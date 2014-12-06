@@ -49,6 +49,10 @@ Congratulations! Your app should be up and running.
 
 Your mod_rewrite module is probably disabled. Look for your apache installation (under WAMP it will be `/path/to/wamp/bin/apache/apacheX.X.X`) then under the `conf` folder you'll find `httpd.conf`. Search for this line:  `#LoadModule rewrite_module modules/mod_rewrite.so` then remove the `#`. Restart your server.
 
+**I'm getting an error saying it can't connect to the database.**
+
+Check under `app/config/database.php` and make sure the MySQL database information is correct.
+
 **When I try to run the `php artisan october:up` command, it says it cannot find php.**
 
 Make sure the directory that contains `php.exe` is in your PATH variable.
