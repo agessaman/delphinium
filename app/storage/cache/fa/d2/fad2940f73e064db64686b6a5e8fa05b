@@ -1,0 +1,170 @@
+9999999999s:7776:"a:5:{s:5:"mtime";i:1407523272;s:7:"content";s:3808:"description = "Default layout"
+
+[session]
+security = "all"
+==
+{% component 'session' %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Delphinium - {{ this.page.title }}</title>
+        <meta name="author" content="October CMS">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" type="image/png" href="{{ 'assets/images/favicon.png'|theme }}" />
+        <link href="{{ [
+            'assets/css/theme.css'
+        ]|theme }}" rel="stylesheet">
+        {% styles %}
+        <!-- Scripts -->
+        <script src="{{ [
+            'assets/javascript/jquery.js',
+            'assets/javascript/app.js'
+        ]|theme }}"></script>
+        {% framework extras %}
+        {% scripts %}
+        <style>
+        	.login{
+        		color: white;
+				margin-top: 15px;
+				display: block;
+				float: right;
+        	}
+        	.login a{
+        		color:#999999;
+        	}
+        	.login a:hover{
+        		color:#FFFFFF;
+        		text-decoration:none;
+        		cursor:pointer;
+        	}
+        </style>
+    </head>
+    <body>
+
+        <!-- Header -->
+        <header id="layout-header">
+
+            <!-- Nav -->
+            <nav id="layout-nav" class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="{{ 'home'|page }}">Delphinium</a>
+                    </div>
+                    <div class="collapse navbar-collapse navbar-main-collapse">
+                        <ul class="nav navbar-nav">
+                            <li class="{% if this.page.id == 'about' %}active{% endif %}"><a href="{{ 'about'|page }}">About</a></li>
+                            <li class="{% if this.page.id == 'specs' %}active{% endif %}"><a href="{{ 'specs'|page }}">Specs</a></li>
+                            <li class="{% if this.page.id == 'contribute' %}active{% endif %}"><a href="{{ 'contribute'|page }}">Contribute</a></li>
+                            <li class="{% if this.page.id == 'contact' %}active{% endif %}"><a href="{{ 'contact'|page }}">Contact</a></li>
+                            <li class="{% if this.page.id == 'demo' %}active{% endif %}"><a href="{{ 'demo'|page }}">Demo</a></li>
+                            <li class="{% if this.page.id == 'forum' %}active{% endif %}"><a href="https://delphinium.uvu.edu/octobercms/forum/channel/project-delphinium">Forum</a></li>
+                            <li><a href="https://github.com/japomani/Project_Delphinium">Download</a></li>
+                            <li><a href="https://github.com/japomani/Project_Delphinium/wiki">Wiki</a></li>
+                        </ul>
+                        <span class="login">
+	                        {% if user %}
+							    <a data-request="onLogout" data-request-data="redirect: '/'"><i class = "icon-caret-left"></i> Sign out - </a>{{ user.name }} 
+							{% else %}
+							    <a href="{{ 'account'|page }}"><i class = "icon-caret-right"></i> Sign in</a>
+							{% endif %}
+						</span>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <!-- Content -->
+        <section id="layout-content">
+           {% page %}
+           <br><br>
+        </section>
+    </body>
+</html>";s:8:"settings";a:2:{s:11:"description";s:14:"Default layout";s:10:"components";a:1:{s:7:"session";a:1:{s:8:"security";s:3:"all";}}}s:4:"code";N;s:6:"markup";s:3746:"{% component 'session' %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Delphinium - {{ this.page.title }}</title>
+        <meta name="author" content="October CMS">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" type="image/png" href="{{ 'assets/images/favicon.png'|theme }}" />
+        <link href="{{ [
+            'assets/css/theme.css'
+        ]|theme }}" rel="stylesheet">
+        {% styles %}
+        <!-- Scripts -->
+        <script src="{{ [
+            'assets/javascript/jquery.js',
+            'assets/javascript/app.js'
+        ]|theme }}"></script>
+        {% framework extras %}
+        {% scripts %}
+        <style>
+        	.login{
+        		color: white;
+				margin-top: 15px;
+				display: block;
+				float: right;
+        	}
+        	.login a{
+        		color:#999999;
+        	}
+        	.login a:hover{
+        		color:#FFFFFF;
+        		text-decoration:none;
+        		cursor:pointer;
+        	}
+        </style>
+    </head>
+    <body>
+
+        <!-- Header -->
+        <header id="layout-header">
+
+            <!-- Nav -->
+            <nav id="layout-nav" class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="{{ 'home'|page }}">Delphinium</a>
+                    </div>
+                    <div class="collapse navbar-collapse navbar-main-collapse">
+                        <ul class="nav navbar-nav">
+                            <li class="{% if this.page.id == 'about' %}active{% endif %}"><a href="{{ 'about'|page }}">About</a></li>
+                            <li class="{% if this.page.id == 'specs' %}active{% endif %}"><a href="{{ 'specs'|page }}">Specs</a></li>
+                            <li class="{% if this.page.id == 'contribute' %}active{% endif %}"><a href="{{ 'contribute'|page }}">Contribute</a></li>
+                            <li class="{% if this.page.id == 'contact' %}active{% endif %}"><a href="{{ 'contact'|page }}">Contact</a></li>
+                            <li class="{% if this.page.id == 'demo' %}active{% endif %}"><a href="{{ 'demo'|page }}">Demo</a></li>
+                            <li class="{% if this.page.id == 'forum' %}active{% endif %}"><a href="https://delphinium.uvu.edu/octobercms/forum/channel/project-delphinium">Forum</a></li>
+                            <li><a href="https://github.com/japomani/Project_Delphinium">Download</a></li>
+                            <li><a href="https://github.com/japomani/Project_Delphinium/wiki">Wiki</a></li>
+                        </ul>
+                        <span class="login">
+	                        {% if user %}
+							    <a data-request="onLogout" data-request-data="redirect: '/'"><i class = "icon-caret-left"></i> Sign out - </a>{{ user.name }} 
+							{% else %}
+							    <a href="{{ 'account'|page }}"><i class = "icon-caret-right"></i> Sign in</a>
+							{% endif %}
+						</span>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <!-- Content -->
+        <section id="layout-content">
+           {% page %}
+           <br><br>
+        </section>
+    </body>
+</html>";}";

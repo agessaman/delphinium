@@ -1,0 +1,32 @@
+{% if cameraItems %}
+<script>
+    jQuery( document ).ready(function($) {
+        $('#OctoDevelOctoSliderCamera').camera({
+            navigation: {{ navigationCamera }},
+            loader: '{{ loaderCamera }}',
+            loaderColor: '{{ loaderColorCamera }}',
+            loaderBgColor: '{{ loaderBgColorCamera }}',
+            loaderOpacity: {{ loaderOpacityCamera }},
+            loaderPadding: {{ loaderPaddingCamera }},
+            loaderStroke: {{ loaderStrokeCamera }},
+            barPosition: '{{ barPositionCamera }}',
+            barDirection: '{{ barDirectionCamera }}',
+            hover: {{ hoverCamera }},
+            thumbnails: {{ thumbnailsCamera }},
+            playPause: {{ playPauseCamera }},
+            pagination: {{ paginationCamera }}
+        });
+    });
+</script>
+    <div class="camera_wrap {{ skinCamera }}" id="OctoDevelOctoSliderCamera">
+        {% for image in cameraItems.images %}
+        <div data-thumb="{{ image.thumb(100,100) }}" data-src="{{ image.path }}">
+            {% if image.description %}
+            <div class="camera_caption {{ captionEffectCamera }}">
+                {{ image.description|raw }}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+{% endif %}

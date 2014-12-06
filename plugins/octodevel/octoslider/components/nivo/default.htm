@@ -1,0 +1,31 @@
+{% if nivoItems %}
+<script>
+    jQuery( document ).ready(function($) {
+        $('#OctoDevelOctoSliderNivo').nivoSlider({
+            effect: '{{ effectNivo }}',
+            slices: {{ slicesNivo }},
+            boxCols: {{ boxColsNivo }},
+            boxRows: {{ boxRowsNivo }},
+            animSpeed: {{ animSpeedNivo }},
+            pauseTime: {{ pauseTimeNivo }},
+            startSlide: {{ startSlideNivo }},
+            directionNav: {{ directionNavNivo }},
+            controlNav: {{ controlNavNivo }},
+            controlNavThumbs: {{ controlNavThumbsNivo }},
+            pauseOnHover: {{ pauseOnHoverNivo }},
+            manualAdvance: {{ manualAdvanceNivo }},
+            prevText: '{{ prevTextNivo }}',
+            nextText: '{{ nextTextNivo }}',
+            randomStart: {{ randomStartNivo }},
+        });
+    });
+</script>
+
+<div class="slider-wrapper{% if themeNivo != 'none' %} theme-{{ themeNivo }}{% endif %}">
+    <div id="OctoDevelOctoSliderNivo" class="nivoSlider">
+    {% for image in nivoItems.images %}
+        <img src="{{ image.path }}" alt="{{ image.title }}" title="{{ image.description }}"{% if controlNavThumbsNivo == 'true' %} data-thumb="{{ image.thumb(100,100) }}"{% endif %} />
+    {% endfor %}
+    </div>
+</div>
+{% endif %}

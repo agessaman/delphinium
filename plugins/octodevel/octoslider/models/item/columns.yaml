@@ -1,0 +1,17 @@
+# ===================================
+#  Column Definitions
+# ===================================
+
+columns:
+
+    title:
+        label: Title
+        searchable: true
+
+    created_at:
+        label: Created
+        type: datetime
+
+    updated_at:
+        label: Updated
+        type: datetime

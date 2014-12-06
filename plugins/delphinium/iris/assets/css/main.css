@@ -1,0 +1,304 @@
+#trail{
+    height:15px;
+}
+#tooltip.svg{
+/*    display:block;
+    margin: auto;*/
+}
+.opaquePath{
+    opacity:0.5;   
+}
+.visiblePath{
+    opacity:1;   
+}
+#blocker{
+    position:fixed;
+    top:0;
+    left:0;
+    background-color: grey;
+    opacity: 0.4;
+    width:inherit;
+    z-index: 1000;
+    width:100%;
+    height:100%;
+    cursor: pointer;
+}
+.show
+{
+    display:block;
+}
+.hidden {
+        display: none;
+}
+
+#tooltip{
+    width:500px;
+    height:400px;
+    position: absolute;
+    border: none;
+}
+
+#divInnerTooltip{
+    position: absolute;
+    width:500px;
+    height:400px;
+    padding: 10px 0px 10px 10px;
+    background-color:white;
+    color: black;
+    font-family: "Helvetica";
+    -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+}
+#divPrerequisites
+{
+    border: 2px solid #FF6600;
+    border-radius: 9px;
+    font-size: 12px;
+    padding: 1px 0 0 9px;
+    width: 464px;
+}
+#divPrerequisites h4{
+    display:inline-block;
+    margin-left:2px !important;
+    font-size:16px;
+    color:#FF6600;
+}
+.red{
+    color:red;   
+}
+.orange
+{
+ color:#FF6600;   
+}
+#tooltip h3{
+    color:#4C9ED9;
+}
+
+#content a, a:link{
+    color:#2C2F34;
+    text-decoration: none;
+    cursor: pointer;
+}
+#content a, a:link{
+    color:#2C2F34;
+}
+#content a, a:link{
+    color:#2C2F34;
+}
+
+#tooltip .titleBar{
+    width: auto;
+    font-family: helvetica;
+    height: 25px;
+    padding: 3px 3px 0px 5px;
+    font-weight:bold;
+    color:#E4E7EF;
+    background-color: #2C2F34;
+    margin-right:10px;
+}
+.titleBar
+{
+    width: 502px !important;
+    margin-right: 0;
+}
+#tooltip #imgClose{
+    color: #8f8f8f;
+    cursor: pointer;
+    font-size: 25px;
+    position: absolute;
+    right: 4px;
+    top: -7px;
+    z-index: 20001;
+}
+#tooltip #spTitle{
+    margin-left:4px;
+    position: absolute;
+}
+#tooltip #imgLock{
+    position:relative;
+    float:right;
+}
+.transparent{
+    z-index: 999;
+    opacity: 0.7;
+    display: block;
+}
+.seeThroughOnly
+{
+    opacity: 0.7;
+    display: block;    
+    z-index: 10002;  
+}
+.solid{
+    opacity:1;
+    z-index:10002;
+    display: block;
+}
+.hideOverflow{
+    overflow:hidden;
+}
+.showOverflow
+{
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+#tooltip p {
+    margin: 0;
+    font-family: sans-serif;
+    line-height: 20px;
+}
+#tooltip .bottomDiv{
+    padding: 5px;
+}
+.content{
+    word-wrap:break-word;
+}
+#modalContainer
+{
+    float:right;
+    width:200px;
+    height:200px;
+    display: none;
+    z-index: 10001;
+    background-color: white;
+    position: fixed;
+    right: 80px;
+    border-radius:5px;
+    border: 1px solid gray;
+}
+#sequence {
+    font-size:10px;
+    font-size:8px;
+    width: 600px;
+    height: 20px;
+    position: relative;
+    top:-3px;
+    left:1px;
+}
+#sequence text, #legend text {
+    font-weight: 600;
+    fill:#E4E7EF;
+}
+
+ul
+{
+    list-style: none;
+    padding-left: 0;
+}
+#ulAssignments
+{
+    font-size:12px;
+}
+#ulOptionalAssignments
+{
+    font-size: 12px;
+}
+
+#divOptionalAssig
+{
+    color:#FF6600;
+    font-size:9px;
+}
+#ulPrerequisites li
+{
+    height:17px;   
+    white-space: nowrap;
+    cursor:help;
+    color:#FF6600 !important; 
+}
+#ulPrerequisites li a
+{
+    color:#FF6600 !important; 
+}
+
+#ulPrerequisites li a:hover
+{
+    color:#FF6600 !important; 
+}
+#ulPrerequisites li a:visited
+{
+    color:#FF6600 !important; 
+}
+
+ul li a{
+   margin-left:5px;
+}
+
+/******************** STYLES FOR ASSIGNMENTS BOX *****************/
+.assignmentLi{
+    margin-top:3px;   
+}
+.assignmentBox{
+    width: inherit;
+    height:70px;
+    background-color: #F0F0F0;
+    border-radius: 5px;
+    <!--box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);-->
+}
+.divLeft{
+    float: left;    
+    width: 78%;
+    height:inherit;
+    padding:5px 0 0 5px;
+}
+
+.divLeft .gray{
+    color: gray;
+}
+.divLeft a{
+ font-size:14px;   
+}
+.divRight{
+    float: right;
+    width: 18%;
+    height:inherit;
+    padding:3px 0 0 3px;
+}
+#divPrereq{
+    font-style: italic;
+    font-size: 80%;
+    color: #808080;
+    margin-left: 20px;
+}
+.spanAStatus
+{
+    cursor:default;   
+}
+#spanAName{
+ margin-left:3px;   
+}
+.divDesc{
+    float:left;
+    margin-top:5px;
+}
+#divStatusDesc{
+    font-size: 80%;
+    color: #808080; 
+    margin-left:3px
+}
+.divPoints{
+    margin-top:10px;   
+}
+.divScore{
+    position:relative;
+    top:3px;
+}
+
+#divOptionalAssignments
+{
+    border-top:1px solid #F0F0F0;
+}
+#divAssignments
+{
+    border-top:1px solid #F0F0F0;
+}
+/******************** STYLES FOR PREREQ BOX **********************/
+.prereqLi{  
+    cursor: pointer;
+    position: relative;
+}
+
+#unauthorized{
+    text-align: center;
+}

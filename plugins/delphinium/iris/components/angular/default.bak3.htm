@@ -1,0 +1,46 @@
+<script type="text/javascript">
+	var moduleData = {{ moduleData|raw}};
+        var courseId = {{courseId}}
+</script>
+<div ng-app="demoApp" ng-controller="MainCtrl">
+    <a href="" class="btn btn-default pull-right" ng-click="collapseAll()">Collapse all</a>
+    <a href="" class="btn btn-default pull-right" ng-click="expandAll()">Expand all</a>
+    {% verbatim %}
+    <script type="text/ng-template" id="nodes_renderer.html">
+        <div ui-tree-handle class="tree-node tree-node-content">
+          <a class="btn btn-success btn-xs" ng-if="item.nodes && item.nodes.length > 0" nodrag ng-click="toggle(this)">
+          <span class="glyphicon" ng-class="{'icon-chevron-circle-right': collapsed, 'icon-chevron-circle-down': !collapsed}"></span></a>
+          {{item.name}}
+          <a class="pull-right btn btn-danger btn-xs" nodrag ng-click="remove(this)"><span class="icon-times"></span></a>
+          <a class="pull-right btn btn-primary btn-xs" nodrag ng-click="newSubItem(this)" style="margin-right: 8px;"><span class="icon-plus"></span></a>
+        </div>
+
+        <div ng-class="contentClass" id="div{{item.moduleId}}">
+            <div class="divContent" ng-repeat="item in item.items" >
+                <a href="" class="contentLink">
+                    <i class="icon-tasks contentType"></i>
+                    <span>{{item.title}}</span>
+                </a>
+                <a class="btn icon-tags dive" nodrag ng-click="getTags(this, item.module_item_id)"></a>        
+            </div>
+        </div>
+        <ol ui-tree-nodes="" ng-model="item.nodes" ng-class="{hidden: collapsed}">
+          <li ng-repeat="item in item.nodes" ui-tree-node ng-include="'nodes_renderer.html'">
+          </li>
+        </ol>
+    </script>
+    <div ui-tree id="tree-root">
+        <ol ui-tree-nodes ng-model="list">
+          <li ng-repeat="item in list" ui-tree-node ng-include="'nodes_renderer.html'"></li>
+        </ol>
+    </div>
+    
+    <div class="col-lg-6">
+        <h3>Data binding</h3>
+        <div class="info">
+            {{info}}
+        </div>
+        <pre class="code">{{ list | json }}</pre>
+      </div>
+     {% endverbatim %}    
+</div>

@@ -1,0 +1,20 @@
+9999999999s:937:"a:5:{s:5:"mtime";i:1407522010;s:7:"content";s:355:"title = "Forum"
+url = "/forum"
+layout = "default"
+child_of = "mey_no_parent"
+
+[forumChannels]
+memberPage = "member"
+memberPageIdParam = ":slug"
+channelPage = "channel"
+channelPageIdParam = ":slug"
+topicPage = "topic"
+topicPageIdParam = ":slug"
+==
+<div class="container" style="margin-top:1.5em;">
+	<h1>Forum</h1>
+	{% component 'forumChannels' %}
+</div>";s:8:"settings";a:5:{s:5:"title";s:5:"Forum";s:3:"url";s:6:"/forum";s:6:"layout";s:7:"default";s:8:"child_of";s:13:"mey_no_parent";s:10:"components";a:1:{s:13:"forumChannels";a:6:{s:10:"memberPage";s:6:"member";s:17:"memberPageIdParam";s:5:":slug";s:11:"channelPage";s:7:"channel";s:18:"channelPageIdParam";s:5:":slug";s:9:"topicPage";s:5:"topic";s:16:"topicPageIdParam";s:5:":slug";}}}s:4:"code";N;s:6:"markup";s:108:"<div class="container" style="margin-top:1.5em;">
+	<h1>Forum</h1>
+	{% component 'forumChannels' %}
+</div>";}";

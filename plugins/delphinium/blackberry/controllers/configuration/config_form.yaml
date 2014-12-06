@@ -1,0 +1,20 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+name: Blackberry
+form: @/plugins/delphinium/blackberry/models/developer/fields.yaml
+modelClass: Delphinium\Blackberry\Models\Developer
+defaultRedirect: delphinium/blackberry/configuration
+
+create:
+    title: New LTI Configuration
+    redirect: delphinium/blackberry/configuration/update/:id
+    redirectClose: delphinium/blackberry/configuration
+    flash-save: LTI configuration added
+
+update:
+    title: Edit LTI Configuration
+    redirect: delphinium/blackberry/configuration
+    flash-save: LTI configuration successfully updated
+    flash-delete: LTI configuration has been deleted

@@ -1,0 +1,521 @@
+9999999999s:27768:"a:5:{s:5:"mtime";i:1409845740;s:7:"content";s:13795:"title = "About"
+url = "/about"
+layout = "default"
+description = "About project delphinium"
+child_of = "mey_no_parent"
+==
+<style>
+    .logoImg{
+        width:15em;
+        float:left;
+        margin-right:3em;
+        margin-left:2em;
+    }
+</style>
+
+<div class="container">
+	<div class="page-header">
+	    <h2>About <small>Project Delphinium's Statement of Excellence</small></h2>
+	</div>
+	
+	<!-- Elevator Speach -->
+	
+	<h3>Elevator Speech</h3>
+	<p class="lead">
+	    <i class="icon-comments-alt"></i>
+	      The whole story in a nutshell
+	</p>
+	
+	<p class="ptext">
+		Over the past few decades, technology has played an increasing role in education. More and more, courses are being moved to distance education and completed over the internet. This shift has solved some problems, like giving more students access to education, however, it has created its own challenges including issues related to student motivation. For example, a recent study by Harvard and MIT shows that only 4% of students enrolled in their 17 massive online open courses complete the course. This challenge is not related to low quality course content or inferior assignments&mdash;the issue is student motivation.
+	</p>
+	<p class="ptext">
+		Project Delphinium attempts to address the challenge of student motivation in online education by applying gamification principles. Gamification is a fairly young concept that has taken root in the marketing and customer loyalty domains. It is also growing in popularity for improving employee performance. Project Delphinium aims to bring gamification’s benefits to education by creating a thriving community of educators, developers, and designers committed to building practical, effective, and engaging gamification tools and environments for education.
+	</p>
+		
+	 <hr />
+	 
+	<!-- Name -->
+	
+	<h3>The Name</h3>
+	<p class="lead">
+	    <i class="icon-bullhorn"></i>
+	      Captures and illustrates the vision and mission
+	</p>
+	<img style="float:right; margin-left: 2em; margin-bottom:2em; width:26em;" src="http://delphinium.uvu.edu/octobercms/themes/demo/assets/images/dephinium1.jpg">
+	<p class="ptext">
+	    As I thought about a metaphor to represent this gamification in education project, the idea of a flower seemed perfect. A flower includes a stem that provides structure, and leaves that provide resources. Together these support the flower's petals which fulfill the function of attracting insects for pollination and provide beauty. These same basic elements are the foundation of project Delphinium. To create a flexible educational gamification environment, we designed a platform that provides structure and resources, and widgets that provide functionality and beauty.
+	</p>
+	<p class="ptext">
+	    While browsing lists of the traditional meanings of flowers, I came across the name "delphinium" and it immediately jumped out at me. First, I loved the sound of the word—Delphinium. To me it sounded futuristic and technical, perhaps like a mineral or an exotic alloy. Then I read its meanings and was hooked:<p>
+	    
+	<blockquote>The delphinium flower is said to represent... levity, fun and a general sense of joy. <a href="http://flowerinfo.org/delphinium-flowers" target="_blank"><i class="icon-external-link"></i></a><br><br>
+	[It] is a symbol of infinite possibility and believing that anything is possible. Stretch your current beliefs and keep reaching for the stars...  <a href="http://www.universeofsymbolism.com/flower-symbolism.html" target="_blank"><i class="icon-external-link"></i></a>
+	</blockquote>
+	
+	<p>    
+	    What better flower could represent a project dedicated to building an educational gamification platform? And thus, Project Delphinium was born!
+	</p>
+	
+	 <hr />
+	 
+	    <!-- Vision -->
+	<h3>Vision</h3>
+	<p class="lead">
+	    <i class="icon-users"></i>
+	      Our ideal future
+	</p>
+	<p class="ptext">
+	    Project Delphinium aims to be a thriving community of educators, developers, and designers committed to creating practical, effective, and engaging gamification environments and tools for education. The Delphinium framework allows us to contribute a wide variety of educational gamification widgets and beautifully arrange them in flexible dashboards, helping to motivate tens of thousands of students.
+	</p>
+	
+	<hr />
+	
+	<!-- Mission -->
+	<h3>Mission</h3>
+	<p class="lead">
+	    <i class="icon-anchor"></i>
+	      What we do
+	</p>
+	<p class="ptext">
+	    We provide a flexible gamification platform that increases motivation in online education.
+	</p>
+	
+	<hr />
+	
+	    
+	<!-- Logo -->
+	<h3>Logo</h3>
+	<p class="lead">
+	    <img src = "https://delphinium.uvu.edu/octobercms/themes/demo/assets/images/favicon.png" width="25px">
+	      An image worth a thousand words
+	</p>
+	<img src = "https://delphinium.uvu.edu/octobercms/themes/demo/assets/images/Delphinium-L.png" class = "logoImg">
+	<p class="ptext">
+	    The Project Delphinium logo employs clean typology with extended stems on the letters 'l' and 'p', symbolizing the stem of a flower. Abstract colorful prisms burst from the stem symbolizing overlapping leaves and flower petals. These overlapping petals represent the interaction between widgets and their shared resources in the Project Delphinium framework.
+	</p>
+	<div style = "clear:both"></div>
+	<hr />
+	    
+	<!-- Slogan -->
+	<h3>Slogan</h3>
+	<p class="lead">
+	    <i class="icon-paper-plane"></i>
+	      Captures it all
+	</p>
+	<p>
+	    Structure + Resources   <i class="icon-angle-right"></i>   Function + Beauty
+	</p>
+	
+	<hr />
+	
+	<!-- Values -->
+	<h3>Values</h3>
+	<p class="lead">
+	    <i class="icon-compass"></i>
+	      Why we do what we do
+	</p>
+	<ul>
+	    <li><i>Success</i> - Life it too short not to be successful</li>
+	    <li><i>Growth</i> - Being more than we were is the purpose of life</li>
+	    <li><i>Service</i> - Few things are more noble or rewarding than helping people find success and growth, especially those who might not have found it on their own</li>
+	</ul>
+	
+	<hr />
+	
+	<!-- Objectives -->
+	<h3>Objectives</h3>
+	<p class="lead">
+	    <i class="icon-location-arrow"></i>
+	      Key desired outcomes
+	</p>
+	<ul>
+	    <li>Build a supportive community</li>
+	    <li>Develop a flexible gamification framework</li>
+	    <li>Create a broad library of gamification widgets</li>
+	</ul>
+	
+	<hr />
+	
+	<!-- Strategies -->
+	<h3>Strategies</h3>
+	<p class="lead">
+	    <i class="icon-cogs"></i>
+	      How we achieve our objectives
+	</p>
+	<ul>
+	    <li>Build a supportive community</li>
+	        <ul>
+	            <li>Encourage the use of Delphinium to motivate students</li>
+	            <li>Provide easily accessible resources</li>
+	            <li>Encourage contribution of resources to development</li>
+	        </ul>
+	    <li>Develop a flexible gamification framework</li>
+	        <ul>
+	            <li>Build on existing accepted technologies</li>
+	            <li>Secure resources for programing talent</li>
+	            <li>Encourage community to test and recommend improvement</li>
+	        </ul>
+	    <li>Create a broad library of gamification widgets</li>
+	        <ul>
+	            <li>Research gamification best practices</li>
+	            <li>Encourage community to request and submit widgets</li>
+	        </ul>
+	</ul>
+	
+	<hr />
+	
+	<!-- Tactics -->
+	<h3>Tactics</h3>
+	<p class="lead">
+	    <i class="icon-tachometer"></i>
+	      Specific planned activities for strategies
+	</p>
+	<ul>
+	    <li>Build a supportive community</li>
+	        <ul>
+	            <li>Encourage the use of Delphinium to motivate students</li>
+	                <ul>
+	                    <li><i>Share presentations on Project Delphinium at relevant conferences</i></li>
+	                    <li><i>Make the technology as easy to use and extend as possible</i></li>
+	                </ul>
+	            <li>Provide easily accessible resources</i></li>
+	                <ul>
+	                    <li><i>Make code available in GitHub</i></li>
+	                    <li><i>Provide written and video tutorials</i></li>
+	                    <li><i>Provide a community support forum where people can ask questions</i></li>
+	                </ul>
+	            <li>Encourage contribution of resources to development</li>
+	                <ul>
+	                    <li><i>Provide forums for experts to describe case studies and best practices</i></li>
+	                    <li><i>Design the Delphinium Framework so that it is easy for the community to contribute widgets to extend functionality</i></li>
+	                    <li><i>Encourage those with resources available to donate funds to the project to support development</i></li>
+	                </ul>
+	        </ul>
+	    <li>Develop a flexible gamification framework</li>
+	        <ul>
+	            <li>Build on existing accepted technologies</li>
+	                <ul>
+	                    <li><i>Provide forums for experts to describe case studies and best practices</i></li>
+	                    <li><i>Design the Delphinium Framework so that it is easy for the community to contribute widgets to extend functionality</i></li>
+	                    <li><i>Encourage those with resources available to donate funds to the project to support development</i></li>
+	                </ul>
+	            <li>Secure resources for programing talent</li>
+	                <ul>
+	                    <li><i>Apply for grants</i></li>
+	                    <li><i>Encourage interested groups to donate funds</i></li>
+	                    <li><i>Beg, borrow, stretch, and sell my first born (not really that first born part)</i></li>
+	                </ul>
+	            <li>Encourage community to test and recommend improvement</li>
+	                <ul>
+	                    <li><i>Establish a GitHub presence where others can download and install the code</i></li>
+	                    <li><i>Use GitHub to track issues, bugs, feature requests, and comments</i></li>
+	                </ul>
+	        </ul>
+	    <li>Create a broad library of gamification widgets</li>
+	        <ul>
+	            <li>Research gamification best practices</li>
+	                <ul>
+	                    <li><i>Continue to read gamification research and literature</i></li>
+	                    <li><i>Conduct and publish new research on the mechanics and effectiveness of gamification</i></li>
+	                    <li><i>Provide a wiki documenting our findings and best practices</i></li>
+	                </ul>
+	            <li>Encourage community to request and submit widgets</li>
+	                <ul>
+	                    <li><i>Provide a forum space where members of the community can request and discuss new widgets</i></li>
+	                    <li><i>Design the Delphinium Framework so that it is easy for the community to contribute widgets to extend functionality</i></li>
+	                </ul>
+	        </ul>
+	</ul>
+	
+	<hr />
+	
+	<!-- Goals -->
+	<h3>Goals</h3>
+	<p class="lead">
+	    <i class="icon-check"></i>
+	      Closing the gap
+	</p>
+	<ol>
+	    <li>Build an informational website about Project Delphinium and the Delphinium Framework - <b>90% Done</b></li>
+	    <li>Complete core framework and widgets by Dec 1, 2014 - <b>15% Done</b></li>
+	    <li>Acquire resources to fund 2 student programmers for 1 year - <b>35% Done</b></li>
+	    <li>Share presentations on Project Delphinium at 2 related conferences - <b>10% Done</b></li>
+	    <li>Build out the community portion of delphinium.uvu.edu including GitHub, forums, and wiki - <b>20% Done</b></li>
+	    <li>Apply for 3 grants to support programmers and development - <b>40% Done</b></li>
+	</ol>
+	<hr />
+	
+	    <!-- History -->
+	<h3>History</h3>
+	<p class="lead">
+	    <i class="icon-pencil-square"></i>
+	      How we got here
+	</p>
+	<p class="ptext">
+	    Dr. Jared R. Chapman began planning what would become Project Delphinium in early 2013. Preferring to stay on the bleeding edge of educational technology, Dr. Chapman had already been experimenting with open source textbooks, flexible assignment due dates, extensive use of peer review, and adaptive quizzes. When he ran across the idea of gamification in his research, he became intrigued. He began to wonder if he could design a course in which his students might "get addicted" to doing homework, similar to how he had observed that many of his students appeared to be addicted to smartphone games.
+	</p>
+	<p class="ptext">
+	    Dr. Chapman began designing what a gamified course interface would look like, drawing inspiration from games like Angry Birds and Plants vs. Zombies. In the summer of 2013 he began coding a gamified skin for the Canvas LMS and by Fall semester had a prototype ready to run with his 125 Utah Valley University (UVU) students. Taking what he learned that semester, he spent the Christmas break refining his code and ran his pilot again in the Spring 2014 semester.
+	</p>
+	<p class="ptext">
+	    After receiving grants from UVU and the UVU Woodbury School of Business, Dr. Chapman was able to hire a student programmer to hasten development. That summer, Dr. Chapman gave a presentation on his Canvas gamification skin at Instructurecon in Park City, Utah. The response was very positive and sparked several discussions with interested groups. Through these conversations, Dr. Chapman began to realize that for the project to really take off, he would need to design it as a flexible platform that could be used by a variety of institutions in a variety of use cases. With this in mind, he began designing the Project Delphinium framework.
+	</p>
+</div>";s:8:"settings";a:6:{s:5:"title";s:5:"About";s:3:"url";s:6:"/about";s:6:"layout";s:7:"default";s:11:"description";s:24:"About project delphinium";s:8:"child_of";s:13:"mey_no_parent";s:10:"components";a:0:{}}s:4:"code";N;s:6:"markup";s:13674:"<style>
+    .logoImg{
+        width:15em;
+        float:left;
+        margin-right:3em;
+        margin-left:2em;
+    }
+</style>
+
+<div class="container">
+	<div class="page-header">
+	    <h2>About <small>Project Delphinium's Statement of Excellence</small></h2>
+	</div>
+	
+	<!-- Elevator Speach -->
+	
+	<h3>Elevator Speech</h3>
+	<p class="lead">
+	    <i class="icon-comments-alt"></i>
+	      The whole story in a nutshell
+	</p>
+	
+	<p class="ptext">
+		Over the past few decades, technology has played an increasing role in education. More and more, courses are being moved to distance education and completed over the internet. This shift has solved some problems, like giving more students access to education, however, it has created its own challenges including issues related to student motivation. For example, a recent study by Harvard and MIT shows that only 4% of students enrolled in their 17 massive online open courses complete the course. This challenge is not related to low quality course content or inferior assignments&mdash;the issue is student motivation.
+	</p>
+	<p class="ptext">
+		Project Delphinium attempts to address the challenge of student motivation in online education by applying gamification principles. Gamification is a fairly young concept that has taken root in the marketing and customer loyalty domains. It is also growing in popularity for improving employee performance. Project Delphinium aims to bring gamification’s benefits to education by creating a thriving community of educators, developers, and designers committed to building practical, effective, and engaging gamification tools and environments for education.
+	</p>
+		
+	 <hr />
+	 
+	<!-- Name -->
+	
+	<h3>The Name</h3>
+	<p class="lead">
+	    <i class="icon-bullhorn"></i>
+	      Captures and illustrates the vision and mission
+	</p>
+	<img style="float:right; margin-left: 2em; margin-bottom:2em; width:26em;" src="http://delphinium.uvu.edu/octobercms/themes/demo/assets/images/dephinium1.jpg">
+	<p class="ptext">
+	    As I thought about a metaphor to represent this gamification in education project, the idea of a flower seemed perfect. A flower includes a stem that provides structure, and leaves that provide resources. Together these support the flower's petals which fulfill the function of attracting insects for pollination and provide beauty. These same basic elements are the foundation of project Delphinium. To create a flexible educational gamification environment, we designed a platform that provides structure and resources, and widgets that provide functionality and beauty.
+	</p>
+	<p class="ptext">
+	    While browsing lists of the traditional meanings of flowers, I came across the name "delphinium" and it immediately jumped out at me. First, I loved the sound of the word—Delphinium. To me it sounded futuristic and technical, perhaps like a mineral or an exotic alloy. Then I read its meanings and was hooked:<p>
+	    
+	<blockquote>The delphinium flower is said to represent... levity, fun and a general sense of joy. <a href="http://flowerinfo.org/delphinium-flowers" target="_blank"><i class="icon-external-link"></i></a><br><br>
+	[It] is a symbol of infinite possibility and believing that anything is possible. Stretch your current beliefs and keep reaching for the stars...  <a href="http://www.universeofsymbolism.com/flower-symbolism.html" target="_blank"><i class="icon-external-link"></i></a>
+	</blockquote>
+	
+	<p>    
+	    What better flower could represent a project dedicated to building an educational gamification platform? And thus, Project Delphinium was born!
+	</p>
+	
+	 <hr />
+	 
+	    <!-- Vision -->
+	<h3>Vision</h3>
+	<p class="lead">
+	    <i class="icon-users"></i>
+	      Our ideal future
+	</p>
+	<p class="ptext">
+	    Project Delphinium aims to be a thriving community of educators, developers, and designers committed to creating practical, effective, and engaging gamification environments and tools for education. The Delphinium framework allows us to contribute a wide variety of educational gamification widgets and beautifully arrange them in flexible dashboards, helping to motivate tens of thousands of students.
+	</p>
+	
+	<hr />
+	
+	<!-- Mission -->
+	<h3>Mission</h3>
+	<p class="lead">
+	    <i class="icon-anchor"></i>
+	      What we do
+	</p>
+	<p class="ptext">
+	    We provide a flexible gamification platform that increases motivation in online education.
+	</p>
+	
+	<hr />
+	
+	    
+	<!-- Logo -->
+	<h3>Logo</h3>
+	<p class="lead">
+	    <img src = "https://delphinium.uvu.edu/octobercms/themes/demo/assets/images/favicon.png" width="25px">
+	      An image worth a thousand words
+	</p>
+	<img src = "https://delphinium.uvu.edu/octobercms/themes/demo/assets/images/Delphinium-L.png" class = "logoImg">
+	<p class="ptext">
+	    The Project Delphinium logo employs clean typology with extended stems on the letters 'l' and 'p', symbolizing the stem of a flower. Abstract colorful prisms burst from the stem symbolizing overlapping leaves and flower petals. These overlapping petals represent the interaction between widgets and their shared resources in the Project Delphinium framework.
+	</p>
+	<div style = "clear:both"></div>
+	<hr />
+	    
+	<!-- Slogan -->
+	<h3>Slogan</h3>
+	<p class="lead">
+	    <i class="icon-paper-plane"></i>
+	      Captures it all
+	</p>
+	<p>
+	    Structure + Resources   <i class="icon-angle-right"></i>   Function + Beauty
+	</p>
+	
+	<hr />
+	
+	<!-- Values -->
+	<h3>Values</h3>
+	<p class="lead">
+	    <i class="icon-compass"></i>
+	      Why we do what we do
+	</p>
+	<ul>
+	    <li><i>Success</i> - Life it too short not to be successful</li>
+	    <li><i>Growth</i> - Being more than we were is the purpose of life</li>
+	    <li><i>Service</i> - Few things are more noble or rewarding than helping people find success and growth, especially those who might not have found it on their own</li>
+	</ul>
+	
+	<hr />
+	
+	<!-- Objectives -->
+	<h3>Objectives</h3>
+	<p class="lead">
+	    <i class="icon-location-arrow"></i>
+	      Key desired outcomes
+	</p>
+	<ul>
+	    <li>Build a supportive community</li>
+	    <li>Develop a flexible gamification framework</li>
+	    <li>Create a broad library of gamification widgets</li>
+	</ul>
+	
+	<hr />
+	
+	<!-- Strategies -->
+	<h3>Strategies</h3>
+	<p class="lead">
+	    <i class="icon-cogs"></i>
+	      How we achieve our objectives
+	</p>
+	<ul>
+	    <li>Build a supportive community</li>
+	        <ul>
+	            <li>Encourage the use of Delphinium to motivate students</li>
+	            <li>Provide easily accessible resources</li>
+	            <li>Encourage contribution of resources to development</li>
+	        </ul>
+	    <li>Develop a flexible gamification framework</li>
+	        <ul>
+	            <li>Build on existing accepted technologies</li>
+	            <li>Secure resources for programing talent</li>
+	            <li>Encourage community to test and recommend improvement</li>
+	        </ul>
+	    <li>Create a broad library of gamification widgets</li>
+	        <ul>
+	            <li>Research gamification best practices</li>
+	            <li>Encourage community to request and submit widgets</li>
+	        </ul>
+	</ul>
+	
+	<hr />
+	
+	<!-- Tactics -->
+	<h3>Tactics</h3>
+	<p class="lead">
+	    <i class="icon-tachometer"></i>
+	      Specific planned activities for strategies
+	</p>
+	<ul>
+	    <li>Build a supportive community</li>
+	        <ul>
+	            <li>Encourage the use of Delphinium to motivate students</li>
+	                <ul>
+	                    <li><i>Share presentations on Project Delphinium at relevant conferences</i></li>
+	                    <li><i>Make the technology as easy to use and extend as possible</i></li>
+	                </ul>
+	            <li>Provide easily accessible resources</i></li>
+	                <ul>
+	                    <li><i>Make code available in GitHub</i></li>
+	                    <li><i>Provide written and video tutorials</i></li>
+	                    <li><i>Provide a community support forum where people can ask questions</i></li>
+	                </ul>
+	            <li>Encourage contribution of resources to development</li>
+	                <ul>
+	                    <li><i>Provide forums for experts to describe case studies and best practices</i></li>
+	                    <li><i>Design the Delphinium Framework so that it is easy for the community to contribute widgets to extend functionality</i></li>
+	                    <li><i>Encourage those with resources available to donate funds to the project to support development</i></li>
+	                </ul>
+	        </ul>
+	    <li>Develop a flexible gamification framework</li>
+	        <ul>
+	            <li>Build on existing accepted technologies</li>
+	                <ul>
+	                    <li><i>Provide forums for experts to describe case studies and best practices</i></li>
+	                    <li><i>Design the Delphinium Framework so that it is easy for the community to contribute widgets to extend functionality</i></li>
+	                    <li><i>Encourage those with resources available to donate funds to the project to support development</i></li>
+	                </ul>
+	            <li>Secure resources for programing talent</li>
+	                <ul>
+	                    <li><i>Apply for grants</i></li>
+	                    <li><i>Encourage interested groups to donate funds</i></li>
+	                    <li><i>Beg, borrow, stretch, and sell my first born (not really that first born part)</i></li>
+	                </ul>
+	            <li>Encourage community to test and recommend improvement</li>
+	                <ul>
+	                    <li><i>Establish a GitHub presence where others can download and install the code</i></li>
+	                    <li><i>Use GitHub to track issues, bugs, feature requests, and comments</i></li>
+	                </ul>
+	        </ul>
+	    <li>Create a broad library of gamification widgets</li>
+	        <ul>
+	            <li>Research gamification best practices</li>
+	                <ul>
+	                    <li><i>Continue to read gamification research and literature</i></li>
+	                    <li><i>Conduct and publish new research on the mechanics and effectiveness of gamification</i></li>
+	                    <li><i>Provide a wiki documenting our findings and best practices</i></li>
+	                </ul>
+	            <li>Encourage community to request and submit widgets</li>
+	                <ul>
+	                    <li><i>Provide a forum space where members of the community can request and discuss new widgets</i></li>
+	                    <li><i>Design the Delphinium Framework so that it is easy for the community to contribute widgets to extend functionality</i></li>
+	                </ul>
+	        </ul>
+	</ul>
+	
+	<hr />
+	
+	<!-- Goals -->
+	<h3>Goals</h3>
+	<p class="lead">
+	    <i class="icon-check"></i>
+	      Closing the gap
+	</p>
+	<ol>
+	    <li>Build an informational website about Project Delphinium and the Delphinium Framework - <b>90% Done</b></li>
+	    <li>Complete core framework and widgets by Dec 1, 2014 - <b>15% Done</b></li>
+	    <li>Acquire resources to fund 2 student programmers for 1 year - <b>35% Done</b></li>
+	    <li>Share presentations on Project Delphinium at 2 related conferences - <b>10% Done</b></li>
+	    <li>Build out the community portion of delphinium.uvu.edu including GitHub, forums, and wiki - <b>20% Done</b></li>
+	    <li>Apply for 3 grants to support programmers and development - <b>40% Done</b></li>
+	</ol>
+	<hr />
+	
+	    <!-- History -->
+	<h3>History</h3>
+	<p class="lead">
+	    <i class="icon-pencil-square"></i>
+	      How we got here
+	</p>
+	<p class="ptext">
+	    Dr. Jared R. Chapman began planning what would become Project Delphinium in early 2013. Preferring to stay on the bleeding edge of educational technology, Dr. Chapman had already been experimenting with open source textbooks, flexible assignment due dates, extensive use of peer review, and adaptive quizzes. When he ran across the idea of gamification in his research, he became intrigued. He began to wonder if he could design a course in which his students might "get addicted" to doing homework, similar to how he had observed that many of his students appeared to be addicted to smartphone games.
+	</p>
+	<p class="ptext">
+	    Dr. Chapman began designing what a gamified course interface would look like, drawing inspiration from games like Angry Birds and Plants vs. Zombies. In the summer of 2013 he began coding a gamified skin for the Canvas LMS and by Fall semester had a prototype ready to run with his 125 Utah Valley University (UVU) students. Taking what he learned that semester, he spent the Christmas break refining his code and ran his pilot again in the Spring 2014 semester.
+	</p>
+	<p class="ptext">
+	    After receiving grants from UVU and the UVU Woodbury School of Business, Dr. Chapman was able to hire a student programmer to hasten development. That summer, Dr. Chapman gave a presentation on his Canvas gamification skin at Instructurecon in Park City, Utah. The response was very positive and sparked several discussions with interested groups. Through these conversations, Dr. Chapman began to realize that for the project to really take off, he would need to design it as a flexible platform that could be used by a variety of institutions in a variety of use cases. With this in mind, he began designing the Project Delphinium framework.
+	</p>
+</div>";}";

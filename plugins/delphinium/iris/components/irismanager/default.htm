@@ -1,0 +1,28 @@
+<script type="text/javascript">
+	var moduleData = {{ moduleData|raw}};
+        var courseId = {{courseId}};
+</script>
+<form id="form" name="form">
+	<div class="dd" id="nestable"></div>
+
+    <button class="btn btn-default oc-icon-trash-o"
+            data-request="{{ __SELF__ }}::onTest">Test</button>
+    <div class="divTags hidden" id="divTags">
+        <div>
+            <input id="tagInput">
+            <button id="btnAddTag">Add tags</button>
+        </div>
+        <div id="divCurrTags">
+            
+        </div>
+       <div><span>one</span><i>X</i></div>
+       <div><span>  two</span><i>X</i></div>
+       <div><span>  three</span><i>X</i></div>
+       <div><span> three</span><i>X</i></div>
+       <div><span>  four</span><i>X</i></div>
+       <div><span>  five</span><i>X</i></div>
+       <div><span> six</span><i>X</i></div>
+       <div><span>  seven</span><i>X</i></div>
+       <div><span>  eight</span><i>X</i></div>
+    </div>
+</form>

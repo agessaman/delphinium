@@ -1,0 +1,4 @@
+1.0.0:
+    - Initialize plugin
+    - create_blackberry_developers_table.php
+    - create_blackberry_users_table.php

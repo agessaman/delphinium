@@ -1,0 +1,7 @@
+# ===================================
+#  List Behavior Config
+# ===================================
+
+title: Greenhouse
+list: @/plugins/delphinium/greenhouse/models/greenhouse/columns.yaml
+modelClass: Delphinium\Greenhouse\Models\Greenhouse

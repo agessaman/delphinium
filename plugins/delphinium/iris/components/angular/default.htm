@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<script type="text/javascript">
+	var moduleData = {{ moduleData|raw}};
+	var avTags = {{ avTags|raw}};
+        var courseId = {{courseId}}
+        console.log(avTags);
+</script>
+
+<div ng-app="treeApp" ng-controller="treeCtrl">
+{% verbatim %}
+  <div class="manager">
+    <span>In order for Iris to function properly, all modules must be nested inside a "main" module.</span>
+    <div class="buttons">
+          <a href="" class="btn btn-default pull-right" ng-click="collapseAll()">Collapse all</a>
+          <a href="" class="btn btn-default pull-right" ng-click="expandAll()">Expand all</a>
+    </div>
+        <!-- Nested node template -->
+        <script type="text/ng-template" id="nodes_renderer.html">
+          <div ui-tree-handle class="tree-node tree-node-content">
+            <a class="btn btn-success btn-xs" ng-if="item.children && item.children.length > 0" nodrag ng-click="toggle(this)">
+            
+            <span ng-class="{'icon-chevron-right': collapsed, 'icon-chevron-down': !collapsed}"></span></a>
+            {{item.name}}
+            
+          </div>
+        <a ng-class="{'icon-chevron-right': isExpanded, 'icon-chevron-down': !isExpanded}"
+            class="pull-right btn expand" nodrag ng-click="isExpanded = !isExpanded"></a>
+        <div id="div{{item.moduleId}}" show='modalShown' ng-show="isExpanded">
+            <div class="divContent" ng-repeat="item in item.items" >
+                <a href="" class="contentLink">
+                    <i class="icon-tasks contentType"></i>
+                    <span>{{item.title}}</span>
+                </a>
+                <a class="btn icon-tags dive" nodrag ng-click="showTagsFunc(this)"></a>     
+                <div>
+                    <div class="divTags" show='modalShown' width='350px' height='auto' ng-show="showTags">
+                        <form ng-submit="addTags(this)">
+                            Current tags:
+                            <ul>
+                                <li ng-repeat="tag in tags">{{tag}}
+                                    <i class="removeTags" ng-click="deleteTag(this, tag)">X</i>
+                                </li>
+                            </ul>
+                            Click on any of the tags below, or add your own tags separated by a comma.<br/>
+                            <input type="text" ng-model="tagValue">
+                            <input type="submit" value="Add Tags">
+                        </form>
+                        
+                        
+                        Possible tags:
+                        <ul>
+                            <li class="addInnerTag"  ng-repeat="item in possibleTags"><i ng-click="addInnerTag(this, item)">{{item}}</i>
+                            </li>
+                        </ul>     
+                    </div>
+                </div>
+            </div>
+        </div>
+
+          <ol ui-tree-nodes="" ng-model="item.children" ng-class="{hidden: collapsed}">
+            <li ng-repeat="item in item.children" ui-tree-node ng-include="'nodes_renderer.html'">
+            </li>
+          </ol>
+        </script>
+        <div ui-tree callbacks="callbacks" id="tree-root">
+          <ol ui-tree-nodes ng-model="data">
+            <li class="treeItem" ng-repeat="item in data" ui-tree-node ng-include="'nodes_renderer.html'"></li>
+          </ol>
+        </div>
+        <a class="btn btn-success btn-xs" nodrag ng-click="saveOrder(this)">Save Order</a>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!--[if IE 8]>
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/es5-shim/3.4.0/es5-shim.min.js"></script>
+  <![endif]-->
+  {% endverbatim %}  
+</div>
+
+
+<!--<a class="pull-right btn btn-danger btn-xs" nodrag ng-click="remove(this)"><span class="icon-times"></span></a>
+<a class="pull-right btn btn-primary btn-xs" nodrag ng-click="newSubItem(this)" style="margin-right: 8px;"><span class="icon-plus"></span></a>-->
+
+<!--
+<li ng-repeat="tag in item.tags">{{item.title}}
+                                
+                            </li>
+
+
+
+
+
+<tags-input ng-model="item.tags">
+                        </tags-input>
+                        
+
+-->

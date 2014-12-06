@@ -1,0 +1,9 @@
+{% if simpleItems %}
+<div class="slider-wrapper">
+    <div id="OctoDevelOctoSliderSimple">
+    {% for image in simpleItems.images %}
+        <img src="{{ image.path }}" alt="{{ image.title }}" title="{{ image.description }}" />
+    {% endfor %}
+    </div>
+</div>
+{% endif %}

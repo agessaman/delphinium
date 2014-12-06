@@ -1,0 +1,9 @@
+.DS_Store
+*.log
+bootstrap/
+install_files/
+themes/demo/
+uploads/
+vendor/
+app/config/database.php
+install.php

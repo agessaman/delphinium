@@ -1,0 +1,8 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+name: Greenhouse
+form: @/plugins/delphinium/greenhouse/models/greenhouse/fields.yaml
+modelClass: Delphinium\Greenhouse\Models\Greenhouse
+defaultRedirect: delphinium/greenhouse/greenhouse

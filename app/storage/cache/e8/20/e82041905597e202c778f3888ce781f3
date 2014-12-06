@@ -1,0 +1,12 @@
+9999999999s:573:"a:5:{s:5:"mtime";i:1407286897;s:7:"content";s:186:"title = "playground"
+url = "/playground"
+layout = "default"
+child_of = "mey_no_parent"
+
+[LTIConfiguration]
+ltiInstance = "1"
+
+[iris]
+chartName = "1"
+==
+{% component 'LTIConfiguration' %}";s:8:"settings";a:5:{s:5:"title";s:10:"playground";s:3:"url";s:11:"/playground";s:6:"layout";s:7:"default";s:8:"child_of";s:13:"mey_no_parent";s:10:"components";a:2:{s:16:"LTIConfiguration";a:1:{s:11:"ltiInstance";s:1:"1";}s:4:"iris";a:1:{s:9:"chartName";s:1:"1";}}}s:4:"code";N;s:6:"markup";s:34:"{% component 'LTIConfiguration' %}";}";

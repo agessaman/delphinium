@@ -1,0 +1,20 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+name: Iris
+form: @/plugins/delphinium/iris/models/home/fields.yaml
+modelClass: Delphinium\Iris\Models\Home
+defaultRedirect: delphinium/iris/home
+
+create:
+    title: Create Iris Sunburst Chart
+    redirect: delphinium/iris/home/update/:id
+    redirectClose: delphinium/iris/home
+    flash-save: Sunburst has been created!
+
+update:
+    title: Edit Sunburst Chart
+    redirect: delphinium/iris/home
+    flash-save: Sunburst updated successfully!
+    flash-delete: Sunburst has been deleted.

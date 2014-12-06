@@ -1,0 +1,15 @@
+# ===================================
+#  Field Definitions
+# ===================================
+
+fields:
+
+    title:
+        label: Title
+
+    images:
+        label: Images
+        type: fileupload
+        mode: image
+        image-width: 240
+        image-height: 110

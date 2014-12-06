@@ -1,0 +1,13 @@
+1.0.0:
+    - Initialize plugin
+    - create_items_table.php
+1.0.1:
+    - JQuery noConflict compatibility, minor code cleanup
+1.0.2:
+    - Component options grouped
+1.0.3:
+    - Fixed validation exceptions
+1.0.4:
+    - Removed app tag from image path component, causes 404 error on images when OctoberCMS is not installed in site root
+1.0.5:
+    - Fixed bugs with web root path

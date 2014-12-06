@@ -1,0 +1,19 @@
+9999999999s:909:"a:5:{s:5:"mtime";i:1407522163;s:7:"content";s:345:"title = "Topic"
+url = "/forum/topic/:slug"
+layout = "default"
+child_of = "mey_no_parent"
+
+[forumTopic]
+idParam = ":slug"
+memberPage = "member"
+memberPageIdParam = ":slug"
+channelPage = "channel"
+channelPageIdParam = ":slug"
+==
+<div class="container" style="margin-top:1.5em;">
+<h2>{{ topic.subject }}</h2>
+	{% component 'forumTopic' %}
+</div>";s:8:"settings";a:5:{s:5:"title";s:5:"Topic";s:3:"url";s:18:"/forum/topic/:slug";s:6:"layout";s:7:"default";s:8:"child_of";s:13:"mey_no_parent";s:10:"components";a:1:{s:10:"forumTopic";a:5:{s:7:"idParam";s:5:":slug";s:10:"memberPage";s:6:"member";s:17:"memberPageIdParam";s:5:":slug";s:11:"channelPage";s:7:"channel";s:18:"channelPageIdParam";s:5:":slug";}}}s:4:"code";N;s:6:"markup";s:118:"<div class="container" style="margin-top:1.5em;">
+<h2>{{ topic.subject }}</h2>
+	{% component 'forumTopic' %}
+</div>";}";

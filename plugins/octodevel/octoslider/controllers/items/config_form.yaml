@@ -1,0 +1,16 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+name: Slider
+form: @/plugins/octodevel/octoslider/models/item/fields.yaml
+modelClass: OctoDevel\OctoSlider\Models\Item
+defaultRedirect: octodevel/octoslider/items
+
+create:
+    redirect: octodevel/octoslider/items/update/:id
+    redirectClose: octodevel/octoslider/items
+
+update:
+    redirect: octodevel/octoslider/items
+    redirectClose: octodevel/octoslider/items
