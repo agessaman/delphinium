@@ -25,23 +25,31 @@
   5. Go to the Administrator section and setup your admin information.
     * **Do not forget this!** There's no way to retrieve your admin login information if you lose it.
   6. Finish the installation then try going to `/delphinium/backend` and login with your admin account to make sure everything is setup.
-  7. Now clone the repository into your `/delphinium` folder.
-    * Because this is a non-empty folder, use these commands to properly pull everything.
-```bash
-cd /path/to/delphinium
-git init
-git remote add origin PATH/TO/REPO
-git fetch
-git checkout -t origin/master
-```
-  8. After that, you'll need to install the plugins. Open a command line and do the following:
-
-```bash
-cd /path/to/delphinium
-php artisan october:up
-```
+  7. Now go to `/delphinium/plugins` and clone the repository
+    ```bash
+    cd /path/to/delphinium/plugins
+    git clone https://github.com/ProjectDelphinium/delphinium.git
+    ```
+  8. After that, you'll need to install the plugin. Open a command line and do the following:
+    ```bash
+    cd /path/to/delphinium
+    php artisan october:up
+    ```
 
 Congratulations! Your app should be up and running.
+
+## Migration From Previous Instructions
+
+If you followed the previous installation instructions, this will ensure you end up with the repository in the correct place.
+
+  1. Delete `/path/to/delphinium/.git`
+  2. Go to `/path/to/delphinium/plugins` and clone the repository
+  ```bash
+  cd /path/to/delphinium/plugins
+  git clone https://github.com/ProjectDelphinium/delphinium.git
+  ```
+
+Now you should be setup and correctly synced up.
 
 ## Troubleshooting
 
