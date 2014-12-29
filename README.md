@@ -26,11 +26,13 @@
     * **Do not forget this!** There's no way to retrieve your admin login information if you lose it.
   6. Finish the installation then try going to `/delphinium/backend` and login with your admin account to make sure everything is setup.
   7. Now go to `/delphinium/plugins` and clone the repository
+
     ```bash
     cd /path/to/delphinium/plugins
     git clone https://github.com/ProjectDelphinium/delphinium.git
     ```
   8. After that, you'll need to install the plugin. Open a command line and do the following:
+
     ```bash
     cd /path/to/delphinium
     php artisan october:up
@@ -44,6 +46,7 @@ If you followed the previous installation instructions, this will ensure you end
 
   1. Delete `/path/to/delphinium/.git`
   2. Go to `/path/to/delphinium/plugins` and clone the repository
+
   ```bash
   cd /path/to/delphinium/plugins
   git clone https://github.com/ProjectDelphinium/delphinium.git
