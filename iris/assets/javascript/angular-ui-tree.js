@@ -1915,8 +1915,18 @@
 
                     if (selectedElementScope.$$apply && !cancel) {
                       selectedElementScope.$dragInfo.apply(scope.$treeScope.copy);
-
-                      selectedElementScope.$apply(function() {
+                      
+                      
+//                  THIS LINE 
+//                  selectedElementScope.$apply(function() { 
+//                  MUST BE REPLACED BY THIS ONE:
+//                  scope.$treeScope.$apply(function() {
+//                  IF THIS LINE IS NOT USED THE DROPPED CALLBACK IS NOT GOING TO WORK!
+//                  SEE https://github.com/JimLiu/angular-ui-tree/issues/272
+                  
+                  
+//                  selectedElementScope.$apply(function() {
+                      scope.$treeScope.$apply(function() {
                         scope.$treeScope.$callbacks.dropped(dragInfoEventArgs);
                       });
                       dragInfoEventArgs.dest.nodesScope.$apply(function() {
@@ -1929,8 +1939,14 @@
                         scope.$treeScope.$callbacks.dragCancel(dragInfoEventArgs);
                       });
                     }
-
-                    selectedElementScope.$apply(function() {
+//                  THIS LINE 
+//                  selectedElementScope.$apply(function() { 
+//                  MUST BE REPLACED BY THIS ONE:
+//                  scope.$treeScope.$apply(function() {
+//                  IF THIS LINE IS NOT USED THE DRAGSTOP CALLBACK IS NOT GOING TO WORK!
+//                  
+//                    selectedElementScope.$apply(function() {
+                    scope.$treeScope.$apply(function() {
                       scope.$treeScope.$callbacks.dragStop(dragInfoEventArgs);
                     });
 

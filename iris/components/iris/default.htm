@@ -1,64 +1,57 @@
 <div class="iris-widget">
     <script type="text/javascript">
-	var graphData = {{ moduleData|raw}};
-        var courseId = {{courseId}};
-</script>
-	<h1>Chart Name: {{ this.page.title }}</h1>
-	
-	<script type="text/javascript">
-		var data = {{ moduleData|raw}};
-	</script>
-    	
-		
-		<!<script src="/plugins/delphinium/iris/assets/javascript/test.js"></script>
+            var graphData = {{ graphData|raw}};
+            var rawData = {{ rawData|raw}};
+            var studentId = {{userId}};
+            var courseId = {{courseId}};
+    </script>
+    <div id="wrapper">
+        <div id="tooltip" class="hidden">
+            <span class="imgClose">
+                <span id="stackImgClose" class="fa-stack fa-lg">
+                    <span id="circle"></span>
+                    <span class="fa fa-times-thin fa-stack-1x"></span>
+                </span>
+            </span>
+            
 
-	<div id="wrapper">
-            <div id="tooltip" class="hidden">
-                <i id="imgClose" class="fa fa-times imgClose"></i>
-                
-                <div class="titleBar">
-                    <span id="spTitle">This is my title</span>
+<!--            <span class="icon-circle-thin"></span>
+            <span id="imgClose" class="fa fa-times-thin"></span>-->
+
+            <div class="titleBar">
+                <span id="spTitle">This is my title</span>
+            </div>
+            <div id="divInnerTooltip">
+
+                <div id="sequence">
+                    <svg id="trail"></svg>
                 </div>
-                <div id="divInnerTooltip">
-
-                    <div id="sequence">
-                        <svg id="trail"></svg>
-                    </div>
-                    <div id="divPrerequisites">
-                        <i class="fa fa-warning orange"></i><h4>Module Prerequisites</h4>
-                        <p>Before you can start this module you need to finish the following assignments:</p>
-                        <ul id="ulPrerequisites"></ul>
-                    </div>
-                    <div class="bottomDiv">
-                        <!--<div class="subtitleBar">
-                            <div>
-                                <h3 id="module">Module 4:</h3>
-                            </div>
-                        </div>-->
-                        <div id="content" class="content">
-                            <span id="tooltipDesc">Lame Lame Lame </span>
-                            <hr>
-                            <div id="divAssignments">
-                                <h4>Assignments</h4>
-                                <ul id="ulAssignments"></ul>
-                            </div>
-                            <hr>
-                            <div id="divOptionalAssignments">
-                                <h4>Optional Assignments</h4>
-                                <ul id="ulOptionalAssignments"></ul>
-                            </div>
+                <div id="divPrerequisites">
+                    <i class="fa fa-warning orange"></i><h4>Module Prerequisites</h4>
+                    <p>Before you can start this module you need to finish the following modules:</p>
+                    <ul id="ulPrerequisites"></ul>
+                </div>
+                <div class="bottomDiv">
+                    <!--<div class="subtitleBar">
+                        <div>
+                            <h3 id="module">Module 4:</h3>
+                        </div>
+                    </div>-->
+                    <div id="content" class="content">
+                        <h5 id="tooltipDesc"></h5>
+                        <div id="divAssignments">
+                            <h4>Content</h4>
+                            <ul id="ulAssignments"></ul>
+                        </div>
+                        <div id="divOptionalAssignments">
+                            <h4>Optional Assignments</h4>
+                            <ul id="ulOptionalAssignments"></ul>
                         </div>
                     </div>
                 </div>
+            </div>
 
-            </div>
         </div>
-        
-            <div id="divColorLegend">
-                <div class="legendItem"><div class="darkBlue box"></div><div class="text">Done</div></div>
-                <div class="legendItem"><div class="lightBlue box"></div><div class="text">In-progress</div></div>
-                <div class="legendItem"><div class="green box"></div><div class="text">Open</div></div>
-                <div class="legendItem"><div class="gray box"></div><div class="text">Locked</div></div>
-            </div>
-        <div id="blocker" class="hidden"></div>	
+    </div>
+    <div id="blocker" class="hidden"></div>	
 </div>

@@ -25,6 +25,7 @@ class CreateRaspberryModulesTable extends Migration
                 $table->boolean('require_sequential_progress')->nullable();
                 $table->boolean('publish_final_grade')->nullable();
                 $table->string('prerequisite_module_ids')->nullable();
+                $table->string('state')->nullable();
                 $table->boolean('published')->nullable();
                 $table->integer('items_count')->nullable();
 				

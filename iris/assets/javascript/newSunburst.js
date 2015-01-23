@@ -2,12 +2,17 @@
 var rawSubmissionData;
 var accessibleSubmissData = new Array();
 var moduleStates;
+
 //TODO: make colors configurable
 var stateColors = {locked:"#8F8F8F", unlocked:"#588238", started:"#3087B4", completed:"#143D55"};
+var backColors = {locked:"#DDDDDD", unlocked:"#588238", started:"#3087B4", completed:"#133D55"};
+
+
 $(document).ready(function() {
-    
+//    console.log(graphData);
     graphData =graphData[0];
     console.log(graphData);
+    
         //set up environment
         var width = 960,
         height = 700,
@@ -60,7 +65,13 @@ $(document).ready(function() {
                 .style("fill-rule", "evenodd")
                 .style("cursor","pointer");
 
-
+                d3.select("#stackImgClose")
+                .on("mouseenter", function(d){
+                    d3.select("#circle").classed("icon-circle-thin fa-stack-2x", true);
+                })
+                .on('mouseleave',function(d){
+                    d3.select("#circle").classed("icon-circle-thin fa-stack-2x", false);
+                });
 
 
 
@@ -69,8 +80,10 @@ $(document).ready(function() {
 function showTooltip(d)
 {
     resetTooltipContent();
-    
+    var hasPrereqs = false;
     //make the title bar the same color to represent the state
+    var backColor = backColors['locked'];
+            
     if(moduleStates!==undefined)
     {
         var ob = moduleStates.filter(function (ob) 
@@ -84,7 +97,9 @@ function showTooltip(d)
 
         if(ob!==undefined){
             var newColor= stateColors[ob.state];
+            var backColor = backColors[ob.state];
             d3.select(".titleBar").style("background-color",newColor);
+//            d3.select("#imgClose").style("color", newColor);
         }
         
     }
@@ -102,7 +117,7 @@ function showTooltip(d)
         var actualPrereqs;
         if(moduleStates===undefined)
         {
-            actualPrereqs = prereqs;
+            actualPrereqs = prereqs;    
         }
         else
         {
@@ -116,7 +131,14 @@ function showTooltip(d)
                        return obj;
                    }
                })[0];
-               return obj["state"] !== 'completed';
+               if(obj!==undefined)
+               {
+                    return obj["state"] !== 'completed';
+               }
+              else//if the obj is undefined it means that the item that is a prerequisite is not published, so it's as if it were not a prereq
+              {//so we won't include it in the list of prerequisites
+                  return false;
+              }
            });
         }
         
@@ -127,6 +149,7 @@ function showTooltip(d)
         }
         else
         {
+            hasPrereqs = true;
             //check if the prereqs are completed; only show those that aren't
             var ulPrereqs = d3.select("#ulPrerequisites").selectAll("li")
                 .data(actualPrereqs)
@@ -161,10 +184,6 @@ function showTooltip(d)
                         }
                    }
                 });
-    //            .attr("xlink:href", function(prereqs){
-    //                return prereqObjArr[prereqs].url;
-    //            });
-
 
             //Highlight prerequisite
             var originalColor ="";
@@ -187,7 +206,7 @@ function showTooltip(d)
                         .attr("class","solid");
 
                     var mod = d3.select("#path" + prereqs)
-                    .style("fill", originalColor); 
+                    .style("fill", originalColor);
                 });
         }
         
@@ -210,6 +229,7 @@ function showTooltip(d)
     div.scrollTop = 0;
     div.scrollLeft = 0;
 
+
     //FILL OUT CONTENT (ASSIGNMENTS)
     
     var contentItems = d.items;
@@ -217,8 +237,14 @@ function showTooltip(d)
     {
         var tooltip = d3.select("#tooltip");
         //register a mousemove event so the tooltip keeps following the mouse
+        
+        var tit = d.name;
+        if(tit.length>67)
+        {
+            tit = tit.substring(0,64) + "...";   
+        }
         tooltip.select("#spTitle")
-        .text(d.name);
+        .text(tit);
 
         var optionalTags = false;
         var requiredAssignments = [];
@@ -238,6 +264,7 @@ function showTooltip(d)
             }
         }
         
+//        $(".assignmentBox").css("background-color",backColor);
         if(optionalTags)
         {
             var ob =[];
@@ -271,6 +298,23 @@ function showTooltip(d)
         
         }
         
+        if(hasPrereqs)
+        {
+            var links = $("#ulAssignments li a");
+            links.each(function(i){
+                var parent = $(this).parent();//li
+                var cnt = $(this).contents();
+                $(this).replaceWith(cnt);
+                parent.css("cursor","default");
+                parent.css("color", "rgb(162, 154, 158)");
+            });
+            $(".assignmentBox").css("background-color","#F0F0F0");
+            $(".assignmentBox").hover(
+                function() {
+                  $( this ).css("border","1px solid #D0D0D0");
+                });
+            
+        }
         
         var optDiv = $("#divOptionalAssignments");
         optionalTags?optDiv.attr("class","visible"):optDiv.attr("class","hidden");
@@ -308,7 +352,6 @@ function highlightPrerequisite(liSelect, prereqId)
 
 function getTags(dd)
 {
-    
     var icon = "";
     var selection = null;
     var optional = false;
@@ -316,47 +359,49 @@ function getTags(dd)
 
     var itemTags = dd.tags;
     itemTags = itemTags.toLowerCase();
-    var tags = itemTags.split(",");
+    var tags = itemTags.split(", ");
 
-    if(tags.indexOf('optional') > -1)
+
+    //priorities in tags are 1) Description, 2) Optional
+    if((tags.indexOf('description') > -1)&&(dd.type==="SubHeader"))
     {
-        icon= "fa icon-star";
+        $("#tooltipDesc").html(dd.title);//if the type is SubHeader we will assign it as Description and not add an li item for it
+        return;
+    }
+    else if(tags.indexOf('optional') > -1)
+    {
+        icon= "icon-star";
         optional = true;
     }
     else
     {
         switch(dd.type) {
             case "File"://Reading Quiz
-                icon = "fa icon-file-word-o";
+                icon = "icon-file-word-o";
                 break;
             case "Page"://Writing Assignment
-                icon =  "fa fa-pencil";
+                icon =  "icon-pencil";
                 break;
             case "Discussion"://Game
-                icon =  "fa fa-gamepad";//does not exist
+                icon =  "icon-gamepad";//does not exist
                 break;
             case "Assignment"://Self assessment
-                icon =  "fa fa-search-plus";
-                //HERE insert the score
-//                console.log(dd.type+" --- "+dd.title +" --- "+dd.content_id);
+                icon =  "icon-search-plus";
                 break;
             case "Quiz":
-                icon =  "fa fa-book";
-                //BuildOut quiz scores                
-//                console.log(dd.type+" --- "+dd.title +" --- "+dd.content_id);
-
+                icon =  "icon-book";
                 break;
             case "SubHeader":
-                $("#tooltipDesc").html(dd.title);//if the type is SubHeader we will assign it as Description and not add an li item for it
-                return;
+                icon = "icon-header";
+                break;
             case "ExternalUrl":
-                icon =  "fa fa-book";
+                icon =  "icon-book";
                 break; 
             case "ExternalTool":
-                icon =  "fa fa-book";
+                icon =  "icon-book";
                 break;
             default:
-                icon =  "fa fa-book";
+                icon =  "icon-book";
         } 
     }        
     
@@ -383,7 +428,6 @@ function getTags(dd)
                     "<span id='spanAStatus' class='fa icon-check'></span>"+
                     "<span id='divStatusDesc'>Complete</span>" +
                     "<div class='divPoints'>Score:"+ ob["score"]+"/"+dd.content_details[0].points_possible + "</div>" +
-                    "<div class='divScore'>Grade: " + ob["grade"]+ "</div>";
                 "</div>" +
             "</div>" +
         "</a>" +
@@ -391,19 +435,53 @@ function getTags(dd)
     }
     else
     {
-        markup="";
+        if(dd.type==="SubHeader")
+        {
+            markup="";
         markup += "<li class='assignmentLi'>" +
         "<a href='" + dd.html_url + "' target='_blank'>" +
-            "<div class='assignmentBox' id='content" + dd.content_id + "'>" +
-                "<div class='divLeft'>" +
-                    "<span class='" + icon + "'></span><span id='spanAName'>" + dd.title+ "</span><div id='divOptionalAssig'></div>" +
-                "</div>" +
-                "<div class='divRight'>" +
+            "<div class='subheaderBox' id='content" + dd.content_id + "'>" +
+                "<div class='divSubheader'>" +
+                    "<h5>" + dd.title+ "</h5>" +
+                    "<hr>"+
                 "</div>" +
             "</div>" +
         "</a>" +
         "</li>";
+        }
+        else if ((dd.type==="Assigment")||(dd.type==="Quiz"))
+        {
+            markup="";
+            markup += "<li class='assignmentLi'>" +
+            "<a href='" + dd.html_url + "' target='_blank'>" +
+                "<div class='assignmentBox' id='content" + dd.content_id + "'>" +
+                    "<div class='divLeft'>" +
+                        "<span class='" + icon + "'></span><span id='spanAName'>" + dd.title+ "</span><div id='divOptionalAssig'></div>" +
+                    "</div>" +
+                    "<div class='divRight'>" +
+                    "<div class='divPoints'>--/"+dd.content_details[0].points_possible + " pts</div>" +
+                    "</div>" +
+                "</div>" +
+            "</a>" +
+            "</li>";
+        }
+        else
+        {
+            markup="";
+            markup += "<li class='assignmentLi'>" +
+            "<a href='" + dd.html_url + "' target='_blank'>" +
+                "<div class='assignmentBox' id='content" + dd.content_id + "'>" +
+                    "<div class='divLeft'>" +
+                        "<span class='" + icon + "'></span><span id='spanAName'>" + dd.title+ "</span><div id='divOptionalAssig'></div>" +
+                    "</div>" +
+                "</div>" +
+            "</a>" +
+            "</li>";
+        }
+        
+        
     }
+    
     
 
     //add the html markup to the appropriate ul
@@ -619,6 +697,9 @@ function getAncestors(node) {
             moduleStates = getModuleStates(studentId, courseId);
             
             getSubmissionData(studentId, courseId);
+            
+            //check completion of each module
+            checkModuleCompletion();
         }
 
     });
@@ -634,6 +715,19 @@ $(document).keyup(function(e) {   // enter
 });
 
 
+function checkModuleCompletion()
+{
+    accessibleSubmissData;
+    for(var i=0; i<=graphData.length-1;i++)
+    {
+        
+    }
+}
+
+function recursive()
+{
+    
+}
 function getModuleStates(studentId, courseId)
 {
     var tempStates;
@@ -652,29 +746,20 @@ function getModuleStates(studentId, courseId)
                     for(var i=0;i<=data.length-1;i++)
                     {
                         d = data[i];
+//                        console.log(d.moduleId + " -- "+ d.state);
                         //select the path that corresponds
                         var mod = d3.select("#path" + d.moduleId);
-                        var originalColor = mod.style("fill");
-                        var newColor= colors[d.state];
+                        if(mod[0][0]!==null)
+                        {
+                            var originalColor = mod.style("fill");
+                            var newColor= colors[d.state];
+
+                            mod.style("fill", newColor);   
+                        }
                         
-                        mod.style("fill", newColor);
                     }
-                    
-                    //if there was an item we had in graphData that we didn't have in submission states we ought to remove it from the chart
-                    //it means that the module was unpublished for the user and needs to be removed.\
-//                    var parent = $("#path" + d.moduleId).remove();
-                    
-                    //TODO
-                    //also remove it from graphData
-
-//                    var newColor;
-//                    ob!==undefined?newColor= stateColors[ob.state]:newColor="#8F8F8F";
-//                    return newColor;
-
-
-
+                    moduleStates = tempStates;
                 }
-                moduleStates = tempStates;
                 return tempStates;
             }
         });
@@ -691,13 +776,7 @@ function getSubmissionData(studentId, courseId)
         data: {studentId: studentId,courseId:courseId},
         success: function (data) {
             showScores(data);
-//            console.log(data);
 
-            //can enable clicking on the chart
-            var path = d3.select("#wrapper g").selectAll("path")//svg.datum(graphData).selectAll("path")
-                .on("click", function(d){
-                    modalBoxShow(d);
-                });
         }
     });
 }
@@ -711,7 +790,7 @@ function showScores(data)
     {
         d = data[i];
         var item = new Object();
-         item['submission_type'] = d["submission_type"];
+        item['submission_type'] = d["submission_type"];
         //check that the assignment is a quiz
         if(d["submission_type"]==="online_quiz")
         {
@@ -739,6 +818,13 @@ function showScores(data)
         accessibleSubmissData.push(item);
         
     }
+    
+        //can enable clicking on the chart
+        console.log("enable click for modal tooltip");
+        var path = d3.select("#wrapper g").selectAll("path")//svg.datum(graphData).selectAll("path")
+            .on("click", function(d){
+                modalBoxShow(d);
+            });
 }
 /*******************************Close Modal Popup*************************/
 function hideModalPopup(content)
@@ -815,7 +901,7 @@ function modalBoxShow(content){
 
     //add click event to close button of modal popup
 
-    var btn = d3.select("#imgClose");
+    var btn = d3.select(".imgClose");
     btn.on("click", function(){
        //hide the popup
         hideModalPopup();

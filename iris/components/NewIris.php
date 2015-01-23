@@ -17,38 +17,59 @@ class NewIris extends ComponentBase
     
     public function onRun()
     {	
+        /*
 //        \Cache::flush();
-        $this->addJs('/plugins/delphinium/iris/assets/javascript/d3.v3.min.js');
-        $this->addJs('/plugins/delphinium/iris/assets/javascript/jquery.min.js');
-        $this->addJs('/plugins/delphinium/iris/assets/javascript/newSunburst.js');
-        $this->addCss('/themes/demo/assets/vendor/font-awesome/css/font-awesome.css');
-        $this->addCss('/plugins/delphinium/iris/assets/css/main.css');	
-    	
+//        $this->addJs('/plugins/delphinium/iris/assets/javascript/d3.v3.min.js');
+//        $this->addJs('/plugins/delphinium/iris/assets/javascript/jquery.min.js');
+//        $this->addJs('/plugins/delphinium/iris/assets/javascript/newSunburst.js');
+//        $this->addCss('/themes/demo/assets/vendor/font-awesome/css/font-awesome.css');
+//        $this->addCss('/plugins/delphinium/iris/assets/css/main.css');	
+            	
     	//this component MUST be used in conjunction with the LTI component, so a session will already have been started
 //    	session_start();
         
-        $courseId = $_SESSION['courseID'];
-	$userId=$_SESSION['userID'];
-        $this->page['userId'] = $userId;
+//        $courseId = $_SESSION['courseID'];
+//	  $userId=$_SESSION['userID'];
+//        $this->page['userId'] = $userId;
+//        $this->page['courseId'] = $courseId;
+//        
+//        $encryptedToken = $_SESSION['userToken'];
+//        $decrypted =$encryptedToken;//\Crypt::decrypt($encryptedToken);
+        
+        $courseId = 343331;
+        $this->page['userId'] = 1489289;
         $this->page['courseId'] = $courseId;
+        $decrypted ="sdf";//\Crypt::decrypt($encryptedToken);
         
-        $encryptedToken = $_SESSION['userToken'];
         
-        $decrypted =$encryptedToken;//\Crypt::decrypt($encryptedToken);
     	$iris = new IrisClass();
         
         $cacheTime = $this->property('cacheTime');
         $forever;
-        $cacheTime>10080?$forever = true:$forever = false;
+        
+        if($cacheTime>10080)
+        {
+            $forever = true;
+        }
+        else
+        {
+            $forever = false;
+        }
+//        $cacheTime>10080?$forever = true:$forever = false;
         
         $moduleData = $iris->getModules($courseId, $decrypted, $cacheTime, $forever);
+        
+//     var_dump($moduleData);
         $this->page['rawData'] = json_encode($moduleData);
        
         $finalData = $this->prepareData($courseId, $moduleData);
         
+//     var_dump($finalData);
         //need to add one parent to encompass all the modules
     	$this->page['graphData'] = json_encode($finalData);
+//            var_dump(json_encode($finalData));
         
+        */
     }
     
    public function defineProperties()
@@ -103,11 +124,11 @@ class NewIris extends ComponentBase
     
     private function prepareData($courseId, $moduleData)
     {
-        
     	$iris = new IrisClass();
         $course = $iris->getCourse($courseId);
-    	
         $result = $this->buildTree($moduleData,1);
+//        
+//        var_dump($result);
     	$this->page['courseData'] = json_encode($course);
         return $result;
     }

@@ -22,6 +22,7 @@ class CreateRaspberryModuleItemsTable extends Migration
             $table->string('title');
             $table->integer('indent');
             $table->string('type');
+            $table->boolean('published')->nullable();
             $table->integer('content_id');
             $table->string('html_url');
             $table->string('url');

@@ -1,64 +1,46 @@
+<!DOCTYPE html>
 <script type="text/javascript">
 	var moduleData = {{ moduleData|raw}};
+	var avTags = {{ avTags|raw}};
         var courseId = {{courseId}}
 </script>
 
-<div ng-app="demoApp" ng-controller="MainCtrl">
-    {% verbatim %}
-    <!-- Nested list template -->
-    <script type="text/ng-template" id="items_renderer.html">
-      <div ui-tree-handle ng-class="{ 'select': $treeScope.multiSelect, 'copy': $treeScope.copy }">
-        <a class="btn btn-success btn-xs" nodrag ng-click="toggle(this)">
-          <span class="glyphicon" ng-class="{ 'icon-caret-square-o-right': collapsed, 'icon-caret-square-o-down': !collapsed }"></span>
-        </a>
-        {{item.name}}
-        <a class="pull-right btn icon-caret-down" nodrag ng-click="showContent(this)"">
-            <span class="glyphicon glyphicon-remove"></span>
-        </a>
-        <div ng-class="contentClass" id="div{{item.moduleId}}">
-            <div class="divContent" ng-repeat="item in item.items" >
-                <a href="" class="contentLink">
-                    <i class="icon-tasks contentType"></i>
-                    <span>{{item.title}}</span>
-                </a>
-                <a class="btn icon-tags dive" nodrag ng-click="getTags(this, item.module_item_id)"></a>        
-            </div>
+<form data-request="angular::onRefreshCache"">
+    <button type="submit" class="btn btn btn-primary">Refresh Cache</button>
+</form>
+
+<div ng-app="treeApp" ng-controller="treeCtrl">
+{% verbatim %}
+<div class="buttons">
+          <a href="" class="btn btn-default pull-right" ng-click="collapseAll()">Collapse all</a>
+          <a href="" class="btn btn-default pull-right" ng-click="expandAll()">Expand all</a>
+          <a class="btn btn-success" nodrag ng-click="saveOrder(this)">Save Order</a>
+    </div>
+  <div class="manager">
+    <span>In order for Iris to function properly, all modules must be nested inside a "main" module.</span>
+    
+        <!-- Nested node template -->
+        <script type="text/ng-template" id="nodes_renderer.html">
+          <div ui-tree-handle>
+            {{item.name}}
+          </div>
+          <ol ui-tree-nodes="" ng-model="item.children">
+            <li ng-repeat="item in item.children" ui-tree-node ng-include="'nodes_renderer.html'">
+            </li>
+          </ol>
+        </script>
+        <div ui-tree callbacks="treeOptions">
+          <ol ui-tree-nodes="" ng-model="data" id="tree-root">
+            <li ng-repeat="item in data" ui-tree-node ng-include="'nodes_renderer.html'"></li>
+          </ol>
         </div>
         
       </div>
-      
-      <ol ui-tree-nodes ng-model="item.children" ng-class="{ 'hidden': collapsed }">
-        <li ng-repeat="item in item.children" ui-tree-node ng-class="{ 'selected': selected, 'original': original }" ng-include="'items_renderer.html'"></li>
-      </ol>
-    </script>
-    
-    <div ui-tree callbacks="callbacks" drag-enabled="parameters.dragEnabled" empty-placeholder-enabled="parameters.emptyPlaceholderEnabled" 
-             max-depth="parameters.maxDepth" drag-delay="parameters.dragDelay" drag-distance="parameters.dragDistance" 
-             lock-x="parameters.lockX" lock-y="parameters.lockY" bound-to="parameters.boundTo" spacing="parameters.spacing" 
-             coverage="parameters.coverage" cancel-key="parameters.cancelKey" copy-key="parameters.copyKey" select-key="parameters.selectKey" 
-             expand-on-hover="(parameters.enableExpandOnHover) ? parameters.expandOnHover : parameters.enableExpandOnHover">
-      <ol ui-tree-nodes ng-model="list">
-        <li ng-repeat="item in list" ui-tree-node ng-class="{ 'selected': selected, 'original': original }" ng-include="'items_renderer.html'"></li>
-      </ol>
+
     </div>
 
-    <a class="btn btn-success btn-xs" nodrag ng-click="saveOrder(this)">Save Order</a>
-    
-    <modal-dialog show='modalShown' width='350px' height='auto'>
-        <form ng-submit="addTags(this)">
-            <input type="text" ng-model="tagValue">
-            <input type="submit" value="Add Tags">
-        </form>
-        <ul>
-            <li ng-repeat="tag in tags">{{tag}}
-                <i class="removeTags" ng-click="deleteTag(this, tag)">X</i>
-            </li>
-        </ul>
-    </modal-dialog>
-<div class="col-lg-6">
-              <h4>Full tree</h4>
-              <pre class="code">{{ list | json }}</pre>
-            </div>
-    {% endverbatim %}    
-    
+  </div>
+
+  {% endverbatim %}  
 </div>
+

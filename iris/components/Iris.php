@@ -16,61 +16,78 @@ class Iris extends ComponentBase
 	public function componentDetails()
     {
         return [
-            'name'        => 'Iris Sunburst Chart',
-            'description' => 'Sunburst chart representing the modules of a course and the student\'s progress in it'
+            'name'        => 'Iris Chart',
+            'description' => 'This chart displays all the modules of a course and the student\'s progress in it'
         ];
     }
     
     public function onRun()
     {	
-    
+        
+//        \Cache::flush();
         $this->addJs('/plugins/delphinium/iris/assets/javascript/d3.v3.min.js');
         $this->addJs('/plugins/delphinium/iris/assets/javascript/jquery.min.js');
-        $this->addJs('/plugins/delphinium/iris/assets/javascript/sunburst.js');
-        //$this->addJs('/plugins/delphinium/iris/assets/javascript/newSunburst.js');
-        $this->addCss('/themes/demo/assets/vendor/font-awesome/css/font-awesome.css');
+        $this->addJs('/plugins/delphinium/iris/assets/javascript/newSunburst.js');
+//        $this->addCss('/themes/demo/assets/vendor/font-awesome/css/font-awesome.css');
+        $this->addCss('/themes/demo/assets/vendor/font-autumn/css/font-autumn.css');
         $this->addCss('/plugins/delphinium/iris/assets/css/main.css');	
-    	
-    	
-    	session_start();
-        $courseId = $_SESSION['courseID'];
-	$userId=$_SESSION['userID'];
+            	
+    	//this component MUST be used in conjunction with the LTI component, so a session will already have been started
+//    	session_start();
+        
+//        $courseId = $_SESSION['courseID'];
+//	  $userId=$_SESSION['userID'];
+//        $this->page['userId'] = $userId;
+//        $this->page['courseId'] = $courseId;
+//        
+//        $encryptedToken = $_SESSION['userToken'];
+//        $decrypted =$encryptedToken;//\Crypt::decrypt($encryptedToken);
+        
+        $courseId = 343331;
+        $this->page['userId'] = 1489289;
         $this->page['courseId'] = $courseId;
-        $encryptedToken = $_SESSION['userToken'];
+        $decrypted ="sdf";//\Crypt::decrypt($encryptedToken);
         
-        $decrypted =$encryptedToken;//\Crypt::decrypt($encryptedToken);
+        
     	$iris = new IrisClass();
-    	$moduleData = $iris->getModules($courseId, $decrypted, 10, false);
         
-        /*
-        $output = array();
-        $jsonEncoded;
-        foreach($moduleData as $item)
+        $cacheTime = $this->property('cacheTime');
+        $forever;
+        
+        if($cacheTime>10080)
         {
-            $jsonEncoded = json_encode($item);
-            array_push($output, $jsonEncoded);
+            $forever = true;
         }
-        */
-        //$json = $moduleData->jsonSerialize();
-    	$this->page['moduleData'] = json_encode($moduleData);
-    	
-    	
+        else
+        {
+            $forever = false;
+        }
+        
+        $moduleData = $iris->getModules($courseId, $decrypted, $cacheTime, $forever);
+        $this->page['rawData'] = json_encode($moduleData);
+        $finalData = $this->prepareData($courseId, $moduleData);
+        //need to add one parent to encompass all the modules
+    	$this->page['graphData'] = json_encode($finalData);
+        
+        
     }
     
    public function defineProperties()
     {
         return [
-            'chartName' => [
-                'title'        => 'Charts',
-                'description'  => 'Choose the chart that will be displayed.',
-                'type'         => 'dropdown',
-                'default'      => '',
+            'cacheTime' => [
+                'title'              => 'Cache Time',
+                'description'        => 'For how long should we cache Iris\' data (mins)?',
+                'type'              => 'dropdown',
+                'placeholder'       => 'Select how long we should cache data for',
+                'default'            => 20,
+                'options'           => ['5'=>'5 mins', '10'=>'10 mins', '15'=>'15 mins',
+                    '20'=>'20 mins','30'=>'30 mins','1440'=>'1 day',
+                    '10080'=>'1 week','10081'=>'Forever',]
             ]
             
         ];
     }
-    
-    
     
     public function getChartNameOptions()
     {
@@ -86,19 +103,35 @@ class Iris extends ComponentBase
         return $array_dropdown;
     }
     
-    
-    public function getLtiInstanceOptions()
-    {
-    	$instances = LtiConfigurations::all();
-
-        $array_dropdown = ['0'=>'- select an LTI configuration - '];
-
-        foreach ($instances as $instance)
-        {
-            $array_dropdown[$instance->id] = $instance->Name;
+    private function buildTree(array &$elements, $parentId = 1) {
+        $branch = array();
+        foreach ($elements as $key=>$module) {
+            if($module['published'] == "1")//if not published don't include it
+            {   
+                if ($module['parentId'] == $parentId) {
+                    $children = $this->buildTree($elements, $module['moduleId']);
+                    if ($children) {
+                        $module['children'] = $children;
+                    }
+    //                $branch[$module['moduleId']] = $module;
+                    $branch[] = $module;
+                    unset($elements[$module['moduleId']]);
+                }
+            }
         }
 
-        return $array_dropdown;
+        return $branch;
+
+    }
+    
+    private function prepareData($courseId, $moduleData)
+    {
+    	$iris = new IrisClass();
+        $course = $iris->getCourse($courseId);
+        $result = $this->buildTree($moduleData,1);
+//        
+    	$this->page['courseData'] = json_encode($course);
+        return $result;
     }
     
     

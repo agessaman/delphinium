@@ -1,5 +1,10 @@
+body{margin:10px;}
 .btn {
     margin-right: 8px;
+}
+
+#flashMsg{
+    color:red;
 }
 
 .angular-ui-tree-handle {
@@ -9,6 +14,28 @@
     padding: 10px 10px;
 }
 
+.unpublishedModule {
+    background-color:#E0E0E0 !important;
+    color:gray;
+}
+
+.unpublishedModuleIcon {
+    font-size:10px;
+    position:relative;
+    top:-35px;
+    color:gray;
+    pointer:default;
+}
+
+.unpublishedTagIcon {
+    font-size:10px;
+    color:gray;
+}
+
+.unpublishedItem
+{
+    color:gray;
+}
 .angular-ui-tree-handle:hover {
     color: #438eb9;
     background: #f4f6f7;
@@ -39,7 +66,6 @@
 }
 
 .dive{
-    position:absolute;
     right:15px;
 }
 
@@ -53,6 +79,8 @@
     border:1px solid #7c9eb2;
     border-radius:5px;
 }
+
+.buttons{padding-bottom:30px;}
 .buttons a
 {
     float:right;

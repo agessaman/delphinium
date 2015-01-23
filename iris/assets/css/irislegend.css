@@ -15,11 +15,11 @@ and open the template in the editor.
     font-family: "Helvetica";
     border: 1px solid #8F8F8F;
     height: auto;
-    width: auto;
+    width: 130px;
     border-radius: 10px;
-    position: absolute;
-    top:480px;
-    left:30px;
+    /*position: absolute;*/
+    /*bottom:30px;*/
+    /*left:30px;*/
     padding:0px 10px 10px 0px;
     -webkit-box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.4);
     -moz-box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.4);

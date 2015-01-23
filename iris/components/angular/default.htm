@@ -3,37 +3,53 @@
 	var moduleData = {{ moduleData|raw}};
 	var avTags = {{ avTags|raw}};
         var courseId = {{courseId}}
-        console.log(avTags);
 </script>
+
+<div id="flashMsg" class="hidden"><span >This item can't be dragged to the top because it is unpublished</span></div>
+<form data-request="angular::onRefreshCache">
+    <button type="submit" class="btn btn btn-primary">Refresh Data from Canvas</button>
+</form>
 
 <div ng-app="treeApp" ng-controller="treeCtrl">
 {% verbatim %}
-  <div class="manager">
-    <span>In order for Iris to function properly, all modules must be nested inside a "main" module.</span>
-    <div class="buttons">
-          <a href="" class="btn btn-default pull-right" ng-click="collapseAll()">Collapse all</a>
+<div class="buttons">
+    <a href="" class="btn btn-default pull-right" ng-click="collapseAll()">Collapse all</a>
           <a href="" class="btn btn-default pull-right" ng-click="expandAll()">Expand all</a>
+<!--          <a class="btn btn-success" nodrag ng-click="saveOrder(this)">Save Order</a>-->
     </div>
+  <div class="manager">
+    
         <!-- Nested node template -->
         <script type="text/ng-template" id="nodes_renderer.html">
-          <div ui-tree-handle class="tree-node tree-node-content">
+          <div ui-tree-handle class="tree-node tree-node-content" ng-class="{'unpublishedModule': (item.published==='0')}">
             <a class="btn btn-success btn-xs" ng-if="item.children && item.children.length > 0" nodrag ng-click="toggle(this)">
-            
+           
             <span ng-class="{'icon-chevron-right': collapsed, 'icon-chevron-down': !collapsed}"></span></a>
             {{item.name}}
-            
           </div>
+  
+
         <a ng-class="{'icon-chevron-right': isExpanded, 'icon-chevron-down': !isExpanded}"
-            class="pull-right btn expand" nodrag ng-click="isExpanded = !isExpanded"></a>
-        <div id="div{{item.moduleId}}" show='modalShown' ng-show="isExpanded">
+            class="pull-right btn expand" nodrag ng-click="showContent(item)"></a>
+            
+        <ng-switch on="item.published">
+          <span class="icon-cloud unpublishedModuleIcon pull-right btn" ng-switch-when="0"> unpublished</span>
+        </ng-switch>
+
+        <div id="div{{item.moduleId}}" class="node hidden">
             <div class="divContent" ng-repeat="item in item.items" >
-                <a href="" class="contentLink">
+                <a href="" class="contentLink" ng-class="{'unpublishedItem': (item.published==='0')}">
                     <i class="icon-tasks contentType"></i>
                     <span>{{item.title}}</span>
                 </a>
-                <a class="btn icon-tags dive" nodrag ng-click="showTagsFunc(this)"></a>     
-                <div>
-                    <div class="divTags" show='modalShown' width='350px' height='auto' ng-show="showTags">
+                <a title="Click to edit tags" class="btn icon-tags dive" ng-class="{'unpublishedItem': (item.published==='0')}"
+                    nodrag ng-click="showTagsFunc(this)"></a>  
+                    
+                <ng-switch on="item.published">
+                    <span class="btn icon-cloud unpublishedTagIcon" ng-switch-when="0"> unpublished</span>
+                </ng-switch>
+                <div id="div{{item.module_item_id}}" class="hidden tagNode">
+                    <div class="divTags" width='350px' height='auto'>
                         <form ng-submit="addTags(this)">
                             Current tags:
                             <ul>
@@ -41,17 +57,21 @@
                                     <i class="removeTags" ng-click="deleteTag(this, tag)">X</i>
                                 </li>
                             </ul>
-                            Click on any of the tags below, or add your own tags separated by a comma.<br/>
+                            
+                            
+                            Possible tags:
+                            <ul>
+                                <li class="addInnerTag"  ng-repeat="item in possibleTags"><i ng-click="addInnerTag(this, item)">{{item}}</i>
+                                </li>
+                            </ul> 
+                    
+                            Add your own tags separated by a comma.<br/>
                             <input type="text" ng-model="tagValue">
                             <input type="submit" value="Add Tags">
                         </form>
                         
                         
-                        Possible tags:
-                        <ul>
-                            <li class="addInnerTag"  ng-repeat="item in possibleTags"><i ng-click="addInnerTag(this, item)">{{item}}</i>
-                            </li>
-                        </ul>     
+                            
                     </div>
                 </div>
             </div>
@@ -62,12 +82,12 @@
             </li>
           </ol>
         </script>
-        <div ui-tree callbacks="callbacks" id="tree-root">
-          <ol ui-tree-nodes ng-model="data">
+        <div ui-tree callbacks="treeOptions" id="tree-root">
+          <ol ui-tree-nodes="" ng-model="data">
             <li class="treeItem" ng-repeat="item in data" ui-tree-node ng-include="'nodes_renderer.html'"></li>
           </ol>
         </div>
-        <a class="btn btn-success btn-xs" nodrag ng-click="saveOrder(this)">Save Order</a>
+        
       </div>
 
     </div>
@@ -78,6 +98,7 @@
     <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/es5-shim/3.4.0/es5-shim.min.js"></script>
   <![endif]-->
+  
   {% endverbatim %}  
 </div>
 

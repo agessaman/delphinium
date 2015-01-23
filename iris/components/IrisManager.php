@@ -41,7 +41,7 @@ class IrisManager extends ComponentBase
             $courseId = $_SESSION['courseID'];
             
             $val = $this->property('cacheTime');
-            $moduleData = $iris->getModules($courseId, $decrypted, $val, false);
+            $moduleData = $iris->getModules($courseId, $decrypted, $val, false, null);
 
             $this->page['courseId'] = $courseId;
 
@@ -167,12 +167,18 @@ class IrisManager extends ComponentBase
 //        $url = 'https://uvu.instructure.com/api/v1/courses/'.$courseId.'/modules?include[]=items&include[]=content_details&access_token='.$token.'&per_page=5000';
 //        
         $api = new Api();
-//     
-        
-//        $data = $api->addTags(49051682, json_encode($arr), $courseId);
-        $data = $api->getAvailableTags($courseId);
+        $token = '14~U2NLr7L2YmFsapN53ovxT6kvK4eToJL8LvuO2QZj1j8XAMLIlM1Yokz8CtKL8gxY';
+        $url = 'https://uvu.instructure.com/api/v1/courses/'.$courseId.'/modules?include[]=items&include[]=content_details&access_token='.$token.'&per_page=5000';
+        $data = $api->getModules($url, $courseId, false, 0, null);
         
         var_dump($data);
+//        $data = $api->addTags(49051682, json_encode($arr), $courseId);
+//        $tag = array("Two");
+//        $arr = json_encode($tag);
+//        $data = $api->addTags(15056, $arr, 343331);
+//        $data = $api->getAvailableTags($courseId);
+//        
+//        var_dump($data);
 //        return;
 		
         

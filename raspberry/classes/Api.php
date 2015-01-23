@@ -34,8 +34,8 @@ class Api{
                            $key = 'module'.$courseId."-".$id;
                            if (Cache::has($key))
                            {
-                                   $value = Cache::get($key);
-                                   array_push($items,$value);
+                                $value = Cache::get($key);
+                                array_push($items,$value);
                            }
                            else
                            {
@@ -44,10 +44,12 @@ class Api{
                                return $mods;
                            }
                    }
+                   
                    return $items;
            }
            else
            {
+//                var_dump("freshData");
                //if we don't want cached data or we didn't have the keys
                $modules = $this->getModulesFromApiNoCache($url, $courseId, $cacheTime, $forever);
                return $modules;
@@ -55,18 +57,21 @@ class Api{
 
    }
 	
-    public function getModulesFromApiNoCache($url, $courseId,$cacheTime, $forever)
+    public function getModulesFromApiNoCache($url, $courseId, $cacheTime, $forever)
     {
-    	
+//        var_dump($url);
+        
 	$moduleIdsArray = array();
         $apiHelper = new ApiHelper();
     	$data = $apiHelper->get_api_data($url);
 		
+//        var_dump($data);
+        $affectedRows = Module::where('courseId', '=', $courseId)->delete();//We do this to maintain Canvas and the Stem manager synchronized
+        //for example, if something was deleted in Canvas, this will reflect that deletion in Stem
             foreach($data as $moduleRow)
             {
                 //we'll create an array with all the moduleIds that belong to this courseId
                 $moduleIdsArray[] = $moduleRow->id;
-
                 //check if module exists
                 $module = Module::firstOrNew(array('moduleId' => $moduleRow->id));//('moduleId','=',$module->id);
                 $module->moduleId = $moduleRow->id;
@@ -82,7 +87,8 @@ class Api{
                 $module->prerequisite_module_ids = $csv;
                 
                 
-                $module->published = $moduleRow->published;
+                if(isset($moduleRow->published)){$module->published = $moduleRow->published;}
+                if(isset($moduleRow->state)){$module->state = $moduleRow->state;}
                 $module->items_count = $moduleRow->items_count;
                 
                 
@@ -96,14 +102,40 @@ class Api{
 
                 //toArray is the key here! an Eloquent model is a closure and won't be serialized unless we first convert it to an Array!!!
                 $key = 'module'.$courseId."-".$module->moduleId;
-                $forever?Cache::forever($key, $module->toArray()):Cache::put($key, $module->toArray(), $cacheTime);
+//                $forever?Cache::forever($key, $module->toArray()):Cache::put($key, $module->toArray(), $cacheTime);
+                if(Cache::has($key))
+                {
+                    Cache::forget($key);
+                }
+                if($forever)
+                {
+                    Cache::forever($key, $module->toArray());
+                }
+                else
+                {
+//                    var_dump($cacheTime);
+                    Cache::put($key, $module->toArray(), $cacheTime);
+                }
             }
 			
             //put in Cache a list of all the module keys for this course
             $moduleIdsKey = "moduleIds-courseId".$courseId;
-            $forever?Cache::forever($moduleIdsKey, $moduleIdsArray):Cache::put($moduleIdsKey, $moduleIdsArray, $cacheTime);
+//            $forever?Cache::forever($moduleIdsKey, $moduleIdsArray):Cache::put($moduleIdsKey, $moduleIdsArray, $cacheTime);
+            if(Cache::has($moduleIdsKey))
+            {
+                Cache::forget($moduleIdsKey);
+            }
+            if($forever)
+            {
+                Cache::forever($moduleIdsKey, $moduleIdsArray);
+            }
+            else
+            {
+                Cache::put($moduleIdsKey, $moduleIdsArray, $cacheTime);
+            }
 
             //return an array of module models
+//            var_dump(json_encode($items));
             return $items;
     }
     
@@ -131,7 +163,19 @@ class Api{
             $module->indent = $mItem->indent;
             $module->type = $mItem->type;
             
-            if(isset($mItem->content_id)){$module->content_id = $mItem->content_id;}
+            if(isset($mItem->published)){$module->published = $mItem->published;}
+            
+            //if we don't have contentId we'll use the module_item_id. This is for tagging purposes
+            $contentId = 0;
+            if(isset($mItem->content_id))
+            {
+                $module->content_id = $mItem->content_id;
+            }
+            else
+            {
+                $module->content_id = $mItem->id;
+            }
+            
             if(isset($mItem->html_url)){$module->html_url = $mItem->html_url;}
             if(isset($mItem->url)){$module->url = $mItem->url;}
             if(isset($mItem->page_url)){$module->page_url = $mItem->page_url;}
@@ -139,15 +183,14 @@ class Api{
             if(isset($mItem->new_tab)){$module->new_tab = $mItem->new_tab;}
             if(isset($mItem->completion_requirement)){$module->completion_requirement = json_encode($mItem->completion_requirement);}
             
-            if(isset($mItem->content_details) && (isset($mItem->content_id)) && isset($mItem->type))
+            if(isset($mItem->content_details) && isset($mItem->type))
             {
-                    $content = $this->saveContentDetails($courseId, $moduleId, $mItem->id, $mItem->content_id, $mItem->type,$mItem->content_details, $cacheTime, $forever);
-                    $module->content = $content;
-                    $module->save();
+                $content = $this->saveContentDetails($courseId, $moduleId, $mItem->id, $module->content_id, $mItem->type,$mItem->content_details, $cacheTime, $forever);
+                $module->content = $content;
             }
             
             
-//            $module->save();
+            $module->save();
             array_push($allItems, $module);
             $key="moduleItem-".$courseId.'-'.$moduleId.'-'.$mItem->id;
             
@@ -155,7 +198,15 @@ class Api{
             {
                 Cache::forget($key);
             }
-            $forever?Cache::forever($key, $module->toArray()):Cache::put($key, $module->toArray(),$cacheTime);
+//            $forever?Cache::forever($key, $module->toArray()):Cache::put($key, $module->toArray(),$cacheTime);
+            if($forever)
+            {
+                Cache::forever($key, $module->toArray());
+            }
+            else
+            {
+                Cache::put($key, $module->toArray(),$cacheTime);
+            }
         }
         
         //add the module Items to the module object
@@ -183,10 +234,6 @@ class Api{
     {
         $key="content-".$courseId.'-'.$moduleId.'-'.$itemId.'-'.$contentId;
         
-        if(Cache::has($key))
-        {
-            Cache::forget($key);
-        }
         
         $content = Content::firstOrNew(array('content_id'=>$contentId));//('content_id','=',$contentId);
 
@@ -202,24 +249,36 @@ class Api{
                 
         $content->save();
         
-        $forever?Cache::forever($key, $content->toArray()):Cache::put($key, $content->toArray(), $cacheTime);
+//        $forever?Cache::forever($key, $content->toArray()):Cache::put($key, $content->toArray(), $cacheTime);
+        
+        if(Cache::has($key))
+        {
+            Cache::forget($key);
+        }
+        if($forever)
+        {
+            Cache::forever($key, $content->toArray());
+        }
+        else
+        {
+            Cache::put($key, $content->toArray(), $cacheTime);
+        }
         return $content;
     }
     
-    public function tagContent($content_id, $tags)
-    {
-        $content = Content::where('$content_id','=', $content_id)->first();
-        $content->tags = $tags;
-        $content->save();
-    }
+//    public function tagContent($content_id, $tags)
+//    {
+//        $content = Content::where('$content_id','=', $content_id)->first();
+//        $content->tags = $tags;
+//        $content->save();
+//    }
 	
-    
     public function getModules($url, $courseId, $cachedData, $cacheTime, $forever)
     {
     	$fullModules = array();
     	
     	$apiModules = $this->getApiModules($url, $courseId, $cachedData, $cacheTime, $forever);
-        
+//        var_dump(json_encode($apiModules));
     	foreach($apiModules as $module)
     	{
           
@@ -239,11 +298,10 @@ class Api{
 
     	}
         
-        $allModules = Module::where('courseId', '=', $courseId)->orderBy('parentId')->get();
-        
+        $allModules = Module::where('courseId', '=', $courseId)->orderBy('parentId')->orderBy('order')->get();
+//        var_dump(json_encode($allModules));
     	foreach($allModules as $module)
         {
-//            $fullModules[$module->moduleId] = $module->toArray();
             //add each module's content
             $mItems = ModuleItem::where('module_id', '=', $module->moduleId)->get();
             $mItemArray= array();
@@ -266,8 +324,21 @@ class Api{
             $modArray["items"] = $mItemArray;
             array_push($fullModules,$modArray);
             $key = 'module'.$courseId."-".$module->moduleId;
-            $forever?Cache::forever($key, $modArray):Cache::put($key, $modArray, $cacheTime);
+//            $forever?Cache::forever($key, $modArray):Cache::put($key, $modArray, $cacheTime);
+            if(Cache::has($key))
+            {
+                Cache::forget($key);
+            }
+            if($forever)
+            {
+                Cache::forever($key, $modArray);
+            }
+            else
+            {
+                Cache::put($key, $modArray, $cacheTime);
+            }
         }
+//        var_dump(json_encode($fullModules));
     	return $fullModules;
     }
     
@@ -304,13 +375,15 @@ class Api{
                 $modFromCache = Cache::get($key);
                 Cache::forget($key);//forget item, update and reinsert
                 $modFromCache['parentId'] = $item->parentId;
+                $modFromCache['order'] = $item->order;
                 
                 Cache::put($key, $modFromCache, $cacheTime);
+                
+                array_push($ordered, $modFromCache);
             }
         }
 		
-        //TODO: we cache the ordering of the modules?
-        //Cache::put('orderedModules-'.$courseId, $ordered, 10);
+        return $ordered;
     }
     
     /*
@@ -341,7 +414,11 @@ class Api{
         $module->save();
         
         $key = 'module'.$courseId."-".$moduleId;
-        Cache::forget($key);
+        if(Cache::has($key))
+        {
+            Cache::forget($key);
+        }
+//        Cache::forget($key);
         Cache::put($key, $module->toArray(), $cacheTime);
 		
         return $data;
@@ -376,11 +453,29 @@ class Api{
         
         if($tags)
         {
-            return $tags->tags;
+            $tagArr = explode(", ",$tags->tags);
+//            
+            if(in_array("Optional", $tagArr)||in_array("optional", $tagArr)){
+            }//doing !in_array gives false positives
+            else
+            {
+                array_push($tagArr,"Optional");
+            }
+            
+            
+            
+            if (in_array("Description", $tagArr)||in_array("description", $tagArr)){
+            }
+            else
+            {
+                array_push($tagArr,"Description");
+            }
+            
+            return implode(", ",$tagArr);
         }
         else
         {
-            return $tags;
+            return "Optional, Description";
         }
     }
     
@@ -408,30 +503,34 @@ class Api{
     
     public function addTags($contentId, $newTags, $courseId)
     {
-//        var_dump($newTags);
-        $content = Content::where('content_id', '=', $contentId)->first();
-        if(strlen($content->tags)>0){
-//            var_dump("stre");
-            $current = explode(', ', $content->tags);
-       
-            $c = array_merge($current,$newTags);
-            $unique = array_unique($c);
-//            var_dump("unique-".$unique);
-            //convert array to string
-            $tagString =implode(', ', $unique);
-        }
-        else 
-        {
-            $tagString =implode(', ', $newTags);
-        }
-        
-        
-            $content->tags =$tagString;
-            $content->save();
+            $content = Content::where('content_id', '=', $contentId)->first();
             
-            $this->updateAvailableTags($courseId, $newTags);
-            return $content->tags;
-        
+            if(!is_null($content))//this could be due to the moduleItem not having an Id
+            {
+                if(strlen($content->tags)>0){
+                    $current = explode(', ', $content->tags);
+
+                    $c = array_merge($current,$newTags);
+                    $unique = array_unique($c);
+                    //convert array to string
+                    $tagString =implode(', ', $unique);
+                }
+                else 
+                {
+                    $tagString =implode(', ', $newTags);
+                }
+
+
+                $content->tags =$tagString;
+                $content->save();
+
+                $this->updateAvailableTags($courseId, $newTags);
+                return $content->tags;
+            }
+            else
+            {
+                return null;
+            }
     }
     
     public function deleteTag($contentId, $tag)
@@ -528,13 +627,13 @@ class Api{
     
     private function getModuleIds($courseId)
     {
-            $array = array();
-            $key = "moduleIds-courseId".$courseId;
-            if(Cache::has($key))
-            {
-                    $array = Cache::get($key);
-            }
-            return $array;
+        $array = array();
+        $moduleIdsKey = "moduleIds-courseId".$courseId;
+        if(Cache::has($moduleIdsKey))
+        {
+            $array = Cache::get($moduleIdsKey);
+        }
+        return $array;
     }
     
     protected function makeModuleFromApi($moduleItem)
@@ -557,5 +656,13 @@ class Api{
 		
     }
     
+    private function orderByParentId($a, $b)
+    {
+        if ($a == $b) {
+            return 0;
+        }
+        return ($a < $b) ? -1 : 1;
+    }
+
     
 }
