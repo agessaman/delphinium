@@ -1,0 +1,21 @@
+# ===================================
+#  List Behavior Config
+# ===================================
+
+title: Dev Configurations
+list: @/plugins/delphinium/dev/models/configuration/columns.yaml
+modelClass: Delphinium\Dev\Models\Configuration
+recordUrl: delphinium/dev/configuration/update/:id
+noRecordsMessage: backend::lang.list.no_records
+recordsPerPage: 20
+showSorting: true
+showCheckboxes: true
+showSetup: true
+
+toolbar:
+    buttons: list_toolbar
+    search:
+        prompt: backend::lang.list.search_prompt
+
+
+

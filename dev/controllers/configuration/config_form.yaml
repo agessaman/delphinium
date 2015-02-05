@@ -1,0 +1,21 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+name: Dev
+form: @/plugins/delphinium/dev/models/configuration/fields.yaml
+modelClass: Delphinium\Dev\Models\Configuration
+defaultRedirect: delphinium/dev/configuration
+
+create:
+    title: New Dev Configuration
+    redirect: delphinium/dev/configuration/update/:id
+    redirectClose: delphinium/dev/configuration
+    flash-save: Dev configuration added
+
+update:
+    title: Edit Dev Configuration
+    redirect: delphinium/dev/configuration
+    redirectClose: delphinium/dev/configuration
+    flash-save: Dev configuration successfully updated
+    flash-delete: Dev configuration has been deleted

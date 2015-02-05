@@ -64,8 +64,10 @@ class Iris extends ComponentBase
         }
         
         $moduleData = $iris->getModules($courseId, $decrypted, $cacheTime, $forever);
+//        var_dump($moduleData);
         $this->page['rawData'] = json_encode($moduleData);
         $finalData = $this->prepareData($courseId, $moduleData);
+//        var_dump($finalData);
         //need to add one parent to encompass all the modules
     	$this->page['graphData'] = json_encode($finalData);
         

@@ -1,0 +1,17 @@
+# ===================================
+#  Column Definitions
+# ===================================
+
+columns:
+
+    Configuration_name:
+        label: Name
+        searchable: true
+
+    Token:
+        label: Token
+        searchable: false
+        
+    Enabled:
+        label: Enable for Dev Mode
+        

@@ -1,0 +1,15 @@
+fields:
+    Configuration_name:
+        label: Name
+        span: auto
+        comment: Enter the name for this token
+
+    Token:
+        label: Token
+        span: auto
+        comment: Enter the token to be used for development
+
+    Enabled:
+        label: Enable dev mode with this token? (only one token can be used for dev mode at a time)
+        type: checkbox
+        default: false

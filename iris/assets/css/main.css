@@ -192,7 +192,7 @@
 
 #tooltipDesc
 {
-    margin-left: 25px;
+    text-indent: 25px;
 }
 #modalContainer
 {
@@ -283,19 +283,22 @@ ul li a{
 .subheaderBox{
     width: 460px;
     height: 30px;
+    margin-bottom:25px;
 }
 .subheaderBox .divSubheader{
     float: left;    
     width: 460px;
-    height:inherit;
-    padding:5px 0 0 5px;
-    border: none;
     font-weight: bold;
+    height: auto;
+    border-bottom: 1px solid rgb(162, 154, 158);
 }
 
+.subheaderLi{
+    margin-bottom:15px;
+}
 .divSubheader h5
 {
-    margin-bottom: 5px;
+    margin:0px !important;
     font-weight: bold;
 }
 .divSubheader hr{
@@ -358,6 +361,7 @@ ul li a{
 #divAssignments
 {
     border-top:1px solid #F0F0F0;
+    padding-top: 10px;
 }
 /******************** STYLES FOR PREREQ BOX **********************/
 .prereqLi{  

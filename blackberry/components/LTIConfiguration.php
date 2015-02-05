@@ -67,7 +67,7 @@ class LTIConfiguration extends ComponentBase
         //DB::query("DELETE FROM tokens");
         
     	$consumerKey = $instanceFromDB['ConsumerKey'];
-	$clientId = $instanceFromDB['DeveloperId'];
+		$clientId = $instanceFromDB['DeveloperId'];
         $developerSecret = $instanceFromDB['DeveloperSecret'];
         
 //        //save in the session the token and user Id selected

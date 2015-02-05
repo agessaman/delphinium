@@ -438,18 +438,17 @@ function getTags(dd)
         if(dd.type==="SubHeader")
         {
             markup="";
-        markup += "<li class='assignmentLi'>" +
+        markup += "<li class='assignmentLi subheaderLi'>" +
         "<a href='" + dd.html_url + "' target='_blank'>" +
             "<div class='subheaderBox' id='content" + dd.content_id + "'>" +
                 "<div class='divSubheader'>" +
                     "<h5>" + dd.title+ "</h5>" +
-                    "<hr>"+
                 "</div>" +
             "</div>" +
         "</a>" +
         "</li>";
         }
-        else if ((dd.type==="Assigment")||(dd.type==="Quiz"))
+        else if ((dd.type==="Assigment")||(dd.type==="Quiz")||(dd.type==="Discussion"))
         {
             markup="";
             markup += "<li class='assignmentLi'>" +
