@@ -80,3 +80,10 @@ You'll need to create a `cache` table. Open phpMyAdmin and go to the `octobercms
     * Type: TEXT
   3.   expiration
     * Type: INT
+
+## Enabling development mode
+
+1. Go to The Canvas website and select “Dev Delphinium”. Click “Accept” when you get the message.
+2. Copy your userId and Token somewhere safe.
+3. Update your app with the latest code from GitHub. In your backend app go to Greenhouse/Dev. Add a new Dev Configuration (enter your UserId, Token, CourseId,  select “Enable for dev mode”. Save your changes
+4. Now in your development environment whenever you are going to request data from Raspberry you’ll need to drop the “dev/Dev” component in your page first.  To configure it just select the “Dev Configuration” you just created from the drop down. Then drop any other component you are going to be working on (this only applies for components that make data calls to Raspberry)
