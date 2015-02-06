@@ -15,6 +15,8 @@ class CreateDevConfigurationTable extends Migration
             	$table->engine = 'InnoDB';
                 $table->increments('id');
                 $table->string('Configuration_name');
+                $table->integer('User_id');
+                $table->integer('Course_id');
                 $table->string('Token');
                 $table->boolean('Enabled');
                 $table->timestamps();

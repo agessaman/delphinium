@@ -2,13 +2,23 @@ fields:
     Configuration_name:
         label: Name
         span: auto
-        comment: Enter the name for this token
+        comment: Enter the name for this dev configuration
 
     Token:
         label: Token
         span: auto
         comment: Enter the token to be used for development
 
+    User_id:
+        label: UserId
+        span: auto
+        comment: Enter the userId that corresponds to this token
+        
+    Course_id:
+        label: CourseId
+        span: auto
+        comment: Enter the courseId that corresponds to this token
+        
     Enabled:
         label: Enable dev mode with this token? (only one token can be used for dev mode at a time)
         type: checkbox

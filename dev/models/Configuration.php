@@ -13,6 +13,7 @@ class Configuration extends Model
      */
     public $rules = [
     	'Configuration_name'=>'required',
-        'Token' => 'required'
+        'Token' => 'required',
+        'User_id'=> 'required'
     ];
 }

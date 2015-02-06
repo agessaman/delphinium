@@ -18,7 +18,12 @@ class Dev extends ComponentBase
     
     public function onRun()
     {	
-        
+    	$config = Configuration::find($this->property('devConfig'));
+		
+	session_start();
+        $_SESSION['userID'] = $config->User_id;
+        $_SESSION['userToken'] = $config->Token;
+        $_SESSION['courseID'] = $config->Course_id;
         
     }
     

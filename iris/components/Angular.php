@@ -29,19 +29,19 @@ class Angular  extends ComponentBase
         
 //        session_start();
 //        
-//        if(isset($_SESSION['courseID']))
-//        {
-//            $courseId = $_SESSION['courseID'];
-//            $encryptedToken = $_SESSION['userToken'];
-//        
-//            $decrypted =$encryptedToken;//\Crypt::decrypt($encryptedToken);
-//            $this->prepareData($courseId, $decrypted, 10, false);
-//        }
-        $courseId = 343331;
-        $this->page['userId'] = 1489289;
-        $this->page['courseId'] = $courseId;
-        $decrypted ="sdf";//\Crypt::decrypt($encryptedToken);
-        $this->prepareData($courseId, $decrypted, 10, false);
+        if(isset($_SESSION['courseID']))
+        {
+            $courseId = $_SESSION['courseID'];
+            $encryptedToken = $_SESSION['userToken'];
+        
+            $decrypted =$encryptedToken;//\Crypt::decrypt($encryptedToken);
+            $this->prepareData($courseId, $decrypted, 10, false);
+        }
+//        $courseId = 343331;
+//        $this->page['userId'] = 1489289;
+//        $this->page['courseId'] = $courseId;
+//        $decrypted ="sdf";//\Crypt::decrypt($encryptedToken);
+//        $this->prepareData($courseId, $decrypted, 10, false);
     }
     
     public function onRefreshCache()

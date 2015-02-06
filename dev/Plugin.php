@@ -45,8 +45,7 @@ class Plugin extends PluginBase
     public function registerComponents()
     {
         return [
-            '\Delphinium\Dev\Components\Dev' => 'dev',
-            '\Delphinium\Dev\Components\ViewToken' => 'token'
+            '\Delphinium\Dev\Components\Dev' => 'dev'
         ];
     }
 

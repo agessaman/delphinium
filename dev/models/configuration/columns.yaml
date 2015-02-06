@@ -12,6 +12,14 @@ columns:
         label: Token
         searchable: false
         
+    User_id:
+        label: UserId
+        searchable: true
+        
+    Course_id:
+        label: CourseId
+        searchable: true
+        
     Enabled:
-        label: Enable for Dev Mode
+        label: Enabled for Dev Mode
         

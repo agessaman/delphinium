@@ -35,18 +35,18 @@ class Iris extends ComponentBase
     	//this component MUST be used in conjunction with the LTI component, so a session will already have been started
 //    	session_start();
         
-//        $courseId = $_SESSION['courseID'];
-//	  $userId=$_SESSION['userID'];
-//        $this->page['userId'] = $userId;
-//        $this->page['courseId'] = $courseId;
-//        
-//        $encryptedToken = $_SESSION['userToken'];
-//        $decrypted =$encryptedToken;//\Crypt::decrypt($encryptedToken);
-        
-        $courseId = 343331;
-        $this->page['userId'] = 1489289;
+        $courseId = $_SESSION['courseID'];
+        $userId=$_SESSION['userID'];
+        $this->page['userId'] = $userId;
         $this->page['courseId'] = $courseId;
-        $decrypted ="sdf";//\Crypt::decrypt($encryptedToken);
+//        
+        $encryptedToken = $_SESSION['userToken'];
+        $decrypted =$encryptedToken;//\Crypt::decrypt($encryptedToken);
+        
+//        $courseId = 343331;
+//        $this->page['userId'] = 1489289;
+//        $this->page['courseId'] = $courseId;
+//        $decrypted ="sdf";//\Crypt::decrypt($encryptedToken);
         
         
     	$iris = new IrisClass();
@@ -64,7 +64,9 @@ class Iris extends ComponentBase
         }
         
         $moduleData = $iris->getModules($courseId, $decrypted, $cacheTime, $forever);
-//        var_dump($moduleData);
+        
+        var_dump($moduleData);
+        return;
         $this->page['rawData'] = json_encode($moduleData);
         $finalData = $this->prepareData($courseId, $moduleData);
 //        var_dump($finalData);

@@ -64,8 +64,10 @@ class Api{
 	$moduleIdsArray = array();
         $apiHelper = new ApiHelper();
     	$data = $apiHelper->get_api_data($url);
-		
-//        var_dump($data);
+		var_dump($url);
+                return;
+        var_dump($data);
+        return;
         $affectedRows = Module::where('courseId', '=', $courseId)->delete();//We do this to maintain Canvas and the Stem manager synchronized
         //for example, if something was deleted in Canvas, this will reflect that deletion in Stem
             foreach($data as $moduleRow)
