@@ -88,5 +88,5 @@ You'll need to create a `cache` table. Open phpMyAdmin and go to the `octobercms
 3. Update your app with the latest code from GitHub.
 4. Run the following command from your cmd line: 
 * php artisan october:up
-5. In your backend app go to Greenhouse/Dev. Add a new Dev Configuration (enter your UserId, Token, CourseId,  select “Enable for dev mode”. Save your changes
+5. In your backend app go to Greenhouse/Dev. Add a new Dev Configuration (enter your UserId, Token, CourseId, Domain, and  select “Enable for dev mode”). Save your changes
 6. Now in your development environment whenever you are going to request data from Raspberry you’ll need to drop the “dev/Dev” component in your page first.  To configure it just select the “Dev Configuration” you just created from the drop down. Then drop any other component you are going to be working on (this only applies for components that make data calls to Raspberry)
