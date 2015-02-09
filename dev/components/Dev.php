@@ -24,6 +24,7 @@ class Dev extends ComponentBase
         $_SESSION['userID'] = $config->User_id;
         $_SESSION['userToken'] = $config->Token;
         $_SESSION['courseID'] = $config->Course_id;
+        $_SESSION['domain'] = $config->Domain;
         
     }
     
