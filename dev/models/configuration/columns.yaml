@@ -20,6 +20,10 @@ columns:
         label: CourseId
         searchable: true
         
+    Domain:
+        label: Domain
+        searchable: true
+        
     Enabled:
         label: Enabled for Dev Mode
         

@@ -45,7 +45,8 @@ class Plugin extends PluginBase
     public function registerComponents()
     {
         return [
-            '\Delphinium\Dev\Components\Dev' => 'dev'
+            '\Delphinium\Dev\Components\Dev' => 'dev',
+            '\Delphinium\Dev\Components\TestRoots' => 'testRoots'
         ];
     }
 

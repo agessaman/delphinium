@@ -19,6 +19,11 @@ fields:
         span: auto
         comment: Enter the courseId that corresponds to this token
         
+    Domain:
+        label: Domain
+        span: auto
+        comment: Enter the domain
+        
     Enabled:
         label: Enable dev mode with this token? (only one token can be used for dev mode at a time)
         type: checkbox
