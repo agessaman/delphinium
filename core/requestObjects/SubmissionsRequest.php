@@ -1,21 +1,26 @@
 <?php namespace Delphinium\Core\RequestObjects;
 
 use Delphinium\Core\Enums\CommonEnums\ActionType;
+use Delphinium\Core\Enums\CommonEnums\Lms;
 
 class SubmissionsRequest extends RootsRequest
 {
     /*
      * Properties
      */
-    public $allStudents;
+    
+    //TODO: generate getters & setters
+    public $actionType;
     public $studentIds;
     public $assignmentIds;
+    public $lms;
     
     /*
-     * Constructor
+     * Constructor 
+     * Will set default params
      */
-    function __construct() {
-        $this->action = ActionType::GET;
-        $this->allStudents = false;
+    function __construct($actionType = ActionType::GET, $studentIds = array(), $assignmentIds = array(), $lms = Lms::Canvas) 
+    {
+        
     }
 }

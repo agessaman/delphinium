@@ -18,12 +18,13 @@ class TestRoots extends ComponentBase
     public function onRun()
     {   
         $req = new SubmissionsRequest();
-        $req->action = ActionType::GET;
+//        $req->action = ActionType::GET;   default action is GET
         $req->allStudents = false;
         $req->studentIds = $_SESSION['userID'];
         
         $roots = new Roots();
-        $roots->submissions($req);
+        $res = $roots->submissions($req);
+        echo $res;
     }
 }
 
