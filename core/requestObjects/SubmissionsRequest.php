@@ -10,16 +10,17 @@ class SubmissionsRequest extends RootsRequest
      */
     
     //TODO: generate getters & setters
-    public $actionType;
     public $studentIds;
     public $assignmentIds;
-    public $lms;
+    public $multipleUsers;
+    public $multipleAssignments;
     
     /*
      * Constructor 
      * Will set default params
      */
-    function __construct($actionType = ActionType::GET, $studentIds = array(), $assignmentIds = array(), $lms = Lms::Canvas) 
+    function __construct($actionType = ActionType::GET, $studentIds = null, $assignmentIds = null, $lms = Lms::Canvas, 
+            $multipleUsers = false, $multipleAssignments = false) 
     {
         
     }

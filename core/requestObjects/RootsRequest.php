@@ -3,6 +3,7 @@
 
 abstract class RootsRequest
 {
-    public $action;
+    public $actionType;
+    public $lms;
     
 }
