@@ -9,19 +9,57 @@ class SubmissionsRequest extends RootsRequest
      * Properties
      */
     
-    //TODO: generate getters & setters
+    
     public $studentIds;
     public $assignmentIds;
     public $multipleUsers;
     public $multipleAssignments;
     
+    function getStudentIds() {
+        return $this->studentIds;
+    }
+
+    function getAssignmentIds() {
+        return $this->assignmentIds;
+    }
+
+    function getMultipleUsers() {
+        return $this->multipleUsers;
+    }
+
+    function getMultipleAssignments() {
+        return $this->multipleAssignments;
+    }
+
+    function setStudentIds($studentIds) {
+        $this->studentIds = $studentIds;
+    }
+
+    function setAssignmentIds($assignmentIds) {
+        $this->assignmentIds = $assignmentIds;
+    }
+
+    function setMultipleUsers($multipleUsers) {
+        $this->multipleUsers = $multipleUsers;
+    }
+
+    function setMultipleAssignments($multipleAssignments) {
+        $this->multipleAssignments = $multipleAssignments;
+    }
+
+    
+    
     /*
      * Constructor 
-     * Will set default params
      */
-    function __construct($actionType = ActionType::GET, $studentIds = null, $assignmentIds = null, $lms = Lms::Canvas, 
+    function __construct($actionType, $lms, $studentIds = null, $assignmentIds = null, 
             $multipleUsers = false, $multipleAssignments = false) 
     {
-        
+        $this->actionType = $actionType;
+        $this->lms = $lms;
+        $this->setAssignmentIds($assignmentIds);
+        $this->setMultipleAssignments($multipleAssignments);
+        $this->setMultipleUsers($multipleUsers);
+        $this->setStudentIds($studentIds);
     }
 }

@@ -281,10 +281,14 @@ ul li a{
     border: 2px solid #D0D0D0;
 }
 .subheaderBox{
+    display: table;
+    overflow: hidden;
+    position: relative;
     width: 460px;
-    height: 30px;
-    margin-bottom:25px;
+    height: auto;
+    margin-bottom:-15px;
 }
+
 .subheaderBox .divSubheader{
     float: left;    
     width: 460px;

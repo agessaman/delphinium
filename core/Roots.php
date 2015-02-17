@@ -4,11 +4,34 @@ use Delphinium\Core\RequestObjects\SubmissionsRequest;
 use Delphinium\Core\RequestObjects\ModulesRequest;
 use Delphinium\Core\RequestObjects\AssignmentsRequest;
 use Delphinium\Core\Enums\CommonEnums\Lms;
+use Delphinium\Core\Enums\CommonEnums\ActionType;
 use Delphinium\Core\Exceptions\RequestObjectException;
 use Delphinium\Core\Exceptions\InvalidParameterInRequestObjectException;
+use Delphinium\Core\lmsClasses\Canvas;
+use Delphinium\Raspberry\Models\Module;
+use GuzzleHttp\Client;
 
 class Roots
 {
+    private $useCachedData = true;
+    private $cacheTime = 0;
+    private $forever = false;
+    /*
+     * @useCachedData = if true will return cached data. If false will return "fresh" data
+     * @cacheTime = number of minutes to cache data for. If the value -1 is used, data will be cached "forever"
+     */
+    function __construct($useCachedData, $cacheTime) 
+    {
+        $this->useCachedData = $useCachedData;
+        if($cacheTime <0)
+        {
+            $this->forever = true;
+        }
+        else
+        {
+            $this->cacheTime = $cacheTime;
+        }
+    }
     /*
      * Public Functions
      */
@@ -31,25 +54,31 @@ class Roots
     
     public function assignments(AssignmentsRequest $request)
     {
-        return $this->parseAssignments($request);
+        return true;
     }
     
     public function modules(ModulesRequest $request)
     {
-        
-        $result;
-        switch ($request->lms)
+        if($this->useCachedData)
         {
-            case (Lms::Canvas):
-                $result = $this->canvasModules($request);
-                break;
-            default:
-                $result = $this->canvasModules($request);
-                break;
-                
+            return $this->getModuleData($request);
         }
-            
-        return $result;
+        else
+        {
+            $result;
+            switch ($request->lms)
+            {
+                case (Lms::CANVAS):
+                    $result = $this->canvasModules($request);
+                    break;
+                default:
+                    $result = $this->canvasModules($request);
+                    break;
+
+            }
+
+            return $result;
+        }
     }
     
     
@@ -58,11 +87,27 @@ class Roots
      * Private Functions
      */
     
-    private function callLmsApi()
+    private function getModuleData(ModulesRequest $request)
     {
+        $courseId = $_SESSION['courseID'];
+        
+        
+        $query = Module::query();
+        $query->where('courseId','=',$courseId);
+        
+        if($request->moduleId)
+        {
+            $query->where('moduleId','=',$request->moduleId);
+        }
+        if($request->contentId)
+        {
+            $query->where('contentId','=', $request->contentId);
+        }
+        $results = $query->get();
+        
+        return $results;
         
     }
-    
     private function canvasSubmissions(SubmissionsRequest $request)
     {
         $userId = $_SESSION['userID'];
@@ -155,10 +200,11 @@ class Roots
         
         $url = $this->constructUrl($urlPieces, $urlArgs);
         
-        return $url;
+        $response = $this->makeGuzzleRequest($request, $url);
+        return $response->getBody();
     }
     
-    private function parseAssignments(AssignmentsRequest $request)
+    private function canvasAssignments(AssignmentsRequest $request)
     {
         echo "in assignments function from roots";
     }
@@ -202,9 +248,13 @@ class Roots
         //Attach token
         $urlArgs[]="access_token={$token}&per_page=5000";
         
-        $url = $this->constructUrl($urlPieces, $urlArgs);
+        $url = $this->constructUrl($urlPieces, $urlArgs); 
         
-        return $url;
+        $response = $this->makeGuzzleRequest($request, $url);
+        
+        $canvas = new Canvas($this->forever, $this->cacheTime);
+        $items = $canvas->processModuleData(json_decode($response->getBody()), $courseId);
+        return $items;
         
     }
     
@@ -238,4 +288,34 @@ class Roots
         $url = $urlStr.$urlParamsStr;
         return $url;
     }
+    
+    private function makeGuzzleRequest($request, $url)
+    {
+        $client = new Client();
+        switch($request->actionType)
+        {
+            case ActionType::GET:
+                $response = $client->get($url);
+                break;
+            case ActionType::DELETE:
+                $response = $client->delete($url);
+                break;
+            case ActionType::PUT:
+                $response = $client->put($url);
+                break;
+            case ActionType::POST:
+                $response = $client->post($url);
+                break;
+            default:
+                $response = $client->get($url);
+        }
+        
+        return $response;
+    }
+    
+   
+    
+    
+    
+    
 }
