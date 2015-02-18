@@ -83,7 +83,7 @@ You'll need to create a `cache` table. Open phpMyAdmin and go to the `octobercms
 
 ## Enabling development mode
 
-1. Go to The Canvas website and select “Dev Delphinium”. Click “Accept” when you get the message.
+1. Go to The Canvas website (uvu.instructure.com). Go to the DEV_MGMT course and select “Dev Delphinium” from the left menu. Click “Accept” (or log in, or whatever) when you get the message.
 2. Copy your userId and Token somewhere safe.
 3. Update your app with the latest code from GitHub.
 4. Run the following command from your cmd line: 
