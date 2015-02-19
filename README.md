@@ -81,6 +81,10 @@ You'll need to create a `cache` table. Open phpMyAdmin and go to the `octobercms
   3.   expiration
     * Type: INT
 
+**After updating my repository I get ` {"error":{"type":"Illuminate\Database\QueryException","message":"SQLSTATE[42S02]: Base table or view not found: 1146 Table 'myTable' doesn't exist....` **
+
+Run `php artisan october:up`. This will create the table you are missing in your local OctoberCMS app
+
 ## Enabling development mode
 
 1. Go to The Canvas website (uvu.instructure.com). Go to the DEV_MGMT course and select “Dev Delphinium” from the left menu. Click “Accept” (or log in, or whatever) when you get the message.
