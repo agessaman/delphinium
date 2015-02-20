@@ -23,10 +23,9 @@ class TestRoots extends ComponentBase
         $req->moduleId = 380199;
         $req->includeContentDetails = true;
         $req->includeContentItems = true;
-        $req->contentId = null;
-        $useCachedData = false;
-        $cacheTime = 1;
-        $roots = new Roots($useCachedData, $cacheTime);
+        $req->moduleItemId = null;
+        
+        $roots = new Roots();
         $res = $roots->modules($req);
         echo json_encode($res);
     }

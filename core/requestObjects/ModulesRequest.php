@@ -6,7 +6,7 @@ use Delphinium\Core\Enums\CommonEnums\Lms;
 class ModulesRequest extends RootsRequest
 {
     public $moduleId;
-    public $contentId;
+    public $moduleItemId;
     public $includeContentItems;
     public $includeContentDetails;
     
@@ -14,8 +14,8 @@ class ModulesRequest extends RootsRequest
         return $this->moduleId;
     }
 
-    function getContentId() {
-        return $this->contentId;
+    function getModuleItemId() {
+        return $this->moduleItemId;
     }
 
     function getIncludeContentItems() {
@@ -30,8 +30,8 @@ class ModulesRequest extends RootsRequest
         $this->moduleId = $moduleId;
     }
 
-    function setContentId($contentId) {
-        $this->contentId = $contentId;
+    function setModuleItemId($moduleItemId) {
+        $this->moduleItemId = $moduleItemId;
     }
 
     function setIncludeContentItems($includeContentItems) {
@@ -55,7 +55,7 @@ class ModulesRequest extends RootsRequest
                 $this->lms = $lms;   
             }
             
-            $this->setContentId($contentId);
+            $this->setModuleItemId($contentId);
             $this->setIncludeContentDetails($includeContentDetails);
             $this->setIncludeContentItems($includeContentItems);
             $this->setModuleId($moduleId);

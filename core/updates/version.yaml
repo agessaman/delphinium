@@ -1,0 +1,4 @@
+1.0.0:
+    - Initialize plugin
+    - create_core_cache_settings_table.php
+    - SeedCacheSettingsTable.php
