@@ -42,7 +42,7 @@ class ModulesRequest extends RootsRequest
         $this->includeContentDetails = $includeContentDetails;
     }
 
-        function __construct($actionType, $lms, $moduleId = null, $contentId = null,  
+        function __construct($actionType, $moduleId = null, $contentId = null,  
             $includeContentItems = false, $includeContentDetails = false) 
     {
             if(ActionType::isValidValue($actionType))
@@ -50,9 +50,14 @@ class ModulesRequest extends RootsRequest
                 $this->actionType = $actionType;
             }
             
+            $lms = strtoupper($_SESSION['lms']);
             if(Lms::isValidValue($lms))
             {
                 $this->lms = $lms;   
+            }
+            else
+            {
+                throw new \Exception("Invalid LMS"); 
             }
             
             $this->setModuleItemId($contentId);

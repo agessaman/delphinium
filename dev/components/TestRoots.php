@@ -25,6 +25,7 @@ class TestRoots extends ComponentBase
         $req->includeContentItems = true;
         $req->moduleItemId = null;
         
+//        \Cache::flush();
         $roots = new Roots();
         $res = $roots->modules($req);
         echo json_encode($res);

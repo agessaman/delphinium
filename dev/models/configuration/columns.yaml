@@ -27,3 +27,6 @@ columns:
     Enabled:
         label: Enabled for Dev Mode
         
+    Lms:
+        label: LMS
+        

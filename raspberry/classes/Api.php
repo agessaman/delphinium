@@ -391,7 +391,8 @@ class Api{
      */
     public function updateModule($moduleId, $keyValueParams,$cacheTime)
     {//TODO: make this a parameter/read it from session, or something
-    	$courseId = 343331;
+    	$courseId = $_SESSION['courseID'];
+        $token = $_SESSION['userToken'];
         
         $paramString ='';
         foreach($keyValueParams as $key => $value)
@@ -401,7 +402,9 @@ class Api{
             
              
         }
-        $url = 'https://uvu.instructure.com/api/v1/courses/'.$courseId.'/modules/'.$moduleId.'?access_token=14~U2NLr7L2YmFsapN53ovxT6kvK4eToJL8LvuO2QZj1j8XAMLIlM1Yokz8CtKL8gxY&'.$paramString;       
+        
+        
+        $url = 'https://uvu.instructure.com/api/v1/courses/'.$courseId.'/modules/'.$moduleId.'?access_token='.$token.'&'.$paramString;       
         
         $data = APIHelper::post_api_data($url);
 
@@ -424,7 +427,8 @@ class Api{
     
     public function getApiModuleItems($courseId,$moduleId)
     {
-        $url = 'https://uvu.instructure.com/api/v1/courses/'.$courseId.'/modules/'.$moduleId.'/items?access_token=14~U2NLr7L2YmFsapN53ovxT6kvK4eToJL8LvuO2QZj1j8XAMLIlM1Yokz8CtKL8gxY'; 
+        $token = $_SESSION['userToken'];
+        $url = 'https://uvu.instructure.com/api/v1/courses/'.$courseId.'/modules/'.$moduleId.'/items?access_token='.$token; 
         $apiHelper = new ApiHelper();
     	$data = $apiHelper->get_api_data($url);
         
@@ -553,7 +557,8 @@ class Api{
     
     public function getCourse($courseId)
     {
-        $url = 'https://uvu.instructure.com/api/v1/courses/'.$courseId.'&access_token=14~U2NLr7L2YmFsapN53ovxT6kvK4eToJL8LvuO2QZj1j8XAMLIlM1Yokz8CtKL8gxY';
+        $token = $_SESSION['userToken'];
+        $url = 'https://uvu.instructure.com/api/v1/courses/'.$courseId.'&access_token='.$token;
         $apiHelper = new ApiHelper();
     	$data = $apiHelper->get_api_data($url);
         return $data;
@@ -561,7 +566,8 @@ class Api{
     
     public function getModuleStates($courseId, $studentId)
     {
-        $url = 'https://uvu.instructure.com/api/v1/courses/'.$courseId.'/modules/?student_id='.$studentId.'&access_token=14~U2NLr7L2YmFsapN53ovxT6kvK4eToJL8LvuO2QZj1j8XAMLIlM1Yokz8CtKL8gxY&per_page=5000';       
+        $token = $_SESSION['userToken'];
+        $url = 'https://uvu.instructure.com/api/v1/courses/'.$courseId.'/modules/?student_id='.$studentId.'&access_token='.$token.'&per_page=5000';       
         $moduleIdsArray = array();
         $apiHelper = new ApiHelper();
         $data = $apiHelper->get_api_data($url);
@@ -590,9 +596,8 @@ class Api{
     
     public function getStudentSubmissions($courseId, $studentId)
     {
-        //GET /api/v1/courses/:course_id/students/submissions
-//        ?student_ids[]=items&include[]=content_details
-        $url = 'https://uvu.instructure.com/api/v1/courses/'.$courseId.'/students/submissions?student_ids[]='.$studentId.'&access_token=14~U2NLr7L2YmFsapN53ovxT6kvK4eToJL8LvuO2QZj1j8XAMLIlM1Yokz8CtKL8gxY&per_page=5000';       
+        $token = $_SESSION['userToken'];
+        $url = 'https://uvu.instructure.com/api/v1/courses/'.$courseId.'/students/submissions?student_ids[]='.$studentId.'&access_token='.$token.'&per_page=5000';       
         $moduleIdsArray = array();
         $apiHelper = new ApiHelper();
         

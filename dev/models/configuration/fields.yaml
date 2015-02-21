@@ -28,3 +28,8 @@ fields:
         label: Enable dev mode with this token? (only one token can be used for dev mode at a time)
         type: checkbox
         default: false
+        
+    Lms:
+        label: Lms
+        span: auto
+        comment: Enter the lms for which you want to use dev mode

@@ -8,6 +8,7 @@ use Delphinium\Core\RequestObjects\ModulesRequest;
 use Delphinium\Core\RequestObjects\AssignmentsRequest;
 use Delphinium\Core\Guzzle\GuzzleHelper;
 use Delphinium\Core\Models\CacheSetting;
+use Delphinium\Core\Cache\CacheHelper;
 use Illuminate\Support\Facades\Cache;
 
 class Canvas
@@ -22,7 +23,12 @@ class Canvas
     function __construct($dataType) 
     {
         $cacheSetting = CacheSetting::where('data_type', '=', $dataType)->first();
-        
+     
+        /*NOTE: 
+        * if time = -1, data will be cached forever
+        * if time = 0, data will NOT be cached
+        * if time >0, data will be cached for that many minutes
+        */
         if($cacheSetting->time<0)
         {
             $this->useCachedData = true;
@@ -49,7 +55,17 @@ class Canvas
     {
         if($this->useCachedData)
         {
-            return $this->searchModuleDataInCache($request);
+            $cacheHelper = new CacheHelper();
+            $data = $cacheHelper->searchModuleDataInCache($request);
+            if($data)
+            {//if data is null it means it wasn't in cache... need to get it from 
+                return $data;
+            }
+            else
+            {
+                $this->getModuleDataFromCanvas($request);
+                return $cacheHelper->searchModuleDataInCache($request);
+            }
         }
         else
         {
@@ -61,7 +77,7 @@ class Canvas
     
     private function getModuleDataFromCanvas($request)
     {
-        echo "get data from Canvas";
+        echo "getting data from Canvas ";
         //As per Jared's & Damaris' discussion when users request fresh module data we wil retrieve ALL module data so we can store it in 
         //cache and then we'll only return the data they asked for
 
@@ -244,8 +260,13 @@ class Canvas
             $module->moduleItems = $moduleItems;
         }
         $module->save();
+        
+        //We need to assign the moduleItems AFTER we've converted the module to an array because the moduleItems are a laravel relationship
+        //that is only loaded this way. If we don't set the module Items this way they won't be stored as a property of this module in Cache
+        $moduleArr = $module->toArray();
+        $moduleArr['moduleItems'] = $module->moduleItems->toArray();
 
-//        $key = 'module'.$courseId."-".$module->moduleId;
+        
         $key = "{$courseId}-module-{$module->moduleId}";
         if(Cache::has($key))
         {
@@ -253,11 +274,11 @@ class Canvas
         }
         if($this->forever)
         {//toArray is the key here! an Eloquent model is a closure and won't be serialized unless we first convert it to an Array!!!
-            Cache::forever($key, $module->toArray());
+            Cache::forever($key, $moduleArr);
         }
         else
         {
-            Cache::put($key, $module->toArray(), $this->cacheTime);
+            Cache::put($key, $moduleArr, $this->cacheTime);
         }
 
         
@@ -270,45 +291,53 @@ class Canvas
         $allItems = array();
         
         foreach($moduleItems as $mItem){
-            $module = ModuleItem::firstOrNew(array(
+            $moduleItem = ModuleItem::firstOrNew(array(
                 'module_id' => $moduleId,
                 'module_item_id'=> $mItem->id
             ));
-            $module->module_item_id = $mItem->id;
-            $module->module_id = $mItem->module_id;
-            $module->course_id = $courseId;
-            $module->position = $mItem->position;
-            $module->title = $mItem->title;
-            $module->indent = $mItem->indent;
-            $module->type = $mItem->type;
+            $moduleItem->module_item_id = $mItem->id;
+            $moduleItem->module_id = $mItem->module_id;
+            $moduleItem->course_id = $courseId;
+            $moduleItem->position = $mItem->position;
+            $moduleItem->title = $mItem->title;
+            $moduleItem->indent = $mItem->indent;
+            $moduleItem->type = $mItem->type;
             
-            if(isset($mItem->published)){$module->published = $mItem->published;}
+            if(isset($mItem->published)){$moduleItem->published = $mItem->published;}
             
             //if we don't have contentId we'll use the module_item_id. This is for tagging purposes
             $contentId = 0;
             if(isset($mItem->content_id))
             {
-                $module->content_id = $mItem->content_id;
+                $moduleItem->content_id = $mItem->content_id;
             }
             else
             {
-                $module->content_id = $mItem->id;
+                $moduleItem->content_id = $mItem->id;
             }
             
-            if(isset($mItem->html_url)){$module->html_url = $mItem->html_url;}
-            if(isset($mItem->url)){$module->url = $mItem->url;}
-            if(isset($mItem->page_url)){$module->page_url = $mItem->page_url;}
-            if(isset($mItem->external_url)){$module->external_url = $mItem->external_url;}
-            if(isset($mItem->new_tab)){$module->new_tab = $mItem->new_tab;}
-            if(isset($mItem->completion_requirement)){$module->completion_requirement = json_encode($mItem->completion_requirement);}
+            if(isset($mItem->html_url)){$moduleItem->html_url = $mItem->html_url;}
+            if(isset($mItem->url)){$moduleItem->url = $mItem->url;}
+            if(isset($mItem->page_url)){$moduleItem->page_url = $mItem->page_url;}
+            if(isset($mItem->external_url)){$moduleItem->external_url = $mItem->external_url;}
+            if(isset($mItem->new_tab)){$moduleItem->new_tab = $mItem->new_tab;}
+            if(isset($mItem->completion_requirement)){$moduleItem->completion_requirement = json_encode($mItem->completion_requirement);}
             if(isset($mItem->content_details) && isset($mItem->type))
             {
-                $content = $this->saveContentDetails($courseId, $moduleId, $mItem->id, $module->content_id, $mItem->type,$mItem->content_details);
-                $module->content = $content;
+                $content = $this->saveContentDetails($courseId, $moduleId, $mItem->id, $moduleItem->content_id, $mItem->type,$mItem->content_details);
+                $moduleItem->content = $content;
             }
             
-            $module->save();
-            array_push($allItems, $module);
+            $moduleItem->save();
+            
+            //We need to assign the moduleItems AFTER we've converted the module to an array because the moduleItems are a laravel relationship
+            //that is only loaded this way. If we don't set the module Items this way they won't be stored as a property of this module in Cache
+            $moduleArr = $moduleItem->toArray();
+            $moduleArr['content'] = $moduleItem->content->toArray();
+
+        
+        
+            array_push($allItems, $moduleArr);
             
             $key = "{$courseId}-module-{$moduleId}-moduleItem-{$mItem->id}";
 //            $key="moduleItem-".$courseId.'-'.$moduleId.'-'.$mItem->id;
@@ -319,11 +348,11 @@ class Canvas
             }
             if($this->forever)
             {
-                Cache::forever($key, $module->toArray());
+                Cache::forever($key, $moduleArr);
             }
             else
             {
-                Cache::put($key, $module->toArray(),$this->cacheTime);
+                Cache::put($key, $moduleArr,$this->cacheTime);
             }
         }
         
@@ -364,63 +393,5 @@ class Canvas
         return $content;
     }
     
-    private function searchModuleDataInCache(ModulesRequest $request)
-    {
-        $courseId = $_SESSION['courseID'];
-        $key = "";
-        if($request->moduleId)
-        {
-            if($request->moduleItemId)
-            {
-                $key = "{$courseId}-module-{$request->moduleId}-moduleItem-{$request->moduleItemId}";
-            }
-            else
-            {
-                $key = "{$courseId}-module-{$request->moduleId}";
-            }
-        }
-        else
-        {//if no moduleId was found they must want all the modules
-            $items = array();
-            $moduleIdsKey = "{$courseId}-moduleIds";
-            $moduleIds = array();
-            if(Cache::has($moduleIdsKey))
-            {
-                $moduleIds = Cache::get($moduleIdsKey);
-                
-                foreach($moduleIds as $id)
-                {
-                    $key = "{$courseId}-module-{$id}";
-                    if (Cache::has($key))
-                    {
-                        echo "return cached data";
-                        $value = Cache::get($key);
-                        array_push($items,$value);
-                    }
-                    else
-                    {
-                        $this->getModuleDataFromCanvas($request);
-                        return $this->searchModuleDataInCache($request);
-                    }
-                }
-                return $items;
-            }
-            
-            
-        }
-        
-        
-        if(Cache::has($key))
-        {
-            echo "return cached Data";
-            $data = Cache::get($key);
-            return $data;
-        }
-        else
-        {
-            $this->getModuleDataFromCanvas($request);
-            return $this->searchModuleDataInCache($request);
-        }
-            
-    }
+    
 }

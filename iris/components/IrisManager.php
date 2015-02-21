@@ -152,43 +152,7 @@ class IrisManager extends ComponentBase
     }
     
     public function onTest()
-    {
-//        $url = 'https://uvu.instructure.com/api/v1/courses/343331/modules?include[]=items&include[]=content_details&access_token=14~U2NLr7L2YmFsapN53ovxT6kvK4eToJL8LvuO2QZj1j8XAMLIlM1Yokz8CtKL8gxY&per_page=5000';
-        
-        $studentId = 1489289;
-//        $userCheck = User::where('user_id',$studentId)->first();
-//        $userCheck->delete();
-        
-        
-        
-        $courseId = 343331;
-//        $contentId = 1660429;
-//        $token = '14~Am18zfhe3qNoFuH3mXuGFPqe14SknkLq6qMbEchnkzPFEolaRvwoxvEXMbzQAojN';
-//        $url = 'https://uvu.instructure.com/api/v1/courses/'.$courseId.'/modules?include[]=items&include[]=content_details&access_token='.$token.'&per_page=5000';
-//        
-        $api = new Api();
-        $token = '14~U2NLr7L2YmFsapN53ovxT6kvK4eToJL8LvuO2QZj1j8XAMLIlM1Yokz8CtKL8gxY';
-        $url = 'https://uvu.instructure.com/api/v1/courses/'.$courseId.'/modules?include[]=items&include[]=content_details&access_token='.$token.'&per_page=5000';
-        $data = $api->getModules($url, $courseId, false, 0, null);
-        
-        var_dump($data);
-//        $data = $api->addTags(49051682, json_encode($arr), $courseId);
-//        $tag = array("Two");
-//        $arr = json_encode($tag);
-//        $data = $api->addTags(15056, $arr, 343331);
-//        $data = $api->getAvailableTags($courseId);
-//        
-//        var_dump($data);
-//        return;
-		
-        
-        
-//        $api = new Api();
-//        $data = $api->getModuleStates(343331, 1489289);
-//        var_dump($data);
-//        $var = $api->getApiModules($url, $courseId, true);
-        
-//        $api->deleteTag(49051680, "Test");
+    {   
     }
     
 }

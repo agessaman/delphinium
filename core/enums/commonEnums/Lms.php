@@ -1,5 +1,5 @@
 <?php namespace Delphinium\Core\Enums\CommonEnums;
 
 abstract class Lms extends BasicEnum {
-    const CANVAS = 1;
+    const CANVAS = "CANVAS";
 }

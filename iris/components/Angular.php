@@ -19,7 +19,7 @@ class Angular  extends ComponentBase
     
     public function onRun()
     {   
-        \Cache::flush();
+//        \Cache::flush();
         $this->addJs("/plugins/delphinium/iris/assets/javascript/jquery.min.js");
         $this->addJs("/plugins/delphinium/iris/assets/javascript/angular.min.js");
         $this->addJs("/plugins/delphinium/iris/assets/javascript/angular-ui-tree.js");

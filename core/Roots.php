@@ -59,30 +59,4 @@ class Roots
         return true;
     }
     
-    
-    /*
-     * Private Functions
-     */
-    
-    private function getModuleData(ModulesRequest $request)
-    {
-        $courseId = $_SESSION['courseID'];
-        
-        
-        $query = Module::query();
-        $query->where('courseId','=',$courseId);
-        
-        if($request->moduleId)
-        {
-            $query->where('moduleId','=',$request->moduleId);
-        }
-        if($request->moduleItemId)
-        {
-            $query->where('contentId','=', $request->moduleItemId);
-        }
-        $results = $query->get();
-        
-        return $results;
-        
-    } 
 }

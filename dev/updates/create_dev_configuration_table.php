@@ -19,6 +19,7 @@ class CreateDevConfigurationTable extends Migration
                 $table->integer('Course_id');
                 $table->string('Token');
                 $table->string('Domain');
+                $table->string('Lms');
                 $table->boolean('Enabled');
                 $table->timestamps();
        	 	});
