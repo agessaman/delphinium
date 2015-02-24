@@ -40,7 +40,7 @@ class Roots
         $result;
         switch ($request->lms)
         {
-            case (Lms::Canvas):
+            case (Lms::CANVAS):
                 $canvas = new Canvas(DataType::SUBMISSIONS);
                 $result = $canvas->processSubmissionsRequest($request);
                 break;

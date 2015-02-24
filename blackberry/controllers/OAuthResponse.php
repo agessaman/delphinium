@@ -7,12 +7,6 @@ use Delphinium\Blackberry\Models\User;
 
 class OAuthResponse extends Controller
 {
-
-    public function index()
-	{
-		return "getting there";
-	}
-    
     public function saveUserInfo()
     {
         session_start();
@@ -26,7 +20,7 @@ class OAuthResponse extends Controller
         
         $opts = array('http' => array( 'method'  => 'POST', ));
 	$context  = stream_context_create($opts);
-        $url = 'https://uvu.instructure.com/login/oauth2/token?client_id='.$clientId.'&client_secret='.$developerSecret.'&code='.$code;
+        $url = "https://uvu.instructure.com/login/oauth2/token?client_id={$clientId}&client_secret={$developerSecret}&code={$code}";
 	$userTokenJSON = file_get_contents($url, false, $context, -1, 40000);
 	$userToken = json_decode($userTokenJSON);
         
