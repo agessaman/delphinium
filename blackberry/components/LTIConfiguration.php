@@ -40,20 +40,20 @@ class LTIConfiguration extends ComponentBase {
     }
 
     public function doBltiHandshake() {
-        //first obtain the details of the LTI configuration they chose
+	//first obtain the details of the LTI configuration they chose
         $instanceFromDB = LtiConfigurations::find($this->property('ltiInstance'));
 
-        session_start();
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+    	
         $_SESSION['courseID'] = $_POST["custom_canvas_course_id"];
         $_SESSION['userID'] = $_POST['custom_canvas_user_id'];
         $_SESSION['domain'] = $_POST['custom_canvas_api_domain'];
         //check to see if user is an Instructor
         $rolesStr = $_POST['roles'];
         
-        //as per my discussion with Jared, we will use the instructor's token only. This is the token that will be stored in the DB
-        //and the one that will be used to make all requests. We will NOT store student's tokens.
-        if (strstr('Instructor', $rolesStr)) 
-        {
             $consumerKey = $instanceFromDB['ConsumerKey'];
             $clientId = $instanceFromDB['DeveloperId'];
 
@@ -61,37 +61,37 @@ class LTIConfiguration extends ComponentBase {
             $context = new Blti($consumerKey, false, false);
 
             if ($context->valid) 
-            {
-                // query DB to see if user has token, if yes, go to LTI.
+            { // query DB to see if user has token, if yes, go to LTI.
+
                 $userCheck = User::where('user_id', $_SESSION['userID'])->first();
 
-                if (!$userCheck) //if no user is found, redirect to canvas permission page
+                if (!$userCheck ) //if no user is found, redirect to canvas permission page
                 {
-                    //TODO: take this redirectUri out into some parameter somewhere...
-                    $redirectUri = "https://delphinium.uvu.edu/octobercms/saveUserInfo?lti={$this->property('ltiInstance')}";
-                    $url = "https://{$_SESSION['domain']}/login/oauth2/auth?client_id={$clientId}&response_type=code&redirect_uri={$redirectUri}";
-                    $this->redirect($url);
+                
+                    if(strstr('Instructor', $rolesStr)) //but only if it's an instructor. 
+                    //As per my discussion with Jared, we will use the instructor's token only. This is the token that will be stored in the DB
+                    //and the one that will be used to make all requests. We will NOT store student's tokens.
+                    { 
+                        //TODO: take this redirectUri out into some parameter somewhere...
+                        $redirectUri = "https://delphinium.uvu.edu/octobercms/saveUserInfo?lti={$this->property('ltiInstance')}";
+                        $url = "https://{$_SESSION['domain']}/login/oauth2/auth?client_id={$clientId}&response_type=code&redirect_uri={$redirectUri}";
+                        $this->redirect($url);
+                    }
+                    else
+                    {
+                        echo ("Your Instructor must authorize this course. Please contact your instructor.");
+                        return;
+                    }
                 } 
                 else 
                 {
-                    // echo 'This is your userId: '.$_SESSION['userID']. PHP_EOL;
-                    // echo 'This is your token: '. $userCheck->encrypted_token. PHP_EOL;
-                    // echo 'This is the courseId: '.$_SESSION['courseID']. PHP_EOL;
-                    // echo 'This is the domain: '.$_SESSION['domain'];
                     $_SESSION['userToken'] = $userCheck->encrypted_token;
-                    //DON'T REDIRECT, BECAUSE THIS PLUGIN WILL BE USED BY ALL OTHER PLUGINS, AND WE MUST NOT REDIRECT THEM ANYWHERE.
-                    //THIS WILL BE DETERMINED BY THE OTHER PLUGINS
                 }
             } 
             else 
             {
                 echo('There is a problem. Please notify your instructor');
             }
-        } 
-        else 
-        {
-            echo ("Your Instructor must authorize this course. Please contact your instructor.");
-        }
     }
 
     function redirect($url) {
