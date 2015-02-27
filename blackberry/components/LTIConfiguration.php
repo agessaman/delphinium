@@ -51,6 +51,9 @@ class LTIConfiguration extends ComponentBase {
         $_SESSION['courseID'] = $_POST["custom_canvas_course_id"];
         $_SESSION['userID'] = $_POST['custom_canvas_user_id'];
         $_SESSION['domain'] = $_POST['custom_canvas_api_domain'];
+        //TODO: make sure this parameter below works with all other LMSs
+        $_SESSION['lms'] = $_POST['tool_consumer_info_product_family_code'];
+        
         //check to see if user is an Instructor
         $rolesStr = $_POST['roles'];
         
