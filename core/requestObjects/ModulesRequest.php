@@ -42,8 +42,8 @@ class ModulesRequest extends RootsRequest
         $this->includeContentDetails = $includeContentDetails;
     }
 
-        function __construct($actionType, $moduleId = null, $contentId = null,  
-            $includeContentItems = false, $includeContentDetails = false) 
+    function __construct($actionType, $moduleId = null, $contentId = null,  
+        $includeContentItems = false, $includeContentDetails = false) 
     {
             if(ActionType::isValidValue($actionType))
             {  

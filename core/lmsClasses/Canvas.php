@@ -51,36 +51,14 @@ class Canvas
     /*
      * public functions
      */
-    public function processModuleRequest (ModulesRequest $request)
+    public function getModuleData($request)
     {
-        if($this->useCachedData)
-        {
-            $cacheHelper = new CacheHelper();
-            $data = $cacheHelper->searchModuleDataInCache($request);
-            if($data)
-            {//if data is null it means it wasn't in cache... need to get it from 
-                return $data;
-            }
-            else
-            {
-                $this->getModuleDataFromCanvas($request);
-                return $cacheHelper->searchModuleDataInCache($request);
-            }
-        }
-        else
-        {
-            return $this->getModuleDataFromCanvas($request);
-        }
-        
-        
-    }
-    
-    private function getModuleDataFromCanvas($request)
-    {
-        echo "getting data from Canvas ";
         //As per Jared's & Damaris' discussion when users request fresh module data we wil retrieve ALL module data so we can store it in 
         //cache and then we'll only return the data they asked for
-
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
         $domain = $_SESSION['domain'];
         $token = $_SESSION['userToken'];
         $courseId = $_SESSION['courseID'];

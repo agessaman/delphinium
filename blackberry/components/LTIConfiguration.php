@@ -63,11 +63,10 @@ class LTIConfiguration extends ComponentBase {
             if ($context->valid) 
             { // query DB to see if user has token, if yes, go to LTI.
 
-                $userCheck = User::where('user_id', $_SESSION['userID'])->first();
+                $userCheck = User::where('course_id', $_SESSION['courseID'])->first();
 
                 if (!$userCheck ) //if no user is found, redirect to canvas permission page
                 {
-                
                     if(strstr('Instructor', $rolesStr)) //but only if it's an instructor. 
                     //As per my discussion with Jared, we will use the instructor's token only. This is the token that will be stored in the DB
                     //and the one that will be used to make all requests. We will NOT store student's tokens.

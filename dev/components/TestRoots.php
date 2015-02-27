@@ -4,7 +4,6 @@ use Delphinium\Core\Roots;
 use Delphinium\Core\RequestObjects\SubmissionsRequest;
 use Delphinium\Core\RequestObjects\ModulesRequest;
 use Delphinium\Core\Enums\CommonEnums\ActionType;
-use Delphinium\Core\Enums\CommonEnums\Lms;
 use Cms\Classes\ComponentBase;
 
 class TestRoots extends ComponentBase
@@ -19,7 +18,7 @@ class TestRoots extends ComponentBase
     
     public function onRun()
     {   
-        $req = new ModulesRequest(ActionType::GET, Lms::CANVAS);
+        $req = new ModulesRequest(ActionType::GET);
         $req->moduleId = 380199;
         $req->includeContentDetails = true;
         $req->includeContentItems = true;

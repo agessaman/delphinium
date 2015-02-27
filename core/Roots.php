@@ -19,19 +19,29 @@ class Roots
     public function modules(ModulesRequest $request)
     {
         $result;
-        switch ($request->lms)
-        {
-            case (Lms::CANVAS):
-                $canvas = new Canvas(DataType::MODULES);
-                $result = $canvas->processModuleRequest($request);
-                break;
-            default:
-                $canvas = new Canvas(DataType::MODULES);
-                $result = $canvas->processModuleRequest($request);
-                break;
-
+        $cacheHelper = new CacheHelper();
+        $data = $cacheHelper->searchModuleDataInCache($request);
+        if($data)
+        {//if data is null it means it wasn't in cache... need to get it from 
+            return $data;
         }
+        else
+        {
+            switch ($request->lms)
+            {
+                case (Lms::CANVAS):
+                    $canvas = new Canvas(DataType::MODULES);
+                    $canvas->getModuleData($request);
+                    $result = $cacheHelper->searchModuleDataInCache($request);
+                    break;
+                default:
+                    $canvas = new Canvas(DataType::MODULES);
+                    $canvas->getModuleData($request);
+                    $result = $cacheHelper->searchModuleDataInCache($request);
+                    break;
 
+            }
+        }
         return $result;
     }
     
