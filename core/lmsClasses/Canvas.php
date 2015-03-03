@@ -6,9 +6,10 @@ use Delphinium\Raspberry\Models\Content;
 use Delphinium\Core\RequestObjects\SubmissionsRequest;
 use Delphinium\Core\RequestObjects\ModulesRequest;
 use Delphinium\Core\RequestObjects\AssignmentsRequest;
+use \Delphinium\Core\Enums\CommonEnums\ActionType;
 use Delphinium\Core\Guzzle\GuzzleHelper;
 use Delphinium\Core\Models\CacheSetting;
-use Delphinium\Core\Cache\CacheHelper;
+use Delphinium\Core\Exceptions\InvalidParameterInRequestObjectException;
 use Illuminate\Support\Facades\Cache;
 
 class Canvas
@@ -51,7 +52,7 @@ class Canvas
     /*
      * public functions
      */
-    public function getModuleData($request)
+    public function getModuleData(ModulesRequest $request)
     {
         //As per Jared's & Damaris' discussion when users request fresh module data we wil retrieve ALL module data so we can store it in 
         //cache and then we'll only return the data they asked for
@@ -179,12 +180,78 @@ class Canvas
         */
     }
     
+    public function putData(ModulesRequest $request)
+    {
+        if(!$request->moduleId)
+        {
+            throw new InvalidParameterInRequestObjectException(get_class($request),"moduleId", "Parameter is required");
+        }
+        
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $domain = $_SESSION['domain'];
+        $token = $_SESSION['userToken'];
+        $courseId = $_SESSION['courseID'];
+        $scope = "module";
+        
+        $urlPieces= array();
+        $urlArgs = array();
+        $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
+
+        $urlPieces[] = "modules/{$request->moduleId}";
+        
+        if($request->moduleItemId)
+        {
+            $urlPieces[] = "items/{$request->moduleItemId}";
+            $scope = "module_item";
+        }
+        
+        foreach($request->params as $key=>$value)
+        {
+            $urlArgs[] = "{$scope}[{$key}]={$value}";
+        }
+        
+        //Attach token
+        $urlArgs[]="access_token={$token}";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs); 
+
+        $response = GuzzleHelper::makeRequest($request, $url);
+        return $response;
+        
+        
+        
+        
+        
+        
+        
+        //TODO refresh Cache
+        /*
+        //return the item that was just updated so we can store it in cache but coming from Canvas.
+        $newUrl = GuzzleHelper::constructUrl($urlPieces);
+        $request->actionType = ActionType::GET;
+        $request->params = null;
+        $urlArgs = [];//clear array
+        $urlArgs[]="access_token={$token}";
+        $newUrl = GuzzleHelper::constructUrl($urlPieces, $urlArgs); 
+
+        $response = GuzzleHelper::makeRequest($request, $newUrl);
+        */
+    }
+    /*
+     * private functions
+     */
+    
+    
     private function processAssignmentsRequest(AssignmentsRequest $request)
     {
         echo "in assignments function from roots";
     }
     
-    public function processCanvasModuleData($data, $courseId)
+    
+    private function processCanvasModuleData($data, $courseId)
     {
         $items = array();
         $moduleIdsArray = array();

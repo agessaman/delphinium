@@ -2,6 +2,8 @@
 
 use Delphinium\Core\RequestObjects\AssignmentsRequest;
 use Delphinium\Core\RequestObjects\ModulesRequest;
+use Delphinium\Raspberry\Models\Module;
+use Delphinium\Raspberry\Models\ModuleItem;
 use Illuminate\Support\Facades\Cache;
 /* 
  * To change this license header, choose License Headers in Project Properties.
@@ -67,8 +69,39 @@ class CacheHelper
             
             
         }
-}
+    }
 
+    public function updateCache(ModulesRequest $request)
+    {         
+        $key="";
+        if($request->moduleId)
+        {
+            if($request->moduleItemId)
+            {
+                $modItem = ModuleItem::where('module_item_id','=',$request->moduleItemId);
+                $moduleArr = $moduleItem->toArray();
+                $moduleArr['content'] = $moduleItem->content->toArray();
+                
+                $key = "{$courseId}-module-{$moduleId}-moduleItem-{$mItem->id}";
+            }
+            else
+            {
+                $module = Module::where('moduleId','=',$request->moduleId);
+                $moduleArr = $module->toArray();
+                $moduleArr['moduleItems'] = $module->moduleItems->toArray();
+        
+                $key = "{$courseId}-module-{$module->moduleId}";
+                
+            }
+            
+            if(Cache::has($key))
+            {
+                $data = Cache::get($key);
+                $data;
+            }
+        }
+        
+    }
     public function searchAssignmentDataInCache(AssignmentsRequest $request)
     {
         

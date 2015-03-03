@@ -34,11 +34,15 @@ class GuzzleHelper
         $urlStr = "";
         for($i = 0;$i<=count($urlPieces)-1;$i++)
         {
-            $urlStr.= $urlPieces[$i]."/";
+//            $urlStr.= $urlPieces[$i]."/";
             if($i===count($urlPieces)-1)
             {
                 //we've reached the last url piece. Attach ? for params
-                $urlStr.="?";
+                $urlStr.= $urlPieces[$i]."?";//$urlStr.="?";
+            }
+            else
+            {
+                $urlStr.= $urlPieces[$i]."/";
             }
         }
         

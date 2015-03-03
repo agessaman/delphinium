@@ -17,7 +17,40 @@ class TestRoots extends ComponentBase
     }
     
     public function onRun()
+    {  
+        $this->testChangingModuleItem();
+//        $this->testUpdatingModule();
+//        $this->testBasicModulesRequest();
+    }
+    
+    private function testUpdatingModule()
     {   
+        //update a module (changing title and published to false)
+        $req = new ModulesRequest(ActionType::PUT);
+        $req->moduleId = 380199;
+        $req->moduleItemId = null;
+        $params = array("name"=>"just changed the title","published"=>"true");
+        $req->params = $params;
+        
+        $roots = new Roots();
+        $res = $roots->modules($req);
+    }
+    
+    private function testChangingModuleItem()
+    {
+        $req = new ModulesRequest(ActionType::PUT);
+        $req->moduleId = 380199;
+        $req->moduleItemId = 2683431;
+        $params = array("title"=>"Changed again","published"=>"true");
+        $req->params = $params;
+        
+        $roots = new Roots();
+        $res = $roots->modules($req);
+    }
+    
+    
+    private function testBasicModulesRequest()
+    {
         $req = new ModulesRequest(ActionType::GET);
         $req->moduleId = 380199;
         $req->includeContentDetails = true;

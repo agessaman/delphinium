@@ -9,6 +9,7 @@ class ModulesRequest extends RootsRequest
     public $moduleItemId;
     public $includeContentItems;
     public $includeContentDetails;
+    public $params;
     
     function getModuleId() {
         return $this->moduleId;
@@ -24,6 +25,10 @@ class ModulesRequest extends RootsRequest
 
     function getIncludeContentDetails() {
         return $this->includeContentDetails;
+    }
+
+    function getParams() {
+        return $this->params;
     }
 
     function setModuleId($moduleId) {
@@ -42,27 +47,33 @@ class ModulesRequest extends RootsRequest
         $this->includeContentDetails = $includeContentDetails;
     }
 
+    function setParams($params) {
+        $this->params = $params;
+    }
+
+    
     function __construct($actionType, $moduleId = null, $contentId = null,  
-        $includeContentItems = false, $includeContentDetails = false) 
+    $includeContentItems = false, $includeContentDetails = false, $params=null) 
     {
-            if(ActionType::isValidValue($actionType))
-            {  
-                $this->actionType = $actionType;
-            }
-            
-            $lms = strtoupper($_SESSION['lms']);
-            if(Lms::isValidValue($lms))
-            {
-                $this->lms = $lms;   
-            }
-            else
-            {
-                throw new \Exception("Invalid LMS"); 
-            }
-            
-            $this->setModuleItemId($contentId);
-            $this->setIncludeContentDetails($includeContentDetails);
-            $this->setIncludeContentItems($includeContentItems);
-            $this->setModuleId($moduleId);
+        if(ActionType::isValidValue($actionType))
+        {  
+            $this->actionType = $actionType;
+        }
+
+        $lms = strtoupper($_SESSION['lms']);
+        if(Lms::isValidValue($lms))
+        {
+            $this->lms = $lms;   
+        }
+        else
+        {
+            throw new \Exception("Invalid LMS"); 
+        }
+
+        $this->setModuleItemId($contentId);
+        $this->setIncludeContentDetails($includeContentDetails);
+        $this->setIncludeContentItems($includeContentItems);
+        $this->setModuleId($moduleId);
+        $this->setParams($params);
     }
 }

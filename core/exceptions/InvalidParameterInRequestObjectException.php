@@ -1,6 +1,6 @@
 <?php namespace Delphinium\Core\Exceptions;
 
-class InvalidParameterInRequestObjectException extends Exception
+class InvalidParameterInRequestObjectException extends \Exception
 {
     
     function getRequestObject() {
