@@ -25,7 +25,6 @@ class GuzzleHelper
             default:
                 $response = $client->get($url);
         }
-        
         return $response;
     }
     

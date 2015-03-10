@@ -10,7 +10,7 @@ class SeedCacheSettingsTable extends Seeder
         CacheSetting::create([
             'cache_setting_id' => 1,
             'data_type'        => 'Modules',
-            'time'             => 5,
+            'time'             => -1,
             'created_at'       => \Carbon\Carbon::now()->toDateTimeString()
         ]);
         

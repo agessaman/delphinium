@@ -44,23 +44,38 @@ class Roots
                 
                 
             case(ActionType::PUT):
+                $response;
                 switch ($request->lms)
-                    {
-                        case (Lms::CANVAS):
-                            $canvas = new Canvas(DataType::MODULES);
-                            return $canvas->putData($request);
-                        default:
-                            $canvas = new Canvas(DataType::MODULES);
-                            return $canvas->putData($request);
-                    }
-                //update cache
-                $cacheHelper = new CacheHelper();
-                $cacheHelper->updateCache($request);
-                break;
+                {
+                    case (Lms::CANVAS):
+                        $canvas = new Canvas(DataType::MODULES);
+                        return $canvas->putModuleData($request);
+                    default:
+                        $canvas = new Canvas(DataType::MODULES);
+                        return $canvas->putModuleData($request);
+                }
             case(ActionType::POST):
+                switch ($request->lms)
+                {
+                    case (Lms::CANVAS):
+                        $canvas = new Canvas(DataType::MODULES);
+                        return $canvas->postModuleData($request);
+                    default:
+                        $canvas = new Canvas(DataType::MODULES);
+                        return $canvas->postModuleData($request);
+                }
                 break;
             case(ActionType::DELETE):
-                break;
+                $response;
+                switch ($request->lms)
+                {
+                    case (Lms::CANVAS):
+                        $canvas = new Canvas(DataType::MODULES);
+                        return $canvas->deleteModuleData($request);
+                    default:
+                        $canvas = new Canvas(DataType::MODULES);
+                        return $canvas->deleteModuleData($request);
+                }
         }
         
     }
@@ -88,5 +103,7 @@ class Roots
     {
         return true;
     }
+    
+    
     
 }

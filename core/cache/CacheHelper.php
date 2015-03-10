@@ -2,8 +2,6 @@
 
 use Delphinium\Core\RequestObjects\AssignmentsRequest;
 use Delphinium\Core\RequestObjects\ModulesRequest;
-use Delphinium\Raspberry\Models\Module;
-use Delphinium\Raspberry\Models\ModuleItem;
 use Illuminate\Support\Facades\Cache;
 /* 
  * To change this license header, choose License Headers in Project Properties.
@@ -21,15 +19,16 @@ class CacheHelper
         {
             if($request->moduleItemId)
             {
+//                echo "want module item";
                 $key = "{$courseId}-module-{$request->moduleId}-moduleItem-{$request->moduleItemId}";
             }
             else
             {
                 $key = "{$courseId}-module-{$request->moduleId}";
             }
-            
             if(Cache::has($key))
             {
+                echo " found key in cache ";
                 $data = Cache::get($key);
                 return $data;
             }
@@ -40,6 +39,7 @@ class CacheHelper
         }
         else
         {//if no moduleId was found they must want all the modules
+//            echo "want all mods";
             $items = array();
             $moduleIdsKey = "{$courseId}-moduleIds";
             $moduleIds = array();
@@ -71,40 +71,60 @@ class CacheHelper
         }
     }
 
-    public function updateCache(ModulesRequest $request)
-    {         
-        $key="";
-        if($request->moduleId)
-        {
-            if($request->moduleItemId)
-            {
-                $modItem = ModuleItem::where('module_item_id','=',$request->moduleItemId);
-                $moduleArr = $moduleItem->toArray();
-                $moduleArr['content'] = $moduleItem->content->toArray();
-                
-                $key = "{$courseId}-module-{$moduleId}-moduleItem-{$mItem->id}";
-            }
-            else
-            {
-                $module = Module::where('moduleId','=',$request->moduleId);
-                $moduleArr = $module->toArray();
-                $moduleArr['moduleItems'] = $module->moduleItems->toArray();
-        
-                $key = "{$courseId}-module-{$module->moduleId}";
-                
-            }
-            
-            if(Cache::has($key))
-            {
-                $data = Cache::get($key);
-                $data;
-            }
-        }
-        
-    }
     public function searchAssignmentDataInCache(AssignmentsRequest $request)
     {
         
     }
 
+    public function deleteObjFromCache($key)
+    {
+        if(Cache::has($key))
+        {
+            Cache::forget($key);
+        }
+    }
+    
+    public function deleteModuleItemFromCache($moduleItemKey, $cacheTime)
+    {
+        if(Cache::has($moduleItemKey))
+        {
+            $moduleItem = Cache::get($moduleItemKey);
+            $modItemId = $moduleItem["module_item_id"];
+            $moduleId = $moduleItem["module_id"];
+            $courseId = $moduleItem["course_id"];
+            //delete module item from cache
+            Cache::forget($moduleItemKey);
+            
+            //also delete it from its module's array of module items
+            $moduleKey = "{$courseId}-module-{$moduleId}";
+            if(Cache::has($moduleKey))
+            {
+                $module = Cache::get($moduleKey);
+                $mdItems = $module['module_items'];
+    
+                foreach ($mdItems as $key=>$value)
+                {
+                    if ($value["module_item_id"]===$modItemId) {
+                       unset($mdItems[$key]);
+                       $mdItems = array_values($mdItems);
+                       break;
+                    }
+                }
+                
+                //update the module's items
+                $module['items_count'] = count($mdItems);
+                $module["module_items"] = $mdItems;
+                Cache::forget($moduleKey);
+                
+                if($cacheTime<1)
+                {
+                    Cache::forever($moduleKey, $module);
+                }
+                else
+                {
+                    Cache::put($moduleKey, $module, $cacheTime);
+                }
+            }
+        }
+    }
 }

@@ -2,6 +2,8 @@
 
 use Delphinium\Core\Enums\CommonEnums\ActionType;
 use Delphinium\Core\Enums\CommonEnums\Lms;
+use Delphinium\Core\UpdatableObjects\Module;
+use Delphinium\Core\Models\ModuleItem;
 
 class ModulesRequest extends RootsRequest
 {
@@ -10,50 +12,28 @@ class ModulesRequest extends RootsRequest
     public $includeContentItems;
     public $includeContentDetails;
     public $params;
+    private $module;
+    private $moduleItem;
     
-    function getModuleId() {
-        return $this->moduleId;
+    function getModule() {
+        return $this->module;
     }
 
-    function getModuleItemId() {
-        return $this->moduleItemId;
+    function getModuleItem() {
+        return $this->moduleItem;
     }
 
-    function getIncludeContentItems() {
-        return $this->includeContentItems;
+    function setModule(Module $module) {
+        $this->module = $module;
     }
 
-    function getIncludeContentDetails() {
-        return $this->includeContentDetails;
+    function setModuleItem($moduleItem) {
+        $this->moduleItem = $moduleItem;
     }
 
-    function getParams() {
-        return $this->params;
-    }
-
-    function setModuleId($moduleId) {
-        $this->moduleId = $moduleId;
-    }
-
-    function setModuleItemId($moduleItemId) {
-        $this->moduleItemId = $moduleItemId;
-    }
-
-    function setIncludeContentItems($includeContentItems) {
-        $this->includeContentItems = $includeContentItems;
-    }
-
-    function setIncludeContentDetails($includeContentDetails) {
-        $this->includeContentDetails = $includeContentDetails;
-    }
-
-    function setParams($params) {
-        $this->params = $params;
-    }
-
-    
+        
     function __construct($actionType, $moduleId = null, $contentId = null,  
-    $includeContentItems = false, $includeContentDetails = false, $params=null) 
+    $includeContentItems = false, $includeContentDetails = false, $params=null, Module $module = null, $moduleItem = null) 
     {
         if(ActionType::isValidValue($actionType))
         {  
@@ -63,17 +43,19 @@ class ModulesRequest extends RootsRequest
         $lms = strtoupper($_SESSION['lms']);
         if(Lms::isValidValue($lms))
         {
-            $this->lms = $lms;   
+            $this->lms = $lms;
         }
         else
         {
             throw new \Exception("Invalid LMS"); 
         }
 
-        $this->setModuleItemId($contentId);
-        $this->setIncludeContentDetails($includeContentDetails);
-        $this->setIncludeContentItems($includeContentItems);
-        $this->setModuleId($moduleId);
-        $this->setParams($params);
+        $this->moduleId = $moduleId;
+        $this->moduleItemId = $contentId;
+        $this->includeContentDetails = $includeContentDetails;
+        $this->includeContentItems= $includeContentItems;
+        $this->params = $params;
+        $this->module = $module;
+        $this->moduleItem = $moduleItem;
     }
 }

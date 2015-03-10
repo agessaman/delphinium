@@ -3,8 +3,6 @@
 
   angular.module('treeApp', ['ui.tree'])
   .controller('treeCtrl', function($scope,$http) {
-      alert("here");
-      console.log(moduleData);
     $scope.data  = moduleData;
     $scope.contentClass = "hidden";
 //    $scope.modalShown = false;

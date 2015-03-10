@@ -5,5 +5,4 @@ abstract class RootsRequest
 {
     public $actionType;
     public $lms;
-    
 }

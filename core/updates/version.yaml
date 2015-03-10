@@ -2,3 +2,9 @@
     - Initialize plugin
     - create_core_cache_settings_table.php
     - SeedCacheSettingsTable.php
+    - create_core_modules_table.php
+    - create_core_ordered_modules_table.php
+    - create_core_module_items_table.php
+    - create_core_tags_table.php
+    - create_core_content_table.php
+    - create_core_assignments_table.php

@@ -25,7 +25,7 @@ class InvalidParameterInRequestObjectException extends \Exception
     public function __construct($requestObject, $parameter, $message=null) {
         
         $code = 1;// see code guide below
-        $fullMsg = "Parameter {$parameter} in RequestObject {$requestObject} is not valid";
+        $fullMsg = "Parameter {$parameter} in {$requestObject} is not valid";
         if($message)
         {
             $fullMsg.= ": {$message}";
