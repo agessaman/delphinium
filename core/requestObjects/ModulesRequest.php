@@ -12,8 +12,8 @@ class ModulesRequest extends RootsRequest
     public $includeContentItems;
     public $includeContentDetails;
     public $params;
-    private $module;
-    private $moduleItem;
+    public $module;
+    public $moduleItem;
     
     function getModule() {
         return $this->module;

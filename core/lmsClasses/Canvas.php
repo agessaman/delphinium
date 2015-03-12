@@ -6,10 +6,11 @@ use Delphinium\Core\Guzzle\GuzzleHelper;
 use Delphinium\Core\Models\CacheSetting;
 use Delphinium\Core\Models\ModuleItem;
 use Delphinium\Core\Models\Content;
+use Delphinium\Core\Models\Module;
 use Delphinium\Core\RequestObjects\SubmissionsRequest;
 use Delphinium\Core\RequestObjects\ModulesRequest;
 use Delphinium\Core\RequestObjects\AssignmentsRequest;
-use Delphinium\Core\UpdatableObjects\Module;
+use Delphinium\Core\UpdatableObjects\UpdatableModule;
 use Illuminate\Support\Facades\Cache;
 
 class Canvas
@@ -357,7 +358,7 @@ class Canvas
         }
     
     public function postModuleData(ModulesRequest $request)
-    {   
+    {
         if(!isset($_SESSION)) 
         { 
             session_start(); 
@@ -380,34 +381,31 @@ class Canvas
         }
         else
         {//we're creating a module obj
+        
             $urlPieces[] = "modules";
-            
+
             $mod = $request->getModule();
-            echo json_encode($mod);
             foreach($mod as $key => $value) {
-                echo "it's : ".json_encode($value);
-//                echo "$key => json_encode({$value})\n";
-//                $urlArgs[] = "{$scope}[{$key}]={$value}";
+                if(($value) && ($key ==="prerequisite_module_ids") && is_array($value))
+                {
+                    foreach($value as $prereq)
+                    {
+                        $urlArgs[] = "module[prerequisite_module_ids][]={$prereq}";
+                    }
+                }
+                else if ($value)
+                {
+                    $urlArgs[] = "module[{$key}]={$value}";
+                }
             }
-        }
-        
-        return;
-        if($request->moduleItemId)
-        {
-            $urlPieces[] = "items/{$request->moduleItemId}";
-            $scope = "module_item";
-        }
-        
-        foreach($request->params as $key=>$value)
-        {
-            $urlArgs[] = "{$scope}[{$key}]={$value}";
         }
         
         //Attach token
         $urlArgs[]="access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs); 
-
+//        echo $url;
+//        return;
         $response = GuzzleHelper::makeRequest($request, $url);
         
         //update cache if request was successful
@@ -424,6 +422,11 @@ class Canvas
                 //it's a module
                 $this->updateModuleInCache($newlyUpdated);
             }
+            return 1;
+        }
+        else
+        {
+            return 0;
         }
     }
     /*

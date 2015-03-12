@@ -8,19 +8,19 @@ use Delphinium\Core\Exceptions\InvalidParameterInRequestObjectException;
  * and open the template in the editor.
  */
 class Module {
-    private $name;
-    private $unlock_at;
-    private $published;
-    private $prereq_mod_ids;
+    public $name;
+    public $unlock_at;
+    public $published;
+    public $prerequisite_module_ids;
         
-    function __construct($name, DateTime $unloack_at, $published,  $prereq_mod_ids)
+    function __construct($name, $published,  DateTime $unloack_at = null, array $prerequisite_module_ids = null)
     {
         if (!is_string($name)) {
             throw new InvalidParameterInRequestObjectException(get_class($this),"name", "Parameter must be a string");
         }
         
         $current_date = new \DateTime("now");
-        if ($current_date >  $unloack_at)
+        if (($unloack_at)&&($current_date >  $unloack_at))
         {
             throw new InvalidParameterInRequestObjectException(get_class($this),"unloack_at", "Unlock at date must be in the future");
         }
@@ -30,17 +30,15 @@ class Module {
             throw new InvalidParameterInRequestObjectException(get_class($this),"published", "Parameter must be boolean");
         }
         
-        try
+        if(($prerequisite_module_ids)&&!is_array($prerequisite_module_ids))
         {
-            $arr = explode(", ", $prereq_mod_ids);
-        } 
-        catch (Exception $ex) {
-            throw new InvalidParameterInRequestObjectException(get_class($this),"prereq_mod_ids", "Parameter must be a CSV string");
+            throw new InvalidParameterInRequestObjectException(get_class($this),"prerequisite_module_ids", "Parameter must be an array");
         }
         
+        
         $this->name = $name;
-        $this->unlock_at = $unloack_at;
-        $this->published = $published;
-        $this->prereq_mod_ids = $prereq_mod_ids;
+        $this->unlock_at = ($unloack_at) ? date_format($unloack_at, 'Y-m-d H:i:s') : null;
+        $this->published = ($published) ? 'true' : 'false';
+        $this->prerequisite_module_ids = $prerequisite_module_ids;
     }
 }
