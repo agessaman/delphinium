@@ -1,5 +1,6 @@
 <?php namespace Delphinium\Core\lmsClasses;
 
+use \DateTime;
 use Delphinium\Core\Cache\CacheHelper;
 use Delphinium\Core\Exceptions\InvalidParameterInRequestObjectException;
 use Delphinium\Core\Guzzle\GuzzleHelper;
@@ -7,6 +8,7 @@ use Delphinium\Core\Models\CacheSetting;
 use Delphinium\Core\Models\ModuleItem;
 use Delphinium\Core\Models\Content;
 use Delphinium\Core\Models\Module;
+use Delphinium\Core\Models\Assignment;
 use Delphinium\Core\RequestObjects\SubmissionsRequest;
 use Delphinium\Core\RequestObjects\ModulesRequest;
 use Delphinium\Core\RequestObjects\AssignmentsRequest;
@@ -51,6 +53,9 @@ class Canvas
     /*
      * public functions
      */
+    /*
+     * MODULES
+     */
     public function getModuleData(ModulesRequest $request)
     {
         //As per Jared's & Damaris' discussion when users request fresh module data we wil retrieve ALL module data so we can store it in 
@@ -82,6 +87,225 @@ class Canvas
         return $this->processCanvasModuleData(json_decode($response->getBody()), $courseId);
     }
     
+    public function putModuleData(ModulesRequest $request)
+    {
+        if(!$request->moduleId)
+        {
+            throw new InvalidParameterInRequestObjectException(get_class($request),"moduleId", "Parameter is required");
+        }
+        
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $domain = $_SESSION['domain'];
+        $token = $_SESSION['userToken'];
+        $courseId = $_SESSION['courseID'];
+        $scope = "module";
+        
+        $urlPieces= array();
+        $urlArgs = array();
+        $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
+
+        $urlPieces[] = "modules/{$request->moduleId}";
+        
+        if($request->moduleItemId)
+        {
+            $urlPieces[] = "items/{$request->moduleItemId}";
+            $scope = "module_item";
+        }
+        
+        foreach($request->params as $key=>$value)
+        {
+            $urlArgs[] = "{$scope}[{$key}]={$value}";
+        }
+        
+        //Attach token
+        $urlArgs[]="access_token={$token}";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs); 
+
+        $response = GuzzleHelper::makeRequest($request, $url);
+        
+        //update cache if request was successful
+        if ($response->getStatusCode() ==="200")
+        {
+            $newlyUpdated= \GuzzleHttp\json_decode($response->getBody());
+            if(isset($newlyUpdated->module_id))
+            {
+                //it's a module item
+                $this->updateModuleItemInCache($newlyUpdated);
+            }
+            else 
+            {
+                //it's a module
+                $this->updateModuleInCache($newlyUpdated);
+            }
+        }
+    }
+    
+    public function deleteModuleData(ModulesRequest $request)
+    {
+        $isModuleItem = false;
+        if(!$request->moduleId)
+        {
+            throw new InvalidParameterInRequestObjectException(get_class($request),"moduleId", "Parameter is required");
+        }
+        
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $domain = $_SESSION['domain'];
+        $token = $_SESSION['userToken'];
+        $courseId = $_SESSION['courseID'];
+        $scope = "module";
+        
+        $urlPieces= array();
+        $urlArgs = array();
+        $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
+
+        $urlPieces[] = "modules/{$request->moduleId}";
+        
+        if($request->moduleItemId)
+        {
+            $isModuleItem = true;
+            $urlPieces[] = "items/{$request->moduleItemId}";
+            $scope = "module_item";
+        }
+        
+        
+        //Attach token
+        $urlArgs[]="access_token={$token}";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs); 
+
+        try
+        {
+            //delete from Canvas
+            $response = GuzzleHelper::makeRequest($request, $url);
+            
+            //delete from cache & from DB
+            $cacheHelper = new CacheHelper();
+            if($isModuleItem)
+            {
+                $mItemkey = "{$courseId}-module-{$request->moduleId}-moduleItem-{$request->moduleItemId}";
+                //we can't just delete the module straight from cache cause we need to delete it from the module, etc
+                $cacheHelper->deleteModuleItemFromCache($mItemkey, $this->cacheTime);
+                
+                ModuleItem::where('module_item_id', '=', $request->moduleItemId)
+                        ->where('module_id','=',$request->moduleId)->delete();
+            }
+            else
+            {
+                $moduleKey = "{$courseId}-module-{$request->moduleId}";
+                $cacheHelper->deleteObjFromCache($moduleKey);
+                
+                Module::where('courseId', '=', $courseId)
+                        ->where('module_id','=',$request->moduleId)->delete();
+            }
+              
+            return $response;
+        }
+        catch(\GuzzleHttp\Exception\ClientException $e)//without the backslash the Exception won't be caught!
+        {
+            if ($e->hasResponse()) 
+            {
+//                echo $e->getResponse();
+                if ($e->getResponse()->getStatusCode() ==="404")
+                { //This can be caused because the module/moduleItem doesn't exist. Just return (skip the part where we try to delete item from cache)
+                    return null;
+                }
+            }
+            return "An error occurred. Unable to delete module data";
+        }
+
+    }
+    
+    public function postModuleData(ModulesRequest $request)
+    {
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $domain = $_SESSION['domain'];
+        $token = $_SESSION['userToken'];
+        $courseId = $_SESSION['courseID'];
+        $scope = "module";
+        
+        $urlPieces= array();
+        $urlArgs = array();
+        $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
+
+        
+        if($request->moduleId)
+        {// "we're creating a moduleItem";
+            $urlPieces[] = "modules/{$request->moduleId}/items";
+
+            $modItem = $request->getModuleItem();
+            foreach($modItem as $key => $value) {
+                if ($value)
+                {
+                    $urlArgs[] = "module_item[{$key}]={$value}";
+                }
+            }
+        }
+        else
+        {//we're creating a module obj
+        
+            $urlPieces[] = "modules";
+
+            $modItem = $request->getModule();
+            foreach($modItem as $key => $value) {
+                if(($value) && ($key ==="prerequisite_module_ids") && is_array($value))
+                {
+                    foreach($value as $prereq)
+                    {
+                        $urlArgs[] = "module[prerequisite_module_ids][]={$prereq}";
+                    }
+                }
+                else if ($value)
+                {
+                    $urlArgs[] = "module[{$key}]={$value}";
+                }
+            }
+        }
+        
+        //Attach token
+        $urlArgs[]="access_token={$token}";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs); 
+        
+//        echo $url;
+//        return;
+        $response = GuzzleHelper::makeRequest($request, $url);
+        
+        //update cache if request was successful
+        if ($response->getStatusCode() ==="200")
+        {
+            $newlyUpdated= \GuzzleHttp\json_decode($response->getBody());
+            if(isset($newlyUpdated->module_id))
+            {
+                //it's a module item
+                $this->updateModuleItemInCache($newlyUpdated);
+            }
+            else 
+            {
+                //it's a module
+                $this->updateModuleInCache($newlyUpdated);
+            }
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+     
+    
+    /*
+     * SUBMISSIONS
+     */
     public function processSubmissionsRequest(SubmissionsRequest $request)
     {
         
@@ -180,13 +404,11 @@ class Canvas
         
     }
     
-    public function putModuleData(ModulesRequest $request)
-    {
-        if(!$request->moduleId)
-        {
-            throw new InvalidParameterInRequestObjectException(get_class($request),"moduleId", "Parameter is required");
-        }
-        
+    /*
+     * ASSIGNMENTS
+     */
+    public function processAssignmentsRequest(AssignmentsRequest $request)
+    {//api/v1/courses/:course_id/assignments
         if(!isset($_SESSION)) 
         { 
             session_start(); 
@@ -194,216 +416,17 @@ class Canvas
         $domain = $_SESSION['domain'];
         $token = $_SESSION['userToken'];
         $courseId = $_SESSION['courseID'];
-        $scope = "module";
         
         $urlPieces= array();
         $urlArgs = array();
-        $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
+        $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}/assignments";
 
-        $urlPieces[] = "modules/{$request->moduleId}";
-        
-        if($request->moduleItemId)
-        {
-            $urlPieces[] = "items/{$request->moduleItemId}";
-            $scope = "module_item";
-        }
-        
-        foreach($request->params as $key=>$value)
-        {
-            $urlArgs[] = "{$scope}[{$key}]={$value}";
-        }
         
         //Attach token
         $urlArgs[]="access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs); 
-
-        $response = GuzzleHelper::makeRequest($request, $url);
         
-        //update cache if request was successful
-        if ($response->getStatusCode() ==="200")
-        {
-            $newlyUpdated= \GuzzleHttp\json_decode($response->getBody());
-            if(isset($newlyUpdated->module_id))
-            {
-                //it's a module item
-                $this->updateModuleItemInCache($newlyUpdated);
-            }
-            else 
-            {
-                //it's a module
-                $this->updateModuleInCache($newlyUpdated);
-            }
-        }
-    }
-    
-    
-    public function deleteModuleData(ModulesRequest $request)
-    {
-        $isModuleItem = false;
-        if(!$request->moduleId)
-        {
-            throw new InvalidParameterInRequestObjectException(get_class($request),"moduleId", "Parameter is required");
-        }
-        
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
-        $domain = $_SESSION['domain'];
-        $token = $_SESSION['userToken'];
-        $courseId = $_SESSION['courseID'];
-        $scope = "module";
-        
-        $urlPieces= array();
-        $urlArgs = array();
-        $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
-
-        $urlPieces[] = "modules/{$request->moduleId}";
-        
-        if($request->moduleItemId)
-        {
-            $isModuleItem = true;
-            $urlPieces[] = "items/{$request->moduleItemId}";
-            $scope = "module_item";
-        }
-        
-        
-        //Attach token
-        $urlArgs[]="access_token={$token}";
-
-        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs); 
-
-        try
-        {
-            //delete from Canvas
-            $response = GuzzleHelper::makeRequest($request, $url);
-            
-            //delete from cache & from DB
-            $cacheHelper = new CacheHelper();
-            if($isModuleItem)
-            {
-                $mItemkey = "{$courseId}-module-{$request->moduleId}-moduleItem-{$request->moduleItemId}";
-                //we can't just delete the module straight from cache cause we need to delete it from the module, etc
-                $cacheHelper->deleteModuleItemFromCache($mItemkey, $this->cacheTime);
-                
-                ModuleItem::where('module_item_id', '=', $request->moduleItemId)
-                        ->where('module_id','=',$request->moduleId)->delete();
-            }
-            else
-            {
-                $moduleKey = "{$courseId}-module-{$request->moduleId}";
-                $cacheHelper->deleteObjFromCache($moduleKey);
-                
-                Module::where('courseId', '=', $courseId)
-                        ->where('module_id','=',$request->moduleId)->delete();
-            }
-              
-            return $response;
-        }
-        catch(\GuzzleHttp\Exception\ClientException $e)//without the backslash the Exception won't be caught!
-        {
-            if ($e->hasResponse()) 
-            {
-//                echo $e->getResponse();
-                if ($e->getResponse()->getStatusCode() ==="404")
-                { //This can be caused because the module/moduleItem doesn't exist. Just return (skip the part where we try to delete item from cache)
-                    return null;
-                }
-            }
-            return "An error occurred. Unable to delete module data";
-        }
-        
-        /*
-        //update cache if request was successful
-        //This code is here because of the particular way in which Canvas returns the recently deleted item. Since we can't expect other 
-        //LMSs to do the same we will place this code here (Canvas) rather than moving it to Roots
-        if ($response->getStatusCode() ==="200")
-        {
-            $deletedItem = \GuzzleHttp\json_decode($response->getBody());
-            if(isset($deletedItem->module_id))//we're dealing with a module item
-            {
-                $mItemkey = "{$courseId}-module-{$deletedItem->module_id}-moduleItem-{$deletedItem->id}";
-                $moduleKey = "{$courseId}-module-{$deletedItem->module_id}";
-                
-                if(Cache::has($mItemkey))
-                {
-                    $moduleItem = Cache::get($mItemkey);
-                }
-                
-                //also delte the module item from the list of module items that belongs to its module parent
-                //delete item from DB?
-                if(Cache::has($moduleKey))
-                {
-                    $module = Cache::get($moduleKey);
-                    $mdItems = $module['moduleItems'];
-                    echo count($mdItems);
-                    $keyToDelete = array_search($moduleItem,$mdItems);
-                    if($keyToDelete!==false){
-                        unset($mdItems[$keyToDelete]);
-                        $mdItems = array_values($mdItems);
-                        echo count($mdItems);
-                    }
-                }
-            }
-            else //we're dealing with a module
-            {
-                $mItemkey = "{$courseId}-module-{$deletedItem->id}";if(Cache::has($mItemkey))
-                {
-                    Cache::forget($mItemkey);
-                }
-            }
-            
-            */
-        }
-    
-    public function postModuleData(ModulesRequest $request)
-    {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
-        $domain = $_SESSION['domain'];
-        $token = $_SESSION['userToken'];
-        $courseId = $_SESSION['courseID'];
-        $scope = "module";
-        
-        $urlPieces= array();
-        $urlArgs = array();
-        $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
-
-        
-        if($request->moduleId)
-        {//we're creating a moduleItem
-            $urlPieces[] = "modules/{$request->moduleId}/items";
-            
-            $request->getModule();
-        }
-        else
-        {//we're creating a module obj
-        
-            $urlPieces[] = "modules";
-
-            $mod = $request->getModule();
-            foreach($mod as $key => $value) {
-                if(($value) && ($key ==="prerequisite_module_ids") && is_array($value))
-                {
-                    foreach($value as $prereq)
-                    {
-                        $urlArgs[] = "module[prerequisite_module_ids][]={$prereq}";
-                    }
-                }
-                else if ($value)
-                {
-                    $urlArgs[] = "module[{$key}]={$value}";
-                }
-            }
-        }
-        
-        //Attach token
-        $urlArgs[]="access_token={$token}";
-
-        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs); 
 //        echo $url;
 //        return;
         $response = GuzzleHelper::makeRequest($request, $url);
@@ -411,28 +434,18 @@ class Canvas
         //update cache if request was successful
         if ($response->getStatusCode() ==="200")
         {
-            $newlyUpdated= \GuzzleHttp\json_decode($response->getBody());
-            if(isset($newlyUpdated->module_id))
-            {
-                //it's a module item
-                $this->updateModuleItemInCache($newlyUpdated);
-            }
-            else 
-            {
-                //it's a module
-                $this->updateModuleInCache($newlyUpdated);
-            }
-            return 1;
-        }
-        else
-        {
-            return 0;
+            $response = GuzzleHelper::makeRequest($request, $url);
+
+            return $this->processCanvasAssignmentData(json_decode($response->getBody()), $courseId);
         }
     }
+    
     /*
      * private functions
      */
-    
+    /*
+     * MODULES
+     */
     //These cache-updating functions are here because of the particular way Canvas handles updates. After we update something in the API, canvas 
     //returns the item that was just updated so we can just use it to update our Cache if the request was successful. This is specific enough
     //to canvas that we can't put it in the CacheHelper class cause other LMS's implementation will be different
@@ -460,15 +473,11 @@ class Canvas
     {
         deleteFromCache($key);
     }
+    
     private function deleteModuleItemFromCache($moduleItem)
     {
         deleteFromCache($key);
     }
-    private function processAssignmentsRequest(AssignmentsRequest $request)
-    {
-        echo "in assignments function from roots";
-    }
-    
     
     private function processCanvasModuleData($data, $courseId)
     {
@@ -631,6 +640,7 @@ class Canvas
         
         return $moduleArr;
     }
+    
     private function saveContentDetails($courseId, $moduleId, $itemId, $contentId, $type, $contentDetails)
     {
 //        $key="content-".$courseId.'-'.$moduleId.'-'.$itemId.'-'.$contentId;
@@ -664,5 +674,90 @@ class Canvas
         return $content;
     }
     
+    
+    /*
+     * ASSIGNMENTS
+     */
+    private function processCanvasAssignmentData($data, $courseId)
+    {
+        $assignments= array();
+        foreach($data as $row)
+        {
+            $assignments[] = $this->processSingleAssignment($row);
+        }
+        $key = "{$courseId}-assignments";
+        
+        if(Cache::has($key))
+        {
+            Cache::forget($key);
+        }
+        if($this->forever)
+        {//toArray is the key here! an Eloquent model is a closure and won't be serialized unless we first convert it to an Array!!!
+            
+            Cache::forever($key, $assignments);
+        }
+        else
+        {
+            Cache::put($key, $assignments, $this->cacheTime);
+        }
+
+        
+        return $assignments;
+        
+    }
+    private function processSingleAssignment($row)
+    {
+        $assignment = Assignment::firstOrNew(array('assignment_id' => $row->id));
+        $assignment->assignment_group_id = $row->assignment_group_id;
+        $assignment->name = $row->name;
+        $assignment->description = $row->description;
+        
+        if(isset($row->due_at))
+        {
+            $strDate = strtotime($row->due_at); 
+            echo $strDate;
+            $format = 'Y-m-d H:i:s';
+            $due_at= DateTime::createFromFormat($format, $strDate);
+            echo json_encode($due_at);
+            echo " Set ";
+        }
+        else
+        {
+            echo " not set ";
+        }
+        
+        
+        return;
+        $assignment->due_at = $row->due_at;
+        $assignment->lock_at = $row->lock_at;
+        $assignment->unlock_at = $row->unlock_at;
+        if(isset($row->all_dates)){$assignment->all_dates = $row->all_dates;}
+        $assignment->course_id = $row->course_id;
+        $assignment->html_url = $row->html_url;
+        $assignment->points_possible = $row->points_possible;
+        $assignment->locked_for_user = $row->locked_for_user;
+        if(isset($row->quiz_id)){$assignment->quiz_id = $row->quiz_id;}
+                
+        $assignment->save();
+        
+        $key = "{$courseId}-assignment_group_id-{$assignment->assignment_group_id}-assignment_id-{$assignment->assignment_id}";
+        
+        if(Cache::has($key))
+        {
+            Cache::forget($key);
+        }
+        if($this->forever)
+        {//toArray is the key here! an Eloquent model is a closure and won't be serialized unless we first convert it to an Array!!!
+            
+            Cache::forever($key, $assignment->toArray());
+        }
+        else
+        {
+            Cache::put($key, $assignment->toArray(), $this->cacheTime);
+        }
+
+        
+        return $assignment;
+    }
     
 }

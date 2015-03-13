@@ -13,11 +13,11 @@ class CreateCoreAssignmentsTable extends Migration
         	Schema::create('delphinium_core_assignments', function($table)
         	{
             	$table->engine = 'InnoDB';
-                $table->bigIncrements('id');
                 $table->integer('assignment_id');
+                $table->integer('assignment_group_id');
                 $table->string('name');
                 $table->string('description');
-                $table->dateTime('due_at');
+                $table->dateTime('due_at')->nullable;
                 $table->dateTime('lock_at');
                 $table->dateTime('unlock_at');
                 $table->string('all_dates');

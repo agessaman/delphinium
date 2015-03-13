@@ -3,7 +3,7 @@
 use Delphinium\Core\Enums\CommonEnums\ActionType;
 use Delphinium\Core\Enums\CommonEnums\Lms;
 use Delphinium\Core\UpdatableObjects\Module;
-use Delphinium\Core\Models\ModuleItem;
+use Delphinium\Core\UpdatableObjects\ModuleItem;
 
 class ModulesRequest extends RootsRequest
 {
@@ -33,7 +33,7 @@ class ModulesRequest extends RootsRequest
 
         
     function __construct($actionType, $moduleId = null, $contentId = null,  
-    $includeContentItems = false, $includeContentDetails = false, $params=null, Module $module = null, $moduleItem = null) 
+    $includeContentItems = false, $includeContentDetails = false, $params=null, Module $module = null, ModuleItem $moduleItem = null) 
     {
         if(ActionType::isValidValue($actionType))
         {  

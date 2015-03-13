@@ -1,10 +1,13 @@
 <?php namespace Delphinium\Dev\Components;
 
 use Delphinium\Core\UpdatableObjects\Module;
+use Delphinium\Core\UpdatableObjects\ModuleItem;
 use Delphinium\Core\Roots;
 use Delphinium\Core\RequestObjects\SubmissionsRequest;
 use Delphinium\Core\RequestObjects\ModulesRequest;
+use Delphinium\Core\RequestObjects\AssignmentsRequest;
 use Delphinium\Core\Enums\CommonEnums\ActionType;
+use Delphinium\Core\Enums\ModuleItemEnums\ModuleItemType;
 use Cms\Classes\ComponentBase;
 use Illuminate\Support\Facades\Cache;
 
@@ -26,7 +29,9 @@ class TestRoots extends ComponentBase
 //        $this->testDeletingModule();
 //                Cache::flush();
 //        $this->testBasicModulesRequest();
-        $this->testAddingModule();
+//        $this->testAddingModule();
+//        $this->testAddingModuleItem();
+        $this->testingGettingAssignments();
     }
     
     private function testBasicModulesRequest()
@@ -102,11 +107,10 @@ class TestRoots extends ComponentBase
         $date = new \DateTime("now");
         $date->add(new \DateInterval('P1D'));
         $unlock_at = $date;
-        $published = true;
         $prerequisite_module_ids =array("380199","380201");
         
 //        $module = new Module($name, $published);
-        $module = new Module($name, $published, $unlock_at, $prerequisite_module_ids);
+        $module = new Module($name, $unlock_at, $prerequisite_module_ids);
         
         $req = new ModulesRequest(ActionType::POST);
         $req->moduleId = null;
@@ -120,8 +124,30 @@ class TestRoots extends ComponentBase
     private function testAddingModuleItem()
     {
         $req = new ModulesRequest(ActionType::POST);
-        $req->moduleId = 455418;
-        $moduleItem = new ModuleItem();
+        $req->moduleId = 455742;
+        
+        $title = "Testing module Item";
+        $modItemType = ModuleItemType::SUBHEADER;
+        
+        $page_url = "http://www.google.com";
+        $moduleItem = new ModuleItem($title, $modItemType, null, $page_url);
+        
+        $req = new ModulesRequest(ActionType::POST);
+        $req->moduleId = 455742;
+        $req->moduleItem = $moduleItem;
+        
+        $roots = new Roots();
+        $res = $roots->modules($req);
+        echo json_encode($res);
+    }
+    
+    private function testingGettingAssignments()
+    {
+        $req = new AssignmentsRequest(ActionType::GET);
+        
+        $roots = new Roots();
+        $res = $roots->assignments($req);
+        echo json_encode($res);
     }
 }
 

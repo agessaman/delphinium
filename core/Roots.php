@@ -8,6 +8,7 @@ use Delphinium\Core\Enums\CommonEnums\DataType;
 use Delphinium\Core\Enums\CommonEnums\ActionType;
 use Delphinium\Core\lmsClasses\Canvas;
 use Delphinium\Core\Cache\CacheHelper;
+use Delphinium\Core\Exceptions\InvalidActionException;
 
 class Roots
 {
@@ -101,7 +102,25 @@ class Roots
     
     public function assignments(AssignmentsRequest $request)
     {
-        return true;
+        switch($request->actionType)
+        {
+            case(ActionType::GET):
+                switch ($request->lms)
+                {
+                    case (Lms::CANVAS):
+                        $canvas = new Canvas(DataType::ASSIGNMENTS);
+                        $result = $canvas->processAssignmentsRequest($request);
+                        break;
+                    default:
+                        $canvas = new Canvas(DataType::ASSIGNMENTS);
+                        $result = $canvas->processAssignmentsRequest($request);
+                        break;
+
+                }
+            break;
+        default :
+            throw new InvalidActionException($request->actionType, get_class($request));
+        }
     }
     
     
