@@ -1,6 +1,7 @@
 <?php namespace Delphinium\Core\Cache;
 
 use Delphinium\Core\RequestObjects\AssignmentsRequest;
+use \Delphinium\Core\RequestObjects\AssignmentGroupsRequest;
 use Delphinium\Core\RequestObjects\ModulesRequest;
 use Illuminate\Support\Facades\Cache;
 /* 
@@ -73,7 +74,76 @@ class CacheHelper
 
     public function searchAssignmentDataInCache(AssignmentsRequest $request)
     {
+        $courseId = $_SESSION['courseID'];
+        $key = "";
+        if($request->getAssignment_id())
+        {//they want a specific assignment
+            $key = "{$courseId}-assignment_id-{$request->getAssignment_id()}";
+            if(Cache::has($key))
+            {
+                echo "found in cache";
+                return Cache::get($key);
+            }
+            else
+            {
+                return null;
+            }
+        }
+        else
+        {//return all assignments
+            $key = "{$courseId}-assignments";
+            if(Cache::has($key))
+            {
+                echo "found in cache";
+                return Cache::get($key);
+            }
+            else
+            {
+                return null;
+            }
+            
+            
+        }
+    }
+    
+    public function serchAssignmentGroupDataInCache(AssignmentGroupsRequest $request)
+    {
+        $courseId = $_SESSION['courseID'];
         
+        if($request->getAssignment_group_id())
+        {
+            $key = "{$courseId}-assignment_group_id-{$request->getAssignment_group_id()}";
+        }
+        else
+        {
+            $key = "{$courseId}-assignment_groups";
+        }
+        
+        if(Cache::has($key))
+        {
+            echo "has key";
+            if(!$request->getInclude_assignments())
+            {
+                $groups = Cache::get($key);
+//                foreach($groups as $group)
+//                {
+//                    echo json_encode($group)."--";
+//                    $group['assignments'] = array();
+////                    $results[] = $group;
+//                }
+////                return $results;
+                return $groups;
+            }
+            else
+            {
+                return Cache::get($key);
+            }
+            
+        }
+        else
+        {
+            return null;
+        }
     }
 
     public function deleteObjFromCache($key)
@@ -127,4 +197,5 @@ class CacheHelper
             }
         }
     }
+    
 }

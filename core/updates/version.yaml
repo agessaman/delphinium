@@ -8,3 +8,4 @@
     - create_core_tags_table.php
     - create_core_content_table.php
     - create_core_assignments_table.php
+    - create_core_assignment_groups_table.php

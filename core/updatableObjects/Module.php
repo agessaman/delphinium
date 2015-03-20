@@ -8,14 +8,14 @@ class Module {
     public $unlock_at;
     public $prerequisite_module_ids;
         
-    function __construct($name,  DateTime $unloack_at = null, array $prerequisite_module_ids = null)
+    function __construct($name,  DateTime $unlock_at = null, array $prerequisite_module_ids = null)
     {
         if (!is_string($name)) {
             throw new InvalidParameterInRequestObjectException(get_class($this),"name", "Parameter must be a string");
         }
         
         $current_date = new \DateTime("now");
-        if (($unloack_at)&&($current_date >  $unloack_at))
+        if (($unlock_at)&&($current_date >  $unlock_at))
         {
             throw new InvalidParameterInRequestObjectException(get_class($this),"unloack_at", "Unlock at date must be in the future");
         }
@@ -27,7 +27,7 @@ class Module {
         
         
         $this->name = $name;
-        $this->unlock_at = ($unloack_at) ? date_format($unloack_at, 'Y-m-d H:i:s') : null;
+        $this->unlock_at = ($unlock_at) ? $unlock_at->format("c") : null;
         $this->prerequisite_module_ids = $prerequisite_module_ids;
     }
 }

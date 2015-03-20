@@ -39,6 +39,10 @@ class ModulesRequest extends RootsRequest
         {  
             $this->actionType = $actionType;
         }
+        else
+        {
+            throw new \Exception("Invalid ActionType"); 
+        }
 
         $lms = strtoupper($_SESSION['lms']);
         if(Lms::isValidValue($lms))

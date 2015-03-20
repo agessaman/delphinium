@@ -16,11 +16,11 @@ class CreateCoreAssignmentsTable extends Migration
                 $table->integer('assignment_id');
                 $table->integer('assignment_group_id');
                 $table->string('name');
-                $table->string('description');
+                $table->string('description')->nullable;
                 $table->dateTime('due_at')->nullable;
-                $table->dateTime('lock_at');
-                $table->dateTime('unlock_at');
-                $table->string('all_dates');
+                $table->dateTime('lock_at')->nullable;
+                $table->dateTime('unlock_at')->nullable;
+                $table->string('all_dates')->nullable;
                 $table->integer('course_id');
                 $table->string('html_url');
                 $table->integer('points_possible');

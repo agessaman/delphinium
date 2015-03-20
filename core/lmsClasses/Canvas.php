@@ -9,9 +9,11 @@ use Delphinium\Core\Models\ModuleItem;
 use Delphinium\Core\Models\Content;
 use Delphinium\Core\Models\Module;
 use Delphinium\Core\Models\Assignment;
+use Delphinium\Core\Models\AssignmentGroup;
 use Delphinium\Core\RequestObjects\SubmissionsRequest;
 use Delphinium\Core\RequestObjects\ModulesRequest;
 use Delphinium\Core\RequestObjects\AssignmentsRequest;
+use Delphinium\Core\RequestObjects\AssignmentGroupsRequest;
 use Delphinium\Core\UpdatableObjects\UpdatableModule;
 use Illuminate\Support\Facades\Cache;
 
@@ -81,7 +83,6 @@ class Canvas
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs); 
 
-//        echo " got module data from Canvas ";
         $response = GuzzleHelper::makeRequest($request, $url);
 
         return $this->processCanvasModuleData(json_decode($response->getBody()), $courseId);
@@ -187,22 +188,47 @@ class Canvas
             
             //delete from cache & from DB
             $cacheHelper = new CacheHelper();
+            
+            /*
+             * NOTE:
+             * Cascading delete is not yet supported in OctoberCMS, so we have to do all the cascading deletes manually. 
+             * See https://github.com/octobercms/october/issues/419
+             */
             if($isModuleItem)
-            {
+            {//delete the module item and all its contents
                 $mItemkey = "{$courseId}-module-{$request->moduleId}-moduleItem-{$request->moduleItemId}";
-                //we can't just delete the module straight from cache cause we need to delete it from the module, etc
-                $cacheHelper->deleteModuleItemFromCache($mItemkey, $this->cacheTime);
                 
+                //we can't just delete the module straight from cache cause we need to delete it from the module (in cache), etc
+                $cacheHelper->deleteModuleItemFromCache($mItemkey, $this->cacheTime);
                 ModuleItem::where('module_item_id', '=', $request->moduleItemId)
                         ->where('module_id','=',$request->moduleId)->delete();
+                
+                $this->deleteModuleItemsContent($courseId, $request->moduleId, $request->moduleItemId);
+                
             }
             else
-            {
+            {//delete module, module items, and contents
                 $moduleKey = "{$courseId}-module-{$request->moduleId}";
                 $cacheHelper->deleteObjFromCache($moduleKey);
                 
-                Module::where('courseId', '=', $courseId)
+                Module::where('course_id', '=', $courseId)
                         ->where('module_id','=',$request->moduleId)->delete();
+                
+                //also delete the module items and content
+                
+                $moduleItems = ModuleItem::where('course_id', '=', $courseId)
+                        ->where('module_id','=',$request->moduleId);
+                foreach($moduleItems as $item)
+                {
+                    $this->deleteModuleItemsContent($courseId, $request->moduleId, $item->module_item_id);
+                    $mItemkey = "{$courseId}-module-{$request->moduleId}-moduleItem-{$request->moduleItemId}";
+                
+                    //we can't just delete the module straight from cache cause we need to delete it from the module (in cache), etc
+                    $cacheHelper->deleteModuleItemFromCache($mItemkey, $this->cacheTime);
+                }
+                ModuleItem::where('course_id', '=', $courseId)
+                        ->where('module_id','=',$request->moduleId)->delete();
+                
             }
               
             return $response;
@@ -211,7 +237,6 @@ class Canvas
         {
             if ($e->hasResponse()) 
             {
-//                echo $e->getResponse();
                 if ($e->getResponse()->getStatusCode() ==="404")
                 { //This can be caused because the module/moduleItem doesn't exist. Just return (skip the part where we try to delete item from cache)
                     return null;
@@ -276,8 +301,6 @@ class Canvas
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs); 
         
-//        echo $url;
-//        return;
         $response = GuzzleHelper::makeRequest($request, $url);
         
         //update cache if request was successful
@@ -409,6 +432,8 @@ class Canvas
      */
     public function processAssignmentsRequest(AssignmentsRequest $request)
     {//api/v1/courses/:course_id/assignments
+        
+        echo "getting from Canvas";
         if(!isset($_SESSION)) 
         { 
             session_start(); 
@@ -419,27 +444,60 @@ class Canvas
         
         $urlPieces= array();
         $urlArgs = array();
-        $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}/assignments";
+        $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
 
+        $singleRow = false;
+            
+        $urlPieces[] = "assignments";
+        
+        //we'll get ALL the assignments in cache. Then we'll filter it out from cache;
+//        if($request->getAssignment_id())
+//        {
+//            $singleRow = true;
+//            $urlPieces[] = $request->getAssignment_id();
+//        }
         
         //Attach token
         $urlArgs[]="access_token={$token}";
+        $urlArgs[]="per_page=5000";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs); 
         
-//        echo $url;
-//        return;
         $response = GuzzleHelper::makeRequest($request, $url);
-        
-        //update cache if request was successful
-        if ($response->getStatusCode() ==="200")
-        {
-            $response = GuzzleHelper::makeRequest($request, $url);
 
-            return $this->processCanvasAssignmentData(json_decode($response->getBody()), $courseId);
-        }
+        return $this->processCanvasAssignmentData(json_decode($response->getBody()), $courseId, $singleRow);
+        
     }
     
+    public function processAssignmentGroupsRequest(AssignmentGroupsRequest $request)
+    {
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $domain = $_SESSION['domain'];
+        $token = $_SESSION['userToken'];
+        $courseId = $_SESSION['courseID'];
+        
+        $urlPieces= array();
+        $urlArgs = array();
+        $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
+
+        $singleRow = false;
+        $urlPieces[] = "assignment_groups";
+        
+        $urlArgs[]="include[]=assignments";
+        //Attach token
+        $urlArgs[]="access_token={$token}";
+        $urlArgs[]="per_page=5000";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs); 
+        
+        $response = GuzzleHelper::makeRequest($request, $url);
+        
+        return $this->processCanvasAssignmentGroupsData(json_decode($response->getBody()), $courseId, $singleRow);
+        
+    }
     /*
      * private functions
      */
@@ -469,20 +527,22 @@ class Canvas
         $this->processSingleModuleItem($courseId, $moduleItemArr);
     }
     
-    private function deleteModuleFromCache($module)
-    {
-        deleteFromCache($key);
-    }
     
-    private function deleteModuleItemFromCache($moduleItem)
+    private function deleteModuleItemsContent($courseId, $moduleId, $moduleItemId)
     {
-        deleteFromCache($key);
+        $contentArr = Content::where('module_item_id','=', $moduleItemId);
+        foreach($contentArr as $item)
+        {   
+            $contentKey = "{$courseId}-module-{$moduleId}-moduleItem-{$moduleItemId}-content-{$item->content_id}";
+            $cacheHelper = new CacheHelper();
+            $cacheHelper->deleteObjFromCache($contentKey);
+        }
+
+        Content::where('module_item_id','=', $moduleItemId)->delete();
     }
     
     private function processCanvasModuleData($data, $courseId)
     {
-        
-        echo " processing from Canvas ";
         $items = array();
         $moduleIdsArray = array();
         
@@ -540,8 +600,6 @@ class Canvas
         $moduleArr = $module->toArray();
         $moduleArr['module_items'] = $module->module_items->toArray();
 
-//        
-//        echo $module->module_id;
         $key = "{$courseId}-module-{$module->module_id}";
         
         if(Cache::has($key))
@@ -551,12 +609,10 @@ class Canvas
         if($this->forever)
         {//toArray is the key here! an Eloquent model is a closure and won't be serialized unless we first convert it to an Array!!!
             
-//            echo "adding forever to cache {$key}";
             Cache::forever($key, $moduleArr);
         }
         else
         {
-//            echo "adding remporarily to cache {$key}";
             Cache::put($key, $moduleArr, $this->cacheTime);
         }
 
@@ -678,69 +734,77 @@ class Canvas
     /*
      * ASSIGNMENTS
      */
-    private function processCanvasAssignmentData($data, $courseId)
+    private function processCanvasAssignmentData($data, $courseId, $singleRow)
     {
         $assignments= array();
-        foreach($data as $row)
-        {
-            $assignments[] = $this->processSingleAssignment($row);
-        }
-        $key = "{$courseId}-assignments";
         
-        if(Cache::has($key))
+        if($singleRow)
         {
-            Cache::forget($key);
-        }
-        if($this->forever)
-        {//toArray is the key here! an Eloquent model is a closure and won't be serialized unless we first convert it to an Array!!!
-            
-            Cache::forever($key, $assignments);
+            $assignments[] = $this->processSingleAssignment($data);
         }
         else
         {
-            Cache::put($key, $assignments, $this->cacheTime);
-        }
+            foreach($data as $row)
+            {
+                $assignments[] = $this->processSingleAssignment($row);
+            }
+            $key = "{$courseId}-assignments";
 
+            if(Cache::has($key))
+            {
+                Cache::forget($key);
+            }
+            if($this->forever)
+            {//toArray is the key here! an Eloquent model is a closure and won't be serialized unless we first convert it to an Array!!!
+
+                Cache::forever($key, $assignments);
+            }
+            else
+            {
+                Cache::put($key, $assignments, $this->cacheTime);
+            }
+        }
         
         return $assignments;
         
     }
+    
     private function processSingleAssignment($row)
-    {
+    {           
         $assignment = Assignment::firstOrNew(array('assignment_id' => $row->id));
+        $assignment->assignment_id = $row->id;
         $assignment->assignment_group_id = $row->assignment_group_id;
         $assignment->name = $row->name;
-        $assignment->description = $row->description;
+        if(($assignment->description)) {$assignment->description=$row->description;}
         
+        $format = "Y-m-d\TH:i:sO";
         if(isset($row->due_at))
         {
-            $strDate = strtotime($row->due_at); 
-            echo $strDate;
-            $format = 'Y-m-d H:i:s';
-            $due_at= DateTime::createFromFormat($format, $strDate);
-            echo json_encode($due_at);
-            echo " Set ";
+            $due_at= DateTime::createFromFormat($format, $row->due_at);
+            $assignment->due_at = $due_at->format('c');
         }
-        else
+        if(isset($row->lock_at))
         {
-            echo " not set ";
+            $lock_at= DateTime::createFromFormat($format, $row->lock_at);
+            $assignment->lock_at = $lock_at->format('c');
+            
         }
-        
-        
-        return;
-        $assignment->due_at = $row->due_at;
-        $assignment->lock_at = $row->lock_at;
-        $assignment->unlock_at = $row->unlock_at;
+        if(isset($row->unlock_at))
+        {
+            $unlock_at= DateTime::createFromFormat($format, $row->unlock_at);
+            $assignment->unlock_at = $unlock_at->format('c');
+        }
         if(isset($row->all_dates)){$assignment->all_dates = $row->all_dates;}
-        $assignment->course_id = $row->course_id;
-        $assignment->html_url = $row->html_url;
-        $assignment->points_possible = $row->points_possible;
-        $assignment->locked_for_user = $row->locked_for_user;
+        if(isset($row->course_id)){$assignment->course_id = $row->course_id;}
+        if(isset($row->html_url)){$assignment->html_url = $row->html_url;}
+        if(isset($row->points_possible)){$assignment->points_possible = $row->points_possible;}
+        if(isset($row->locked_for_user)){$assignment->locked_for_user = $row->locked_for_user;}
         if(isset($row->quiz_id)){$assignment->quiz_id = $row->quiz_id;}
-                
+        if(isset($row->additional_info)){$assignment->additional_info = $row->additional_info;}
+        
         $assignment->save();
         
-        $key = "{$courseId}-assignment_group_id-{$assignment->assignment_group_id}-assignment_id-{$assignment->assignment_id}";
+        $key = "{$row->course_id}-assignment_id-{$assignment->assignment_id}";
         
         if(Cache::has($key))
         {
@@ -760,4 +824,84 @@ class Canvas
         return $assignment;
     }
     
+    private function processCanvasAssignmentGroupsData($data, $courseId, $singleRow)
+    {
+        if(($singleRow) || count($data)===1)
+        {
+            return $this->processSingleAssignmentGroup($data, $courseId);
+        }
+        else
+        {
+            $assignmentGroupArray = array();
+            foreach($data as $row)
+            {
+                $assignmentG = $this->processSingleAssignmentGroup($row, $courseId);
+                $assignmentGroupArray[] = $assignmentG;
+            }
+            
+            $key = "{$courseId}-assignment_groups";
+        
+            if(Cache::has($key))
+            {
+                Cache::forget($key);
+            }
+            if($this->forever)
+            {//toArray is the key here! an Eloquent model is a closure and won't be serialized unless we first convert it to an Array!!!
+
+                Cache::forever($key, $assignmentGroupArray);
+            }
+            else
+            {
+                Cache::put($key, $assignmentGroupArray, $this->cacheTime);
+            }
+                return $assignmentGroupArray;
+            }
+    }
+    
+    private function processSingleAssignmentGroup($row, $courseId)
+    {
+        $assignmentGroup = AssignmentGroup::firstOrNew(array('assignment_group_id' => $row->id));
+        $assignmentGroup->assignment_group_id = $row->id;
+        $assignmentGroup->name = $row->name;
+        $assignmentGroup->position = $row->position;
+        if(isset($row->rules)){ $assignmentGroup->rules = json_encode($row->rules);}
+        $assignmentGroup->group_weight = $row->group_weight;
+        
+        
+        $assigArr = $assignmentGroup->toArray();//in order to save eloquent models to the DB we need to convert them to arrays because they are closures
+        //by nature and we can't store them in cache like that. We'll convert them to arrays, then set their *many relationships
+        //in the array (relationships aren't maintained when an eloquent model is converted to an array
+        if(isset($row->assignments))
+        {
+            $arr = array();
+            $assignments = $row->assignments;
+            foreach($assignments as $row)
+            {
+                $assignment = $this->processSingleAssignment($row);
+                $arr[] = $assignment;
+            }
+            $assignmentGroup->assignments = $arr;
+            
+            $assigArr["assignments"] = $arr;
+        }
+        
+        $assignmentGroup->save();
+        $key = "{$courseId}-assignment_group_id-{$assignmentGroup->assignment_group_id}";
+        
+        if(Cache::has($key))
+        {
+            Cache::forget($key);
+        }
+        if($this->forever)
+        {   
+            Cache::forever($key, $assigArr);
+        }
+        else
+        {
+            Cache::put($key, $assigArr, $this->cacheTime);
+        }
+
+        
+        return $assigArr;
+    }
 }

@@ -3,6 +3,7 @@
 use Delphinium\Core\RequestObjects\SubmissionsRequest;
 use Delphinium\Core\RequestObjects\ModulesRequest;
 use Delphinium\Core\RequestObjects\AssignmentsRequest;
+use Delphinium\Core\RequestObjects\AssignmentGroupsRequest;
 use Delphinium\Core\Enums\CommonEnums\Lms;
 use Delphinium\Core\Enums\CommonEnums\DataType;
 use Delphinium\Core\Enums\CommonEnums\ActionType;
@@ -105,17 +106,26 @@ class Roots
         switch($request->actionType)
         {
             case(ActionType::GET):
-                switch ($request->lms)
+                $cacheHelper = new CacheHelper();
+                $data = $cacheHelper->searchAssignmentDataInCache($request);
+                if($data)
+                {//if data is null it means it wasn't in cache... need to get it from 
+                    return $data;
+                }
+                else
                 {
-                    case (Lms::CANVAS):
-                        $canvas = new Canvas(DataType::ASSIGNMENTS);
-                        $result = $canvas->processAssignmentsRequest($request);
-                        break;
-                    default:
-                        $canvas = new Canvas(DataType::ASSIGNMENTS);
-                        $result = $canvas->processAssignmentsRequest($request);
-                        break;
+                    switch ($request->lms)
+                    {
+                        case (Lms::CANVAS):
+                            $canvas = new Canvas(DataType::ASSIGNMENTS);
+                            $canvas->processAssignmentsRequest($request);
+                            return $cacheHelper->searchAssignmentDataInCache($request);
+                        default:
+                            $canvas = new Canvas(DataType::ASSIGNMENTS);
+                            $canvas->processAssignmentsRequest($request);
+                            return $cacheHelper->searchAssignmentDataInCache($request);
 
+                    }
                 }
             break;
         default :
@@ -123,6 +133,37 @@ class Roots
         }
     }
     
+    public function assignmentGroups(AssignmentGroupsRequest $request)
+    {
+        switch($request->actionType)
+        {
+            case(ActionType::GET):
+                $cacheHelper = new CacheHelper();
+                $data = $cacheHelper->serchAssignmentGroupDataInCache($request);
+                if($data)
+                {//if data is null it means it wasn't in cache... need to get it from 
+                    return $data;
+                }
+                else
+                {
+                    switch ($request->lms)
+                    {
+                        case (Lms::CANVAS):
+                            $canvas = new Canvas(DataType::ASSIGNMENTS);
+                            $canvas->processAssignmentGroupsRequest($request);
+                            return $cacheHelper->serchAssignmentGroupDataInCache($request);
+                        default:
+                            $canvas = new Canvas(DataType::ASSIGNMENTS);
+                            $canvas->processAssignmentGroupsRequest($request);
+                            return $cacheHelper->serchAssignmentGroupDataInCache($request);
+                    }
+                }
+                
+            break;
+        default :
+            throw new InvalidActionException($request->actionType, get_class($request));
+        }
+    }
     
     
 }

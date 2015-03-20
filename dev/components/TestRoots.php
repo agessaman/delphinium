@@ -6,6 +6,7 @@ use Delphinium\Core\Roots;
 use Delphinium\Core\RequestObjects\SubmissionsRequest;
 use Delphinium\Core\RequestObjects\ModulesRequest;
 use Delphinium\Core\RequestObjects\AssignmentsRequest;
+use Delphinium\Core\RequestObjects\AssignmentGroupsRequest;
 use Delphinium\Core\Enums\CommonEnums\ActionType;
 use Delphinium\Core\Enums\ModuleItemEnums\ModuleItemType;
 use Cms\Classes\ComponentBase;
@@ -23,21 +24,27 @@ class TestRoots extends ComponentBase
     
     public function onRun()
     {  
+        Cache::flush();
+//        $this->testBasicModulesRequest();
 //        $this->testChangingModuleItem();
 //        $this->testUpdatingModule();
-//        
+//        $this->testDeletingModuleItem();
 //        $this->testDeletingModule();
-//                Cache::flush();
-//        $this->testBasicModulesRequest();
 //        $this->testAddingModule();
+
 //        $this->testAddingModuleItem();
-        $this->testingGettingAssignments();
+//        
+//        $this->testingGettingAssignments();
+//        $this->testGettingSingleAssignment();
+        
+//        $this->testAssignmentGroups();
+        $this->testSingleAssignmentGroup();
     }
     
     private function testBasicModulesRequest()
     {
         $req = new ModulesRequest(ActionType::GET);
-        $req->moduleId = 455418;
+        $req->moduleId = 380221;
         $req->includeContentDetails = true;
         $req->includeContentItems = true;
         $req->moduleItemId = null;//2869243;
@@ -78,10 +85,10 @@ class TestRoots extends ComponentBase
     private function testDeletingModuleItem()
     {
         $req = new ModulesRequest(ActionType::DELETE);
-        $req->moduleId = 380199;
+        $req->moduleId = 456194;
         $req->includeContentDetails = true;
         $req->includeContentItems = true;
-        $req->moduleItemId = 2683431;
+        $req->moduleItemId = 2875254;
         
         $roots = new Roots();
         $res = $roots->modules($req);
@@ -91,8 +98,8 @@ class TestRoots extends ComponentBase
     private function testDeletingModule()
     {
         $req = new ModulesRequest(ActionType::DELETE);
-        $req->moduleId = 455418;
-        $req->moduleItemId = 2870946;
+        $req->moduleId = 456194;
+//        $req->moduleItemId = 2870946;
         
 //        \Cache::flush();
         $roots = new Roots();
@@ -106,6 +113,8 @@ class TestRoots extends ComponentBase
         $format = 'Y-m-d H:i:s';
         $date = new \DateTime("now");
         $date->add(new \DateInterval('P1D'));
+//        echo json_encode($date);
+//        return;
         $unlock_at = $date;
         $prerequisite_module_ids =array("380199","380201");
         
@@ -147,6 +156,35 @@ class TestRoots extends ComponentBase
         
         $roots = new Roots();
         $res = $roots->assignments($req);
+        echo json_encode($res);
+    }
+    
+    private function testGettingSingleAssignment()
+    {
+        $assignment_id = 1660430;
+        $req = new AssignmentsRequest(ActionType::GET, $assignment_id);
+        
+        $roots = new Roots();
+        $res = $roots->assignments($req);
+        echo json_encode($res);
+    }
+    
+    private function testAssignmentGroups()
+    {
+        $req = new AssignmentGroupsRequest(ActionType::GET, true, null);
+        
+        $roots = new Roots();
+        $res = $roots->assignmentGroups($req);
+        echo json_encode($res);   
+    }
+    
+    private function testSingleAssignmentGroup()
+    {
+        $assignment_group_id = 378245;
+        $req = new AssignmentGroupsRequest(ActionType::GET, false, $assignment_group_id);
+        
+        $roots = new Roots();
+        $res = $roots->assignmentGroups($req);
         echo json_encode($res);
     }
 }
