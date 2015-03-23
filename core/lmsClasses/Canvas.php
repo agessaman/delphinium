@@ -777,21 +777,20 @@ class Canvas
         $assignment->name = $row->name;
         if(($assignment->description)) {$assignment->description=$row->description;}
         
-        $format = "Y-m-d\TH:i:sO";
         if(isset($row->due_at))
         {
-            $due_at= DateTime::createFromFormat($format, $row->due_at);
+            $due_at= DateTime::createFromFormat(DateTime::ISO8601, $row->due_at);
             $assignment->due_at = $due_at->format('c');
         }
         if(isset($row->lock_at))
         {
-            $lock_at= DateTime::createFromFormat($format, $row->lock_at);
+            $lock_at= DateTime::createFromFormat(DateTime::ISO8601, $row->lock_at);
             $assignment->lock_at = $lock_at->format('c');
-            
+
         }
         if(isset($row->unlock_at))
         {
-            $unlock_at= DateTime::createFromFormat($format, $row->unlock_at);
+            $unlock_at= DateTime::createFromFormat(DateTime::ISO8601, $row->unlock_at);
             $assignment->unlock_at = $unlock_at->format('c');
         }
         if(isset($row->all_dates)){$assignment->all_dates = $row->all_dates;}

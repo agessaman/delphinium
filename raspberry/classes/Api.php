@@ -76,7 +76,7 @@ class Api{
                 $module->courseId = $courseId;//do we need this?
                 $module->name = $moduleRow->name;
                 $module->position = $moduleRow->position;
-                $module->unlock_at = $moduleRow->unlock_at;
+                $module->utc_unlock_at = $moduleRow->utc_unlock_at;
                 $module->require_sequential_progress = $moduleRow->require_sequential_progress;
                 $module->publish_final_grade = $moduleRow->publish_final_grade;
                 $csv = $this->makeCSVofArray($moduleRow->prerequisite_module_ids);
@@ -241,7 +241,7 @@ class Api{
         //$content->tags=$contentDetails->content_id;
         if(isset($contentDetails->points_possible)){$content->points_possible= $contentDetails->points_possible;}
         if(isset($contentDetails->due_at)){$content->due_at= $contentDetails->due_at;}
-        if(isset($contentDetails->unlock_at)){$content->unlock_at= $contentDetails->unlock_at;}
+        if(isset($contentDetails->utc_unlock_at)){$content->utc_unlock_at= $contentDetails->utc_unlock_at;}
         if(isset($contentDetails->lock_at)){$content->lock_at= $contentDetails->lock_at;}
         if(isset($contentDetails->lock_explanation)){$content->lock_explanation= $contentDetails->lock_explanation;}
                 
@@ -646,7 +646,7 @@ class Api{
         $module->courseId = $courseId;//do we need this?
         $module->name = $moduleItem->name;
         $module->position = $moduleItem->position;
-        $module->unlock_at = $moduleItem->unlock_at;
+        $module->unlock_at = $moduleItem->utc_unlock_at;
         $module->require_sequential_progress = $moduleItem->require_sequential_progress;
       	$module->publish_final_grade = $moduleItem->publish_final_grade;
 //   	$module->prerequisite_module_ids = $moduleItem->prerequisite_module_ids;//array

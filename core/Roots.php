@@ -109,11 +109,11 @@ class Roots
                 $cacheHelper = new CacheHelper();
                 $data = $cacheHelper->searchAssignmentDataInCache($request);
                 if($data)
-                {//if data is null it means it wasn't in cache... need to get it from 
+                {
                     return $data;
                 }
                 else
-                {
+                {//if data is null it means it wasn't in cache... need to get it from Canvas
                     switch ($request->lms)
                     {
                         case (Lms::CANVAS):

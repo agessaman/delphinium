@@ -11,6 +11,7 @@ use Delphinium\Core\Enums\CommonEnums\ActionType;
 use Delphinium\Core\Enums\ModuleItemEnums\ModuleItemType;
 use Cms\Classes\ComponentBase;
 use Illuminate\Support\Facades\Cache;
+use \DateTime;
 
 class TestRoots extends ComponentBase
 {
@@ -37,8 +38,8 @@ class TestRoots extends ComponentBase
 //        $this->testingGettingAssignments();
 //        $this->testGettingSingleAssignment();
         
-//        $this->testAssignmentGroups();
-        $this->testSingleAssignmentGroup();
+        $this->testAssignmentGroups();
+//        $this->testSingleAssignmentGroup();
     }
     
     private function testBasicModulesRequest()
@@ -110,7 +111,7 @@ class TestRoots extends ComponentBase
     {
         $name = "Module Coming From API";
         
-        $format = 'Y-m-d H:i:s';
+        $format = DateTime::ISO8601;
         $date = new \DateTime("now");
         $date->add(new \DateInterval('P1D'));
 //        echo json_encode($date);
@@ -171,7 +172,7 @@ class TestRoots extends ComponentBase
     
     private function testAssignmentGroups()
     {
-        $req = new AssignmentGroupsRequest(ActionType::GET, true, null);
+        $req = new AssignmentGroupsRequest(ActionType::GET, false, null);
         
         $roots = new Roots();
         $res = $roots->assignmentGroups($req);
@@ -181,7 +182,7 @@ class TestRoots extends ComponentBase
     private function testSingleAssignmentGroup()
     {
         $assignment_group_id = 378245;
-        $req = new AssignmentGroupsRequest(ActionType::GET, false, $assignment_group_id);
+        $req = new AssignmentGroupsRequest(ActionType::GET, true, $assignment_group_id);
         
         $roots = new Roots();
         $res = $roots->assignmentGroups($req);

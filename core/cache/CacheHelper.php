@@ -20,7 +20,6 @@ class CacheHelper
         {
             if($request->moduleItemId)
             {
-//                echo "want module item";
                 $key = "{$courseId}-module-{$request->moduleId}-moduleItem-{$request->moduleItemId}";
             }
             else
@@ -29,7 +28,6 @@ class CacheHelper
             }
             if(Cache::has($key))
             {
-                echo " found key in cache ";
                 $data = Cache::get($key);
                 return $data;
             }
@@ -40,7 +38,6 @@ class CacheHelper
         }
         else
         {//if no moduleId was found they must want all the modules
-//            echo "want all mods";
             $items = array();
             $moduleIdsKey = "{$courseId}-moduleIds";
             $moduleIds = array();
@@ -81,7 +78,6 @@ class CacheHelper
             $key = "{$courseId}-assignment_id-{$request->getAssignment_id()}";
             if(Cache::has($key))
             {
-                echo "found in cache";
                 return Cache::get($key);
             }
             else
@@ -94,7 +90,6 @@ class CacheHelper
             $key = "{$courseId}-assignments";
             if(Cache::has($key))
             {
-                echo "found in cache";
                 return Cache::get($key);
             }
             else
@@ -109,10 +104,11 @@ class CacheHelper
     public function serchAssignmentGroupDataInCache(AssignmentGroupsRequest $request)
     {
         $courseId = $_SESSION['courseID'];
-        
+        $singleGroup = false;
         if($request->getAssignment_group_id())
         {
             $key = "{$courseId}-assignment_group_id-{$request->getAssignment_group_id()}";
+            $singleGroup = true;
         }
         else
         {
@@ -121,18 +117,28 @@ class CacheHelper
         
         if(Cache::has($key))
         {
-            echo "has key";
             if(!$request->getInclude_assignments())
             {
                 $groups = Cache::get($key);
-//                foreach($groups as $group)
-//                {
-//                    echo json_encode($group)."--";
-//                    $group['assignments'] = array();
-////                    $results[] = $group;
-//                }
-////                return $results;
-                return $groups;
+                
+                if(!$singleGroup)
+                {
+                    $res = array();
+                    foreach($groups as $group)
+                    {
+                        if(isset($group['assignments']))
+                        {
+                            $group['assignments'] = array();
+                        }
+                        $res[] = $group;
+                    }
+                    return $res;
+                }
+                else
+                {
+                    $groups['assignments'] = array();
+                    return $groups;
+                }
             }
             else
             {
