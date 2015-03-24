@@ -84,21 +84,29 @@ class Roots
     
     public function submissions(SubmissionsRequest $request)
     {
-        $result;
-        switch ($request->lms)
+        switch($request->actionType)
         {
-            case (Lms::CANVAS):
-                $canvas = new Canvas(DataType::SUBMISSIONS);
-                $result = $canvas->processSubmissionsRequest($request);
-                break;
-            default:
-                $canvas = new Canvas(DataType::SUBMISSIONS);
-                $result = $canvas->processSubmissionsRequest($request);
-                break;
-                
+            case(ActionType::GET):
+                $result;
+                switch ($request->lms)
+                {
+                    case (Lms::CANVAS):
+                        $canvas = new Canvas(DataType::SUBMISSIONS);
+                        $result = $canvas->processSubmissionsRequest($request);
+                        break;
+                    default:
+                        $canvas = new Canvas(DataType::SUBMISSIONS);
+                        $result = $canvas->processSubmissionsRequest($request);
+                        break;
+
+                }
+
+                return $result;
+                break; 
+            default :
+                throw new InvalidActionException($request->actionType, get_class($request));
+        
         }
-            
-        return $result;
     }
     
     public function assignments(AssignmentsRequest $request)

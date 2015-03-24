@@ -25,6 +25,10 @@ class CreateCoreModulesTable extends Migration
                 $table->boolean('published')->nullable();
                 $table->integer('items_count')->nullable();
                 $table->boolean('locked');
+                
+                //this data is used for ordering the modules. It comes from the iris manager, not from Canvas API
+                $table->integer('order');//the position this module will occupy in its parent
+                $table->integer('parent_id');
                 $table->timestamps();
             });
        	 }

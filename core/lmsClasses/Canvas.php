@@ -8,8 +8,10 @@ use Delphinium\Core\Models\CacheSetting;
 use Delphinium\Core\Models\ModuleItem;
 use Delphinium\Core\Models\Content;
 use Delphinium\Core\Models\Module;
+use Delphinium\Core\Models\OrderedModule;
 use Delphinium\Core\Models\Assignment;
 use Delphinium\Core\Models\AssignmentGroup;
+use Delphinium\Core\Models\Submission;
 use Delphinium\Core\RequestObjects\SubmissionsRequest;
 use Delphinium\Core\RequestObjects\ModulesRequest;
 use Delphinium\Core\RequestObjects\AssignmentsRequest;
@@ -35,21 +37,25 @@ class Canvas
         * if time = 0, data will NOT be cached
         * if time >0, data will be cached for that many minutes
         */
-        if($cacheSetting->time<0)
+        if($cacheSetting)
         {
-            $this->useCachedData = true;
-            $this->forever = true;
-        }
-        else if($cacheSetting->time===0)
-        {
-            $this->useCachedData = false;
-        }
-        else
-        {
-            $this->useCachedData = true;
-            $this->forever = false;
-            $this->cacheTime = $cacheSetting->time;
-        }
+            
+            if($cacheSetting->time<0)
+            {
+                $this->useCachedData = true;
+                $this->forever = true;
+            }
+            else if($cacheSetting->time===0)
+            {
+                $this->useCachedData = false;
+            }
+            else
+            {
+                $this->useCachedData = true;
+                $this->forever = false;
+                $this->cacheTime = $cacheSetting->time;
+            }
+        }//if no cacheSetting it's because we won't be storing that data type in cache (such as submissions)
     }
     
     /*
@@ -331,90 +337,69 @@ class Canvas
      */
     public function processSubmissionsRequest(SubmissionsRequest $request)
     {
-        
-        $userId = $_SESSION['userID'];
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
         $domain = $_SESSION['domain'];
         $token = $_SESSION['userToken'];
         $courseId = $_SESSION['courseID'];
+        $userId = $_SESSION['userID'];
         
         $urlPieces= array();
         $urlArgs = array();
         $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
-       
-        //For some reason the submissions API is funky when it comes to multipleAssignments. In this case
-        //it doesn't follow the same pattern as the rest of the API calls
-        if($request->multipleAssignments)
-        {
+
+        
+        //MULTIPLE ASSIGNMENTS AND POTENTIALLY MULTIPLE USERS
+        if($request->getMultipleAssignments())
+        {//GET /api/v1/courses/:course_id/students/submissions
             $urlPieces[]="students/submissions";
             
             //STUDENT IDS
             //student_ids can be "All", or a list of actual studentIds
-            if((count($request->studentIds)===1) && strtolower($request->studentIds[0])==='all')
+            if($request->getMultipleStudents() && $request->getAllStudents())
             {
                 $urlArgs[]="student_ids[]=all";
             }
+            else if($request->getMultipleStudents())
+            {
+                $ids = json_encode($request->getStudentIds());
+                $urlArgs[]="student_ids[]={$ids}";
+            }
             else
             {
-                try{
-                    $studentIds = implode(",", (array)$request->studentIds);
-                    $urlArgs[]="student_ids[]={$studentIds}";
-                }
-                catch(Exception $e)
-                {
-                    throw new InvalidParameterInRequestObjectException(get_class($request),"studentIds");
-                }
+                $urlArgs[]="student_ids[]={$userId}";
             }
             
             //ASSIGNMENT IDS
             //assignment_ids can be a list of assignmentIds, or if empty, all assignments will be returned
-            if(count($request->assignmentIds)>0)
-            {
-                try
-                {
-                    $assignmentIds = implode(",", $request->assignmentIds);
-                    $urlArgs[]= "assignment_ids[]={$assignmentIds}";
-                }
-                catch(Exception $e)
-                {
-                    throw new InvalidParameterInRequestObjectException(get_class($request),"assignmentIds", $e->getMessage());
-                }
-            }
+            
+            $assignmentIds = $tags = implode(',', $request->getAssignmentIds());
+            $urlArgs[]= "assignment_ids[]={$assignmentIds}";
+                
+        }
+        //SINGLE ASSIGNMENT, MULTIPLE USERS
+        else if($request->getMultipleStudents())
+        {   
+            // GET /api/v1/courses/:course_id/assignments/:assignment_id/submissions
+            $urlPieces[]= "assignments";
+            //grab the first assignment id. Shouldn't have more than one (all this has been validated in the SubmissionsRequest constructor)
+            $urlPieces[]= $request->getAssignmentIds()[0];
+            $urlPieces[]= "submissions";
             
         }
-        else if($request->multipleUsers)
-        {
-            $urlPieces[]= "assignments"; //input1
-            if(count($request->assignmentIds)!==1)
-            {
-                throw new InvalidParameterInRequestObjectException(get_class($request),"assignmentIds");
-            }
-            else
-            {
-                $urlPieces[]= implode(",",(array)$request->assignmentIds); //input2
-            }
-            
-            if(count($request->studentIds)===1)
-            {
-                $urlPieces[]= "submissions"; //input3
-            }
-            else
-            {
-                throw new InvalidParameterInRequestObjectException(get_class($request),"studentIds");
-            }
-        }
+        //SINGLE ASSIGNMENT, SINGLE USER
         else
-        {
-            $urlPieces[]= "assignments"; //input1
-            if(count($request->assignmentIds)>0)
-            {
-                $urlPieces[]= implode(",",(array)$request->assignmentIds); //input2
+        {//GET /api/v1/courses/:course_id/assignments/:assignment_id/submissions
+            if(($request->getAssignmentIds()))
+            {            
+                $urlPieces[]= "assignments"; //input1
+                $urlPieces[]= $request->getAssignmentIds()[0]; // get the first assignment id from the array (there shouldn't be more than one anyway)
+                $urlPieces[] = "submissions";
+                $urlPieces[] = $userId;
             }
-            
-            $urlPieces[]= "submissions"; //input3
-            if(count($request->studentIds)>0)
-            {
-                $urlPieces[]= implode(",", (array)$request->studentIds); //input4
-            }
+
         }
         
         //Attach token
@@ -422,8 +407,10 @@ class Canvas
         
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
         
+        echo $url;return;
         $response = GuzzleHelper::makeRequest($request, $url);
-        return $response->getBody();
+        
+        return $this->processCanvasSubmissionData(json_decode($response->getBody()));
         
     }
     
@@ -449,13 +436,6 @@ class Canvas
         $singleRow = false;
             
         $urlPieces[] = "assignments";
-        
-        //we'll get ALL the assignments in cache. Then we'll filter it out from cache;
-//        if($request->getAssignment_id())
-//        {
-//            $singleRow = true;
-//            $urlPieces[] = $request->getAssignment_id();
-//        }
         
         //Attach token
         $urlArgs[]="access_token={$token}";
@@ -594,6 +574,14 @@ class Canvas
             $moduleItems = $this->saveModuleItems($moduleRow->items, $courseId);
             $module->module_items = $moduleItems;
         }
+        $orderedMod = $this->retrieveOrderedModuleInfo($moduleRow->id, $courseId);
+        
+        if($orderedMod)
+        {
+            $module->order = $orderedMod->order;
+            $module->parent_id = $orderedMod->parent_id;
+        }
+        
         $module->save();
         //We need to assign the moduleItems AFTER we've converted the module to an array because the moduleItems are a laravel relationship
         //that is only loaded this way. If we don't set the module Items this way they won't be stored as a property of this module in Cache
@@ -618,6 +606,12 @@ class Canvas
 
         
         return $module;
+    }
+    
+    private function retrieveOrderedModuleInfo($moduleId, $courseId)
+    {
+        return OrderedModule::where('course_id', '=', $courseId)
+                                    ->where('module_id','=',$moduleId)->first();
     }
     
     private function saveModuleItems($moduleItems, $courseId)
@@ -902,5 +896,51 @@ class Canvas
 
         
         return $assigArr;
+    }
+    
+    /*
+     * SUBMISSIONS
+     */
+    private function processCanvasSubmissionData($data)
+    {
+        $submissions = array();
+        if(gettype($data)==="array")//we have a single submission
+        { //we have multiple submissions
+            foreach($data as $row)
+            {
+                $subm = $this->processSingleSubmission($row);
+                $submissions[] = $subm;
+            }
+        }
+        else
+        {  
+            $submissions[] = $this->processSingleSubmission($data);
+        }
+        return $submissions;
+    }
+    
+    private function processSingleSubmission($row)
+    {
+        $submission = new Submission();
+        $submission->submission_id = $row->id;
+        $submission->assignment_id = $row->assignment_id;
+        if(isset($row->course)){$submission->course = $row->course;}
+        if(isset($row->attempt)){$submission->attempt = $row->attempt;}
+        if(isset($row->body)){$submission->body = $row->body;}
+        if(isset($row->grade)){$submission->grade = $row->grade;}
+        if(isset($row->grade_matches_current_submission)){$submission->grade_matches_current_submission = $row->grade_matches_current_submission;}
+        if(isset($row->html_url)){$submission->html_url = $row->html_url;}
+        if(isset($row->preview_url)){$submission->preview_url = $row->preview_url;}
+        if(isset($row->score)){$submission->score = $row->score;}
+        if(isset($row->submission_comments)){$submission->submission_comments = $row->submission_comments;}
+        if(isset($row->submission_type)){$submission->submission_type = $row->submission_type;}
+        if(isset($row->submitted_at)){$submission->submitted_at = $row->submitted_at;}
+        if(isset($row->url)){$submission->url = $row->url;}
+        if(isset($row->user_id)){$submission->user_id = $row->user_id;}
+        if(isset($row->grader_id)){$submission->grader_id = $row->grader_id;}
+        if(isset($row->late)){$submission->late = $row->late;}
+        if(isset($row->assignment_visible)){$submission->assignment_visible = $row->assignment_visible;}
+        
+        return $submission;
     }
 }

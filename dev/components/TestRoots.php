@@ -26,7 +26,7 @@ class TestRoots extends ComponentBase
     public function onRun()
     {  
         Cache::flush();
-//        $this->testBasicModulesRequest();
+        $this->testBasicModulesRequest();
 //        $this->testChangingModuleItem();
 //        $this->testUpdatingModule();
 //        $this->testDeletingModuleItem();
@@ -38,8 +38,15 @@ class TestRoots extends ComponentBase
 //        $this->testingGettingAssignments();
 //        $this->testGettingSingleAssignment();
         
-        $this->testAssignmentGroups();
+//        $this->testAssignmentGroups();
 //        $this->testSingleAssignmentGroup();
+//        
+//        $this->testGettingSingleSubmissionSingleUserSingleAssignment();
+//        $this->testGettingAllSubmissionForSingleAssignment();
+//        $this->testGettingMultipleSubmissionsForSingleStudent();
+//        $this->testGettingMultipleSubmissionsAllStudents();
+//        $this->testGettingMultipleSubmissionsMultipleStudents();
+//        $this->testGettingSubmissions();
     }
     
     private function testBasicModulesRequest()
@@ -188,5 +195,100 @@ class TestRoots extends ComponentBase
         $res = $roots->assignmentGroups($req);
         echo json_encode($res);
     }
+    
+    
+    private function testGettingSingleSubmissionSingleUserSingleAssignment()
+    {
+        $studentIds = array(1489289);
+        $assignmentIds = array(1660419);
+        $multipleStudents = false;
+        $multipleAssignments = false;
+        $allStudents = false;
+        $allAssignments = false;
+        
+        //can have the student Id param null if multipleUsers is set to false (we'll only get the current user's submissions)
+        $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, 
+                $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
+        
+        $roots = new Roots();
+        $res = $roots->submissions($req);
+        echo json_encode($res);
+    }
+    
+    private function testGettingAllSubmissionForSingleAssignment()
+    {
+        $studentIds = array(10733259,10733259);
+        $assignmentIds = array(1660406);//array(1660419);
+        $multipleStudents = true;
+        $multipleAssignments = false;
+        $allStudents = true;
+        $allAssignments = false;
+        
+        //can have the student Id param null if multipleUsers is set to false (we'll only get the current user's submissions)
+        $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, 
+                $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
+        
+        $roots = new Roots();
+        $res = $roots->submissions($req);
+        echo json_encode($res);
+    }
+    
+    private function testGettingMultipleSubmissionsForSingleStudent()
+    {
+        $studentIds = array(10733259);
+        $assignmentIds = array(1660419, 1660406, 1660412);
+        $multipleStudents = false;
+        $multipleAssignments = true;
+        $allStudents = false;
+        $allAssignments = false;
+        
+        //can have the student Id param null if multipleUsers is set to false (we'll only get the current user's submissions)
+        
+        $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, 
+                $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
+        
+        $roots = new Roots();
+        $res = $roots->submissions($req);
+        echo json_encode($res);
+    }
+    
+    private function testGettingMultipleSubmissionsAllStudents()
+    {
+        $studentIds = null;
+        $assignmentIds = array(1660419, 1660406, 1660412);
+        $multipleStudents = true;
+        $multipleAssignments = true;
+        $allStudents = true;
+        $allAssignments = false;
+        
+        //can have the student Id param null if multipleUsers is set to false (we'll only get the current user's submissions)
+        
+        $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, 
+                $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
+        
+        $roots = new Roots();
+        $res = $roots->submissions($req);
+        echo json_encode($res);
+    }
+        
+    private function testGettingMultipleSubmissionsMultipleStudents()
+    {//This throws an error because I'm not authorized to retrieve submissions in behalf of other students
+        $studentIds = array(10733259,10733259);
+        $assignmentIds = array(1660419, 1660406, 1660412);
+        $multipleStudents = true;
+        $multipleAssignments = true;
+        $allStudents = false;
+        $allAssignments = false;
+        
+        //can have the student Id param null if multipleUsers is set to false (we'll only get the current user's submissions)
+        
+        $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, 
+                $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
+        
+        $roots = new Roots();
+        $res = $roots->submissions($req);
+        echo json_encode($res);
+    }
+    
 }
 
