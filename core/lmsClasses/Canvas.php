@@ -66,7 +66,7 @@ class Canvas
      * MODULES
      */
     public function getModuleData(ModulesRequest $request)
-    {
+    {   
         //As per Jared's & Damaris' discussion when users request fresh module data we wil retrieve ALL module data so we can store it in 
         //cache and then we'll only return the data they asked for
         if(!isset($_SESSION)) 
@@ -533,6 +533,9 @@ class Canvas
     
     private function processCanvasModuleData($data, $courseId)
     {
+//        echo " -- processing from CANVAS -- ";
+        
+        
         $items = array();
         $moduleIdsArray = array();
         
@@ -558,6 +561,11 @@ class Canvas
         {
             Cache::put($moduleIdsKey, $moduleIdsArray, $this->cacheTime);
         }
+        
+        //since we are updating our DB and CACHE with fresh Canvas data we MUST check against our DB and make sure we don't have "old" modules stored
+        $dbHelper = new DbHelper();
+        $dbHelper->qualityAssuranceModules($courseId, $moduleIdsArray);
+                
         return $items;
     }
     

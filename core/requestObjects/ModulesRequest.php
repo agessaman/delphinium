@@ -14,6 +14,7 @@ class ModulesRequest extends RootsRequest
     public $params;
     public $module;
     public $moduleItem;
+    public $freshData;
     
     function getModule() {
         return $this->module;
@@ -30,10 +31,13 @@ class ModulesRequest extends RootsRequest
     function setModuleItem($moduleItem) {
         $this->moduleItem = $moduleItem;
     }
+    function getFreshData() {
+        return $this->freshData;
+    }
 
-        
-    function __construct($actionType, $moduleId = null, $contentId = null,  
-    $includeContentItems = false, $includeContentDetails = false, $params=null, Module $module = null, ModuleItem $moduleItem = null) 
+            
+    function __construct($actionType, $moduleId = null, $moduleItemId = null,  
+    $includeContentItems = false, $includeContentDetails = false, $params=null, Module $module = null, ModuleItem $moduleItem = null, $freshData = null) 
     {
         if(ActionType::isValidValue($actionType))
         {  
@@ -55,11 +59,12 @@ class ModulesRequest extends RootsRequest
         }
 
         $this->moduleId = $moduleId;
-        $this->moduleItemId = $contentId;
+        $this->moduleItemId = $moduleItemId;
         $this->includeContentDetails = $includeContentDetails;
         $this->includeContentItems= $includeContentItems;
         $this->params = $params;
         $this->module = $module;
         $this->moduleItem = $moduleItem;
+        $this->freshData = $freshData;
     }
 }

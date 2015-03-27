@@ -9,7 +9,15 @@ abstract class RootsRequest
     public $actionType;
     public $lms;
     
-    function __construct($actionType) 
+    function getActionType() {
+        return $this->actionType;
+    }
+
+    function getLms() {
+        return $this->lms;
+    }
+
+        function __construct($actionType) 
     {
         if(ActionType::isValidValue($actionType))
         {  

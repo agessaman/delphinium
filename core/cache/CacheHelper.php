@@ -14,6 +14,7 @@ class CacheHelper
 {
     public function searchModuleDataInCache(ModulesRequest $request)
     {
+//        echo "-- searching in Cache --";
         $courseId = $_SESSION['courseID'];
         $key = "";
         if($request->moduleId)
@@ -64,8 +65,6 @@ class CacheHelper
             {
                 return null;
             }
-            
-            
         }
     }
 

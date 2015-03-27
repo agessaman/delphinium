@@ -22,31 +22,27 @@ class Roots
         switch($request->actionType)
         {
             case (ActionType::GET):
-                $cacheHelper = new CacheHelper();
-                $data = $cacheHelper->searchModuleDataInCache($request);
-                if($data)
-                {//if data is null it means it wasn't in cache... need to get it from 
-                    return $data;
+                if(!$request->getFreshData())
+                {
+                    
+                    $cacheHelper = new CacheHelper();
+                    $data = $cacheHelper->searchModuleDataInCache($request);
+                    if($data)
+                    {//if data is null it means it wasn't in cache... need to get it from LMS
+                        return $data;
+                    }
+                    else
+                    {
+                        return $this->getModuleDataFromLms($request);
+                    }
                 }
                 else
                 {
-                    switch ($request->lms)
-                    {
-                        case (Lms::CANVAS):
-                            $canvas = new Canvas(DataType::MODULES);
-                            $canvas->getModuleData($request);
-                            return $cacheHelper->searchModuleDataInCache($request);
-                        default:
-                            $canvas = new Canvas(DataType::MODULES);
-                            $canvas->getModuleData($request);
-                            return $cacheHelper->searchModuleDataInCache($request);
-
-                    }
+                    return $this->getModuleDataFromLms($request);
                 }
-                
+                break;
                 
             case(ActionType::PUT):
-                $response;
                 switch ($request->lms)
                 {
                     case (Lms::CANVAS):
@@ -56,6 +52,7 @@ class Roots
                         $canvas = new Canvas(DataType::MODULES);
                         return $canvas->putModuleData($request);
                 }
+                break;
             case(ActionType::POST):
                 switch ($request->lms)
                 {
@@ -68,7 +65,6 @@ class Roots
                 }
                 break;
             case(ActionType::DELETE):
-                $response;
                 switch ($request->lms)
                 {
                     case (Lms::CANVAS):
@@ -78,6 +74,7 @@ class Roots
                         $canvas = new Canvas(DataType::MODULES);
                         return $canvas->deleteModuleData($request);
                 }
+                break;
         }
         
     }
@@ -173,5 +170,20 @@ class Roots
         }
     }
     
-    
+    private function getModuleDataFromLms(ModulesRequest $request)
+    {
+        $cacheHelper = new CacheHelper();
+        switch ($request->getLms())
+        {
+            case (Lms::CANVAS):
+                $canvas = new Canvas(DataType::MODULES);
+                $canvas->getModuleData($request);
+                return $cacheHelper->searchModuleDataInCache($request);
+            default:
+                $canvas = new Canvas(DataType::MODULES);
+                $canvas->getModuleData($request);
+                return $cacheHelper->searchModuleDataInCache($request);
+
+        }
+    }
 }

@@ -12,6 +12,8 @@ use Delphinium\Core\Enums\ModuleItemEnums\ModuleItemType;
 use Cms\Classes\ComponentBase;
 use Illuminate\Support\Facades\Cache;
 use \DateTime;
+use \DateInterval;
+use Delphinium\Core\DB\DbHelper;
 
 class TestRoots extends ComponentBase
 {
@@ -25,9 +27,11 @@ class TestRoots extends ComponentBase
     
     public function onRun()
     {  
+//        $this->refreshCache();
+//        $this->test();
 //        Cache::flush();
 //        $this->testBasicModulesRequest();
-        $this->testUpdatingModuleItem();
+//        $this->testUpdatingModuleItem();
 //        $this->testUpdatingModule();
         
 //        $this->testDeletingModuleItem();
@@ -53,7 +57,7 @@ class TestRoots extends ComponentBase
     private function testBasicModulesRequest()
     {
         $req = new ModulesRequest(ActionType::GET);
-        $req->moduleId = 456847;
+        $req->moduleId = null;//456852;
         $req->includeContentDetails = true;
         $req->includeContentItems = true;
         $req->moduleItemId = null;//2869243;
@@ -117,11 +121,11 @@ class TestRoots extends ComponentBase
     }
     private function testAddingModule()
     {
-        $name = "Module Coming From API";
+        $name = "Module from API";
         
         $format = DateTime::ISO8601;
-        $date = new \DateTime("now");
-        $date->add(new \DateInterval('P1D'));
+        $date = new DateTime("now");
+        $date->add(new DateInterval('P1D'));
 //        echo json_encode($date);
 //        return;
         $unlock_at = $date;
@@ -289,6 +293,40 @@ class TestRoots extends ComponentBase
         $roots = new Roots();
         $res = $roots->submissions($req);
         echo json_encode($res);
+    }
+    
+    private function refreshCache()
+    {
+        $moduleId = null;
+        $includeContentDetails = true;
+        $includeContentItems = true;
+        $moduleItemId = null;
+        $params = null;
+        $refreshData = true;
+        
+        $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems, $includeContentDetails, $params, null, 
+                null, $refreshData);
+        
+        $roots = new Roots();
+        $res = $roots->modules($req);
+        echo json_encode($res);
+    }
+    
+    
+    private function test()
+    {
+//        $format = DateTime::ISO8601;
+//        $date = new DateTime("now");
+////        $date->add(new DateInterval('P1D'));
+//        
+//        echo json_encode($date); 
+        
+        //"380199",
+        $arr = array("380200","380201","380202","380203","380204","380205","380206","380207","380208","380209","380210","380211",
+            "380212","380213","380214","380215","380216","380217","380218","380219","380220","380221","456852","456876","456877","456878");
+        
+        $dbHelper = new DbHelper();
+        $dbHelper->qualityAssuranceModules(343331, $arr);
     }
     
 }
