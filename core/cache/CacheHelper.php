@@ -1,7 +1,7 @@
 <?php namespace Delphinium\Core\Cache;
 
 use Delphinium\Core\RequestObjects\AssignmentsRequest;
-use \Delphinium\Core\RequestObjects\AssignmentGroupsRequest;
+use Delphinium\Core\RequestObjects\AssignmentGroupsRequest;
 use Delphinium\Core\RequestObjects\ModulesRequest;
 use Illuminate\Support\Facades\Cache;
 /* 
@@ -160,27 +160,70 @@ class CacheHelper
         }
     }
     
-    public function deleteModuleItemFromCache($moduleItemKey, $cacheTime)
+    public function deleteModuleFromCacheCascade($moduleId, $forever, $cacheTime)
     {
+        $courseId = $_SESSION['courseID'];
+        $moduleKey = "{$courseId}-module-{$moduleId}";
+        if(Cache::has($moduleKey))
+        {
+            $module = Cache::get($moduleKey);
+            
+            foreach($module['module_items'] as $moduleItem)
+            {
+                $moduleItemKey = "{$courseId}-module-{$moduleItem['module_id']}-moduleItem-{$moduleItem['module_item_id']}";
+                $this->deleteModuleItemFromCacheCascade($moduleItemKey, true, $cacheTime);
+            }
+            
+            Cache::forget($moduleKey);
+        }
+        
+        
+        
+//        clear this module from the list of modules in cache
+        $moduleIdsKey = "{$courseId}-moduleIds";
+        $allModules = Cache::get($moduleIdsKey);
+        
+        $arr = array_diff($allModules, array($moduleId));
+        if($forever)
+        {
+            Cache::forever($moduleIdsKey, $arr);
+        }
+        else
+        {
+            Cache::put($moduleIdsKey, $arr, $cacheTime);
+        }
+        
+    }
+    
+    public function deleteModuleItemFromCacheCascade($moduleItemKey, $deleteFromModuleList, $cacheTime)
+    {
+        $courseId = $_SESSION['courseID'];
         if(Cache::has($moduleItemKey))
         {
             $moduleItem = Cache::get($moduleItemKey);
-            $modItemId = $moduleItem["module_item_id"];
-            $moduleId = $moduleItem["module_id"];
-            $courseId = $moduleItem["course_id"];
-            //delete module item from cache
-            Cache::forget($moduleItemKey);
+            $moduleId = $moduleItem['module_id'];
+            foreach($moduleItem['content'] as $contentItem)
+            {
+                //get each moduleItem's content and delete from cache
+                $contentKey = "{$courseId}-module-{$moduleId}-moduleItem-{$moduleItem['module_item_id']}-content-{$contentItem['content_id']}";
+                $this->deleteContentFromCache($contentKey);
+            }
             
-            //also delete it from its module's array of module items
+            //delete the module Item
+            Cache::forget($moduleItemKey);
+        }
+        
+        if($deleteFromModuleList)
+        {//loop through this module item's module and delete this moduleItem from the module's list of module items
+            
             $moduleKey = "{$courseId}-module-{$moduleId}";
             if(Cache::has($moduleKey))
             {
                 $module = Cache::get($moduleKey);
                 $mdItems = $module['module_items'];
-    
                 foreach ($mdItems as $key=>$value)
                 {
-                    if ($value["module_item_id"]===$modItemId) {
+                    if ($value["module_item_id"]===$moduleItem['module_item_id']) {
                        unset($mdItems[$key]);
                        $mdItems = array_values($mdItems);
                        break;
@@ -204,4 +247,8 @@ class CacheHelper
         }
     }
     
+    public function deleteContentFromCache($contentKey)
+    {
+        $this->deleteObjFromCache($contentKey);
+    }
 }

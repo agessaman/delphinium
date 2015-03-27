@@ -25,14 +25,15 @@ class TestRoots extends ComponentBase
     
     public function onRun()
     {  
-        Cache::flush();
-        $this->testBasicModulesRequest();
-//        $this->testChangingModuleItem();
+//        Cache::flush();
+//        $this->testBasicModulesRequest();
+        $this->testUpdatingModuleItem();
 //        $this->testUpdatingModule();
+        
 //        $this->testDeletingModuleItem();
 //        $this->testDeletingModule();
+        
 //        $this->testAddingModule();
-
 //        $this->testAddingModuleItem();
 //        
 //        $this->testingGettingAssignments();
@@ -52,7 +53,7 @@ class TestRoots extends ComponentBase
     private function testBasicModulesRequest()
     {
         $req = new ModulesRequest(ActionType::GET);
-        $req->moduleId = 380221;
+        $req->moduleId = 456847;
         $req->includeContentDetails = true;
         $req->includeContentItems = true;
         $req->moduleItemId = null;//2869243;
@@ -77,12 +78,12 @@ class TestRoots extends ComponentBase
         $res = $roots->modules($req);
     }
     
-    private function testChangingModuleItem()
+    private function testUpdatingModuleItem()
     {
         $req = new ModulesRequest(ActionType::PUT);
-        $req->moduleId = 380199;
-        $req->moduleItemId = 2683431;
-        $params = array("title"=>"Subheader","published"=>"true");
+        $req->moduleId = 456852;
+        $req->moduleItemId = 2881776;
+        $params = array("title"=>"Subheader","published"=>"true", "external_url"=>"https://www.google.com");
         $req->params = $params;
         
         $roots = new Roots();
@@ -93,10 +94,10 @@ class TestRoots extends ComponentBase
     private function testDeletingModuleItem()
     {
         $req = new ModulesRequest(ActionType::DELETE);
-        $req->moduleId = 456194;
+        $req->moduleId = 456847;
         $req->includeContentDetails = true;
         $req->includeContentItems = true;
-        $req->moduleItemId = 2875254;
+        $req->moduleItemId = 2881762;
         
         $roots = new Roots();
         $res = $roots->modules($req);
@@ -106,7 +107,7 @@ class TestRoots extends ComponentBase
     private function testDeletingModule()
     {
         $req = new ModulesRequest(ActionType::DELETE);
-        $req->moduleId = 456194;
+        $req->moduleId = 456847;
 //        $req->moduleItemId = 2870946;
         
 //        \Cache::flush();
@@ -141,16 +142,16 @@ class TestRoots extends ComponentBase
     private function testAddingModuleItem()
     {
         $req = new ModulesRequest(ActionType::POST);
-        $req->moduleId = 455742;
+        $req->moduleId = 456845;
         
-        $title = "Testing module Item";
+        $title = "Testing module Item from API";
         $modItemType = ModuleItemType::SUBHEADER;
         
         $page_url = "http://www.google.com";
         $moduleItem = new ModuleItem($title, $modItemType, null, $page_url);
         
         $req = new ModulesRequest(ActionType::POST);
-        $req->moduleId = 455742;
+        $req->moduleId = 456845;
         $req->moduleItem = $moduleItem;
         
         $roots = new Roots();

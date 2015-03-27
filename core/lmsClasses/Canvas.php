@@ -1,6 +1,7 @@
 <?php namespace Delphinium\Core\lmsClasses;
 
 use \DateTime;
+use Delphinium\Core\DB\DbHelper;
 use Delphinium\Core\Cache\CacheHelper;
 use Delphinium\Core\Exceptions\InvalidParameterInRequestObjectException;
 use Delphinium\Core\Guzzle\GuzzleHelper;
@@ -181,7 +182,6 @@ class Canvas
             $scope = "module_item";
         }
         
-        
         //Attach token
         $urlArgs[]="access_token={$token}";
 
@@ -191,51 +191,61 @@ class Canvas
         {
             //delete from Canvas
             $response = GuzzleHelper::makeRequest($request, $url);
-            
-            //delete from cache & from DB
-            $cacheHelper = new CacheHelper();
-            
-            /*
-             * NOTE:
-             * Cascading delete is not yet supported in OctoberCMS, so we have to do all the cascading deletes manually. 
-             * See https://github.com/octobercms/october/issues/419
-             */
-            if($isModuleItem)
-            {//delete the module item and all its contents
-                $mItemkey = "{$courseId}-module-{$request->moduleId}-moduleItem-{$request->moduleItemId}";
-                
-                //we can't just delete the module straight from cache cause we need to delete it from the module (in cache), etc
-                $cacheHelper->deleteModuleItemFromCache($mItemkey, $this->cacheTime);
-                ModuleItem::where('module_item_id', '=', $request->moduleItemId)
-                        ->where('module_id','=',$request->moduleId)->delete();
-                
-                $this->deleteModuleItemsContent($courseId, $request->moduleId, $request->moduleItemId);
-                
-            }
-            else
-            {//delete module, module items, and contents
-                $moduleKey = "{$courseId}-module-{$request->moduleId}";
-                $cacheHelper->deleteObjFromCache($moduleKey);
-                
-                Module::where('course_id', '=', $courseId)
-                        ->where('module_id','=',$request->moduleId)->delete();
-                
-                //also delete the module items and content
-                
-                $moduleItems = ModuleItem::where('course_id', '=', $courseId)
-                        ->where('module_id','=',$request->moduleId);
-                foreach($moduleItems as $item)
-                {
-                    $this->deleteModuleItemsContent($courseId, $request->moduleId, $item->module_item_id);
-                    $mItemkey = "{$courseId}-module-{$request->moduleId}-moduleItem-{$request->moduleItemId}";
-                
-                    //we can't just delete the module straight from cache cause we need to delete it from the module (in cache), etc
-                    $cacheHelper->deleteModuleItemFromCache($mItemkey, $this->cacheTime);
+            if($response->getStatusCode() ==="200")
+            {
+                //if the CANVAS delete was successful we need to 
+                //delete the same data from cache & from the DB
+                $cacheHelper = new CacheHelper();
+                $dbHelper = new DbHelper();
+                /*
+                 * NOTE:
+                 * Cascading delete is not yet supported in OctoberCMS, so we have to do all the cascading deletes manually. 
+                 * See https://github.com/octobercms/october/issues/419
+                 */
+                if($isModuleItem)
+                {//delete the module item and its contents from CACHE
+                    $moduleItemKey = "{$courseId}-module-{$request->moduleId}-moduleItem-{$request->moduleItemId}";
+                    $cacheHelper->deleteModuleItemFromCacheCascade($moduleItemKey, true, $this->cacheTime);
+    //                $cacheHelper->deleteModuleFromCacheCascade($request->moduleId, $this->forever, $this->cacheTime);
+
+                    //delete the module item and its contents from DB
+                    $dbHelper->deleteModuleItemCascade($request->moduleId, $request->moduleItemId);
+                     //delete module item's contents
+    //                $this->deleteModuleItemsContent($courseId, $request->moduleId, $request->moduleItemId);
                 }
-                ModuleItem::where('course_id', '=', $courseId)
-                        ->where('module_id','=',$request->moduleId)->delete();
-                
+                else
+                {//DELETE MODULE
+
+                //this will delete this module, its module items, and the content from DB
+                $dbHelper->deleteModuleCascade($courseId, $request->moduleId);
+
+                //this will delete this module, its module items, and the content from Cache
+                $cacheHelper->deleteModuleFromCacheCascade($request->moduleId, $this->forever, $this->cacheTime);
+
+                ////delete module, module items, and contents
+    //                $moduleKey = "{$courseId}-module-{$request->moduleId}";
+    //                $cacheHelper->deleteObjFromCache($moduleKey);
+    //                
+    //                Module::where('course_id', '=', $courseId)
+    //                        ->where('module_id','=',$request->moduleId)->delete();
+    //                //also delete the module items and content
+    //                
+    //                $moduleItems = ModuleItem::where('course_id', '=', $courseId)
+    //                        ->where('module_id','=',$request->moduleId);
+    //                foreach($moduleItems as $item)
+    //                {
+    //                    $this->deleteModuleItemsContent($courseId, $request->moduleId, $item->module_item_id);
+    //                    $mItemkey = "{$courseId}-module-{$request->moduleId}-moduleItem-{$request->moduleItemId}";
+    //                
+    //                    //we can't just delete the module straight from cache cause we need to delete it from the module (in cache), etc
+    //                    $cacheHelper->deleteModuleItemFromCache($mItemkey, $this->cacheTime);
+    //                }
+    //                ModuleItem::where('course_id', '=', $courseId)
+    //                        ->where('module_id','=',$request->moduleId)->delete();
+    //                
+                }
             }
+            
               
             return $response;
         }
