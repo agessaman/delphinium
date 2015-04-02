@@ -7,21 +7,40 @@ use Delphinium\Core\UpdatableObjects\ModuleItem;
 
 class ModulesRequest extends RootsRequest
 {
-    public $moduleId;
-    public $moduleItemId;
-    public $includeContentItems;
-    public $includeContentDetails;
-    public $params;
+    private $moduleId;
+    private $moduleItemId;
+    private $includeContentItems;
+    private $includeContentDetails;
     public $module;
     public $moduleItem;
-    public $freshData;
+    private $freshData;
     
+    function getModuleId() {
+        return $this->moduleId;
+    }
+
+    function getModuleItemId() {
+        return $this->moduleItemId;
+    }
+
+    function getIncludeContentItems() {
+        return $this->includeContentItems;
+    }
+
+    function getIncludeContentDetails() {
+        return $this->includeContentDetails;
+    }
+
     function getModule() {
         return $this->module;
     }
 
     function getModuleItem() {
         return $this->moduleItem;
+    }
+
+    function getFreshData() {
+        return $this->freshData;
     }
 
     function setModule(Module $module) {
@@ -31,22 +50,14 @@ class ModulesRequest extends RootsRequest
     function setModuleItem($moduleItem) {
         $this->moduleItem = $moduleItem;
     }
-    function getFreshData() {
-        return $this->freshData;
-    }
-
+    
             
     function __construct($actionType, $moduleId = null, $moduleItemId = null,  
-    $includeContentItems = false, $includeContentDetails = false, $params=null, Module $module = null, ModuleItem $moduleItem = null, $freshData = null) 
+    $includeContentItems = false, $includeContentDetails = false, Module $module = null, ModuleItem $moduleItem = null, $freshData = null) 
     {
-        if(ActionType::isValidValue($actionType))
-        {  
-            $this->actionType = $actionType;
-        }
-        else
-        {
-            throw new \Exception("Invalid ActionType"); 
-        }
+        //this takes care of setting the lms and the ActionType in the parent class (RootsRequest)
+        parent::__construct($actionType);
+        
 
         $lms = strtoupper($_SESSION['lms']);
         if(Lms::isValidValue($lms))
@@ -62,7 +73,6 @@ class ModulesRequest extends RootsRequest
         $this->moduleItemId = $moduleItemId;
         $this->includeContentDetails = $includeContentDetails;
         $this->includeContentItems= $includeContentItems;
-        $this->params = $params;
         $this->module = $module;
         $this->moduleItem = $moduleItem;
         $this->freshData = $freshData;

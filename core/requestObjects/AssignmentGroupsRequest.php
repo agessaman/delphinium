@@ -19,14 +19,8 @@ class AssignmentGroupsRequest extends RootsRequest
         
     function __construct($actionType, $include_assignments, $assignment_group_id = null) 
     {
-        if(ActionType::isValidValue($actionType))
-        {  
-            $this->actionType = $actionType;
-        }
-        else
-        {
-            throw new \Exception("Invalid ActionType"); 
-        }
+        //this takes care of setting the lms and the ActionType in the parent class (RootsRequest)
+        parent::__construct($actionType);
 
         $lms = strtoupper($_SESSION['lms']);
         if(Lms::isValidValue($lms))

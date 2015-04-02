@@ -8,7 +8,7 @@ class GuzzleHelper
     public static function makeRequest($request, $url)
     {
         $client = new Client();
-        switch($request->actionType)
+        switch($request->getActionType())
         {
             case ActionType::GET:
                 $response = $client->get($url);

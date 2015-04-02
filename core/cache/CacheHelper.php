@@ -17,15 +17,15 @@ class CacheHelper
 //        echo "-- searching in Cache --";
         $courseId = $_SESSION['courseID'];
         $key = "";
-        if($request->moduleId)
+        if($request->getModuleId())
         {
-            if($request->moduleItemId)
+            if($request->getModuleItemId())
             {
-                $key = "{$courseId}-module-{$request->moduleId}-moduleItem-{$request->moduleItemId}";
+                $key = "{$courseId}-module-{$request->getModuleId()}-moduleItem-{$request->getModuleItemId()}";
             }
             else
             {
-                $key = "{$courseId}-module-{$request->moduleId}";
+                $key = "{$courseId}-module-{$request->getModuleId()}";
             }
             if(Cache::has($key))
             {

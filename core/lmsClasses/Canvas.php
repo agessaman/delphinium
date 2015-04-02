@@ -17,7 +17,8 @@ use Delphinium\Core\RequestObjects\SubmissionsRequest;
 use Delphinium\Core\RequestObjects\ModulesRequest;
 use Delphinium\Core\RequestObjects\AssignmentsRequest;
 use Delphinium\Core\RequestObjects\AssignmentGroupsRequest;
-use Delphinium\Core\UpdatableObjects\UpdatableModule;
+use Delphinium\Core\UpdatableObjects\Module as UpdatableModule;
+use Delphinium\Core\UpdatableObjects\ModuleItem as UpdatableModuleItem;
 use Illuminate\Support\Facades\Cache;
 
 class Canvas
@@ -92,12 +93,15 @@ class Canvas
 
         $response = GuzzleHelper::makeRequest($request, $url);
 
+        
+        
+        echo json_encode($response);
         return $this->processCanvasModuleData(json_decode($response->getBody()), $courseId);
     }
     
     public function putModuleData(ModulesRequest $request)
     {
-        if(!$request->moduleId)
+        if(!$request->getModuleId())
         {
             throw new InvalidParameterInRequestObjectException(get_class($request),"moduleId", "Parameter is required");
         }
@@ -115,24 +119,26 @@ class Canvas
         $urlArgs = array();
         $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
 
-        $urlPieces[] = "modules/{$request->moduleId}";
+        $urlPieces[] = "modules/{$request->getModuleId()}";
         
-        if($request->moduleItemId)
-        {
-            $urlPieces[] = "items/{$request->moduleItemId}";
+        if($request->getModuleItemId())
+        {//updating a module item
+            
+            $urlPieces[] = "items/{$request->getModuleItemId()}";
             $scope = "module_item";
+            $urlArgs = $this->buildModuleItemUpdateArgs($request->getModuleItem());
         }
-        
-        foreach($request->params as $key=>$value)
-        {
-            $urlArgs[] = "{$scope}[{$key}]={$value}";
+        else
+        {//updating a module
+            $urlArgs = $this->buildModuleUpdateUrl($request->getModule());
         }
         
         //Attach token
         $urlArgs[]="access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs); 
-
+echo $url;
+//return;
         $response = GuzzleHelper::makeRequest($request, $url);
         
         //update cache if request was successful
@@ -155,7 +161,7 @@ class Canvas
     public function deleteModuleData(ModulesRequest $request)
     {
         $isModuleItem = false;
-        if(!$request->moduleId)
+        if(!$request->getModuleId())
         {
             throw new InvalidParameterInRequestObjectException(get_class($request),"moduleId", "Parameter is required");
         }
@@ -173,12 +179,12 @@ class Canvas
         $urlArgs = array();
         $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
 
-        $urlPieces[] = "modules/{$request->moduleId}";
+        $urlPieces[] = "modules/{$request->getModuleId()}";
         
-        if($request->moduleItemId)
+        if($request->getModuleItemId())
         {
             $isModuleItem = true;
-            $urlPieces[] = "items/{$request->moduleItemId}";
+            $urlPieces[] = "items/{$request->getModuleItemId()}";
             $scope = "module_item";
         }
         
@@ -204,12 +210,12 @@ class Canvas
                  */
                 if($isModuleItem)
                 {//delete the module item and its contents from CACHE
-                    $moduleItemKey = "{$courseId}-module-{$request->moduleId}-moduleItem-{$request->moduleItemId}";
+                    $moduleItemKey = "{$courseId}-module-{$request->getModuleId()}-moduleItem-{$request->getModuleItemId()}";
                     $cacheHelper->deleteModuleItemFromCacheCascade($moduleItemKey, true, $this->cacheTime);
     //                $cacheHelper->deleteModuleFromCacheCascade($request->moduleId, $this->forever, $this->cacheTime);
 
                     //delete the module item and its contents from DB
-                    $dbHelper->deleteModuleItemCascade($request->moduleId, $request->moduleItemId);
+                    $dbHelper->deleteModuleItemCascade($request->getModuleId(), $request->getModuleItemId());
                      //delete module item's contents
     //                $this->deleteModuleItemsContent($courseId, $request->moduleId, $request->moduleItemId);
                 }
@@ -217,10 +223,10 @@ class Canvas
                 {//DELETE MODULE
 
                 //this will delete this module, its module items, and the content from DB
-                $dbHelper->deleteModuleCascade($courseId, $request->moduleId);
+                $dbHelper->deleteModuleCascade($courseId, $request->getModuleId());
 
                 //this will delete this module, its module items, and the content from Cache
-                $cacheHelper->deleteModuleFromCacheCascade($request->moduleId, $this->forever, $this->cacheTime);
+                $cacheHelper->deleteModuleFromCacheCascade($request->getModuleId(), $this->forever, $this->cacheTime);
 
                 ////delete module, module items, and contents
     //                $moduleKey = "{$courseId}-module-{$request->moduleId}";
@@ -279,9 +285,9 @@ class Canvas
         $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
 
         
-        if($request->moduleId)
+        if($request->getModuleId())
         {// "we're creating a moduleItem";
-            $urlPieces[] = "modules/{$request->moduleId}/items";
+            $urlPieces[] = "modules/{$request->getModuleId()}/items";
 
             $modItem = $request->getModuleItem();
             foreach($modItem as $key => $value) {
@@ -298,6 +304,7 @@ class Canvas
 
             $modItem = $request->getModule();
             foreach($modItem as $key => $value) {
+                
                 if(($value) && ($key ==="prerequisite_module_ids") && is_array($value))
                 {
                     foreach($value as $prereq)
@@ -322,17 +329,33 @@ class Canvas
         //update cache if request was successful
         if ($response->getStatusCode() ==="200")
         {
-            $newlyUpdated= \GuzzleHttp\json_decode($response->getBody());
-            if(isset($newlyUpdated->module_id))
+            $newlyCreated= \GuzzleHttp\json_decode($response->getBody());
+            
+            if(isset($newlyCreated->module_id))
             {
                 //it's a module item
-                $this->updateModuleItemInCache($newlyUpdated);
+                $modItem = $this->updateModuleItemInCache($newlyCreated);
+                
+//                echo json_encode($modItem);
+                if($request->getModuleItem()->getTags())
+                {//add the tags!
+                    echo "has tags";
+                    $tags = $request->getModuleItem()->getTags();
+                    
+                    $dbHelper = new DbHelper();
+                    $dbHelper->addTags($modItem['content_id'], $tags, $courseId);
+                }
+                else
+                {
+//                    echo "doesn't have tags";
+                }
             }
             else 
             {
                 //it's a module
-                $this->updateModuleInCache($newlyUpdated);
+                $this->updateModuleInCache($newlyCreated);
             }
+            
             return 1;
         }
         else
@@ -494,6 +517,60 @@ class Canvas
     /*
      * MODULES
      */
+    
+    private function buildModuleUpdateArgs(UpdatableModule $module)
+    {
+        $urlArgs = array();
+        foreach($module as $key=>$value)
+        {
+            if($key === "published")
+            {
+                $converted_res = ($value) ? 'true' : 'false';
+                $urlArgs[] = "module[{$key}]={$converted_res}";
+                continue;
+            }
+            if($key === "prerequisite_module_ids")
+            {
+                $urlArgs[] = "module[prerequisite_module_ids][]={$value}";
+                continue;
+            }
+            $urlArgs[] = "module[{$key}]={$value}";
+        }
+        return $urlArgs;
+    }
+    private function buildModuleItemUpdateArgs(UpdatableModuleItem $moduleItem)
+    { 
+        $urlArgs = array();
+        
+        foreach($moduleItem as $key=>$value)
+        {//cannot update content_id or page_url (as per Canvas API)
+            if(($key === "content_id")||($key === "page_url")||$key==="tags"||$key==="type")
+            {
+                continue;
+            }
+            if($key === "published")
+            {
+                $converted_res = ($value) ? 'true' : 'false';
+                $urlArgs[] = "module_item[{$key}]={$converted_res}";
+                continue;
+            }
+            if($key === "completion_requirement_type")
+            {
+                $urlArgs[] = "module_item[completion_requirement][type]={$value}";
+                continue;
+            }
+            if($key === "completion_requirement_min_score")
+            {
+                $urlArgs[] = "module_item[completion_requirement][min_score]={$value}";
+                continue;
+            }
+            if($value)
+            {
+                $urlArgs[] = "module_item[{$key}]={$value}";
+            }
+        }
+        return $urlArgs;
+    }
     //These cache-updating functions are here because of the particular way Canvas handles updates. After we update something in the API, canvas 
     //returns the item that was just updated so we can just use it to update our Cache if the request was successful. This is specific enough
     //to canvas that we can't put it in the CacheHelper class cause other LMS's implementation will be different
@@ -505,6 +582,7 @@ class Canvas
     	}
         $courseId = $_SESSION['courseID'];
         $mod = $this->processSingleModule($moduleArr, $courseId);//by calling this function we are automatically updating this item in cache
+        return $mod;
     }
     
     private function updateModuleItemInCache($moduleItemArr)
@@ -514,7 +592,7 @@ class Canvas
             session_start(); 
     	}
         $courseId = $_SESSION['courseID'];
-        $this->processSingleModuleItem($courseId, $moduleItemArr);
+        return $this->processSingleModuleItem($courseId, $moduleItemArr);
     }
     
     
@@ -677,9 +755,18 @@ class Canvas
         if(isset($mItem->external_url)){$moduleItem->external_url = $mItem->external_url;}
         if(isset($mItem->new_tab)){$moduleItem->new_tab = $mItem->new_tab;}
         if(isset($mItem->completion_requirement)){$moduleItem->completion_requirement = json_encode($mItem->completion_requirement);}
-        if(isset($mItem->content_details) && isset($mItem->type))
+        if(isset($mItem->type))
         {
-            $content = $this->saveContentDetails($courseId, $mItem->module_id, $mItem->id, $moduleItem->content_id, $mItem->type,$mItem->content_details);
+            $contentDetails;
+            if(isset($mItem->content_details))
+            {
+                $contentDetails = $mItem->content_details;
+            }
+            else
+            {
+                $contentDetails = null;
+            }
+            $content = $this->saveContentDetails($courseId, $mItem->module_id, $mItem->id, $moduleItem->content_id, $mItem->type,$contentDetails);
             $moduleItem->content = $content;
         }
 

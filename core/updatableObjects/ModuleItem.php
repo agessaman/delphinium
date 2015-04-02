@@ -14,9 +14,19 @@ class ModuleItem {
     public $external_url;
     public $completion_requirement_type;
     public $completion_requirement_min_score;
-        
+    public $published;
+    public $position;
+    public $tags;
+    
+    function getTags() {
+        return $this->tags;
+    }
+//    function setTags($tags) {
+//        $this->tags = $tags;
+//    }
+
     function __construct($title, $module_item_type, $content_id = null, $page_url = null, $external_url = null, 
-        CompletionRequirementType $completion_requirement_type = null, $completion_requirement_min_score = null)
+        $completion_requirement_type = null, $completion_requirement_min_score = null, $published = false, $position = 1,array $tags = null)
     {
         if (!is_string($title)) {
             throw new InvalidParameterInRequestObjectException(get_class($this),"title", "Parameter must be a string");
@@ -52,6 +62,26 @@ class ModuleItem {
             throw new InvalidParameterInRequestObjectException(get_class($this),"completion_requirement_min_score", "Parameter must be an integer");
         }
         
+        
+        if($tags)
+        {
+            
+            if(!$content_id)
+            {
+                $this->tags = $tags;
+                throw new InvalidParameterInRequestObjectException(get_class($this),"content_id", "In order to add tags a content id must be provided");
+            }
+            else
+            {   
+                $str = implode(", ", $tags);
+                $this->tags=$str;
+            }
+        }
+        else
+        {
+            $this->tags = $tags;
+        }
+        
         $this->title = $title;
         $this->type = $module_item_type;
         $this->content_id = $content_id;
@@ -59,5 +89,8 @@ class ModuleItem {
         $this->external_url = $external_url;
         $this->completion_requirement_type = $completion_requirement_type;
         $this->completion_requirement_min_score = $completion_requirement_min_score;
+        $this->position = $position;
+        $this->published = $published;
+        
     }
 }

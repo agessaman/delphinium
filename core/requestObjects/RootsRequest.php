@@ -6,8 +6,8 @@ use Delphinium\Core\Enums\CommonEnums\Lms;
 
 abstract class RootsRequest
 {
-    public $actionType;
-    public $lms;
+    private $actionType;
+    private $lms;
     
     function getActionType() {
         return $this->actionType;
@@ -17,7 +17,7 @@ abstract class RootsRequest
         return $this->lms;
     }
 
-        function __construct($actionType) 
+    function __construct($actionType) 
     {
         if(ActionType::isValidValue($actionType))
         {  

@@ -19,9 +19,10 @@ class Roots
     
     public function modules(ModulesRequest $request)
     {
-        switch($request->actionType)
+        switch($request->getActionType())
         {
             case (ActionType::GET):
+                
                 if(!$request->getFreshData())
                 {
                     
@@ -43,7 +44,7 @@ class Roots
                 break;
                 
             case(ActionType::PUT):
-                switch ($request->lms)
+                switch ($request->getLms())
                 {
                     case (Lms::CANVAS):
                         $canvas = new Canvas(DataType::MODULES);
@@ -54,7 +55,7 @@ class Roots
                 }
                 break;
             case(ActionType::POST):
-                switch ($request->lms)
+                switch ($request->getLms())
                 {
                     case (Lms::CANVAS):
                         $canvas = new Canvas(DataType::MODULES);
@@ -65,7 +66,7 @@ class Roots
                 }
                 break;
             case(ActionType::DELETE):
-                switch ($request->lms)
+                switch ($request->getLms())
                 {
                     case (Lms::CANVAS):
                         $canvas = new Canvas(DataType::MODULES);
@@ -81,11 +82,11 @@ class Roots
     
     public function submissions(SubmissionsRequest $request)
     {
-        switch($request->actionType)
+        switch($request->getActionType())
         {
             case(ActionType::GET):
                 $result;
-                switch ($request->lms)
+                switch ($request->getLms())
                 {
                     case (Lms::CANVAS):
                         $canvas = new Canvas(DataType::SUBMISSIONS);
@@ -101,14 +102,14 @@ class Roots
                 return $result;
                 break; 
             default :
-                throw new InvalidActionException($request->actionType, get_class($request));
+                throw new InvalidActionException($request->getActionType(), get_class($request));
         
         }
     }
     
     public function assignments(AssignmentsRequest $request)
     {
-        switch($request->actionType)
+        switch($request->getActionType())
         {
             case(ActionType::GET):
                 $cacheHelper = new CacheHelper();
@@ -119,7 +120,7 @@ class Roots
                 }
                 else
                 {//if data is null it means it wasn't in cache... need to get it from Canvas
-                    switch ($request->lms)
+                    switch ($request->getLms())
                     {
                         case (Lms::CANVAS):
                             $canvas = new Canvas(DataType::ASSIGNMENTS);
@@ -134,13 +135,13 @@ class Roots
                 }
             break;
         default :
-            throw new InvalidActionException($request->actionType, get_class($request));
+            throw new InvalidActionException($request->getActionType(), get_class($request));
         }
     }
     
     public function assignmentGroups(AssignmentGroupsRequest $request)
     {
-        switch($request->actionType)
+        switch($request->getActionType())
         {
             case(ActionType::GET):
                 $cacheHelper = new CacheHelper();
@@ -151,7 +152,7 @@ class Roots
                 }
                 else
                 {
-                    switch ($request->lms)
+                    switch ($request->getLms())
                     {
                         case (Lms::CANVAS):
                             $canvas = new Canvas(DataType::ASSIGNMENTS);
@@ -166,7 +167,7 @@ class Roots
                 
             break;
         default :
-            throw new InvalidActionException($request->actionType, get_class($request));
+            throw new InvalidActionException($request->getActionType(), get_class($request));
         }
     }
     
