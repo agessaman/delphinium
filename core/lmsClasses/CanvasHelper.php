@@ -21,7 +21,7 @@ use Delphinium\Core\UpdatableObjects\Module as UpdatableModule;
 use Delphinium\Core\UpdatableObjects\ModuleItem as UpdatableModuleItem;
 use Illuminate\Support\Facades\Cache;
 
-class Canvas
+class CanvasHelper
 {
     private $useCachedData = true;//whether to use cached data
     private $forever = false;//whether the data should be cached forever
@@ -46,10 +46,12 @@ class Canvas
             {
                 $this->useCachedData = true;
                 $this->forever = true;
+                $this->cacheTime = -1;
             }
             else if($cacheSetting->time===0)
             {
                 $this->useCachedData = false;
+                $this->cacheTime = 0;
             }
             else
             {
@@ -93,9 +95,6 @@ class Canvas
 
         $response = GuzzleHelper::makeRequest($request, $url);
 
-        
-        
-        echo json_encode($response);
         return $this->processCanvasModuleData(json_decode($response->getBody()), $courseId);
     }
     
@@ -130,25 +129,30 @@ class Canvas
         }
         else
         {//updating a module
-            $urlArgs = $this->buildModuleUpdateUrl($request->getModule());
+            $urlArgs = $this->buildModuleUpdateArgs($request->getModule());
         }
         
         //Attach token
         $urlArgs[]="access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs); 
-echo $url;
-//return;
         $response = GuzzleHelper::makeRequest($request, $url);
         
         //update cache if request was successful
         if ($response->getStatusCode() ==="200")
         {
             $newlyUpdated= \GuzzleHttp\json_decode($response->getBody());
+          
             if(isset($newlyUpdated->module_id))
             {
                 //it's a module item
-                $this->updateModuleItemInCache($newlyUpdated);
+                $modItem = $this->updateModuleItemInCache($newlyUpdated);
+                //add the tags!
+                    $tags = $request->getModuleItem()->getTags();
+                    
+                    $dbHelper = new DbHelper();
+                    $dbHelper->updateTags($newlyUpdated->content_id, $tags, $courseId);
+                
             }
             else 
             {
@@ -291,7 +295,20 @@ echo $url;
 
             $modItem = $request->getModuleItem();
             foreach($modItem as $key => $value) {
-                if ($value)
+                
+                if(($key==="tags")||($key==="published"))//tags will be handled by us (not by Canvas). Published cannot be set when creating 
+                {//a module item
+                    continue;
+                }
+                if(($key ==="completion_requirement_type")&&($value))
+                {
+                    $urlArgs[] = "module_item[completion_requirement][type]={$value}";
+                }
+                else if(($key ==="completion_requirement_min_score")&&($value))
+                {
+                    $urlArgs[] = "module_item[completion_requirement][min_score]={$value}";
+                }
+                else if ($value)
                 {
                     $urlArgs[] = "module_item[{$key}]={$value}";
                 }
@@ -324,6 +341,8 @@ echo $url;
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs); 
         
+        
+//        echo $url;return;
         $response = GuzzleHelper::makeRequest($request, $url);
         
         //update cache if request was successful
@@ -339,15 +358,11 @@ echo $url;
 //                echo json_encode($modItem);
                 if($request->getModuleItem()->getTags())
                 {//add the tags!
-                    echo "has tags";
                     $tags = $request->getModuleItem()->getTags();
                     
                     $dbHelper = new DbHelper();
                     $dbHelper->addTags($modItem['content_id'], $tags, $courseId);
-                }
-                else
-                {
-//                    echo "doesn't have tags";
+                    
                 }
             }
             else 
@@ -408,7 +423,7 @@ echo $url;
             //ASSIGNMENT IDS
             //assignment_ids can be a list of assignmentIds, or if empty, all assignments will be returned
             
-            $assignmentIds = $tags = implode(',', $request->getAssignmentIds());
+            $assignmentIds = implode(',', $request->getAssignmentIds());
             $urlArgs[]= "assignment_ids[]={$assignmentIds}";
                 
         }
@@ -440,7 +455,7 @@ echo $url;
         
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
         
-        echo $url;return;
+//        echo $url;return;
         $response = GuzzleHelper::makeRequest($request, $url);
         
         return $this->processCanvasSubmissionData(json_decode($response->getBody()));
@@ -523,15 +538,12 @@ echo $url;
         $urlArgs = array();
         foreach($module as $key=>$value)
         {
-            if($key === "published")
-            {
-                $converted_res = ($value) ? 'true' : 'false';
-                $urlArgs[] = "module[{$key}]={$converted_res}";
-                continue;
-            }
-            if($key === "prerequisite_module_ids")
-            {
-                $urlArgs[] = "module[prerequisite_module_ids][]={$value}";
+            if(($key === "prerequisite_module_ids") &&($value)&& is_array($value))
+            {   
+                foreach($value as $prereq)
+                {
+                    $urlArgs[] = "module[prerequisite_module_ids][]={$prereq}";
+                }
                 continue;
             }
             $urlArgs[] = "module[{$key}]={$value}";
@@ -543,28 +555,25 @@ echo $url;
         $urlArgs = array();
         
         foreach($moduleItem as $key=>$value)
-        {//cannot update content_id or page_url (as per Canvas API)
+        {
+//        echo $key.": ".$value." -- ";
+        ////cannot update content_id, page_url, or type. (as per Canvas API)
+            //The tags will be updated separately since they don't belong to Canvas
             if(($key === "content_id")||($key === "page_url")||$key==="tags"||$key==="type")
             {
                 continue;
             }
-            if($key === "published")
-            {
-                $converted_res = ($value) ? 'true' : 'false';
-                $urlArgs[] = "module_item[{$key}]={$converted_res}";
-                continue;
-            }
-            if($key === "completion_requirement_type")
+            if(($key === "completion_requirement_type")&&($value))//make sure value is not null
             {
                 $urlArgs[] = "module_item[completion_requirement][type]={$value}";
                 continue;
             }
-            if($key === "completion_requirement_min_score")
+            if(($key === "completion_requirement_min_score")&&($value))//make sure value is not null
             {
                 $urlArgs[] = "module_item[completion_requirement][min_score]={$value}";
                 continue;
             }
-            if($value)
+            if($value)//only grab non-null items
             {
                 $urlArgs[] = "module_item[{$key}]={$value}";
             }
@@ -610,10 +619,7 @@ echo $url;
     }
     
     private function processCanvasModuleData($data, $courseId)
-    {
-//        echo " -- processing from CANVAS -- ";
-        
-        
+    {   
         $items = array();
         $moduleIdsArray = array();
         
@@ -802,7 +808,6 @@ echo $url;
         $key = "{$courseId}-module-{$moduleId}-moduleItem-{$itemId}-content-{$contentId}";
         
         $content = Content::firstOrNew(array('content_id'=>$contentId));
-
         $content->content_id= $contentId;
         $content->content_type= $type;
         $content->module_item_id = $itemId;

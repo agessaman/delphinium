@@ -44,7 +44,7 @@ class Module {
         $this->name = $name;
         $this->unlock_at = ($utc_unlock_at) ? $utc_unlock_at->format("c") : null;
         $this->prerequisite_module_ids = $prerequisite_module_ids;
-        $this->published = $published;
+        $this->published = ($published) ? 'true' : 'false';
         $this->position = $position;
     }
 }

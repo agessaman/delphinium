@@ -8,6 +8,7 @@ class AssignmentGroupsRequest extends RootsRequest
 {
     private $assignment_group_id;
     private $include_assignments;
+    private $fresh_data;
     
     function getAssignment_group_id() {
         return $this->assignment_group_id;
@@ -16,8 +17,12 @@ class AssignmentGroupsRequest extends RootsRequest
     function getInclude_assignments() {
         return $this->include_assignments;
     }
-        
-    function __construct($actionType, $include_assignments, $assignment_group_id = null) 
+    
+    function getFresh_data() {
+        return $this->fresh_data;
+    }
+
+        function __construct($actionType, $include_assignments, $assignment_group_id = null,  $fresh_data = false) 
     {
         //this takes care of setting the lms and the ActionType in the parent class (RootsRequest)
         parent::__construct($actionType);
@@ -39,5 +44,6 @@ class AssignmentGroupsRequest extends RootsRequest
         
         $this->assignment_group_id = $assignment_group_id;
         $this->include_assignments = $include_assignments;
+        $this->fresh_data = $fresh_data;
     }
 }

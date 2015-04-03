@@ -63,6 +63,12 @@ class DbHelper
         }
     }
     
+    public function getTagsByContentId($content_id)
+    {
+        $content = Content::where('content_id', '=', $content_id)->first();
+        return $content->tags;
+    }
+    
     public function addTags($contentId, $newTagsStr, $courseId)
     {
         $content = Content::where('content_id', '=', $contentId)->first();
@@ -95,6 +101,41 @@ class DbHelper
                 echo "content was null";
                 return null;
             }
+    }
+    
+    public function updateTags($contentId, $newTagsStr, $courseId)
+    {
+        $content = Content::where('content_id', '=', $contentId)->first();
+            
+        if(!is_null($content))//
+        {
+            $content->tags =$newTagsStr;
+            $content->save();
+
+            $newTags = explode(', ', $newTagsStr);
+            $this->updateAvailableTags($courseId, $newTags);
+            return $content->tags;
+        }
+    }
+    
+    public function deleteTag($contentId, $tag)
+    {
+        $content = Content::where('content_id', '=', $contentId)->first();
+        
+        $currTagStr = $content->tags;
+        
+        $current = explode(', ', $currTagStr);
+        
+        $new = array();
+        $new[] = $tag;
+        $filtered = array_diff($current, $new);
+        
+        
+        $tagString =implode(', ', $filtered);
+        
+        $content->tags = $tagString;
+        $content->save();
+        return $content->tags;
     }
     
     public function updateAvailableTags($courseId, $newTags)

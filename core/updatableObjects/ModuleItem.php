@@ -28,11 +28,12 @@ class ModuleItem {
     function __construct($title, $module_item_type, $content_id = null, $page_url = null, $external_url = null, 
         $completion_requirement_type = null, $completion_requirement_min_score = null, $published = false, $position = 1,array $tags = null)
     {
+        
         if (!is_string($title)) {
             throw new InvalidParameterInRequestObjectException(get_class($this),"title", "Parameter must be a string");
         }
         
-        if(!ModuleItemType::isValidValue($module_item_type))
+        if(($module_item_type)&&(!ModuleItemType::isValidValue($module_item_type)))
         {
             throw new InvalidParameterInRequestObjectException(get_class($this),"module_item_type");
         }
@@ -90,7 +91,7 @@ class ModuleItem {
         $this->completion_requirement_type = $completion_requirement_type;
         $this->completion_requirement_min_score = $completion_requirement_min_score;
         $this->position = $position;
-        $this->published = $published;
+        $this->published = ($published) ? 'true' : 'false';
         
     }
 }

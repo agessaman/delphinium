@@ -32,7 +32,7 @@ class TestRoots extends ComponentBase
 //        $this->test();
 //        Cache::flush();
 //        $this->testBasicModulesRequest();
-        $this->testUpdatingModuleItem();
+//        $this->testUpdatingModuleItem();
 //        $this->testUpdatingModule();
         
 //        $this->testDeletingModuleItem();
@@ -42,7 +42,7 @@ class TestRoots extends ComponentBase
 //        $this->testAddingModuleItem();
 //        
 //        $this->testingGettingAssignments();
-//        $this->testGettingSingleAssignment();
+        $this->testGettingSingleAssignment();
         
 //        $this->testAssignmentGroups();
 //        $this->testSingleAssignmentGroup();
@@ -57,13 +57,13 @@ class TestRoots extends ComponentBase
     
     private function testBasicModulesRequest()
     { 
-        $moduleId = null;//456852;
+        $moduleId = 457494;
+        $moduleItemId = 2887055;
         $includeContentDetails = true;
         $includeContentItems = true;
-        $moduleItemId = null;//2869243;
         $module = null;
         $moduleItem = null;
-        $freshData = false;
+        $freshData = true;
                 
         $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems, 
                 $includeContentDetails, $module, $moduleItem , $freshData) ;
@@ -76,14 +76,24 @@ class TestRoots extends ComponentBase
     
     private function testUpdatingModule()
     {   
-        //prereq module id 
-        //380199, 380200
-        $moduleId = 380199;
+        
+        $name = "Updated from backend";
+        
+        $format = DateTime::ISO8601;
+        $date = new DateTime("now");
+        $date->add(new DateInterval('P1D'));
+        $unlock_at = $date;
+        $prerequisite_module_ids =array("380199","380201");
+        $published = true;
+        $position = 4;
+        
+        $module = new Module($name, $unlock_at, $prerequisite_module_ids, $published, $position);
+        
+        
+        $moduleId = 457494;
         $moduleItemId = null;
-//        $params = array("name"=>"Updating from back ","published"=>"true");
         $includeContentItems = false;
         $includeContentDetails = false;
-        $module = null;
         $moduleItem = null;
         $freshData = false;
         
@@ -98,16 +108,17 @@ class TestRoots extends ComponentBase
     private function testUpdatingModuleItem()
     {
         //added
-        $tags = array('description', 'testing tag');
-        $title = "Changed from back end";
-        $modItemType = ModuleItemType::QUIZ;
+        $tags = null;//array('New Tag', 'Another New Tag');
+        $title = "New Title from back end";
+        $modItemType = null;// Module type CANNOT be updated
         $content_id = 2078183;
-        $completion_requirement_min_score = 6;
-        $page_url = "http://www.gmail.com";
+        $completion_requirement_min_score = null;//7;
+        $completion_requirement_type = null;//CompletionRequirementType::MUST_SUBMIT;
+        $page_url = null;//"http://www.gmail.com";
         $published = true;
-        $position = 2;
+        $position = 1;//2;
         
-        $moduleItem = new ModuleItem($title, $modItemType, $content_id, $page_url, null, CompletionRequirementType::MUST_SUBMIT, 
+        $moduleItem = new ModuleItem($title, $modItemType, $content_id, $page_url, null, $completion_requirement_type, 
                 $completion_requirement_min_score, $published, $position, $tags);
         //end added
         
@@ -128,8 +139,8 @@ class TestRoots extends ComponentBase
     
     private function testDeletingModuleItem()
     {
-        $moduleId = 456852;
-        $moduleItemId = 2881776;
+        $moduleId = 457097;
+        $moduleItemId = 2887052;
         $includeContentItems = false;
         $includeContentDetails = false;
         $module = null;
@@ -146,7 +157,7 @@ class TestRoots extends ComponentBase
     
     private function testDeletingModule()
     {
-        $moduleId = 456852;
+        $moduleId = 457079;
         $moduleItemId = null;
         $includeContentItems = false;
         $includeContentDetails = false;
@@ -192,10 +203,10 @@ class TestRoots extends ComponentBase
     
     private function testAddingModuleItem()
     {
-        $tags = array('description', 'testing tag');
-        $title = "Item from backend";
-        $modItemType = ModuleItemType::ASSIGNMENT;
-        $content_id = 2078183;
+        $tags = array('Brand', 'New');
+        $title = "Module Item created from the backend";
+        $modItemType = ModuleItemType::FILE;
+        $content_id = 49051689;
         $completion_requirement_min_score = 6;
         $page_url = "http://www.google.com";
         $published = true;
@@ -204,7 +215,7 @@ class TestRoots extends ComponentBase
         $moduleItem = new ModuleItem($title, $modItemType, $content_id, $page_url, null, CompletionRequirementType::MUST_SUBMIT, 
                 $completion_requirement_min_score, $published, $position, $tags);
                 
-        $moduleId = 457097;
+        $moduleId = 457494;
         $moduleItemId = null;
         $includeContentItems = false;
         $includeContentDetails = false;
@@ -231,7 +242,8 @@ class TestRoots extends ComponentBase
     private function testGettingSingleAssignment()
     {
         $assignment_id = 1660430;
-        $req = new AssignmentsRequest(ActionType::GET, $assignment_id);
+        $freshData = true;
+        $req = new AssignmentsRequest(ActionType::GET, $assignment_id, $freshData);
         
         $roots = new Roots();
         $res = $roots->assignments($req);

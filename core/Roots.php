@@ -7,7 +7,7 @@ use Delphinium\Core\RequestObjects\AssignmentGroupsRequest;
 use Delphinium\Core\Enums\CommonEnums\Lms;
 use Delphinium\Core\Enums\CommonEnums\DataType;
 use Delphinium\Core\Enums\CommonEnums\ActionType;
-use Delphinium\Core\lmsClasses\Canvas;
+use Delphinium\Core\lmsClasses\CanvasHelper;
 use Delphinium\Core\Cache\CacheHelper;
 use Delphinium\Core\Exceptions\InvalidActionException;
 
@@ -47,10 +47,10 @@ class Roots
                 switch ($request->getLms())
                 {
                     case (Lms::CANVAS):
-                        $canvas = new Canvas(DataType::MODULES);
+                        $canvas = new CanvasHelper(DataType::MODULES);
                         return $canvas->putModuleData($request);
                     default:
-                        $canvas = new Canvas(DataType::MODULES);
+                        $canvas = new CanvasHelper(DataType::MODULES);
                         return $canvas->putModuleData($request);
                 }
                 break;
@@ -58,10 +58,10 @@ class Roots
                 switch ($request->getLms())
                 {
                     case (Lms::CANVAS):
-                        $canvas = new Canvas(DataType::MODULES);
+                        $canvas = new CanvasHelper(DataType::MODULES);
                         return $canvas->postModuleData($request);
                     default:
-                        $canvas = new Canvas(DataType::MODULES);
+                        $canvas = new CanvasHelper(DataType::MODULES);
                         return $canvas->postModuleData($request);
                 }
                 break;
@@ -69,10 +69,10 @@ class Roots
                 switch ($request->getLms())
                 {
                     case (Lms::CANVAS):
-                        $canvas = new Canvas(DataType::MODULES);
+                        $canvas = new CanvasHelper(DataType::MODULES);
                         return $canvas->deleteModuleData($request);
                     default:
-                        $canvas = new Canvas(DataType::MODULES);
+                        $canvas = new CanvasHelper(DataType::MODULES);
                         return $canvas->deleteModuleData($request);
                 }
                 break;
@@ -89,11 +89,11 @@ class Roots
                 switch ($request->getLms())
                 {
                     case (Lms::CANVAS):
-                        $canvas = new Canvas(DataType::SUBMISSIONS);
+                        $canvas = new CanvasHelper(DataType::SUBMISSIONS);
                         $result = $canvas->processSubmissionsRequest($request);
                         break;
                     default:
-                        $canvas = new Canvas(DataType::SUBMISSIONS);
+                        $canvas = new CanvasHelper(DataType::SUBMISSIONS);
                         $result = $canvas->processSubmissionsRequest($request);
                         break;
 
@@ -112,30 +112,28 @@ class Roots
         switch($request->getActionType())
         {
             case(ActionType::GET):
-                $cacheHelper = new CacheHelper();
-                $data = $cacheHelper->searchAssignmentDataInCache($request);
-                if($data)
+                
+                if(!$request->getFresh_data())
                 {
-                    return $data;
-                }
-                else
-                {//if data is null it means it wasn't in cache... need to get it from Canvas
-                    switch ($request->getLms())
+                    $cacheHelper = new CacheHelper();
+                    $data = $cacheHelper->searchAssignmentDataInCache($request);
+                    if($data)
+                    {//if data is null it means it wasn't in cache... need to get it from LMS
+                        return $data;
+                    }
+                    else
                     {
-                        case (Lms::CANVAS):
-                            $canvas = new Canvas(DataType::ASSIGNMENTS);
-                            $canvas->processAssignmentsRequest($request);
-                            return $cacheHelper->searchAssignmentDataInCache($request);
-                        default:
-                            $canvas = new Canvas(DataType::ASSIGNMENTS);
-                            $canvas->processAssignmentsRequest($request);
-                            return $cacheHelper->searchAssignmentDataInCache($request);
-
+                        return $this->getAssignmentDataFromLms($request);
                     }
                 }
-            break;
-        default :
-            throw new InvalidActionException($request->getActionType(), get_class($request));
+                else
+                {
+                    return $this->getAssignmentDataFromLms($request);
+                }
+                break;
+                //If another action was given throw exception
+            default :
+                throw new InvalidActionException($request->getActionType(), get_class($request));
         }
     }
     
@@ -144,25 +142,22 @@ class Roots
         switch($request->getActionType())
         {
             case(ActionType::GET):
-                $cacheHelper = new CacheHelper();
-                $data = $cacheHelper->serchAssignmentGroupDataInCache($request);
-                if($data)
-                {//if data is null it means it wasn't in cache... need to get it from 
-                    return $data;
+                if(!$request->getFresh_data())
+                {
+                    $cacheHelper = new CacheHelper();
+                    $data = $cacheHelper->serchAssignmentGroupDataInCache($request);
+                    if($data)
+                    {//if data is null it means it wasn't in cache... need to get it from 
+                        return $data;
+                    }
+                    else
+                    {
+                        return $this->getAssignmentGroupDataFromLms( $request);
+                    } 
                 }
                 else
                 {
-                    switch ($request->getLms())
-                    {
-                        case (Lms::CANVAS):
-                            $canvas = new Canvas(DataType::ASSIGNMENTS);
-                            $canvas->processAssignmentGroupsRequest($request);
-                            return $cacheHelper->serchAssignmentGroupDataInCache($request);
-                        default:
-                            $canvas = new Canvas(DataType::ASSIGNMENTS);
-                            $canvas->processAssignmentGroupsRequest($request);
-                            return $cacheHelper->serchAssignmentGroupDataInCache($request);
-                    }
+                    return $this->getAssignmentGroupDataFromLms( $request);
                 }
                 
             break;
@@ -177,14 +172,47 @@ class Roots
         switch ($request->getLms())
         {
             case (Lms::CANVAS):
-                $canvas = new Canvas(DataType::MODULES);
+                $canvas = new CanvasHelper(DataType::MODULES);
                 $canvas->getModuleData($request);
                 return $cacheHelper->searchModuleDataInCache($request);
             default:
-                $canvas = new Canvas(DataType::MODULES);
+                $canvas = new CanvasHelper(DataType::MODULES);
                 $canvas->getModuleData($request);
                 return $cacheHelper->searchModuleDataInCache($request);
+        }
+    }
+    
+    
+    private function getAssignmentDataFromLms(AssignmentsRequest $request)
+    {
+        $cacheHelper = new CacheHelper();
+        switch ($request->getLms())
+        {
+            case (Lms::CANVAS):
+                $canvas = new CanvasHelper(DataType::ASSIGNMENTS);
+                $canvas->processAssignmentsRequest($request);
+                return $cacheHelper->searchAssignmentDataInCache($request);
+            default:
+                $canvas = new CanvasHelper(DataType::ASSIGNMENTS);
+                $canvas->processAssignmentsRequest($request);
+                return $cacheHelper->searchAssignmentDataInCache($request);
 
+        }
+    }
+    
+    private function getAssignmentGroupDataFromLms(AssignmentGroupsRequest $request)
+    {
+        $cacheHelper = new CacheHelper();
+        switch ($request->getLms())
+        {
+            case (Lms::CANVAS):
+                $canvas = new CanvasHelper(DataType::ASSIGNMENTS);
+                $canvas->processAssignmentGroupsRequest($request);
+                return $cacheHelper->serchAssignmentGroupDataInCache($request);
+            default:
+                $canvas = new CanvasHelper(DataType::ASSIGNMENTS);
+                $canvas->processAssignmentGroupsRequest($request);
+                return $cacheHelper->serchAssignmentGroupDataInCache($request);
         }
     }
 }

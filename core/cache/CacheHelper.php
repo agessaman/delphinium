@@ -3,6 +3,7 @@
 use Delphinium\Core\RequestObjects\AssignmentsRequest;
 use Delphinium\Core\RequestObjects\AssignmentGroupsRequest;
 use Delphinium\Core\RequestObjects\ModulesRequest;
+use Delphinium\Core\DB\DbHelper;
 use Illuminate\Support\Facades\Cache;
 /* 
  * To change this license header, choose License Headers in Project Properties.
@@ -14,9 +15,9 @@ class CacheHelper
 {
     public function searchModuleDataInCache(ModulesRequest $request)
     {
-//        echo "-- searching in Cache --";
         $courseId = $_SESSION['courseID'];
         $key = "";
+        $module  = false;
         if($request->getModuleId())
         {
             if($request->getModuleItemId())
@@ -25,11 +26,27 @@ class CacheHelper
             }
             else
             {
+                $module = true;
                 $key = "{$courseId}-module-{$request->getModuleId()}";
             }
             if(Cache::has($key))
             {
                 $data = Cache::get($key);
+                $res;
+                if($module)
+                {
+                    foreach($data['module_items'] as $item)
+                    {
+                        //need to attach the tags (we don't cache tags or position)
+                        $res = $this->stitchTags($item['content'][0]);
+                        $item['content'] = $res;
+                    }
+                }
+                else
+                {
+                    $res = $this->stitchTags($data['content'][0]);
+                    $data['content'] = $res;
+                }
                 return $data;
             }
             else
@@ -196,6 +213,7 @@ class CacheHelper
     
     public function deleteModuleItemFromCacheCascade($moduleItemKey, $deleteFromModuleList, $cacheTime)
     {
+        $moduleItem;
         $courseId = $_SESSION['courseID'];
         if(Cache::has($moduleItemKey))
         {
@@ -215,7 +233,7 @@ class CacheHelper
         if($deleteFromModuleList)
         {//loop through this module item's module and delete this moduleItem from the module's list of module items
             
-            $moduleKey = "{$courseId}-module-{$moduleId}";
+            $moduleKey = "{$courseId}-module-{$moduleItem['module_id']}";
             if(Cache::has($moduleKey))
             {
                 $module = Cache::get($moduleKey);
@@ -249,5 +267,40 @@ class CacheHelper
     public function deleteContentFromCache($contentKey)
     {
         $this->deleteObjFromCache($contentKey);
+    }
+    
+    public function updateTagsInCache($moduleId, $moduleItemId, $contentId, $courseId, $newTagsStr, $cacheTime)
+    {
+        //get each moduleItem's content and delete from cache
+        $contentKey = "{$courseId}-module-{$moduleId}-moduleItem-{$moduleItemId}-content-{$contentId}";
+        if(Cache::has($contentKey))
+        {
+            $content = Cache::get($contentKey);
+            $content['tags'] = $newTagsStr;
+            Cache::forget($contentKey);
+                
+            if($cacheTime<1)
+            {
+                Cache::forever($contentKey, $content);
+            }
+            else
+            {
+                Cache::put($contentKey, $content, $cacheTime);
+            }
+        }
+            
+    }
+    
+    
+    
+    /*
+     * PRIVATE FUNCTIONS
+     */
+    private function stitchTags($content)
+    {
+        $dbHelper = new DbHelper();
+        $tags = $dbHelper->getTagsByContentId($content['content_id']);
+        $content['tags'] = $tags;
+        return $content;
     }
 }
