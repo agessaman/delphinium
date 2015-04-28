@@ -24,9 +24,9 @@ class Module {
     }
 
         
-    function __construct($name,  DateTime $utc_unlock_at = null, array $prerequisite_module_ids = null, $published = false, $position =1)
+    function __construct($name = null,  DateTime $utc_unlock_at = null, array $prerequisite_module_ids = null, $published = null, $position =1)
     {
-        if (!is_string($name)) {
+        if (($name)&&(!is_string($name))) {
             throw new InvalidParameterInRequestObjectException(get_class($this),"name", "Parameter must be a string");
         }
         
@@ -44,7 +44,11 @@ class Module {
         $this->name = $name;
         $this->unlock_at = ($utc_unlock_at) ? $utc_unlock_at->format("c") : null;
         $this->prerequisite_module_ids = $prerequisite_module_ids;
-        $this->published = ($published) ? 'true' : 'false';
         $this->position = $position;
+        
+        if(!is_null($published))
+        {
+            $this->published = ($published) ? 'true' : 'false';
+        }
     }
 }

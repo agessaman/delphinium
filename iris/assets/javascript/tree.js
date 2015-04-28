@@ -3,6 +3,7 @@
 
   angular.module('treeApp', ['ui.tree'])
   .controller('treeCtrl', function($scope,$http) {
+      
     $scope.data  = moduleData;
     $scope.contentClass = "hidden";
 //    $scope.modalShown = false;
@@ -103,7 +104,6 @@
         //if the item was moved to the first position, this item will now become the parent of all other items
         if((!event.dest.nodesScope.$nodeScope)&&(event.source.nodeScope.$parentNodeScope))
         {
-            console.log("attempting to save items");
             var parent = event.dest.nodesScope.$modelValue[0];
             var allOtherItems = event.dest.nodesScope.$modelValue[1];
             $http.post('moveItemToTop', { parent: JSON.stringify(parent),
@@ -153,6 +153,7 @@
     
     $scope.saveOrder = function(scope)
     {   
+//        console.log(JSON.stringify($scope.data));
         $http.post('saveModules', { courseId: courseId,
             modulesArray:JSON.stringify($scope.data)})
                 .success(function (data,status) {

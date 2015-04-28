@@ -26,8 +26,9 @@ class CanvasHelper
     private $useCachedData = true;//whether to use cached data
     private $forever = false;//whether the data should be cached forever
     private $cacheTime = 0;//or for certain amount of time (in minutes)
-        
-    /*
+    
+    
+        /*
      * constructor
      */
     function __construct($dataType) 
@@ -63,6 +64,21 @@ class CanvasHelper
     }
     
     /*
+     * Getters & setters
+     */
+    function getUseCachedData() {
+        return $this->useCachedData;
+    }
+
+    function getForever() {
+        return $this->forever;
+    }
+
+    function getCacheTime() {
+        return $this->cacheTime;
+    }
+
+    /*
      * public functions
      */
     /*
@@ -70,6 +86,7 @@ class CanvasHelper
      */
     public function getModuleData(ModulesRequest $request)
     {   
+        echo "getting from canvas";
         //As per Jared's & Damaris' discussion when users request fresh module data we wil retrieve ALL module data so we can store it in 
         //cache and then we'll only return the data they asked for
         if(!isset($_SESSION)) 
@@ -77,7 +94,7 @@ class CanvasHelper
             session_start(); 
     	}
         $domain = $_SESSION['domain'];
-        $token = $_SESSION['userToken'];
+        $token = \Crypt::decrypt($_SESSION['userToken']);
         $courseId = $_SESSION['courseID'];
 
         $urlPieces= array();
@@ -110,7 +127,7 @@ class CanvasHelper
             session_start(); 
     	}
         $domain = $_SESSION['domain'];
-        $token = $_SESSION['userToken'];
+        $token = \Crypt::decrypt($_SESSION['userToken']);
         $courseId = $_SESSION['courseID'];
         $scope = "module";
         
@@ -136,6 +153,7 @@ class CanvasHelper
         $urlArgs[]="access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs); 
+        
         $response = GuzzleHelper::makeRequest($request, $url);
         
         //update cache if request was successful
@@ -175,7 +193,7 @@ class CanvasHelper
             session_start(); 
     	}
         $domain = $_SESSION['domain'];
-        $token = $_SESSION['userToken'];
+        $token = \Crypt::decrypt($_SESSION['userToken']);
         $courseId = $_SESSION['courseID'];
         $scope = "module";
         
@@ -231,28 +249,7 @@ class CanvasHelper
 
                 //this will delete this module, its module items, and the content from Cache
                 $cacheHelper->deleteModuleFromCacheCascade($request->getModuleId(), $this->forever, $this->cacheTime);
-
-                ////delete module, module items, and contents
-    //                $moduleKey = "{$courseId}-module-{$request->moduleId}";
-    //                $cacheHelper->deleteObjFromCache($moduleKey);
-    //                
-    //                Module::where('course_id', '=', $courseId)
-    //                        ->where('module_id','=',$request->moduleId)->delete();
-    //                //also delete the module items and content
-    //                
-    //                $moduleItems = ModuleItem::where('course_id', '=', $courseId)
-    //                        ->where('module_id','=',$request->moduleId);
-    //                foreach($moduleItems as $item)
-    //                {
-    //                    $this->deleteModuleItemsContent($courseId, $request->moduleId, $item->module_item_id);
-    //                    $mItemkey = "{$courseId}-module-{$request->moduleId}-moduleItem-{$request->moduleItemId}";
-    //                
-    //                    //we can't just delete the module straight from cache cause we need to delete it from the module (in cache), etc
-    //                    $cacheHelper->deleteModuleItemFromCache($mItemkey, $this->cacheTime);
-    //                }
-    //                ModuleItem::where('course_id', '=', $courseId)
-    //                        ->where('module_id','=',$request->moduleId)->delete();
-    //                
+    
                 }
             }
             
@@ -280,7 +277,7 @@ class CanvasHelper
             session_start(); 
     	}
         $domain = $_SESSION['domain'];
-        $token = $_SESSION['userToken'];
+        $token = \Crypt::decrypt($_SESSION['userToken']);
         $courseId = $_SESSION['courseID'];
         $scope = "module";
         
@@ -321,7 +318,10 @@ class CanvasHelper
 
             $modItem = $request->getModule();
             foreach($modItem as $key => $value) {
-                
+                if(($key ==="name")&&(!$value))
+                {
+                    throw new InvalidParameterInRequestObjectException(get_class($request),"name", "Parameter must be a string");
+                }
                 if(($value) && ($key ==="prerequisite_module_ids") && is_array($value))
                 {
                     foreach($value as $prereq)
@@ -390,7 +390,7 @@ class CanvasHelper
             session_start(); 
     	}
         $domain = $_SESSION['domain'];
-        $token = $_SESSION['userToken'];
+        $token = \Crypt::decrypt($_SESSION['userToken']);
         $courseId = $_SESSION['courseID'];
         $userId = $_SESSION['userID'];
         
@@ -474,7 +474,7 @@ class CanvasHelper
             session_start(); 
     	}
         $domain = $_SESSION['domain'];
-        $token = $_SESSION['userToken'];
+        $token = \Crypt::decrypt($_SESSION['userToken']);
         $courseId = $_SESSION['courseID'];
         
         $urlPieces= array();
@@ -504,7 +504,7 @@ class CanvasHelper
             session_start(); 
     	}
         $domain = $_SESSION['domain'];
-        $token = $_SESSION['userToken'];
+        $token = \Crypt::decrypt($_SESSION['userToken']);
         $courseId = $_SESSION['courseID'];
         
         $urlPieces= array();
@@ -546,7 +546,11 @@ class CanvasHelper
                 }
                 continue;
             }
-            $urlArgs[] = "module[{$key}]={$value}";
+            if($value)
+            {
+                $urlArgs[] = "module[{$key}]={$value}";
+            }
+            
         }
         return $urlArgs;
     }
@@ -622,29 +626,27 @@ class CanvasHelper
     {   
         $items = array();
         $moduleIdsArray = array();
-        
+        $i = 0;
+        $firstItem = null;
         foreach($data as $moduleRow)
         {
+            //assign the first item as the parent IF it's published
+            if(is_null($firstItem) && $moduleRow->published)
+            {
+                $firstItem = $moduleRow->id;
+            }
              //we'll create an array with all the moduleIds that belong to this courseId
             $moduleIdsArray[] = $moduleRow->id;
-            $module = $this->processSingleModule($moduleRow, $courseId);
+            $module = $this->processSingleModule($moduleRow, $courseId, $i, $firstItem);
             $items[] = $module;
+            $i++;
         }
 
         //put in Cache a list of all the module keys for this course
         $moduleIdsKey = "{$courseId}-moduleIds";
-        if(Cache::has($moduleIdsKey))
-        {
-            Cache::forget($moduleIdsKey);
-        }
-        if($this->forever)
-        {
-            Cache::forever($moduleIdsKey, $moduleIdsArray);
-        }
-        else
-        {
-            Cache::put($moduleIdsKey, $moduleIdsArray, $this->cacheTime);
-        }
+        
+        $cacheHelper = new CacheHelper();
+        $cacheHelper->storeDataInCache($moduleIdsKey, $moduleIdsArray, $this->cacheTime);
         
         //since we are updating our DB and CACHE with fresh Canvas data we MUST check against our DB and make sure we don't have "old" modules stored
         $dbHelper = new DbHelper();
@@ -653,15 +655,14 @@ class CanvasHelper
         return $items;
     }
     
-    private function processSingleModule($moduleRow, $courseId)
+    private function processSingleModule($moduleRow, $courseId, $possibleOrder=null, $firstItemId = null)
     {
-        
         //check if module exists
         $module = Module::firstOrNew(array('module_id' => $moduleRow->id));//('moduleId','=',$module->id);
         $module->module_id = $moduleRow->id;
         $module->course_id = $courseId;//do we need this?
         $module->name = $moduleRow->name;
-        $module->position = $moduleRow->position;
+//        $module->position = $moduleRow->position;
         $module->unlock_at = $moduleRow->unlock_at;
         $module->require_sequential_progress = $moduleRow->require_sequential_progress;
         $module->publish_final_grade = $moduleRow->publish_final_grade;
@@ -676,6 +677,7 @@ class CanvasHelper
             $moduleItems = $this->saveModuleItems($moduleRow->items, $courseId);
             $module->module_items = $moduleItems;
         }
+        
         $orderedMod = $this->retrieveOrderedModuleInfo($moduleRow->id, $courseId);
         
         if($orderedMod)
@@ -683,7 +685,17 @@ class CanvasHelper
             $module->order = $orderedMod->order;
             $module->parent_id = $orderedMod->parent_id;
         }
-        
+        else if(!is_null($firstItemId))
+        {
+            $module->parent_id = $firstItemId;
+        }
+//        
+//        $module->save();
+//        $orderedMod = $this->retrieveOrderedModuleInfo($moduleRow->id, $courseId, $possibleOrder, $firstItemId);
+//        
+//        $module->order = $orderedMod->order;
+//        $module->parent_id = $orderedMod->parent_id;
+//       
         $module->save();
         //We need to assign the moduleItems AFTER we've converted the module to an array because the moduleItems are a laravel relationship
         //that is only loaded this way. If we don't set the module Items this way they won't be stored as a property of this module in Cache
@@ -691,29 +703,30 @@ class CanvasHelper
         $moduleArr['module_items'] = $module->module_items->toArray();
 
         $key = "{$courseId}-module-{$module->module_id}";
-        
-        if(Cache::has($key))
-        {
-            Cache::forget($key);
-        }
-        if($this->forever)
-        {//toArray is the key here! an Eloquent model is a closure and won't be serialized unless we first convert it to an Array!!!
-            
-            Cache::forever($key, $moduleArr);
-        }
-        else
-        {
-            Cache::put($key, $moduleArr, $this->cacheTime);
-        }
-
+        $cacheHelper = new CacheHelper();
+        $cacheHelper->storeDataInCache($key, $moduleArr, $this->cacheTime);
         
         return $module;
     }
     
     private function retrieveOrderedModuleInfo($moduleId, $courseId)
     {
-        return OrderedModule::where('course_id', '=', $courseId)
+        $module = OrderedModule::where('course_id', '=', $courseId)
                                     ->where('module_id','=',$moduleId)->first();
+        
+        echo " --".$module->parent_id."-- ";
+        return $module;
+//        $module = OrderedModule::firstOrNew(array(
+//            'course_id' => $courseId,
+//            'module_id'=> $moduleId
+//        ));
+//        //if the item is the first item the parent will be 1
+//        $module->module_id = $moduleId;
+//        $module->course_id = $courseId;
+//        $module->parent_id=($firstItemId===$moduleId)?1:$firstItemId;
+//        $module->order = $possibleOrder;
+//        $module->save();
+//        return $module;
     }
     
     private function saveModuleItems($moduleItems, $courseId)
@@ -785,19 +798,8 @@ class CanvasHelper
 
         $key = "{$courseId}-module-{$mItem->module_id}-moduleItem-{$mItem->id}";
 //            $key="moduleItem-".$courseId.'-'.$moduleId.'-'.$mItem->id;
-
-        if(Cache::has($key))
-        {
-            Cache::forget($key);
-        }
-        if($this->forever)
-        {
-            Cache::forever($key, $moduleArr);
-        }
-        else
-        {
-            Cache::put($key, $moduleArr,$this->cacheTime);
-        }
+        $cacheHelper = new CacheHelper();
+        $cacheHelper->storeDataInCache($key, $moduleArr, $this->cacheTime);
         
         return $moduleArr;
     }
@@ -819,18 +821,9 @@ class CanvasHelper
         if(isset($contentDetails->lock_explanation)){$content->lock_explanation= $contentDetails->lock_explanation;}
                 
         $content->save();
-        if(Cache::has($key))
-        {
-            Cache::forget($key);
-        }
-        if($this->forever)
-        {
-            Cache::forever($key, $content->toArray());
-        }
-        else
-        {
-            Cache::put($key, $content->toArray(), $this->cacheTime);
-        }
+        $cacheHelper = new CacheHelper();
+        $cacheHelper->storeDataInCache($key, $content->toArray(), $this->cacheTime);
+        
         return $content;
     }
     
@@ -854,19 +847,9 @@ class CanvasHelper
             }
             $key = "{$courseId}-assignments";
 
-            if(Cache::has($key))
-            {
-                Cache::forget($key);
-            }
-            if($this->forever)
-            {//toArray is the key here! an Eloquent model is a closure and won't be serialized unless we first convert it to an Array!!!
-
-                Cache::forever($key, $assignments);
-            }
-            else
-            {
-                Cache::put($key, $assignments, $this->cacheTime);
-            }
+            $cacheHelper = new CacheHelper();
+            $cacheHelper->storeDataInCache($key, $assignments, $this->cacheTime);
+            
         }
         
         return $assignments;
@@ -908,21 +891,8 @@ class CanvasHelper
         $assignment->save();
         
         $key = "{$row->course_id}-assignment_id-{$assignment->assignment_id}";
-        
-        if(Cache::has($key))
-        {
-            Cache::forget($key);
-        }
-        if($this->forever)
-        {//toArray is the key here! an Eloquent model is a closure and won't be serialized unless we first convert it to an Array!!!
-            
-            Cache::forever($key, $assignment->toArray());
-        }
-        else
-        {
-            Cache::put($key, $assignment->toArray(), $this->cacheTime);
-        }
-
+        $cacheHelper = new CacheHelper();
+        $cacheHelper->storeDataInCache($key, $assignment->toArray(), $this->cacheTime);
         
         return $assignment;
     }
@@ -943,22 +913,11 @@ class CanvasHelper
             }
             
             $key = "{$courseId}-assignment_groups";
-        
-            if(Cache::has($key))
-            {
-                Cache::forget($key);
-            }
-            if($this->forever)
-            {//toArray is the key here! an Eloquent model is a closure and won't be serialized unless we first convert it to an Array!!!
-
-                Cache::forever($key, $assignmentGroupArray);
-            }
-            else
-            {
-                Cache::put($key, $assignmentGroupArray, $this->cacheTime);
-            }
+            $cacheHelper = new CacheHelper();
+            $cacheHelper->storeDataInCache($key, $assignmentGroupArray, $this->cacheTime);
+            
                 return $assignmentGroupArray;
-            }
+        }
     }
     
     private function processSingleAssignmentGroup($row, $courseId)
@@ -990,20 +949,8 @@ class CanvasHelper
         
         $assignmentGroup->save();
         $key = "{$courseId}-assignment_group_id-{$assignmentGroup->assignment_group_id}";
-        
-        if(Cache::has($key))
-        {
-            Cache::forget($key);
-        }
-        if($this->forever)
-        {   
-            Cache::forever($key, $assigArr);
-        }
-        else
-        {
-            Cache::put($key, $assigArr, $this->cacheTime);
-        }
-
+        $cacheHelper = new CacheHelper();
+        $cacheHelper->storeDataInCache($key, $assigArr, $this->cacheTime);
         
         return $assigArr;
     }

@@ -31,7 +31,7 @@ class TestRoots extends ComponentBase
 //        $this->refreshCache();
 //        $this->test();
 //        Cache::flush();
-//        $this->testBasicModulesRequest();
+        $this->testBasicModulesRequest();
 //        $this->testUpdatingModuleItem();
 //        $this->testUpdatingModule();
         
@@ -42,7 +42,7 @@ class TestRoots extends ComponentBase
 //        $this->testAddingModuleItem();
 //        
 //        $this->testingGettingAssignments();
-        $this->testGettingSingleAssignment();
+//        $this->testGettingSingleAssignment();
         
 //        $this->testAssignmentGroups();
 //        $this->testSingleAssignmentGroup();
@@ -242,7 +242,7 @@ class TestRoots extends ComponentBase
     private function testGettingSingleAssignment()
     {
         $assignment_id = 1660430;
-        $freshData = true;
+        $freshData = false;
         $req = new AssignmentsRequest(ActionType::GET, $assignment_id, $freshData);
         
         $roots = new Roots();
@@ -252,7 +252,10 @@ class TestRoots extends ComponentBase
     
     private function testAssignmentGroups()
     {
-        $req = new AssignmentGroupsRequest(ActionType::GET, false, null);
+        $include_assignments = true;
+        $fresh_data = true;
+        $assignmentGpId = null;
+        $req = new AssignmentGroupsRequest(ActionType::GET, $include_assignments, $assignmentGpId, $fresh_data);
         
         $roots = new Roots();
         $res = $roots->assignmentGroups($req);

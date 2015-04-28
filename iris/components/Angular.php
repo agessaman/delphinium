@@ -27,40 +27,51 @@ class Angular  extends ComponentBase
     	$this->addCss('/plugins/delphinium/iris/assets/css/module-tree.css');	
         $this->addCss('/plugins/delphinium/iris/assets/css/angular-ui-tree.min.css');
         
-//        session_start();
-//        
-        if(isset($_SESSION['courseID']))
-        {
-            $courseId = $_SESSION['courseID'];
-            $encryptedToken = $_SESSION['userToken'];
-        
-            $decrypted =$encryptedToken;//\Crypt::decrypt($encryptedToken);
-            $this->prepareData($courseId, $decrypted, 10, false);
-        }
-//        $courseId = 343331;
-//        $this->page['userId'] = 1489289;
-//        $this->page['courseId'] = $courseId;
-//        $decrypted ="sdf";//\Crypt::decrypt($encryptedToken);
-//        $this->prepareData($courseId, $decrypted, 10, false);
+        if(!isset($_SESSION)) 
+   	 	{ 
+        	session_start(); 
+    	}
+       
+       if(isset($_SESSION['courseID']))
+       {
+           $courseId = $_SESSION['courseID'];
+           $encryptedToken = $_SESSION['userToken'];
+	       $decrypted =\Crypt::decrypt($encryptedToken);
+           // $decrypted =$encryptedToken;//\Crypt::decrypt($encryptedToken);
+           $this->prepareData($courseId, $decrypted, 10, false);
+       }
+       else
+       {
+       		echo "An error has occurred. Please notify your instructor";
+       }
+        // $courseId = 343331;
+//         $this->page['userId'] = 1489289;
+//         $this->page['courseId'] = $courseId;
+//         $decrypted ="sdf";//\Crypt::decrypt($encryptedToken);
+//         $this->prepareData($courseId, $decrypted, 10, false);
     }
     
     public function onRefreshCache()
     {
         
-//        session_start();
-//        if(isset($_SESSION['courseID']))
-//        {
-//            $courseId = $_SESSION['courseID'];
-//            $encryptedToken = $_SESSION['userToken'];
-//        
-//            $decrypted =$encryptedToken;//\Crypt::decrypt($encryptedToken);
-//            
-//            //by doing $cacheTime = -1 we grab fresh data
-//            $this->prepareData($courseId, $decrypted, 0, false);
-//        }
-        $courseId = 343331;
-        $decrypted ="sdf";//\Crypt::decrypt($encryptedToken);
-        $this->prepareData($courseId, $decrypted, -1, false);
+       if(!isset($_SESSION)) 
+   	   { 
+        	session_start(); 
+       }
+       
+       if(isset($_SESSION['courseID']))
+       {
+           $courseId = $_SESSION['courseID'];
+           $encryptedToken = $_SESSION['userToken'];
+       
+           $decrypted =$encryptedToken;//\Crypt::decrypt($encryptedToken);
+           
+           //by doing $cacheTime = -1 we grab fresh data
+           $this->prepareData($courseId, $decrypted, -1, false);
+       }
+        // $courseId = 343331;
+//         $decrypted ="sdf";//\Crypt::decrypt($encryptedToken);
+//         $this->prepareData($courseId, $decrypted, -1, false);
         
     }
     
@@ -68,7 +79,8 @@ class Angular  extends ComponentBase
     {
         $iris = new IrisClass();
         $moduleData = $iris->getModules($courseId, $decrypted, $time, $forever, null);
-
+// 		echo json_encode($moduleData);
+// 		return;
         $this->page['courseId'] = $courseId;
         $result = $iris->buildTree($moduleData);
 //        var_dump($moduleData);

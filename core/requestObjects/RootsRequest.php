@@ -28,6 +28,10 @@ abstract class RootsRequest
             throw new \Exception("Invalid ActionType"); 
         }
         
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
         $lms = strtoupper($_SESSION['lms']);
         if(Lms::isValidValue($lms))
         {

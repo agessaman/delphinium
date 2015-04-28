@@ -4,6 +4,7 @@ use Delphinium\Core\Models\ModuleItem;
 use Delphinium\Core\Models\Module;
 use Delphinium\Core\Models\Content;
 use Delphinium\Core\Models\Tag;
+use Delphinium\Core\Models\OrderedModule;
 
 class DbHelper
 {
@@ -158,5 +159,21 @@ class DbHelper
         $tags->course_id = $courseId;
         $tags->tags = $tagString;
         $tags->save();
+    }
+    
+    public function updateOrderedModule($module)
+    {
+        $orderedModule = OrderedModule::firstOrNew(
+                array(
+                    'course_id' => $module->course_id, 
+                    'module_id' => $module->module_id
+                )
+        );
+        $orderedModule->module_id = $module->module_id;
+        $orderedModule->parent_id = $module->parent_id;
+        $orderedModule->course_id = $module->course_id;
+        $orderedModule->order = $module->order;
+        $orderedModule->save();
+        return $orderedModule;
     }
 }

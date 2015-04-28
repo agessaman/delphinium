@@ -4,12 +4,14 @@ use Delphinium\Core\RequestObjects\SubmissionsRequest;
 use Delphinium\Core\RequestObjects\ModulesRequest;
 use Delphinium\Core\RequestObjects\AssignmentsRequest;
 use Delphinium\Core\RequestObjects\AssignmentGroupsRequest;
+use Delphinium\Core\UpdatableObjects\Module;
 use Delphinium\Core\Enums\CommonEnums\Lms;
 use Delphinium\Core\Enums\CommonEnums\DataType;
 use Delphinium\Core\Enums\CommonEnums\ActionType;
 use Delphinium\Core\lmsClasses\CanvasHelper;
 use Delphinium\Core\Cache\CacheHelper;
 use Delphinium\Core\Exceptions\InvalidActionException;
+use Delphinium\Core\DB\DbHelper;
 
 class Roots
 {
@@ -25,7 +27,6 @@ class Roots
                 
                 if(!$request->getFreshData())
                 {
-                    
                     $cacheHelper = new CacheHelper();
                     $data = $cacheHelper->searchModuleDataInCache($request);
                     if($data)
@@ -166,6 +167,42 @@ class Roots
         }
     }
     
+    
+    /*
+     * OTHER HELPER METHODS
+     */
+    
+    public function updateModuleOrder($modules)
+    {
+        $ordered = array();
+        $cacheHelper = new CacheHelper();
+        $dbHelper = new DbHelper();
+        $canvas = new CanvasHelper(DataType::MODULES);
+        $cacheTime = $canvas->getCacheTime();
+        
+        foreach($modules as $item)
+        {
+            $position = $item->order+1;//item's order is zero based, but Canvas expects it to be 1-based
+            //
+            //UPDATE positioning in LMS
+//            $module = new Module(null, null, null, null, $position);
+//            $req = new ModulesRequest(ActionType::PUT, $item->module_id, null,  
+//                false, false, $module, null , false);
+//            $res = $this->modules($req);
+            
+            //UPDATE positioning in DB
+            $orderedModule = $dbHelper->updateOrderedModule($item);
+//            $key = "{$item->courseId}-module-{$item->moduleId}";
+//            $cacheHelper->storeDataInCache($key, $orderedModule->toArray(), $cacheTime);
+            array_push($ordered, $orderedModule->toArray());
+        }
+        
+        
+        return $ordered;
+    }
+    /*
+     * PRIVATE METHODS
+     */
     private function getModuleDataFromLms(ModulesRequest $request)
     {
         $cacheHelper = new CacheHelper();
@@ -181,7 +218,6 @@ class Roots
                 return $cacheHelper->searchModuleDataInCache($request);
         }
     }
-    
     
     private function getAssignmentDataFromLms(AssignmentsRequest $request)
     {

@@ -22,7 +22,7 @@ class Dev extends ComponentBase
 		
 	session_start();
         $_SESSION['userID'] = $config->User_id;
-        $_SESSION['userToken'] = $config->Token;
+        $_SESSION['userToken'] = \Crypt::encrypt($config->Token);
         $_SESSION['courseID'] = $config->Course_id;
         $_SESSION['domain'] = $config->Domain;
         $_SESSION['lms'] = $config->Lms;

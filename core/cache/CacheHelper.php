@@ -13,8 +13,33 @@ use Illuminate\Support\Facades\Cache;
 
 class CacheHelper
 {
+    public function storeDataInCache($key, $object, $time)
+    {
+        $forever = false;
+        if($time<0)
+        {
+            $forever = true;
+        }
+        
+        if(Cache::has($key))
+        {
+            Cache::forget($key);
+        }
+        if($forever)
+        {
+            Cache::forever($key, $object);
+        }
+        else
+        {
+            Cache::put($key, $object, $time);
+        }
+        
+            
+    }
+    
     public function searchModuleDataInCache(ModulesRequest $request)
     {
+        echo "getting from cache";
         $courseId = $_SESSION['courseID'];
         $key = "";
         $module  = false;
@@ -62,7 +87,6 @@ class CacheHelper
             if(Cache::has($moduleIdsKey))
             {
                 $moduleIds = Cache::get($moduleIdsKey);
-                
                 foreach($moduleIds as $id)
                 {
                     $key = "{$courseId}-module-{$id}";
@@ -87,6 +111,7 @@ class CacheHelper
 
     public function searchAssignmentDataInCache(AssignmentsRequest $request)
     {
+        echo "getting from cache";
         $courseId = $_SESSION['courseID'];
         $key = "";
         if($request->getAssignment_id())
@@ -119,6 +144,7 @@ class CacheHelper
     
     public function serchAssignmentGroupDataInCache(AssignmentGroupsRequest $request)
     {
+        echo "searching in cache";
         $courseId = $_SESSION['courseID'];
         $singleGroup = false;
         if($request->getAssignment_group_id())

@@ -16,5 +16,5 @@ class OrderedModule extends Model
     	'module_id'=>'required'
     ];
 
-
+    protected $fillable = array('*');
 }

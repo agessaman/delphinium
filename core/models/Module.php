@@ -18,8 +18,7 @@ class Module extends Model
     
     //Validation 
     public $rules = [
-    	'module_id'=>'required',
-        'name' => 'required'
+    	'module_id'=>'required'
     ];
 
 
