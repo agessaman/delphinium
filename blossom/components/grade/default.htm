@@ -1,0 +1,25 @@
+<script>
+	var xp = {{XP}};
+	var gradeBonus = {{gradeBonus}};
+	var gradeAnimate = {{gradeAnimate}};
+	var gradeSize = '{{gradeSize}}';
+	var thresholds = [  ['{{apName}}',{{apValue}}], ['{{aName}}',{{aValue}}], ['{{amName}}',{{amValue}}], 
+						['{{bpName}}',{{bpValue}}], ['{{bName}}',{{bValue}}], ['{{bmName}}',{{bmValue}}],  
+						['{{cpName}}',{{cpValue}}], ['{{cName}}',{{cValue}}], ['{{cmName}}',{{cmValue}}], 
+						['{{dpName}}',{{dpValue}}], ['{{dName}}',{{dValue}}], ['{{dmName}}',{{dmValue}}], ['{{fName}}',{{fValue}}]  ];
+</script>
+<h3 class = "name">Current Grade</h3>
+<table>
+	<tr>
+		<td class ="data">{{XP}}</td>
+		<td class = "labels">XP</td>
+	</tr>
+	<tr>
+		<td class ="data" id = "bonus"></td>
+		<td class = "labels">Bonus</td>
+	</tr>
+	<tr id ="borderTop">
+		<td class ="data"  id = "total"></td>
+		<td id = "grade"></td>
+	</tr>
+</table>

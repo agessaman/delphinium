@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Configuration
+
+# Model Form Field configuration
+form: $/delphinium/blossom/models/configuration/fields.yaml
+
+# Model Class name
+modelClass: Delphinium\Blossom\Models\Configuration
+
+# Default redirect location
+defaultRedirect: delphinium/blossom/configuration
+
+# Create page
+create:
+    title: Create Configuration
+    redirect: delphinium/blossom/configuration/update/:id
+    redirectClose: delphinium/blossom/configuration
+
+# Update page
+update:
+    title: Edit Configuration
+    redirect: delphinium/blossom/configuration
+    redirectClose: delphinium/blossom/configuration
+
+# Preview page
+preview:
+    title: Preview Configuration

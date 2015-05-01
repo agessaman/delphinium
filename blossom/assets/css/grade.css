@@ -1,0 +1,25 @@
+.data{
+	text-align: right;
+	vertical-align:bottom;
+	font-weight: bold;
+}
+
+.labels{
+	padding-left: 10px;
+	text-align: left;
+	vertical-align:bottom;
+}
+
+#borderTop{
+	border-style: solid;
+	border-bottom-style: none;
+	border-left-style: none;
+	border-right-style: none;
+}
+
+#grade{
+	padding-left: 10px;
+	text-align: left;
+	vertical-align:bottom;
+	font-weight: bold;
+}
