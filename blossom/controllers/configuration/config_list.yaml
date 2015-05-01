@@ -2,14 +2,14 @@
 #  List Behavior Config
 # ===================================
 
+# List Title
+title: Instances
+
 # Model List Column configuration
 list: $/delphinium/blossom/models/configuration/columns.yaml
 
 # Model Class name
 modelClass: Delphinium\Blossom\Models\Configuration
-
-# List Title
-title: Manage Configurations
 
 # Link URL for each record
 recordUrl: delphinium/blossom/configuration/update/:id
@@ -25,6 +25,8 @@ showSetup: true
 
 # Displays the sorting link on each column
 showSorting: true
+
+showCheckboxes: true
 
 # Default sorting column
 # defaultSort:

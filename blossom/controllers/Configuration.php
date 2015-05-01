@@ -3,9 +3,6 @@
 use BackendMenu;
 use Backend\Classes\Controller;
 
-/**
- * Configuration Back-end Controller
- */
 class Configuration extends Controller
 {
     public $implement = [

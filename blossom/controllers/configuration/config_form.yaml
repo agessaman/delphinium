@@ -3,7 +3,7 @@
 # ===================================
 
 # Record name
-name: Configuration
+name: Blossom
 
 # Model Form Field configuration
 form: $/delphinium/blossom/models/configuration/fields.yaml
@@ -16,16 +16,12 @@ defaultRedirect: delphinium/blossom/configuration
 
 # Create page
 create:
-    title: Create Configuration
+    title: Create Instance
     redirect: delphinium/blossom/configuration/update/:id
     redirectClose: delphinium/blossom/configuration
 
 # Update page
 update:
-    title: Edit Configuration
+    title: Edit Instance
     redirect: delphinium/blossom/configuration
     redirectClose: delphinium/blossom/configuration
-
-# Preview page
-preview:
-    title: Preview Configuration

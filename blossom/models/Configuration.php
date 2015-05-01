@@ -13,27 +13,9 @@ class Configuration extends Model
      */
     public $table = 'delphinium_blossom_configurations';
 
-    /**
-     * @var array Guarded fields
-     */
-    protected $guarded = ['*'];
-
-    /**
-     * @var array Fillable fields
-     */
-    protected $fillable = [];
-
-    /**
-     * @var array Relations
-     */
-    public $hasOne = [];
-    public $hasMany = [];
-    public $belongsTo = [];
-    public $belongsToMany = [];
-    public $morphTo = [];
-    public $morphOne = [];
-    public $morphMany = [];
-    public $attachOne = [];
-    public $attachMany = [];
+    public $rules = [
+        'Name'=>'required',
+        'Component' => 'required'
+    ];
 
 }

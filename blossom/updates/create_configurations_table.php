@@ -14,6 +14,8 @@ class CreateConfigurationsTable extends Migration
             {
                 $table->engine = 'InnoDB';
                 $table->increments('id');
+                $table->string('Name');
+                $table->string('Component');
                 $table->timestamps();
             });
         }
