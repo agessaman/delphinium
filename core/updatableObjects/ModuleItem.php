@@ -25,11 +25,11 @@ class ModuleItem {
 //        $this->tags = $tags;
 //    }
 
-    function __construct($title, $module_item_type, $content_id = null, $page_url = null, $external_url = null, 
+    function __construct($title = null, $module_item_type=null, $content_id = null, $page_url = null, $external_url = null, 
         $completion_requirement_type = null, $completion_requirement_min_score = null, $published = false, $position = 1,array $tags = null)
     {
         
-        if (!is_string($title)) {
+        if (($title)&&(!is_string($title))) {
             throw new InvalidParameterInRequestObjectException(get_class($this),"title", "Parameter must be a string");
         }
         

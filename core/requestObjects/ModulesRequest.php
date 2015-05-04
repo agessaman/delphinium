@@ -14,7 +14,7 @@ class ModulesRequest extends RootsRequest
     public $module;
     public $moduleItem;
     private $freshData;
-    
+   
     function getModuleId() {
         return $this->moduleId;
     }
@@ -52,8 +52,8 @@ class ModulesRequest extends RootsRequest
     }
     
             
-    function __construct($actionType, $moduleId = null, $moduleItemId = null,  
-    $includeContentItems = false, $includeContentDetails = false, Module $module = null, ModuleItem $moduleItem = null, $freshData = null) 
+    function __construct($actionType, $moduleId = null, $moduleItemId = null,  $includeContentItems = false, 
+            $includeContentDetails = false, Module $module = null, ModuleItem $moduleItem = null, $freshData = null) 
     {
         //this takes care of setting the lms and the ActionType in the parent class (RootsRequest)
         parent::__construct($actionType);

@@ -1,10 +1,11 @@
 <?php namespace Delphinium\Iris\Components;
 
 use Cms\Classes\ComponentBase;
+use Delphinium\Core\Roots;
+use Delphinium\Core\RequestObjects\ModulesRequest;
+use Delphinium\Core\Enums\CommonEnums\ActionType;
 use Delphinium\Iris\Classes\Iris as IrisClass;
 /**
- * Description of Angular
- *
  * @author Damaris Zarco
  */
 class Angular  extends ComponentBase
@@ -12,78 +13,54 @@ class Angular  extends ComponentBase
     public function componentDetails()
     {
         return [
-            'name'        => 'Angular + OctoberCms',
-            'description' => 'First attempt at using angular with OctoberCms'
+            'name'        => 'Stem Manager',
+            'description' => 'Module Manager'
         ];
     }
     
     public function onRun()
     {   
-//        \Cache::flush();
-        $this->addJs("/plugins/delphinium/iris/assets/javascript/jquery.min.js");
         $this->addJs("/plugins/delphinium/iris/assets/javascript/angular.min.js");
         $this->addJs("/plugins/delphinium/iris/assets/javascript/angular-ui-tree.js");
+        $this->addJs("/plugins/delphinium/iris/assets/javascript/jquery.min.js");
         $this->addJs("/plugins/delphinium/iris/assets/javascript/tree.js");
     	$this->addCss('/plugins/delphinium/iris/assets/css/module-tree.css');	
         $this->addCss('/plugins/delphinium/iris/assets/css/angular-ui-tree.min.css');
         
         if(!isset($_SESSION)) 
-   	 	{ 
-        	session_start(); 
+        { 
+            session_start(); 
     	}
-       
-       if(isset($_SESSION['courseID']))
-       {
-           $courseId = $_SESSION['courseID'];
-           $encryptedToken = $_SESSION['userToken'];
-	       $decrypted =\Crypt::decrypt($encryptedToken);
-           // $decrypted =$encryptedToken;//\Crypt::decrypt($encryptedToken);
-           $this->prepareData($courseId, $decrypted, 10, false);
-       }
-       else
-       {
-       		echo "An error has occurred. Please notify your instructor";
-       }
-        // $courseId = 343331;
-//         $this->page['userId'] = 1489289;
-//         $this->page['courseId'] = $courseId;
-//         $decrypted ="sdf";//\Crypt::decrypt($encryptedToken);
-//         $this->prepareData($courseId, $decrypted, 10, false);
+        
+        $this->page['courseId'] = $_SESSION['courseID'];
+        
+        $this->prepareData(false);
     }
     
     public function onRefreshCache()
     {
-        
-       if(!isset($_SESSION)) 
-   	   { 
-        	session_start(); 
-       }
-       
-       if(isset($_SESSION['courseID']))
-       {
-           $courseId = $_SESSION['courseID'];
-           $encryptedToken = $_SESSION['userToken'];
-       
-           $decrypted =$encryptedToken;//\Crypt::decrypt($encryptedToken);
-           
-           //by doing $cacheTime = -1 we grab fresh data
-           $this->prepareData($courseId, $decrypted, -1, false);
-       }
-        // $courseId = 343331;
-//         $decrypted ="sdf";//\Crypt::decrypt($encryptedToken);
-//         $this->prepareData($courseId, $decrypted, -1, false);
-        
+       $this->prepareData(true);
     }
     
-    private function prepareData($courseId, $decrypted, $time, $forever)
+    private function prepareData($freshData)
     {
+        $moduleId = null;
+        $moduleItemId = null;
+        $includeContentDetails = true;
+        $includeContentItems = true;
+        $module = null;
+        $moduleItem = null;
+                
+        $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems, 
+                $includeContentDetails, $module, $moduleItem , $freshData);
+        
+        $roots = new Roots();
+        $moduleData = $roots->modules($req);
+        $modArr = $moduleData->toArray();
+        
         $iris = new IrisClass();
-        $moduleData = $iris->getModules($courseId, $decrypted, $time, $forever, null);
-// 		echo json_encode($moduleData);
-// 		return;
-        $this->page['courseId'] = $courseId;
-        $result = $iris->buildTree($moduleData);
-//        var_dump($moduleData);
+        $result = $iris->newBuildTree($modArr);
+        
         $tempArray =array();
 
         if(count($result)<1) //there weren't any parent-child relationships
@@ -102,13 +79,14 @@ class Angular  extends ComponentBase
                     break;
                 }
             }
-            $newArr = $this->unsetValue($moduleData, $firstItem);//remove parent from array
-            $firstParentId=$firstItem["moduleId"];
+            
+            $newArr = $this->unsetValue($modArr, $firstItem);//remove parent from array
+            $firstParentId=$firstItem["module_id"];
             $i=0;
             foreach($newArr as $item)
             {
-                $item["parentId"] = $firstParentId;
-            //each item must have a parentId of the first module
+                $item["parent_id"] = $firstParentId;
+                //each item must have a parentId of the first module
                 $item["children"] = [];
                 $item["order"] = $i;
                 $final[] = $item;
@@ -116,7 +94,7 @@ class Angular  extends ComponentBase
             }
 
             //remove the first Item (which is the parent)
-            $firstItem["parentId"] = 1;
+            $firstItem["parent_id"] = 1;
             $firstItem["children"]=$final;
             $firstItem["order"]=0;
 
@@ -129,7 +107,7 @@ class Angular  extends ComponentBase
         }
 
         $this->page['moduleData'] = json_encode($tempArray);
-        $tags = $iris->getAvailableTags($courseId);
+        $tags = $roots->getAvailableTags();
         if(strlen($tags)>0)
         {
             $tags = explode(', ', $tags);

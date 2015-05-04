@@ -11,7 +11,7 @@ class Configuration extends Controller
         'Backend.Behaviors.FormController',
         'Backend.Behaviors.ListController'
     ];
-	public $formConfig = 'config_form.yaml';
+    public $formConfig = 'config_form.yaml';
     public $listConfig = 'config_list.yaml';
    
     public function __construct()

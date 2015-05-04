@@ -17,6 +17,10 @@
 
 <div ng-app="treeApp" ng-controller="treeCtrl">
 {% verbatim %}
+
+<div>
+    <a href="" class="btn btn-default pull-right" ng-click="reloadApp()">Reload page</a>
+</div>
     <div class="buttons">
         <a href="" class="btn btn-default pull-right" ng-click="collapseAll()">Collapse all</a>
         <a href="" class="btn btn-default pull-right" ng-click="expandAll()">Expand all</a>
@@ -40,9 +44,9 @@
         <ng-switch on="item.published">
           <span class="icon-cloud unpublishedModuleIcon pull-right btn" ng-switch-when="0"> unpublished</span>
         </ng-switch>
-
-        <div id="div{{item.moduleId}}" class="node hidden">
-            <div class="divContent" ng-repeat="item in item.items" >
+ 
+        <div id="div{{item.module_id}}" class="node hidden">
+            <div class="divContent" ng-repeat="item in item.module_items" >
                 <a href="" class="contentLink" ng-class="{'unpublishedItem': (item.published==='0')}">
                     <i class="icon-tasks contentType"></i>
                     <span>{{item.title}}</span>
