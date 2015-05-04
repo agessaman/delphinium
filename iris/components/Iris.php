@@ -1,19 +1,17 @@
 <?php namespace Delphinium\Iris\Components;
 
-
-use \DB;
-use Validator;
-use October\Rain\Support\ValidationException;
 use Delphinium\Iris\Models\Home as IrisCharts;
 use Delphinium\Iris\Classes\Iris as IrisClass;
-use Delphinium\Blackberry\Models\Developers as LtiConfigurations;
+use Delphinium\Core\Roots;
+use Delphinium\Core\RequestObjects\ModulesRequest;
+use Delphinium\Core\Enums\CommonEnums\ActionType;
 use Cms\Classes\ComponentBase;
 
 class Iris extends ComponentBase
 {
 // 	public $chartName;
 	
-	public function componentDetails()
+    public function componentDetails()
     {
         return [
             'name'        => 'Iris Chart',
@@ -23,57 +21,39 @@ class Iris extends ComponentBase
     
     public function onRun()
     {	
+        $this->addJs("/plugins/delphinium/iris/assets/javascript/d3.v3.min.js");
+        $this->addJs("/plugins/delphinium/iris/assets/javascript/jquery.min.js");
+        $this->addJs("/plugins/delphinium/iris/assets/javascript/newSunburst.js");
+        $this->addCss("/themes/demo/assets/vendor/font-awesome/css/font-awesome.css");
+        $this->addCss("/themes/demo/assets/vendor/font-autumn/css/font-autumn.css");
+        $this->addCss("/plugins/delphinium/iris/assets/css/main.css");
         
-//        \Cache::flush();
-        $this->addJs('/plugins/delphinium/iris/assets/javascript/d3.v3.min.js');
-        $this->addJs('/plugins/delphinium/iris/assets/javascript/jquery.min.js');
-        $this->addJs('/plugins/delphinium/iris/assets/javascript/newSunburst.js');
-//        $this->addCss('/themes/demo/assets/vendor/font-awesome/css/font-awesome.css');
-        $this->addCss('/themes/demo/assets/vendor/font-autumn/css/font-autumn.css');
-        $this->addCss('/plugins/delphinium/iris/assets/css/main.css');	
-            	
-    	//this component MUST be used in conjunction with the LTI component, so a session will already have been started
-//    	session_start();
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
         
         $courseId = $_SESSION['courseID'];
-        $userId=$_SESSION['userID'];
-        $this->page['userId'] = $userId;
         $this->page['courseId'] = $courseId;
-//        
-        $encryptedToken = $_SESSION['userToken'];
-        $decrypted =$encryptedToken;//\Crypt::decrypt($encryptedToken);
+        $this->page['userId'] = $_SESSION['userID'];
         
-//        $courseId = 343331;
-//        $this->page['userId'] = 1489289;
-//        $this->page['courseId'] = $courseId;
-//        $decrypted ="sdf";//\Crypt::decrypt($encryptedToken);
+        $freshData = false;
+        $moduleId = null;
+        $moduleItemId = null;
+        $includeContentDetails = true;
+        $includeContentItems = true;
+        $module = null;
+        $moduleItem = null;
+                
+        $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems, 
+                $includeContentDetails, $module, $moduleItem , $freshData);
         
+        $roots = new Roots();
+        $moduleData = $roots->modules($req);
         
-    	$iris = new IrisClass();
-        
-        $cacheTime = $this->property('cacheTime');
-        $forever;
-        
-        if($cacheTime>10080)
-        {
-            $forever = true;
-        }
-        else
-        {
-            $forever = false;
-        }
-        
-        $moduleData = $iris->getModules($courseId, $decrypted, $cacheTime, $forever);
-        
-        $this->page['rawData'] = json_encode($moduleData);
         $finalData = $this->prepareData($courseId, $moduleData);
-//        var_dump($finalData);
-        //need to add one parent to encompass all the modules
     	$this->page['graphData'] = json_encode($finalData);
-        
-        
     }
-    
    public function defineProperties()
     {
         return [
@@ -94,7 +74,6 @@ class Iris extends ComponentBase
     public function getChartNameOptions()
     {
         $slides = IrisCharts::all();
-
         $array_dropdown = ['0'=>'- select a chart - '];
 
         foreach ($slides as $slide)
@@ -110,14 +89,14 @@ class Iris extends ComponentBase
         foreach ($elements as $key=>$module) {
             if($module['published'] == "1")//if not published don't include it
             {   
-                if ($module['parentId'] == $parentId) {
-                    $children = $this->buildTree($elements, $module['moduleId']);
+                if ($module['parent_id'] == $parentId) {
+                    $children = $this->buildTree($elements, $module['module_id']);
                     if ($children) {
                         $module['children'] = $children;
                     }
     //                $branch[$module['moduleId']] = $module;
                     $branch[] = $module;
-                    unset($elements[$module['moduleId']]);
+                    unset($elements[$module['module_id']]);
                 }
             }
         }
@@ -128,9 +107,10 @@ class Iris extends ComponentBase
     
     private function prepareData($courseId, $moduleData)
     {
+        $modArr = $moduleData->toArray();
     	$iris = new IrisClass();
         $course = $iris->getCourse($courseId);
-        $result = $this->buildTree($moduleData,1);
+        $result = $this->buildTree($modArr,1);
 //        
     	$this->page['courseData'] = json_encode($course);
         return $result;
@@ -138,5 +118,3 @@ class Iris extends ComponentBase
     
     
 }
-
-?>

@@ -27,15 +27,16 @@ class Roots
                 
                 if(!$request->getFreshData())
                 {
-                    $cacheHelper = new CacheHelper();
-                    $data = $cacheHelper->searchModuleDataInCache($request);
-                    if($data)
-                    {//if data is null it means it wasn't in cache... need to get it from LMS
-                        return $data;
-                    }
-                    else
+                    $dbHelper = new DbHelper();
+                    $data = $dbHelper->getModuleData($request);
+                    
+                    //depending on the request we can get an eloquent collection or one of our models. Need to validate them differently
+                    switch(get_class($data))
                     {
-                        return $this->getModuleDataFromLms($request);
+                        case "Illuminate\Database\Eloquent\Collection":
+                            return (!$data->isEmpty()) ?  $data :  $this->getModuleDataFromLms($request);
+                        default:
+                            return (!is_null($data)) ? $data : $this->getModuleDataFromLms($request);
                     }
                 }
                 else
@@ -116,15 +117,14 @@ class Roots
                 
                 if(!$request->getFresh_data())
                 {
-                    $cacheHelper = new CacheHelper();
-                    $data = $cacheHelper->searchAssignmentDataInCache($request);
-                    if($data)
-                    {//if data is null it means it wasn't in cache... need to get it from LMS
-                        return $data;
-                    }
-                    else
+                    $dbHelper = new DbHelper();
+                    $data = $dbHelper->getAssignmentData( $request);
+                    switch(get_class($data))
                     {
-                        return $this->getAssignmentDataFromLms($request);
+                        case "Illuminate\Database\Eloquent\Collection":
+                            return (!$data->isEmpty()) ?  $data :  $this->getAssignmentDataFromLms($request);
+                        default:
+                            return (!is_null($data)) ? $data : $this->getAssignmentDataFromLms($request);
                     }
                 }
                 else
@@ -147,14 +147,13 @@ class Roots
                 {
                     $cacheHelper = new CacheHelper();
                     $data = $cacheHelper->serchAssignmentGroupDataInCache($request);
-                    if($data)
-                    {//if data is null it means it wasn't in cache... need to get it from 
-                        return $data;
-                    }
-                    else
+                    switch(get_class($data))
                     {
-                        return $this->getAssignmentGroupDataFromLms( $request);
-                    } 
+                        case "Illuminate\Database\Eloquent\Collection":
+                            return (!$data->isEmpty()) ?  $data :  $this->getAssignmentGroupDataFromLms($request);
+                        default:
+                            return (!is_null($data)) ? $data : $this->getAssignmentGroupDataFromLms($request);
+                    }
                 }
                 else
                 {
@@ -175,10 +174,7 @@ class Roots
     public function updateModuleOrder($modules)
     {
         $ordered = array();
-        $cacheHelper = new CacheHelper();
         $dbHelper = new DbHelper();
-        $canvas = new CanvasHelper(DataType::MODULES);
-        $cacheTime = $canvas->getCacheTime();
         
         foreach($modules as $item)
         {
@@ -200,39 +196,58 @@ class Roots
         
         return $ordered;
     }
+    
+    public function getAvailableTags()
+    {
+        $dbHelper = new DbHelper();
+        return $dbHelper->getAvailableTags();
+    }
+    
+    public function getModuleStates(ModulesRequest $request)
+    {
+        switch ($request->getLms())
+        {
+            case (Lms::CANVAS):
+                $canvasHelper = new CanvasHelper();
+                return $canvasHelper->getModuleStates($request);
+            default:
+                $canvasHelper = new CanvasHelper();
+                return $canvasHelper->getModuleStates($request);
+        }
+    }
+    
     /*
      * PRIVATE METHODS
      */
     private function getModuleDataFromLms(ModulesRequest $request)
     {
-        $cacheHelper = new CacheHelper();
+        $dbHelper = new DbHelper();
         switch ($request->getLms())
         {
             case (Lms::CANVAS):
                 $canvas = new CanvasHelper(DataType::MODULES);
                 $canvas->getModuleData($request);
-                return $cacheHelper->searchModuleDataInCache($request);
+                return $dbHelper->getModuleData($request);
             default:
                 $canvas = new CanvasHelper(DataType::MODULES);
                 $canvas->getModuleData($request);
-                return $cacheHelper->searchModuleDataInCache($request);
+                return $dbHelper->getModuleData($request);
         }
     }
     
     private function getAssignmentDataFromLms(AssignmentsRequest $request)
     {
-        $cacheHelper = new CacheHelper();
+        $dbHelper = new DbHelper();
         switch ($request->getLms())
         {
             case (Lms::CANVAS):
                 $canvas = new CanvasHelper(DataType::ASSIGNMENTS);
                 $canvas->processAssignmentsRequest($request);
-                return $cacheHelper->searchAssignmentDataInCache($request);
+                return $dbHelper->getAssignmentData( $request);
             default:
                 $canvas = new CanvasHelper(DataType::ASSIGNMENTS);
                 $canvas->processAssignmentsRequest($request);
-                return $cacheHelper->searchAssignmentDataInCache($request);
-
+                return $dbHelper->getAssignmentData( $request);
         }
     }
     

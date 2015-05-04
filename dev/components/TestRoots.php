@@ -32,6 +32,8 @@ class TestRoots extends ComponentBase
 //        $this->test();
 //        Cache::flush();
         $this->testBasicModulesRequest();
+//        $this->testDeleteTag();
+//        $this->testAddingUpdatingTags();
 //        $this->testUpdatingModuleItem();
 //        $this->testUpdatingModule();
         
@@ -392,12 +394,93 @@ class TestRoots extends ComponentBase
 //        echo json_encode($date); 
         
         //"380199",
-        $arr = array("380200","380201","380202","380203","380204","380205","380206","380207","380208","380209","380210","380211",
-            "380212","380213","380214","380215","380216","380217","380218","380219","380220","380221","456852","456876","456877","456878");
+//        $arr = array("380200","380201","380202","380203","380204","380205","380206","380207","380208","380209","380210","380211",
+//            "380212","380213","380214","380215","380216","380217","380218","380219","380220","380221","456852","456876","456877","456878");
+//        
+//        $dbHelper = new DbHelper();
+//        $dbHelper->qualityAssuranceModules(343331, $arr);
         
-        $dbHelper = new DbHelper();
-        $dbHelper->qualityAssuranceModules(343331, $arr);
+        
+        
+        $moduleId = null;
+        $moduleItemId = null;
+        $includeContentDetails = true;
+        $includeContentItems = true;
+        $module = null;
+        $moduleItem = null;
+        $freshData = false;
+                
+        $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems, 
+                $includeContentDetails, $module, $moduleItem , $freshData);
+        
+        $roots = new Roots();
+        $moduleData = $roots->modules($req);
+        echo $moduleData;
     }
     
+    function testAddingUpdatingTags()
+    {
+        //To add/update tags the bare minimum that is needed is the content id and the tags.
+        //A moduleItem can be updated on Canvas and have tags added to it in the same request IF the module_item_id is provided
+        
+        $tags = array('New Tag', 'Another New Tag');
+        $title = null;
+        $modItemType = null;
+        $content_id = 49051678;
+        $completion_requirement_min_score = null;
+        $completion_requirement_type = null;
+        $page_url = null;
+        $published = true;
+        $position = null;
+        
+        $moduleItem = new ModuleItem($title, $modItemType, $content_id, $page_url, null, $completion_requirement_type, 
+                $completion_requirement_min_score, $published, $position, $tags);
+        //end added
+        
+        $moduleId = null;
+        $moduleItemId = null;
+        $includeContentItems = false;
+        $includeContentDetails = false;
+        $module = null;
+        $freshData = false;
+        
+        $req = new ModulesRequest(ActionType::PUT, $moduleId, $moduleItemId,  
+            $includeContentItems, $includeContentDetails, $module, $moduleItem , $freshData);
+        
+        $roots = new Roots();
+        $res = $roots->modules($req);
+        return $res;
+    }
+    
+    public function testDeleteTag()
+    {
+        $tags = array('New Tag', 'Another New Tag');
+        $title = null;
+        $modItemType = null;
+        $content_id = 49051678;
+        $completion_requirement_min_score = null;
+        $completion_requirement_type = null;
+        $page_url = null;
+        $published = true;
+        $position = null;
+        
+        $moduleItem = new ModuleItem($title, $modItemType, $content_id, $page_url, null, $completion_requirement_type, 
+                $completion_requirement_min_score, $published, $position, $tags);
+        //end added
+        
+        $moduleId = null;
+        $moduleItemId = null;
+        $includeContentItems = false;
+        $includeContentDetails = false;
+        $module = null;
+        $freshData = false;
+        
+        $req = new ModulesRequest(ActionType::PUT, $moduleId, $moduleItemId,  
+            $includeContentItems, $includeContentDetails, $module, $moduleItem , $freshData);
+        
+        $roots = new Roots();
+        $res = $roots->modules($req);
+        return $res;
+    }
 }
 

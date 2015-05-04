@@ -596,6 +596,24 @@ class Api{
     
     public function getStudentSubmissions($courseId, $studentId)
     {
+        $studentIds = array($studentId);
+        $assignmentIds = array(1660419, 1660406, 1660412);
+        $multipleStudents = false;
+        $multipleAssignments = true;
+        $allStudents = false;
+        $allAssignments = true;
+        
+        //can have the student Id param null if multipleUsers is set to false (we'll only get the current user's submissions)
+        
+        $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, 
+                $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
+        
+        $roots = new Roots();
+        $res = $roots->submissions($req);
+        echo json_encode($res);
+        
+        
+        
         $token = $_SESSION['userToken'];
         $url = 'https://uvu.instructure.com/api/v1/courses/'.$courseId.'/students/submissions?student_ids[]='.$studentId.'&access_token='.$token.'&per_page=5000';       
         $moduleIdsArray = array();

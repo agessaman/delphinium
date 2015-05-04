@@ -27,8 +27,7 @@ class Plugin extends PluginBase
         return [
             '\Delphinium\Iris\Components\Iris' => 'iris',
             '\Delphinium\Iris\Components\Angular' => 'angular',
-            '\Delphinium\Iris\Components\IrisLegend' => 'irislegend',
-            '\Delphinium\Iris\Components\Stem' => 'stem'
+            '\Delphinium\Iris\Components\IrisLegend' => 'irislegend'
         ];
     }
     

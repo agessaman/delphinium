@@ -6,7 +6,6 @@
       
     $scope.data  = moduleData;
     $scope.contentClass = "hidden";
-//    $scope.modalShown = false;
     $scope.currentModuleItemId = 0;
     $scope.contentId = 0;
 
@@ -21,7 +20,7 @@
     {
         $scope.isExpanded = !$scope.isExpanded;
 
-        var node = document.getElementById("div"+item.moduleId);
+        var node = document.getElementById("div"+item.module_id);
         var currClassName = node.className;
 
         var nodes = document.getElementsByClassName("node");
@@ -60,7 +59,7 @@
         else
         {
             node.className = "visible tagNode";
-            var arr = scope.item.tags;
+            var arr = scope.item.content[0].tags;
             if(arr.length>0)
             {
                 $scope.tags = arr.split(", ");
@@ -167,8 +166,9 @@
     $scope.addTags = function(scope)
     {
         var content_id = scope.item.content_id;
-        var tags = scope.tagValue;  
-        var tagArr = tags.split(",");
+        var currTags = getCurrentTags(scope.item);
+        var newTags = scope.tagValue.split(",");
+        var tagArr = currTags.concat(newTags); 
                                         
         for(var i=0;i<=tagArr.length-1;i++)
         {
@@ -176,12 +176,11 @@
             a = capitalizeFirstLetter(a);
             tagArr[i] = a;
         }
-        
         $http.post('addTags', { contentId:content_id,
-            tags:JSON.stringify(tagArr),courseId:courseId}).
+            tags:JSON.stringify(tagArr)}).
                 success(function (data) {
                     $scope.tags = data.split(", ");
-                    scope.item.tags = data;
+                    scope.item.content[0].tags= data;
                     $scope.updateAvailableTags();
                 });   
         this.tagValue = "";
@@ -190,13 +189,22 @@
     $scope.addInnerTag = function(scope, tag)
     {
         var arr = [tag];
+        var currTags = getCurrentTags(scope.$parent.item);
+        var tagArr = currTags.concat(arr); 
         var content_id = scope.$parent.item.content_id;
         
+        for(var i=0;i<=tagArr.length-1;i++)
+        {
+            var a = tagArr[i].trim();
+            a = capitalizeFirstLetter(a);
+            tagArr[i] = a;
+        }
+        
         $http.post('addTags', { contentId:content_id,
-            tags:JSON.stringify(arr),courseId:courseId}).
+            tags:JSON.stringify(tagArr)}).
                 success(function (data) {
                     $scope.tags = data.split(", ");
-                    scope.$parent.item.tags = data;
+                    scope.$parent.item.content[0].tags = data;
                     $scope.updateAvailableTags();
                 });   
         $scope.tagValue = "";
@@ -204,21 +212,23 @@
     
     $scope.deleteTag = function(scope, tag)
     {
+        var currTags = getCurrentTags(scope.$parent.item);
         var content_id = scope.$parent.item.content_id
         var trimmed = tag.trim();
+        var diff = findDifference(currTags, [trimmed]);
         
-        $http.post('deleteTag', { contentId:content_id, tag:trimmed})
+        $http.post('deleteTag', { contentId:content_id, tags:JSON.stringify(diff)})
                 .success(function (data) {
                     var t = data.split(", ");
                     if (data==="")
                     {
-                        scope.$parent.item.tags = data;
+                        scope.$parent.item.content[0].tags = data;
                         $scope.tags = [];
                     }
                     else
                     {
                         $scope.tags = t;
-                        scope.$parent.item.tags = data;
+                        scope.$parent.item.content[0].tags = data;
                     }
                     
                     //need to also update this item's current tags
@@ -249,6 +259,17 @@
 //            }
         });
     }
+    
+    $scope.reloadApp = function()
+    {
+        $scope.data  = moduleData;
+        $scope.contentClass = "hidden";
+        $scope.currentModuleItemId = 0;
+        $scope.contentId = 0;
+
+        $scope.isExpanded = false;
+        $scope.showTags = false;
+    }
   
     //it is crucial that we save this initial order right away
     $scope.saveOrder();//save the new order right away
@@ -275,4 +296,17 @@ function findDifference(a, b)
         if (!seen[a[i].trim()])
             diff.push(a[i].trim());
     return diff;
+}
+
+function getCurrentTags(moduleItem)
+{
+    tagStr = moduleItem.content[0].tags;
+    if(tagStr.length>0)
+    {
+        return tagStr.split(", ");
+    }
+    else
+    {
+        return [];
+    }
 }
