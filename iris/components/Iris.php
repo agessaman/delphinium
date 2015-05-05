@@ -9,7 +9,6 @@ use Cms\Classes\ComponentBase;
 
 class Iris extends ComponentBase
 {
-// 	public $chartName;
 	
     public function componentDetails()
     {
@@ -50,7 +49,7 @@ class Iris extends ComponentBase
         
         $roots = new Roots();
         $moduleData = $roots->modules($req);
-        
+        $this->page['rawData'] = json_encode($moduleData);
         $finalData = $this->prepareData($courseId, $moduleData);
     	$this->page['graphData'] = json_encode($finalData);
     }
@@ -94,7 +93,6 @@ class Iris extends ComponentBase
                     if ($children) {
                         $module['children'] = $children;
                     }
-    //                $branch[$module['moduleId']] = $module;
                     $branch[] = $module;
                     unset($elements[$module['module_id']]);
                 }
@@ -102,7 +100,6 @@ class Iris extends ComponentBase
         }
 
         return $branch;
-
     }
     
     private function prepareData($courseId, $moduleData)
@@ -111,7 +108,7 @@ class Iris extends ComponentBase
     	$iris = new IrisClass();
         $course = $iris->getCourse($courseId);
         $result = $this->buildTree($modArr,1);
-//        
+        
     	$this->page['courseData'] = json_encode($course);
         return $result;
     }
