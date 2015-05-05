@@ -35,7 +35,7 @@ class RestApi extends Controller
         $mods = $roots->updateModuleOrder($flat);
       
         $iris = new IrisClass();
-        $result = $iris->newBuildTree($mods);
+        $result = $iris->buildTree($mods);
         return $result;
     }
 
@@ -135,10 +135,5 @@ class RestApi extends Controller
         $roots = new Roots();
         $res = $roots->submissions($req);
         return $res;
-    }
-    
-    public function pretty()
-    {
-        return "ok";
     }
 }

@@ -1,8 +1,0 @@
-# ===================================
-#  Form Behavior Config
-# ===================================
-
-name: Raspberry
-form: @/plugins/delphinium/raspberry/models/module/fields.yaml
-modelClass: Delphinium\Raspberry\Models\Module
-defaultRedirect: delphinium/raspberry/api

@@ -59,7 +59,7 @@ class Angular  extends ComponentBase
         $modArr = $moduleData->toArray();
         
         $iris = new IrisClass();
-        $result = $iris->newBuildTree($modArr);
+        $result = $iris->buildTree($modArr);
         
         $tempArray =array();
 
