@@ -10,53 +10,13 @@ use Exception;
  */
 class Iris 
 {
+    public function getCourse($courseId)
+    {
+        $api = new Api();
+        $return = $api->getCourse($courseId);
+        return $return;
+    }
 
-	public function getModules($courseId, $token, $cacheTime, $forever, $studentId=NULL)
-	{
-		//TODO: make this domain and courseId configurable
-            
-		$url = 'https://uvu.instructure.com/api/v1/courses/'.$courseId.'/modules?include[]=items&include[]=content_details&access_token='.$token.'&per_page=5000';
-                
-                if(!is_null($studentId))
-                {
-                    $url = 'https://uvu.instructure.com/api/v1/courses/'.$courseId.'/modules/?student_id='.$studentId.'&include[]=items&include[]=content_details&access_token='.$token.'&per_page=5000';
-                }
-		$api = new Api();
-		
-		//return an array of Module objects
-                $cacheData = true;
-                if($cacheTime<1) 
-                {
-                    $cacheData = false;
-                    $cacheTime = 10;
-                }
-//                var_dump($cacheTime);
-		$data = $api->getModules($url, $courseId, $cacheData, $cacheTime, $forever);
-		
-		
-		return $data;
-	}
-        
-        public function saveIrisModules($array, $courseId, $cacheTime)
-        {
-            $api = new Api();
-            $api->saveIrisModules($courseId, $array, $cacheTime);
-        }
-        
-        public function getCourse($courseId)
-        {
-            $api = new Api();
-            $return = $api->getCourse($courseId);
-            return $return;
-        }
-        
-        public function getAvailableTags($courseId)
-        {
-            $api = new Api();
-            $return = $api->getAvailableTags($courseId);
-            return $return;
-        }
-        
     public function recursive($courseId, array $array, &$flatArray, $parentId = 1, $counter=false, $order = 0)
     {//the main-level elements will have no parent, so we will assign them a parentId of 1.
     //            
@@ -64,9 +24,9 @@ class Iris
         {
             $mod = new OrderedModule();
             
-            $mod->moduleId = $level->moduleId;
-            $mod->parentId = $parentId;
-            $mod->courseId = $courseId;
+            $mod->module_id = $level->module_id;
+            $mod->parent_id = $parentId;
+            $mod->course_id = $courseId;
             $mod->order = $order;
 
             array_push($flatArray, $mod);
@@ -75,10 +35,10 @@ class Iris
             {
                 //order will be zero based
                 $innerOrder = 0;
-                $parentId = $level->moduleId;
+                $parentId = $level->module_id;
                 $counter = true;
                 $this->recursive($courseId, $level->children, $flatArray, $parentId, $counter, $innerOrder);
-                $parentId = $level->parentId;
+                $parentId = $level->parent_id;
                 $counter = false;
             }
 
@@ -133,6 +93,49 @@ class Iris
         return $branch;
 
     }
+    
+    public function newBuildTree(&$elements, $parentId = 1) {
+        $branch = array();
+        $order = 0;
+        $newItems= array();
+        foreach ($elements as $module) {
+            //if there are any new Modules that we got by refreshing Cache they will have a parentId=0. We need to add them to the array.
+//            if($module['parentId'] == 0)
+//            {
+//                var_dump($module['name']);
+//                array_push($newItems, $module);
+//                unset($elements[$module['moduleId']]);
+//            }
+            if ($module['parent_id'] == $parentId) 
+            {
+//                var_dump($module['parentId']);
+                $children = $this->newBuildTree($elements, $module['module_id']);
+                if ($children) {
+                    $module['children'] = $children;
+                }
+                else
+                {
+                    $module['children'] = array();
+                }
+                $branch[] = $module;
+                unset($elements[$module['module_id']]);
+            }
+        }
+
+//        if(count($branch)>1)//if we do have parent/child relationships, append the new modules to the end
+//        {
+////            var_dump(count($branch));
+//            foreach($newItems as $module)
+//            {
+//                var_dump($branch[0]["name"]);
+//                $module["parentId"] = $branch[0]["moduleId"];
+//                unset($newItems[$module['moduleId']]);
+//            }
+//        }
+        return $branch;
+
+    }
+    
     public function makeItemParent($arrWithOldParent, $newParent)
     {
         $allItems = $arrWithOldParent["children"];

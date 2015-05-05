@@ -1,7 +1,13 @@
 <?php namespace Delphinium\Raspberry\Controllers;
 
 use Illuminate\Routing\Controller;
-use Delphinium\Raspberry\Models\OrderedModule;
+use Delphinium\Core\UpdatableObjects\Module;
+use Delphinium\Core\UpdatableObjects\ModuleItem;
+use Delphinium\Core\RequestObjects\SubmissionsRequest;
+use Delphinium\Core\RequestObjects\ModulesRequest;
+use Delphinium\Core\Roots;
+use Delphinium\Core\Enums\CommonEnums\ActionType;
+use Delphinium\Iris\Classes\Iris as IrisClass;
 use Delphinium\Raspberry\Classes\Api;
 
 
@@ -20,12 +26,12 @@ class RestApi extends Controller {
         $decoded = json_decode($modulesArray);
         
         $flat = $this->flatten($decoded, $courseId);
-        $api = new Api();
 
-        //TODO: use an actual cacheTime parameter, rather than hardcoding it
-        $mods = $api->saveIrisModules($courseId, $flat, 10); 
-        $iris = new \Delphinium\Iris\Classes\Iris();
-        $result = $iris->buildTree($mods);
+        $roots = new \Delphinium\Core\Roots();
+        $mods = $roots->updateModuleOrder($flat);
+      
+        $iris = new IrisClass();
+        $result = $iris->newBuildTree($mods);
         return $result;
     }
 
@@ -71,47 +77,88 @@ class RestApi extends Controller {
 
     public function addTags()
     {
-        $contentId = \Input::get('contentId');
+        $content_id = \Input::get('contentId');
         $tags = \Input::get('tags');
-        $courseId = \Input::get('courseId');
-        $api = new Api();
-        return $api->addTags($contentId, json_decode($tags), $courseId);
-
+        
+//        $moduleItem = new ModuleItem($title, $modItemType, $content_id, $page_url, $external_url, $completion_requirement_type, 
+//                $completion_requirement_min_score, $published, $position, $tags);
+        $moduleItem = new ModuleItem(null, null, intval($content_id), null, null, null, 
+                null, null, null, json_decode($tags, true));
+        //end added
+        
+//        $req = new ModulesRequest(ActionType::PUT, $moduleId, $moduleItemId,  
+//            $includeContentItems, $includeContentDetails, $module, $moduleItem , $freshData);
+        $req = new ModulesRequest(ActionType::PUT, null, null,  
+            null, null, null, $moduleItem , null);
+        
+        $roots = new Roots();
+        return $roots->modules($req);
     }
 
     public function deleteTag()
-    {
-        $contentId = \Input::get('contentId');
-        $tag = \Input::get('tag');
-        $api = new Api();
-        return $api->deleteTag($contentId, $tag);
-
+    {   
+        $content_id = \Input::get('contentId');
+        $tags = \Input::get('tags');
+        
+//        $moduleItem = new ModuleItem($title, $modItemType, $content_id, $page_url, $external_url, $completion_requirement_type, 
+//                $completion_requirement_min_score, $published, $position, $tags);
+        $moduleItem = new ModuleItem(null, null, intval($content_id), null, null, null, 
+                null, null, null, json_decode($tags, true));
+        //end added
+        
+//        $req = new ModulesRequest(ActionType::PUT, $moduleId, $moduleItemId,  
+//            $includeContentItems, $includeContentDetails, $module, $moduleItem , $freshData);
+        $req = new ModulesRequest(ActionType::PUT, null, null,  
+            null, null, null, $moduleItem , null);
+        
+        $roots = new Roots();
+        return $roots->modules($req);
     }
 
     public function getAvailableTags()
     {
-        $courseId = \Input::get('courseId');
-        $api = new Api();
-        $result = $api->getAvailableTags($courseId);
-
-        return $result;
+        $roots = new Roots();
+        return $roots->getAvailableTags();
+        
     }
 
     public function getModuleStates()
     {
-        $studentId = \Input::get('studentId');
-        $courseId = \Input::get('courseId');
-        $api = new Api();
-        $data = $api->getModuleStates($courseId, $studentId);
-        return $data;
+        $moduleId = null;
+        $moduleItemId = null;
+        $includeContentDetails = false;
+        $includeContentItems = false;
+        $module = null;
+        $moduleItem = null;
+        $freshData = true;
+                
+        $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems, 
+                $includeContentDetails, $module, $moduleItem , $freshData) ;
+        
+        $roots = new Roots();
+        $res = $roots->getModuleStates($req);
+        
+        return $res;
     }
 
     public function getStudentSubmissions()
     {
         $studentId = \Input::get('studentId');
-        $courseId = \Input::get('courseId');
-        $api = new Api();
-        $data = $api->getStudentSubmissions($courseId, $studentId);
-        return $data;
+        
+        $studentIds = array($studentId);
+        $assignmentIds = array();//if we leave this param empty it will return all of the available submissions 
+        //(see https://canvas.instructure.com/doc/api/submissions.html#method.submissions_api.for_students)
+        $multipleStudents = false;
+        $multipleAssignments = true;
+        $allStudents = false;
+        $allAssignments = true;
+        
+        //can have the student Id param null if multipleUsers is set to false (we'll only get the current user's submissions)
+        $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, 
+                $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
+        
+        $roots = new Roots();
+        $res = $roots->submissions($req);
+        return $res;
     }
 }
