@@ -105,11 +105,8 @@ class Iris extends ComponentBase
     private function prepareData($courseId, $moduleData)
     {
         $modArr = $moduleData->toArray();
-    	$iris = new IrisClass();
-        $course = $iris->getCourse($courseId);
         $result = $this->buildTree($modArr,1);
         
-    	$this->page['courseData'] = json_encode($course);
         return $result;
     }
     
