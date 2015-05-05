@@ -81,22 +81,19 @@ class CanvasHelper
         $response = GuzzleHelper::makeRequest($request, $url);
 
         $moduleStateInfo = array();
-
-        $content = $response->getBody();
+        $states = json_decode($response->getBody());
         
-        return $content;
-//        
-//        foreach($content as $moduleRow)
-//        {
-//            //we'll create an array with all the moduleIds that belong to this courseId
-//            $mod = new \stdClass();
-//            $mod->moduleId = $moduleRow->id;
-//            $mod->state = $moduleRow->state;
-//            if(isset($moduleRow->completed_at)){$mod->completed_at = $moduleRow->completed_at;}
-//            array_push($moduleStateInfo, $mod);
-//        }
-//
-//        return $moduleStateInfo;
+        foreach($states as $moduleRow)
+        {
+            //we'll create an array with all the moduleIds that belong to this courseId
+            $mod = new \stdClass();
+            $mod->module_id = $moduleRow->id;
+            $mod->state = $moduleRow->state;
+            if(isset($moduleRow->completed_at)){$mod->completed_at = $moduleRow->completed_at;}
+            array_push($moduleStateInfo, $mod);
+        }
+
+        return $moduleStateInfo;
         
     }
     public function putModuleData(ModulesRequest $request)
