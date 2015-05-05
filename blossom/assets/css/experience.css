@@ -1,0 +1,26 @@
+.axis line, .axis path {
+    shape-rendering: crispEdges;
+    stroke: black;
+    fill: none;
+}
+
+.bp line, .bp path {
+    shape-rendering: crispEdges;
+    stroke: none;
+    fill: none;
+}
+
+.main text {
+    font: 10px sans-serif;	
+}
+
+circle {
+    fill: steelblue;
+}
+.dot{
+    opacity: 0.15;   
+}
+
+#gradedot{
+    fill: #FD994C; 
+}

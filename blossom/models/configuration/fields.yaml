@@ -1,0 +1,18 @@
+# ===================================
+#  Form Field Definitions
+# ===================================
+
+fields:
+    id:
+        label: ID
+        disabled: true
+
+    Name:
+        label: Name
+        span: auto
+        comment: Enter a name to uniquely identify this Instance
+
+    Component:
+        label: Component
+        span: auto
+        comment: Enter what component this instance is for
