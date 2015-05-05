@@ -31,7 +31,7 @@ class TestRoots extends ComponentBase
 //        $this->refreshCache();
 //        $this->test();
 //        Cache::flush();
-        $this->testBasicModulesRequest();
+//        $this->testBasicModulesRequest();
 //        $this->testDeleteTag();
 //        $this->testAddingUpdatingTags();
 //        $this->testUpdatingModuleItem();
@@ -41,7 +41,7 @@ class TestRoots extends ComponentBase
 //        $this->testDeletingModule();   //need to double check this one
         
 //        $this->testAddingModule();
-//        $this->testAddingModuleItem();
+        $this->testAddingModuleItem();
 //        
 //        $this->testingGettingAssignments();
 //        $this->testGettingSingleAssignment();
