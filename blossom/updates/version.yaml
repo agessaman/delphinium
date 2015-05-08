@@ -1,3 +1,7 @@
 1.0.0:
     - Initialize plugin
-    - create_configurations_table.php
+    - create_competencies_table.php
+    - create_bonuses_table.php
+    - create_experiences_table.php
+    - create_grades_table.php
+    - create_leaderboards_table.php

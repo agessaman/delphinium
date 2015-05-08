@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Grade
+
+# Model Form Field configuration
+form: $/delphinium/blossom/models/grade/fields.yaml
+
+# Model Class name
+modelClass: Delphinium\Blossom\Models\Grade
+
+# Default redirect location
+defaultRedirect: delphinium/blossom/grade
+
+# Create page
+create:
+    title: Create Grade
+    redirect: delphinium/blossom/grade/update/:id
+    redirectClose: delphinium/blossom/grade
+
+# Update page
+update:
+    title: Edit Grade
+    redirect: delphinium/blossom/grade
+    redirectClose: delphinium/blossom/grade
+
+# Preview page
+preview:
+    title: Preview Grade

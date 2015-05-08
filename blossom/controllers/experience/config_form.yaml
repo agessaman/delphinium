@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Experience
+
+# Model Form Field configuration
+form: $/delphinium/blossom/models/experience/fields.yaml
+
+# Model Class name
+modelClass: Delphinium\Blossom\Models\Experience
+
+# Default redirect location
+defaultRedirect: delphinium/blossom/experience
+
+# Create page
+create:
+    title: Create Experience
+    redirect: delphinium/blossom/experience/update/:id
+    redirectClose: delphinium/blossom/experience
+
+# Update page
+update:
+    title: Edit Experience
+    redirect: delphinium/blossom/experience
+    redirectClose: delphinium/blossom/experience
+
+# Preview page
+preview:
+    title: Preview Experience

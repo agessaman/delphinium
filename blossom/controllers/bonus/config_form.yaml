@@ -1,0 +1,27 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Bonus
+
+# Model Form Field configuration
+form: $/delphinium/blossom/models/bonus/fields.yaml
+
+# Model Class name
+modelClass: Delphinium\Blossom\Models\Bonus
+
+# Default redirect location
+defaultRedirect: delphinium/blossom/bonus
+
+# Create page
+create:
+    title: Create Bonus Instance
+    redirect: delphinium/blossom/bonus/update/:id
+    redirectClose: delphinium/blossom/bonus
+
+# Update page
+update:
+    title: Edit Bonus Instance
+    redirect: delphinium/blossom/bonus
+    redirectClose: delphinium/blossom/bonus

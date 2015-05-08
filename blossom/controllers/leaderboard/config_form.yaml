@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Leaderboard
+
+# Model Form Field configuration
+form: $/delphinium/blossom/models/leaderboard/fields.yaml
+
+# Model Class name
+modelClass: Delphinium\Blossom\Models\Leaderboard
+
+# Default redirect location
+defaultRedirect: delphinium/blossom/leaderboard
+
+# Create page
+create:
+    title: Create Leaderboard
+    redirect: delphinium/blossom/leaderboard/update/:id
+    redirectClose: delphinium/blossom/leaderboard
+
+# Update page
+update:
+    title: Edit Leaderboard
+    redirect: delphinium/blossom/leaderboard
+    redirectClose: delphinium/blossom/leaderboard
+
+# Preview page
+preview:
+    title: Preview Leaderboard

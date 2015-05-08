@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Competency
+
+# Model Form Field configuration
+form: $/delphinium/blossom/models/competency/fields.yaml
+
+# Model Class name
+modelClass: Delphinium\Blossom\Models\Competency
+
+# Default redirect location
+defaultRedirect: delphinium/blossom/competencies
+
+# Create page
+create:
+    title: Create Competency
+    redirect: delphinium/blossom/competencies/update/:id
+    redirectClose: delphinium/blossom/competencies
+
+# Update page
+update:
+    title: Edit Competency
+    redirect: delphinium/blossom/competencies
+    redirectClose: delphinium/blossom/competencies
+
+# Preview page
+preview:
+    title: Preview Competency

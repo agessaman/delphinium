@@ -3,7 +3,10 @@
 use BackendMenu;
 use Backend\Classes\Controller;
 
-class Configuration extends Controller
+/**
+ * Leaderboard Back-end Controller
+ */
+class Leaderboard extends Controller
 {
     public $implement = [
         'Backend.Behaviors.FormController',
