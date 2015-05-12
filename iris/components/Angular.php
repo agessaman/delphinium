@@ -24,8 +24,24 @@ class Angular  extends ComponentBase
         $this->addJs("/plugins/delphinium/iris/assets/javascript/angular-ui-tree.js");
         $this->addJs("/plugins/delphinium/iris/assets/javascript/jquery.min.js");
         $this->addJs("/plugins/delphinium/iris/assets/javascript/tree.js");
-    	$this->addCss('/plugins/delphinium/iris/assets/css/module-tree.css');	
+        $this->addJs('/plugins/delphinium/iris/assets/javascript/xeditable.min.js');
+        $this->addJs('/plugins/delphinium/iris/assets/javascript/ui-bootstrap.min.js');
+        $this->addJs('/plugins/delphinium/iris/assets/javascript/ui-bootstrap-tpls-0.12.1.min.js');
+        $this->addJs("/plugins/delphinium/iris/assets/javascript/jobid.modal.controller.js");
+        $this->addJs("/plugins/delphinium/iris/assets/javascript/itemModal.controller.js");
+        $this->addJs("/plugins/delphinium/iris/assets/javascript/addItemController.js");
+        $this->addJs("/plugins/delphinium/iris/assets/javascript/moduleModal.js");
+        $this->addJs("/plugins/delphinium/iris/assets/javascript/bootstrap.min.js");
+
+        $this->addCss('/plugins/delphinium/iris/assets/css/module-tree.css');
+        $this->addCss('/plugins/delphinium/iris/assets/css/bootstrap.min.css');
+        $this->addCss('/plugins/delphinium/iris/assets/css/xeditable.css');
         $this->addCss('/plugins/delphinium/iris/assets/css/angular-ui-tree.min.css');
+        $this->addCss('/plugins/delphinium/iris/assets/css/bootstrap.theme.min.css');
+        $this->addCss('/plugins/delphinium/iris/assets/css/font-awesome.css');
+
+
+
         
         if(!isset($_SESSION)) 
         { 

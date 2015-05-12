@@ -773,7 +773,6 @@ function getSubmissionData(studentId, courseId)
         data: {studentId: studentId,courseId:courseId},
         success: function (data) {
             showScores(data);
-
         }
     });
 }
