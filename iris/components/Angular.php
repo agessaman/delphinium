@@ -24,7 +24,6 @@ class Angular  extends ComponentBase
         $this->addJs("/plugins/delphinium/iris/assets/javascript/angular-ui-tree.js");
         $this->addJs("/plugins/delphinium/iris/assets/javascript/jquery.min.js");
         $this->addJs("/plugins/delphinium/iris/assets/javascript/tree.js");
-        $this->addJs("/plugins/delphinium/iris/assets/javascript/xeditable.js");
         $this->addJs('/plugins/delphinium/iris/assets/javascript/xeditable.min.js');
         $this->addJs('/plugins/delphinium/iris/assets/javascript/ui-bootstrap.min.js');
         $this->addJs('/plugins/delphinium/iris/assets/javascript/ui-bootstrap-tpls-0.12.1.min.js');

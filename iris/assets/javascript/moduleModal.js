@@ -1,10 +1,6 @@
 /**
  * Created by Tara on 3/28/2015.
  */
-/**
- * Created by Tara on 3/28/2015.
- */
-
 
 'use strict';
 //var options = {

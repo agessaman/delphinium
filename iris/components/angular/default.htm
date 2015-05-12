@@ -48,7 +48,7 @@
                         <a href="#" editable-textarea="item.title">
                             <pre>{{item.title}}</pre>
                         </a>
-                        <!--{{item}};-->
+ =
                         <BR>
                         Url:
 
@@ -60,15 +60,9 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <!--<div ng-switch on="item.published">-->
-                    <!--<a href="" class="btn btn-default pull-left " ng-switch-when="1" ng-click="unpublish()">-->
-                    <!--Unpublish</a>-->
-                    <!--<a href="" class="btn btn-default pull-left " ng-switch-when="0" ng-click="publish()">-->
-                    <!--Publish</a>-->
-                    <!--</div>-->
+
                     <a href="" class="btn btn-primary pull-right" ng-click="ok()">Update</a>
                     <a href="" class="cancel btn btn-default pull-right" ng-click="cancel()">Close</a>
-                    <!--<a href="" class="btn btn-default pull-left icon-trash" ng-click="delete()">  Delete</a>-->
 
                     <button type="button" class="btn btn-danger pull-left" aria-label="Left Align"
                             ng-click="'collapseAll()">
@@ -82,14 +76,8 @@
                 <div class="modalText">
                     <div class="modal-header">
                         <h3 class="modal-title">Edit Module Settings</h3>
-                        <!--{{item[2].name}}-->
-
-                    </div>
+                     </div>
                     <div class="modal-body">
-                        <!--Name:-->
-                        <!--<a href="#" editable-textarea=" item.name">-->
-                        <!--<pre>{{item.name}}</pre>-->
-                        <!--</a>-->
                         <h4>{{item.name}}</h4>
                         <input type="checkbox" ng-model="checked" name="chklabl" id="chklabl"> Lock module until a give
                         date
@@ -431,13 +419,6 @@
 
 {% endverbatim %}
 </div>
-<!--<a class="pull-right btn btn-danger btn-xs" nodrag ng-click="remove(this)"><span class="icon-times"></span></a>
-<a class="pull-right btn btn-primary btn-xs" nodrag ng-click="newSubItem(this)" style="margin-right: 8px;"><span class="icon-plus"></span></a>-->
-<!--
-<li ng-repeat="tag in item.tags">{{item.title}}
 
-                            </li>
-<tags-input ng-model="item.tags">
-                        </tags-input>
 
 
