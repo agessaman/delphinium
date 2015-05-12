@@ -4,19 +4,13 @@
 	var avTags = {{ avTags|raw}};
         var courseId = {{courseId}};
 </script>
+<div id="flashMsg" class="hidden"><span >This item can't be dragged to the top because it is unpublished</span></div>
 
-<div id="flashMsg" class="hidden"><span>This item can't be dragged to the top because it is unpublished</span></div>
-<form data-request="angular::onRefreshCache">
-    <button type="submit" class="btn btn btn-primary">Refresh Data from Canvas</button>
-</form>
-
-<BR>
-</div>
 <div ng-app="treeApp" ng-controller="treeCtrl">
+    
     {% verbatim %}
-    <div>
-        <a href="" class="btn btn-default pull-right" ng-click="reloadApp()">Reload page</a>
-    </div>
+    <a href="" class="btn btn btn-primary" ng-click="reloadApp()">Refresh Data from Canvas</a>
+    <i class="icon-spinner icon-spin icon-large" ng-show="loading"></i>
     <div class="buttons">
 
         <div ng-controller="addModalCtrl">
@@ -277,7 +271,7 @@
                     </div>
                 </div>
 
-                <BR>
+                <br>
                 <div class="modal-footer">
                     <a href="" class="btn btn-primary pull-right" ng-click="ok()">Add Item</a>
                     <a href="" class="cancel btn btn-default pull-right" ng-click="cancel()">Cancel</a>
@@ -413,14 +407,4 @@
         </div>
     </div>
 </div>
-</div>
-<!--[if IE 8]>
-<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/es5-shim/3.4.0/es5-shim.min.js"></script>
-<![endif]-->
-
 {% endverbatim %}
-</div>
-
-
-
