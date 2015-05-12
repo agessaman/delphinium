@@ -1,5 +1,7 @@
 (function() {
+
     'use strict';
+
 
         angular.module('treeApp', ['ui.tree', 'xeditable', 'ui.bootstrap']).run(function (editableOptions) {
             editableOptions.theme = 'bs2'
@@ -125,6 +127,7 @@
                 };
 
 //this function below (or something similar) will be used by Tara when adding new functionality to the manager
+
                 $scope.newSubItem = function (scope) {
                     var nodeData = scope.$modelValue;
                     nodeData.nodes.push({
@@ -166,6 +169,7 @@
                         var a = tagArr[i].trim();
                         a = capitalizeFirstLetter(a);
                         tagArr[i] = a;
+
                     }
                     $http.post('addTags', {
                         contentId: content_id,
@@ -244,6 +248,7 @@
 //            {
                             $scope.possibleTags = diff;
 //            }
+
                         });
                 }
 
@@ -270,6 +275,7 @@
 
     function capitalizeFirstLetter(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
+
     }
 
     function findDifference(a, b) {

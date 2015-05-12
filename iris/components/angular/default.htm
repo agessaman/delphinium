@@ -34,6 +34,7 @@
     </div>
 
     <div class="manager">
+
         <div class='treeLine'>
             <!--Modal Template-->
             <script type="text/ng-template" id="modalTemp.html">
@@ -48,7 +49,7 @@
                         <a href="#" editable-textarea="item.title">
                             <pre>{{item.title}}</pre>
                         </a>
- =
+
                         <BR>
                         Url:
 
@@ -303,6 +304,7 @@
                     </ng-switch>
 
                 </div>
+
                 <ng-switch on="item.published">
                     <a ng-class="{'icon-reorder publishedModuleIcon': isExpanded, 'icon-navicon publishedModuleIcon': !isExpanded}"
                        class=" pull-right btn expand" nodrag ng-click="showContent(item)" ng-switch-when="1"></a>

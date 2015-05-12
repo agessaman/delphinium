@@ -1,7 +1,0 @@
-# ===================================
-#  List Behavior Config
-# ===================================
-
-title: Raspberry
-list: @/plugins/delphinium/raspberry/models/module/columns.yaml
-modelClass: Delphinium\Raspberry\Models\Module

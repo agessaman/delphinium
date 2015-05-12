@@ -629,7 +629,7 @@ function getAncestors(node) {
                 {
                     var ob = moduleStates.filter(function (ob) 
                     {
-                        var id = parseInt(d.moduleId);
+                        var id = parseInt(d.module_id);
                         if(ob.moduleId === id)
                         {
                             return ob;
@@ -747,9 +747,7 @@ function getModuleStates()
                     for(var i=0;i<=data.length-1;i++)
                     {
                         d = data[i];
-//                        console.log(d.moduleId + " -- "+ d.state);
-                        //select the path that corresponds
-                        var mod = d3.select("#path" + d.moduleId);
+                        var mod = d3.select("#path" + d.module_id);
                         if(mod[0][0]!==null)
                         {
                             var originalColor = mod.style("fill");
@@ -757,14 +755,12 @@ function getModuleStates()
 
                             mod.style("fill", newColor);   
                         }
-                        
                     }
                     moduleStates = tempStates;
                 }
                 return tempStates;
             }
         });
-            
 }
 
 
