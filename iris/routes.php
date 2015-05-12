@@ -9,3 +9,4 @@ Route::get('getAvailableTags', 'Delphinium\Iris\Controllers\RestApi@getAvailable
 
 Route::get('getModuleStates', 'Delphinium\Iris\Controllers\RestApi@getModuleStates');
 Route::get('getStudentSubmissions', 'Delphinium\Iris\Controllers\RestApi@getStudentSubmissions');
+Route::get('getFreshData', 'Delphinium\Iris\Controllers\RestApi@getFreshData');

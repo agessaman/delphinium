@@ -171,29 +171,29 @@ class Roots
      * OTHER HELPER METHODS
      */
     
-    public function updateModuleOrder($modules)
+    public function updateModuleOrder($modules, $updateLms)
     {
         $ordered = array();
         $dbHelper = new DbHelper();
-        
+        $order = 1;//canvas uses 1-based position
+        $new=array();
         foreach($modules as $item)
         {
-            $position = $item->order+1;//item's order is zero based, but Canvas expects it to be 1-based
-            //
-            //UPDATE positioning in LMS
-//            $module = new Module(null, null, null, null, $position);
-//            $req = new ModulesRequest(ActionType::PUT, $item->module_id, null,  
-//                false, false, $module, null , false);
-//            $res = $this->modules($req);
-            
+            if($updateLms)
+            {
+//              UPDATE positioning in LMS
+                $module = new Module(null, null, null, null, $order);
+                $req = new ModulesRequest(ActionType::PUT, $item->module_id, null,  
+                    false, false, $module, null , false);
+                $res = $this->modules($req);
+                               
+                $order++;
+
+            }
             //UPDATE positioning in DB
             $orderedModule = $dbHelper->updateOrderedModule($item);
-//            $key = "{$item->courseId}-module-{$item->moduleId}";
-//            $cacheHelper->storeDataInCache($key, $orderedModule->toArray(), $cacheTime);
             array_push($ordered, $orderedModule->toArray());
         }
-        
-        
         return $ordered;
     }
     

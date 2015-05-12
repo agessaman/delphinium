@@ -540,14 +540,14 @@ class CanvasHelper
         }
         return $urlArgs;
     }
+    
     private function buildModuleItemUpdateArgs(UpdatableModuleItem $moduleItem)
     { 
         $urlArgs = array();
         
         foreach($moduleItem as $key=>$value)
         {
-//        echo $key.": ".$value." -- ";
-        ////cannot update content_id, page_url, or type. (as per Canvas API)
+            //cannot update content_id, page_url, or type. (as per Canvas API)
             //The tags will be updated separately since they don't belong to Canvas
             if(($key === "content_id")||($key === "page_url")||$key==="tags"||$key==="type")
             {
