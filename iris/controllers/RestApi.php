@@ -8,11 +8,17 @@ use Delphinium\Core\RequestObjects\ModulesRequest;
 use Delphinium\Core\Roots;
 use Delphinium\Core\Enums\CommonEnums\ActionType;
 use Delphinium\Iris\Classes\Iris as IrisClass;
+use Delphinium\Iris\Components\Angular;
 
 
 class RestApi extends Controller 
 {
-    
+    public function getFreshData()
+    {
+        $ang = new Angular();
+        $modules = $ang->getModules(true);
+        return $modules;
+    }
     public function moveItemToTop()
     {
         $parent = json_decode(\Input::get('parent'), true);
@@ -26,14 +32,17 @@ class RestApi extends Controller
     {
         $courseId = \Input::get('courseId');
         $modulesArray = \Input::get('modulesArray');
-
+        $updateLms = \Input::get('updateLms');
+        
         $decoded = json_decode($modulesArray);
         
         $flat = $this->flatten($decoded, $courseId);
 
         $roots = new \Delphinium\Core\Roots();
-        $mods = $roots->updateModuleOrder($flat);
+        $mods = $roots->updateModuleOrder($flat, $updateLms);
       
+        
+//        echo " The order is: ---- ".json_encode($flat)." ---";
         $iris = new IrisClass();
         $result = $iris->buildTree($mods);
         return $result;

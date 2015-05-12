@@ -35,13 +35,13 @@ class TestRoots extends ComponentBase
 //        $this->testDeleteTag();
 //        $this->testAddingUpdatingTags();
 //        $this->testUpdatingModuleItem();
-//        $this->testUpdatingModule();
+        $this->testUpdatingModule();
         
 //        $this->testDeletingModuleItem();
 //        $this->testDeletingModule();   //need to double check this one
         
 //        $this->testAddingModule();
-        $this->testAddingModuleItem();
+//        $this->testAddingModuleItem();
 //        
 //        $this->testingGettingAssignments();
 //        $this->testGettingSingleAssignment();
@@ -78,33 +78,40 @@ class TestRoots extends ComponentBase
     
     private function testUpdatingModule()
     {   
-        
-        $name = "Updated from backend";
-        
-        $format = DateTime::ISO8601;
-        $date = new DateTime("now");
-        $date->add(new DateInterval('P1D'));
-        $unlock_at = $date;
-        $prerequisite_module_ids =array("380199","380201");
-        $published = true;
-        $position = 4;
-        
-        $module = new Module($name, $unlock_at, $prerequisite_module_ids, $published, $position);
-        
-        
-        $moduleId = 457494;
-        $moduleItemId = null;
-        $includeContentItems = false;
-        $includeContentDetails = false;
-        $moduleItem = null;
-        $freshData = false;
-        
-        //update a module (changing title and published to false)
-        $req = new ModulesRequest(ActionType::PUT, $moduleId, $moduleItemId,  
-            $includeContentItems, $includeContentDetails, $module, $moduleItem , $freshData);
-        
+        //380212
+        $empty =  array();
+        $module = new Module(null, null, null, null, 22);
+        $req = new ModulesRequest(ActionType::PUT, 380206, null,  
+            false, false, $module, null , false);
         $roots = new Roots();
         $res = $roots->modules($req);
+        
+//        $name = "Updated from backend";
+//        
+//        $format = DateTime::ISO8601;
+//        $date = new DateTime("now");
+//        $date->add(new DateInterval('P1D'));
+//        $unlock_at = $date;
+//        $prerequisite_module_ids =array("380199","380201");
+//        $published = true;
+//        $position = 4;
+//        
+//        $module = new Module($name, $unlock_at, $prerequisite_module_ids, $published, $position);
+//        
+//        
+//        $moduleId = 457494;
+//        $moduleItemId = null;
+//        $includeContentItems = false;
+//        $includeContentDetails = false;
+//        $moduleItem = null;
+//        $freshData = false;
+//        
+//        //update a module (changing title and published to false)
+//        $req = new ModulesRequest(ActionType::PUT, $moduleId, $moduleItemId,  
+//            $includeContentItems, $includeContentDetails, $module, $moduleItem , $freshData);
+//        
+//        $roots = new Roots();
+//        $res = $roots->modules($req);
     }
     
     private function testUpdatingModuleItem()

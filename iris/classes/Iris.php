@@ -1,6 +1,6 @@
 <?php namespace Delphinium\Iris\Classes;
 
-use Delphinium\Raspberry\Models\OrderedModule;
+use Delphinium\Core\Models\OrderedModule;
 
 class Iris 
 {
@@ -64,15 +64,15 @@ class Iris
         
         array_unshift($allItems,$arrWithOldParent);//insert the old parent at the top of the array
         
-        $firstParentId=$newParent['moduleId']; 
+        $firstParentId=$newParent['module_id']; 
         
         foreach($allItems as $value)
         {
-            $value['parentId'] = $firstParentId;
+            $value['parent_id'] = $firstParentId;
             array_push($newParent['children'], $value);//append all children
         }
 
-        $newParent['parentId'] = 1;
+        $newParent['parent_id'] = 1;
         $newParent['order'] = 0;
         
         $this->fixChildrenOrder($newParent['children']);

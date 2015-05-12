@@ -37,12 +37,26 @@ class Angular  extends ComponentBase
         $this->prepareData(false);
     }
     
-    public function onRefreshCache()
-    {
-       $this->prepareData(true);
-    }
     
-    private function prepareData($freshData)
+    public function prepareData($freshData)
+    {
+        $roots = new Roots();
+        $tempArray = $this->getModules($freshData);
+
+        $this->page['moduleData'] = json_encode($tempArray);
+        $tags = $roots->getAvailableTags();
+        if(strlen($tags)>0)
+        {
+            $tags = explode(', ', $tags);
+        }
+        else
+        {
+            $tags = [];
+        }
+        $this->page['avTags'] = json_encode($tags);
+        
+    }
+    public function getModules($freshData)
     {
         $moduleId = null;
         $moduleItemId = null;
@@ -98,27 +112,15 @@ class Angular  extends ComponentBase
             $firstItem["children"]=$final;
             $firstItem["order"]=0;
 
-            $tempArray[] = $firstItem;
-            
+            $tempArray[] = $firstItem;   
         }
         else
         {
             $tempArray = $result;
         }
-
-        $this->page['moduleData'] = json_encode($tempArray);
-        $tags = $roots->getAvailableTags();
-        if(strlen($tags)>0)
-        {
-            $tags = explode(', ', $tags);
-        }
-        else
-        {
-            $tags = [];
-        }
-        $this->page['avTags'] = json_encode($tags);
-        
+        return $tempArray;
     }
+    
     
     private function unsetValue(array $array, $value, $strict = TRUE)
     {
