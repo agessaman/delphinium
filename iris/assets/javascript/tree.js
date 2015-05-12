@@ -6,7 +6,7 @@
         angular.module('treeApp', ['ui.tree', 'xeditable', 'ui.bootstrap']).run(function (editableOptions) {
             editableOptions.theme = 'bs2'
         })
-            .controller('treeCtrl', function ($scope, $http) {
+            .controller('treeCtrl', function($scope,$http, $interval) {
 
                 $scope.data = moduleData;
                 $scope.contentClass = "hidden";
@@ -18,6 +18,7 @@
 
                 $scope.isExpanded = false;
                 $scope.showTags = false;
+                $scope.loading = false;
 
 
                 /*
@@ -149,8 +150,8 @@
 //        console.log(JSON.stringify($scope.data));
                     $http.post('saveModules', {
                         courseId: courseId,
-                        modulesArray: JSON.stringify($scope.data)
-                    })
+                        modulesArray:JSON.stringify($scope.data), updateLms:false})
+
                         .success(function (data, status) {
                             console.log("saved Data");
                             console.log(data);
@@ -247,23 +248,39 @@
 //            if(diff.length>0)
 //            {
                             $scope.possibleTags = diff;
+
 //            }
 
                         });
-                }
+                };
 
-                $scope.reloadApp = function () {
-                    $scope.data = moduleData;
-                    $scope.contentClass = "hidden";
-                    $scope.currentModuleItemId = 0;
-                    $scope.contentId = 0;
+                $scope.loading = true;
+                	        $http.get("getFreshData")
+                	        .success(function (data,status) {
+                	            if(status ===200)
+                	            {
+                	                $scope.data  = data;
+                	                $scope.loading = false;
+                	            }
 
-                    $scope.isExpanded = false;
-                    $scope.showTags = false;
-                }
+                	        });
+
+
+    	    $scope.postOrderToLms = function()
+    	    {
+
+    	        $http.post('saveModules', { courseId: courseId,
+    	            modulesArray:JSON.stringify($scope.data), updateLms:true})
+    	                .success(function (data,status) {
+    	                })
+    	                .error(function(data) {
+    	                });
+    	    };
+
 
                 //it is crucial that we save this initial order right away
                 $scope.saveOrder();//save the new order right away
+                $interval($scope.postOrderToLms, 60000);//post order to Canvas every  minute
             });
 
     })();
