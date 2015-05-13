@@ -8,17 +8,26 @@ class CreateGradesTable extends Migration
 
     public function up()
     {
-        Schema::create('delphinium_blossom_grades', function($table)
+        if ( !Schema::hasTable('delphinium_blossom_grades') )
         {
-            $table->engine = 'InnoDB';
-            $table->increments('id');
-            $table->timestamps();
-        });
+            Schema::create('delphinium_blossom_grades', function($table)
+            {
+                $table->engine = 'InnoDB';
+                $table->increments('id');
+                $table->string('Name');
+                $table->string('Animate');
+                $table->string('Size');
+                $table->timestamps();
+            });
+        }
     }
 
     public function down()
     {
-        Schema::dropIfExists('delphinium_blossom_grades');
+        if ( Schema::hasTable('delphinium_blossom_grades') )
+        {
+            Schema::dropIfExists('delphinium_blossom_grades');
+        }
     }
 
 }

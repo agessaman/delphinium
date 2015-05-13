@@ -8,17 +8,26 @@ class CreateCompetenciesTable extends Migration
 
     public function up()
     {
-        Schema::create('delphinium_blossom_competencies', function($table)
+        if ( !Schema::hasTable('delphinium_blossom_competencies') )
         {
-            $table->engine = 'InnoDB';
-            $table->increments('id');
-            $table->timestamps();
-        });
+            Schema::create('delphinium_blossom_competencies', function($table)
+            {
+                $table->engine = 'InnoDB';
+                $table->increments('id');
+                $table->string('Name');
+                $table->string('Animate');
+                $table->string('Size');
+                $table->timestamps();
+            });
+        }
     }
 
     public function down()
     {
-        Schema::dropIfExists('delphinium_blossom_competencies');
+        if ( Schema::hasTable('delphinium_blossom_competencies') )
+        {
+            Schema::dropIfExists('delphinium_blossom_competencies');
+        }
     }
 
 }

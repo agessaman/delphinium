@@ -1,7 +1,20 @@
 <div data-control="toolbar">
-    <a
-        href="<?= Backend::url('delphinium/blossom/grade/create') ?>"
-        class="btn btn-primary oc-icon-plus">
-        New Grade
-    </a>
+    <div class="btn-group">
+    	
+        <a href="<?= Backend::url('delphinium/blossom/Grade/create') ?>" class="btn btn-primary oc-icon-plus">New Grade Instance</a>
+        <button
+            class="btn btn-default oc-icon-trash-o"
+            disabled="disabled"
+            onclick="$(this).data('request-data', {
+                checked: $('.control-list').listWidget('getChecked')
+            })"
+            data-request="onDelete"
+            data-request-confirm="Are you sure?"
+            data-trigger-type="enable"
+            data-trigger=".control-list input[type=checkbox]"
+            data-trigger-condition="checked"
+            data-stripe-load-indicator>
+            Remove
+        </button>
+    </div>
 </div>

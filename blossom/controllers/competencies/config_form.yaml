@@ -3,29 +3,26 @@
 # ===================================
 
 # Record name
-name: Competency
+name: Competencies
 
 # Model Form Field configuration
-form: $/delphinium/blossom/models/competency/fields.yaml
+form: $/delphinium/blossom/models/competencies/fields.yaml
 
 # Model Class name
-modelClass: Delphinium\Blossom\Models\Competency
+modelClass: Delphinium\Blossom\Models\Competencies
 
 # Default redirect location
 defaultRedirect: delphinium/blossom/competencies
 
 # Create page
 create:
-    title: Create Competency
+    title: Create Competencies
     redirect: delphinium/blossom/competencies/update/:id
     redirectClose: delphinium/blossom/competencies
 
 # Update page
 update:
-    title: Edit Competency
+    title: Edit Competencies
     redirect: delphinium/blossom/competencies
     redirectClose: delphinium/blossom/competencies
 
-# Preview page
-preview:
-    title: Preview Competency

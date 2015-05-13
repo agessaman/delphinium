@@ -15,7 +15,10 @@ class CreateBonusesTable extends Migration
                 $table->engine = 'InnoDB';
                 $table->increments('id');
                 $table->string('Name');
-                $table->string('Component');
+                $table->string('Maximum');
+                $table->string('Minimum');
+                $table->string('Animate');
+                $table->string('Size');
                 $table->timestamps();
             });
         }

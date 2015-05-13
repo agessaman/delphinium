@@ -14,8 +14,11 @@ class Bonus extends Model
     public $table = 'delphinium_blossom_bonuses';
 
     public $rules = [
-        'Name'=>'required',
-        'Component' => 'required'
+    	'Name'=>'required',
+        'Maximum'=>'required',
+        'Minimum' => 'required',
+        'Animate'=>'required',
+        'Size' => 'required'
     ];
 
 

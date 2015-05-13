@@ -3,13 +3,13 @@
 # ===================================
 
 # Model List Column configuration
-list: $/delphinium/blossom/models/competency/columns.yaml
+list: $/delphinium/blossom/models/competencies/columns.yaml
 
 # Model Class name
-modelClass: Delphinium\Blossom\Models\Competency
+modelClass: Delphinium\Blossom\Models\Competencies
 
 # List Title
-title: Manage Competencies
+title: Manage Competencies Instances
 
 # Link URL for each record
 recordUrl: delphinium/blossom/competencies/update/:id

@@ -8,17 +8,30 @@ class CreateExperiencesTable extends Migration
 
     public function up()
     {
-        Schema::create('delphinium_blossom_experiences', function($table)
+        if ( !Schema::hasTable('delphinium_blossom_experiences') )
         {
-            $table->engine = 'InnoDB';
-            $table->increments('id');
-            $table->timestamps();
-        });
+            Schema::create('delphinium_blossom_experiences', function($table)
+            {
+                $table->engine = 'InnoDB';
+                $table->increments('id');
+                $table->string('Name');
+                $table->string('Maximum');
+                $table->string('Milestones');
+                $table->string('Start Date');
+                $table->string('End Date');
+                $table->string('Animate');
+                $table->string('Size');
+                $table->timestamps();
+            });
+        }
     }
 
     public function down()
     {
-        Schema::dropIfExists('delphinium_blossom_experiences');
+         if ( Schema::hasTable('delphinium_blossom_experiences') )
+        {
+            Schema::dropIfExists('delphinium_blossom_experiences');
+        }
     }
 
 }

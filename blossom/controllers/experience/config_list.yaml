@@ -9,7 +9,7 @@ list: $/delphinium/blossom/models/experience/columns.yaml
 modelClass: Delphinium\Blossom\Models\Experience
 
 # List Title
-title: Manage Experiences
+title: Manage Experiences Instances
 
 # Link URL for each record
 recordUrl: delphinium/blossom/experience/update/:id

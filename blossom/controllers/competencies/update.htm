@@ -1,56 +1,36 @@
-<?php Block::put('breadcrumb') ?>
+<div class="control-breadcrumb">
     <ul>
-        <li><a href="<?= Backend::url('delphinium/blossom/competencies') ?>">Competencies</a></li>
+        <li><a href="<?= Backend::url('delphinium/blossom/Competencies') ?>">Competencies Instances</a></li>
         <li><?= e($this->pageTitle) ?></li>
     </ul>
-<?php Block::endPut() ?>
+</div>
 
-<?php if (!$this->fatalError): ?>
+<?= Form::open(['class'=>'layout-item stretch layout-column']) ?>
 
-    <?= Form::open(['class' => 'layout']) ?>
+    <?= $this->formRender() ?>
 
-        <div class="layout-row">
-            <?= $this->formRender() ?>
+    <div class="form-buttons layout-item fix">
+        <div class="loading-indicator-container">
+            <button 
+                type="button" 
+                data-request="onSave" 
+                data-request-data="close:true" 
+                data-hotkey="ctrl+enter"
+                data-hotkey-mac="cmd+enter"
+                data-load-indicator="Saving Competencies Instance..." 
+                class="btn btn-default">
+                Save and Close
+            </button>
+            <button 
+                type="button" 
+                class="oc-icon-trash-o btn-icon danger pull-right" 
+                data-request="onDelete" 
+                data-load-indicator="Deleting Competencies Instance..." 
+                data-request-confirm="Do you really want to delete this Competencies Instance?">
+            </button>
+
+            <span class="btn-text"> or 
+            <a href="<?= Backend::url('delphinium/blossom/Competencies') ?>">Cancel</a></span>
         </div>
-
-        <div class="form-buttons">
-            <div class="loading-indicator-container">
-                <button
-                    type="submit"
-                    data-request="onSave"
-                    data-request-data="redirect:0"
-                    data-hotkey="ctrl+s, cmd+s"
-                    data-load-indicator="Saving competency..."
-                    class="btn btn-primary">
-                    <u>S</u>ave
-                </button>
-                <button
-                    type="button"
-                    data-request="onSave"
-                    data-request-data="close:1"
-                    data-hotkey="ctrl+enter, cmd+enter"
-                    data-load-indicator="Saving competency..."
-                    class="btn btn-default">
-                    Save and Close
-                </button>
-                <button
-                    type="button"
-                    class="oc-icon-trash-o btn-icon danger pull-right"
-                    data-request="onDelete"
-                    data-load-indicator="Deleting competency..."
-                    data-request-confirm="Do you really want to delete this competency?">
-                </button>
-                <span class="btn-text">
-                    or <a href="<?= Backend::url('delphinium/blossom/competencies') ?>">Cancel</a>
-                </span>
-            </div>
-        </div>
-
-    <?= Form::close() ?>
-
-<?php else: ?>
-
-    <p class="flash-message static error"><?= e($this->fatalError) ?></p>
-    <p><a href="<?= Backend::url('delphinium/blossom/competencies') ?>" class="btn btn-default">Return to competencies list</a></p>
-
-<?php endif ?>
+    </div>
+<?= Form::close() ?>

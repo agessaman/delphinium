@@ -25,7 +25,3 @@ update:
     title: Edit Grade
     redirect: delphinium/blossom/grade
     redirectClose: delphinium/blossom/grade
-
-# Preview page
-preview:
-    title: Preview Grade

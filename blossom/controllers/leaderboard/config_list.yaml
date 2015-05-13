@@ -9,7 +9,7 @@ list: $/delphinium/blossom/models/leaderboard/columns.yaml
 modelClass: Delphinium\Blossom\Models\Leaderboard
 
 # List Title
-title: Manage Leaderboards
+title: Manage Leaderboards Instances
 
 # Link URL for each record
 recordUrl: delphinium/blossom/leaderboard/update/:id

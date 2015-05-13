@@ -6,3 +6,31 @@ columns:
     id:
         label: ID
         searchable: true
+
+    Name:
+        label: Name
+        searchable: true
+
+    Maximum:
+        label: Maximum
+        searchable: true
+
+    Milestones:
+        label: Milestones
+        searchable: true
+
+    Start Date:
+        label: Start Date
+        searchable: true
+
+    End Date:
+        label: End Date
+        searchable: true
+
+    Animate:
+        label: Animate
+        searchable: true
+
+    Size:
+        label: Size
+        searchable: true

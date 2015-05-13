@@ -10,9 +10,24 @@ fields:
     Name:
         label: Name
         span: auto
-        comment: Enter a name to uniquely identify this Instance
+        comment: Enter the name of this instance
 
-    Component:
-        label: Component
+    Maximum:
+        label: Maximum
         span: auto
-        comment: Enter what component this instance is for
+        comment: Enter the maximum a bonus can be
+
+    Minimum:
+        label: Minimum
+        span: auto
+        comment: Enter the minimum a penaltie can be
+
+    Animate:
+        label: Animate
+        span: auto
+        comment: Enter if you want this component to be animated
+
+    Size:
+        label: Size
+        span: auto
+        comment: Enter the the size of component you want

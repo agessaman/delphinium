@@ -25,7 +25,3 @@ update:
     title: Edit Leaderboard
     redirect: delphinium/blossom/leaderboard
     redirectClose: delphinium/blossom/leaderboard
-
-# Preview page
-preview:
-    title: Preview Leaderboard
