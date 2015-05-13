@@ -1,12 +1,9 @@
-(function() {
-
+(function () {
     'use strict';
-
-
-        angular.module('treeApp', ['ui.tree', 'xeditable', 'ui.bootstrap']).run(function (editableOptions) {
-            editableOptions.theme = 'bs2'
-        })
-            .controller('treeCtrl', function($scope,$http, $interval) {
+    angular.module('treeApp', ['ui.tree', 'xeditable', 'ui.bootstrap']).run(function (editableOptions) {
+        editableOptions.theme = 'bs2'
+    })
+            .controller('treeCtrl', function ($scope, $http, $interval) {
 
                 $scope.data = moduleData;
                 $scope.contentClass = "hidden";
@@ -72,7 +69,7 @@
                     }
 
 
-                }
+                };
 
                 $scope.treeOptions = {
                     accept: function (sourceNodeScope, destNodesScope) {
@@ -102,20 +99,20 @@
                                 parent: JSON.stringify(parent),
                                 modulesArray: JSON.stringify(allOtherItems)
                             })
-                                .success(function (data, status) {
-                                    console.log(data);
-                                    $scope.data = data;
-                                    $scope.saveOrder($scope);
-                                })
-                                .error(function (data) {
-                                });
+                                    .success(function (data, status) {
+                                        console.log(data);
+                                        $scope.data = data;
+                                        $scope.saveOrder($scope);
+                                    })
+                                    .error(function (data) {
+                                    });
                         }
                         else if (event.source.nodeScope.$parentNodeScope)//if nodeScope.$parentNodeScope is undefined, it means the top element is being dragged,
-                        //in which case we don't want to save the order
-                        {
-                            //just save the order
-                            $scope.saveOrder($scope);
-                        }
+                                //in which case we don't want to save the order
+                                {
+                                    //just save the order
+                                    $scope.saveOrder($scope);
+                                }
                     }
                 };
 
@@ -150,14 +147,14 @@
 //        console.log(JSON.stringify($scope.data));
                     $http.post('saveModules', {
                         courseId: courseId,
-                        modulesArray:JSON.stringify($scope.data), updateLms:false})
+                        modulesArray: JSON.stringify($scope.data), updateLms: false})
 
-                        .success(function (data, status) {
-                            console.log("saved Data");
-                            console.log(data);
-                        })
-                        .error(function (data) {
-                        });
+                            .success(function (data, status) {
+                                console.log("saved Data");
+                                console.log(data);
+                            })
+                            .error(function (data) {
+                            });
                 };
 
                 $scope.addTags = function (scope) {
@@ -176,11 +173,11 @@
                         contentId: content_id,
                         tags: JSON.stringify(tagArr)
                     }).
-                        success(function (data) {
-                            $scope.tags = data.split(", ");
-                            scope.item.content[0].tags = data;
-                            $scope.updateAvailableTags();
-                        });
+                            success(function (data) {
+                                $scope.tags = data.split(", ");
+                                scope.item.content[0].tags = data;
+                                $scope.updateAvailableTags();
+                            });
                     this.tagValue = "";
                 };
 
@@ -200,11 +197,11 @@
                         contentId: content_id,
                         tags: JSON.stringify(tagArr)
                     }).
-                        success(function (data) {
-                            $scope.tags = data.split(", ");
-                            scope.$parent.item.content[0].tags = data;
-                            $scope.updateAvailableTags();
-                        });
+                            success(function (data) {
+                                $scope.tags = data.split(", ");
+                                scope.$parent.item.content[0].tags = data;
+                                $scope.updateAvailableTags();
+                            });
                     $scope.tagValue = "";
                 }
 
@@ -215,22 +212,22 @@
                     var diff = findDifference(currTags, [trimmed]);
 
                     $http.post('deleteTag', {contentId: content_id, tags: JSON.stringify(diff)})
-                        .success(function (data) {
-                            var t = data.split(", ");
-                            if (data === "") {
-                                scope.$parent.item.content[0].tags = data;
-                                $scope.tags = [];
-                            }
-                            else {
-                                $scope.tags = t;
-                                scope.$parent.item.content[0].tags = data;
-                            }
+                            .success(function (data) {
+                                var t = data.split(", ");
+                                if (data === "") {
+                                    scope.$parent.item.content[0].tags = data;
+                                    $scope.tags = [];
+                                }
+                                else {
+                                    $scope.tags = t;
+                                    scope.$parent.item.content[0].tags = data;
+                                }
 
-                            //need to also update this item's current tags
-                            $scope.updateAvailableTags();
-                        })
-                        .error(function (data) {
-                        });
+                                //need to also update this item's current tags
+                                $scope.updateAvailableTags();
+                            })
+                            .error(function (data) {
+                            });
                 };
 
                 $scope.updateAvailableTags = function () {
@@ -239,43 +236,50 @@
                             courseId: courseId
                         }
                     })
-                        .success(function (data, status) {
-                            if (data.length > 0) {
-                                avTags = data.split(", ");
-                            }
+                            .success(function (data, status) {
+                                if (data.length > 0) {
+                                    avTags = data.split(", ");
+                                }
 
-                            var diff = findDifference(avTags, $scope.tags);
+                                var diff = findDifference(avTags, $scope.tags);
 //            if(diff.length>0)
 //            {
-                            $scope.possibleTags = diff;
+                                $scope.possibleTags = diff;
 
 //            }
 
-                        });
+                            });
                 };
 
-                $scope.loading = true;
-                	        $http.get("getFreshData")
-                	        .success(function (data,status) {
-                	            if(status ===200)
-                	            {
-                	                $scope.data  = data;
-                	                $scope.loading = false;
-                	            }
+                $scope.switchPublishState = function()
+                {
+                    
+                };
+                
+                $scope.reloadApp = function ()
+                {
+                    $scope.loading = true;
+                    $http.get("getFreshData")
+                            .success(function (data, status) {
+                                if (status === 200)
+                                {
+                                    $scope.data = data;
+                                    $scope.loading = false;
+                                }
 
-                	        });
+                            });
+                };
 
+                $scope.postOrderToLms = function ()
+                {
 
-    	    $scope.postOrderToLms = function()
-    	    {
-
-    	        $http.post('saveModules', { courseId: courseId,
-    	            modulesArray:JSON.stringify($scope.data), updateLms:true})
-    	                .success(function (data,status) {
-    	                })
-    	                .error(function(data) {
-    	                });
-    	    };
+                    $http.post('saveModules', {courseId: courseId,
+                        modulesArray: JSON.stringify($scope.data), updateLms: true})
+                            .success(function (data, status) {
+                            })
+                            .error(function (data) {
+                            });
+                };
 
 
                 //it is crucial that we save this initial order right away
@@ -283,36 +287,37 @@
                 $interval($scope.postOrderToLms, 60000);//post order to Canvas every  minute
             });
 
-    })();
+})();
 
 
-    /*
-     * Additional functions
-     */
+/*
+ * Additional functions
+ */
 
-    function capitalizeFirstLetter(string) {
-        return string.charAt(0).toUpperCase() + string.slice(1);
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
 
+}
+
+function findDifference(a, b) {
+    var seen = [], diff = [];
+    for (var i = 0; i < b.length; i++)
+        seen[b[i].trim()] = true;
+    for (var i = 0; i < a.length; i++)
+        if (!seen[a[i].trim()])
+            diff.push(a[i].trim());
+    return diff;
+}
+
+function getCurrentTags(moduleItem) {
+    tagStr = moduleItem.content[0].tags;
+    if (tagStr.length > 0) {
+        return tagStr.split(", ");
     }
-
-    function findDifference(a, b) {
-        var seen = [], diff = [];
-        for (var i = 0; i < b.length; i++)
-            seen[b[i].trim()] = true;
-        for (var i = 0; i < a.length; i++)
-            if (!seen[a[i].trim()])
-                diff.push(a[i].trim());
-        return diff;
+    else {
+        return [];
     }
-
-    function getCurrentTags(moduleItem) {
-        tagStr = moduleItem.content[0].tags;
-        if (tagStr.length > 0) {
-            return tagStr.split(", ");
-        }
-        else {
-            return [];
-        }}
+}
 
 
 
