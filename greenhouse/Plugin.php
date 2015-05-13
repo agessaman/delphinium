@@ -25,7 +25,11 @@ class Plugin extends PluginBase
     	Event::fire('delphinium.greenhouse.load');
     	 
     }
-    
+
+    public function register()
+    {
+        BackendMenu::registerContextSidenavPartial('Delphinium.Greenhouse', 'greenhouse', '@/plugins/delphinium/greenhouse/partials/_sidebar.htm');
+    }
     
     public function registerNavigation()
 	{

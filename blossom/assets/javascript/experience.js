@@ -105,8 +105,8 @@ function drawExperience(){
 		.transition()
 			.delay(2000)
 			.style('fill', "steelblue")
-			.attr('height', scale(experienceXP))
-			.attr('y', bottom - scale(experienceXP))
+			.attr('height', Math.round(scale(experienceXP)))
+			.attr('y', bottom - Math.round(scale(experienceXP)))
 			.duration(1000)
 			.ease('bounce');
 
@@ -120,34 +120,32 @@ function drawExperience(){
 			.attr('y', redLineY);
 
 	var bonus = d3.select("#eBonusRect")
-		.attr('y', bottom - scale(experienceXP))
+		.attr('y', bottom - Math.round(scale(experienceXP)))
 		.style("fill","white")
 	    .transition()
 	    	.delay(4000)
 	    	.duration(1000)
 	    	.style("fill","green")
-	    	.attr('y', bottom - (scale(experienceXP) + scale(experienceBonus)))
-	    	.attr('height', scale(experienceBonus))
+	    	.attr('y', bottom - Math.round(scale(experienceXP) + scale(experienceBonus )))
+	    	.attr('height', Math.round(scale(experienceBonus)))
 	    	.ease('bounce');
 
 	var penalties = d3.select("#ePenaltiesRect")
-		.attr('y', bottom - (scale(experienceXP) + scale(experienceBonus)))
+		.attr('y', bottom - Math.round(scale(experienceXP) + scale(experienceBonus)))
 		.style("fill","white")
 	    .transition()
 	    	.delay(5000)
 	    	.duration(1000)
 	    	.style("fill","red")
-	    	.attr('height', scale(experiencePenalties * -1))
+	    	.attr('height', Math.round(scale(experiencePenalties * -1)))
 	    	.ease('bounce');
 
 	penalties.transition()
 		.delay(6000)
-		.duration(1000)
 		.style("fill","white");
 
 	bonus.transition()
 		.delay(7000)
-		.duration(1000)
 		.style("fill","steelblue");
 
 	var experienceText = d3.select("#experienceView").append("text")

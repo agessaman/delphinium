@@ -11,6 +11,10 @@ columns:
         label: Name
         searchable: true
 
-    Component:
-        label: Component
+    Animate:
+        label: Animate
+        searchable: true
+
+    Size:
+        label: Size
         searchable: true

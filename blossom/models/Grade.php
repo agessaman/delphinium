@@ -3,19 +3,20 @@
 use Model;
 
 /**
- * configuration Model
+ * grade Model
  */
-class Configuration extends Model
+class Grade extends Model
 {
 
     /**
      * @var string The database table used by the model.
      */
-    public $table = 'delphinium_blossom_configurations';
+    public $table = 'delphinium_blossom_grades';
 
     public $rules = [
         'Name'=>'required',
-        'Component' => 'required'
+        'Animate'=>'required',
+        'Size' => 'required'
     ];
 
 }

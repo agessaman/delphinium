@@ -43,12 +43,45 @@ class Plugin extends PluginBase
     	Event::listen('backend.menu.extendItems', function($manager){	
     	
             $manager->addSideMenuItems('Delphinium.Greenhouse', 'greenhouse', [
-                'Blossom' => [
-					'label' => 'Blossom',
-					'icon' => 'icon-asterisk',
+                'Bonus' => [
+					'label' => 'Bonus',
+					'icon' => 'icon-heart',
 					'owner' => 'Delphinium.Greenhouse',
-					'url' => Backend::url('delphinium/blossom/configuration'),
-				]
+					'url' => Backend::url('delphinium/blossom/bonus'),
+                    'group'       => 'Blossom',
+				],
+
+                'Competencies' => [
+                    'label' => 'Competencies',
+                    'icon' => 'icon-sliders',
+                    'owner' => 'Delphinium.Greenhouse',
+                    'url' => Backend::url('delphinium/blossom/competencies'),
+                    'group'       => 'Blossom',
+                ],
+
+                'Experience' => [
+                    'label' => 'Experience',
+                    'icon' => 'icon-shield',
+                    'owner' => 'Delphinium.Greenhouse',
+                    'url' => Backend::url('delphinium/blossom/experience'),
+                    'group'       => 'Blossom',
+                ],
+
+                'Grade' => [
+                    'label' => 'Grade',
+                    'icon' => 'icon-signal',
+                    'owner' => 'Delphinium.Greenhouse',
+                    'url' => Backend::url('delphinium/blossom/grade'),
+                    'group'       => 'Blossom',
+                ],
+
+                'Leaderboard' => [
+                    'label' => 'Leaderboard',
+                    'icon' => 'icon-sitemap',
+                    'owner' => 'Delphinium.Greenhouse',
+                    'url' => Backend::url('delphinium/blossom/leaderboard'),
+                    'group'       => 'Blossom',
+                ]
             ]);
             
         });

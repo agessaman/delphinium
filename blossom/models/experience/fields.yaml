@@ -1,0 +1,43 @@
+# ===================================
+#  Form Field Definitions
+# ===================================
+
+fields:
+    id:
+        label: ID
+        disabled: true
+
+    Name:
+        label: Name
+        span: auto
+        comment: Enter the name of this instance
+
+    Maximum:
+        label: Maximum
+        span: auto
+        comment: Enter the maximum a bonus can be
+
+    Milestones:
+        label: Milestones
+        span: auto
+        comment: Enter the number of milestones
+
+    Start Date:
+        label: Start Date
+        span: auto
+        comment: Enter the start date
+
+    End Date:
+        label: End Date
+        span: auto
+        comment: Enter the end date
+
+    Animate:
+        label: Animate
+        span: auto
+        comment: Enter if you want this component to be animated
+
+    Size:
+        label: Size
+        span: auto
+        comment: Enter the the size of component you want

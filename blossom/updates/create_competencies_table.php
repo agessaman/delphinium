@@ -3,19 +3,20 @@
 use Schema;
 use October\Rain\Database\Updates\Migration;
 
-class CreateConfigurationsTable extends Migration
+class CreateCompetenciesTable extends Migration
 {
 
     public function up()
     {
-        if ( !Schema::hasTable('delphinium_blossom_configurations') )
+        if ( !Schema::hasTable('delphinium_blossom_competencies') )
         {
-            Schema::create('delphinium_blossom_configurations', function($table)
+            Schema::create('delphinium_blossom_competencies', function($table)
             {
                 $table->engine = 'InnoDB';
                 $table->increments('id');
                 $table->string('Name');
-                $table->string('Component');
+                $table->string('Animate');
+                $table->string('Size');
                 $table->timestamps();
             });
         }
@@ -23,9 +24,9 @@ class CreateConfigurationsTable extends Migration
 
     public function down()
     {
-        if ( Schema::hasTable('delphinium_blossom_configurations') )
+        if ( Schema::hasTable('delphinium_blossom_competencies') )
         {
-            Schema::dropIfExists('delphinium_blossom_configurations');
+            Schema::dropIfExists('delphinium_blossom_competencies');
         }
     }
 
