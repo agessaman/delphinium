@@ -21,7 +21,7 @@ var JobModalInstanceCtrl = function ($scope, $modalInstance, $location, itemIn) 
 
     $scope.delete = function(scope){
         //alert($scope.item[4].name);
-
+                
         alert('Are you sure you want to permanently delete this module?');
 
         $modalInstance.dismiss('delete');
