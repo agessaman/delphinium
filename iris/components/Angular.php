@@ -37,7 +37,7 @@ class Angular  extends ComponentBase
         $this->addCss('/plugins/delphinium/iris/assets/css/bootstrap.min.css');
         $this->addCss('/plugins/delphinium/iris/assets/css/xeditable.css');
         $this->addCss('/plugins/delphinium/iris/assets/css/angular-ui-tree.min.css');
-        $this->addCss('/plugins/delphinium/iris/assets/css/bootstrap.theme.min.css');
+        $this->addCss('/plugins/delphinium/iris/assets/css/bootstrap-theme.min.css');
         $this->addCss('/plugins/delphinium/iris/assets/css/font-awesome.css');
 
 

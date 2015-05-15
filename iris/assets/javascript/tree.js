@@ -1,7 +1,7 @@
 (function () {
     'use strict';
     angular.module('treeApp', ['ui.tree', 'xeditable', 'ui.bootstrap']).run(function (editableOptions) {
-        editableOptions.theme = 'bs2'
+        editableOptions.theme = 'bs2';
     })
             .controller('treeCtrl', function ($scope, $http, $interval) {
 
@@ -236,26 +236,57 @@
                             courseId: courseId
                         }
                     })
-                            .success(function (data, status) {
-                                if (data.length > 0) {
-                                    avTags = data.split(", ");
-                                }
+                    .success(function (data, status) {
+                        if (data.length > 0) {
+                            avTags = data.split(", ");
+                        }
 
-                                var diff = findDifference(avTags, $scope.tags);
-//            if(diff.length>0)
-//            {
-                                $scope.possibleTags = diff;
-
-//            }
-
-                            });
+                        var diff = findDifference(avTags, $scope.tags);
+                        $scope.possibleTags = diff;
+                    });
                 };
 
-                $scope.switchPublishState = function()
+                $scope.switchPublishedState = function(item)
+                {
+                    var is_module = (item.module_item_id !== undefined) ? false : true;
+                    var publishedState = (item.published ==='1') ? '0' : '1';
+                    
+                    if(is_module)
+                    {
+                        $http.post('toggleModulePublishedState', {
+                            module_id: item.module_id,
+                            published: parseInt(publishedState)
+                        }).
+                        success(function (data) {
+                            item.published = publishedState;
+                        });
+                    }
+                    else
+                    {
+                        $http.post('toggleModuleItemPublishedState', {
+                            module_id: item.module_id,
+                            module_item_id: item.module_item_id,
+                            published: parseInt(publishedState)
+                        }).
+                        success(function (data) {
+                            item.published = publishedState;
+                        });
+                    }
+                };
+                
+                $scope.updateItem = function(item)
+                {
+                    var is_module = (item.module_item_id !== undefined) ? false : true;
+                    if(is_module)
+                    {
+                        
+                    }
+                };
+                
+                $scope.deleteItem = function(item)
                 {
                     
                 };
-                
                 $scope.reloadApp = function ()
                 {
                     $scope.loading = true;

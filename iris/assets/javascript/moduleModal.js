@@ -40,7 +40,7 @@ var addModalCtrl = function ($scope, $modal, $log ) {
             }
         });
         modalInstance.result.then(function (){
-
+    
         }, function (input) {
             if (input === 'addModule'){
                 $scope.addSubItem();

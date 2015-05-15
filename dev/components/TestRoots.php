@@ -35,12 +35,12 @@ class TestRoots extends ComponentBase
 //        $this->testDeleteTag();
 //        $this->testAddingUpdatingTags();
 //        $this->testUpdatingModuleItem();
-        $this->testUpdatingModule();
+//        $this->testUpdatingModule();
         
 //        $this->testDeletingModuleItem();
 //        $this->testDeletingModule();   //need to double check this one
         
-//        $this->testAddingModule();
+        $this->testAddingModule();
 //        $this->testAddingModuleItem();
 //        
 //        $this->testingGettingAssignments();
