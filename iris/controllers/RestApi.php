@@ -19,6 +19,54 @@ class RestApi extends Controller
         $modules = $ang->getModules(true);
         return $modules;
     }
+    
+    public function getAvailableTags()
+    {
+        $roots = new Roots();
+        return $roots->getAvailableTags();
+        
+    }
+
+    public function getModuleStates()
+    {
+        $moduleId = null;
+        $moduleItemId = null;
+        $includeContentDetails = false;
+        $includeContentItems = false;
+        $module = null;
+        $moduleItem = null;
+        $freshData = true;
+                
+        $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems, 
+                $includeContentDetails, $module, $moduleItem , $freshData) ;
+        
+        $roots = new Roots();
+        $res = $roots->getModuleStates($req);
+        
+        return $res;
+    }
+
+    public function getStudentSubmissions()
+    {
+        $studentId = \Input::get('studentId');
+        
+        $studentIds = array($studentId);
+        $assignmentIds = array();//if we leave this param empty it will return all of the available submissions 
+        //(see https://canvas.instructure.com/doc/api/submissions.html#method.submissions_api.for_students)
+        $multipleStudents = false;
+        $multipleAssignments = true;
+        $allStudents = false;
+        $allAssignments = true;
+        
+        //can have the student Id param null if multipleUsers is set to false (we'll only get the current user's submissions)
+        $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, 
+                $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
+        
+        $roots = new Roots();
+        $res = $roots->submissions($req);
+        return $res;
+    }
+    
     public function moveItemToTop()
     {
         $parent = json_decode(\Input::get('parent'), true);
@@ -99,50 +147,152 @@ class RestApi extends Controller
         return $roots->modules($req);
     }
 
-    public function getAvailableTags()
+    public function toggleModulePublishedState()
     {
+        $module_id = \Input::get('module_id');
+        $published = \Input::get('published');
+        
+        $publishedState = $published===1?true:false;
+        
+        //($name = null,  DateTime $utc_unlock_at = null, array $prerequisite_module_ids = null, $published = null, $position =1)
+        $module = new Module(null, null, null, $publishedState, null);
+        $req = new ModulesRequest(ActionType::PUT, $module_id, null,  
+            false, false, $module, null , false);
         $roots = new Roots();
-        return $roots->getAvailableTags();
+        $roots->modules($req);
+    }
+    
+    public function toggleModuleItemPublishedState()
+    {
+        $module_id = \Input::get('module_id');
+        $module_item_id = \Input::get('module_item_id');
+        $published = \Input::get('published');
+        
+        $publishedState = $published===1?true:false;
+        
+        $moduleItem = new ModuleItem(null, null, null, null, null, null, 
+                null, $publishedState, null, null);
+        
+        $req = new ModulesRequest(ActionType::PUT, $module_id, $module_item_id,  
+            false, false, null, $moduleItem , false);
+        
+        $roots = new Roots();
+        $roots->modules($req);
+    
+    }
+    
+    public function addModule()
+    {
+        $name = \Input::get('name');
+        $unlock_at =\Input::get('unlock_at');
+        
+        $prerequisite_module_ids =null;//\Input::get('prerequisites');
+        $published = \Input::get('published');
+        
+        $module = new Module($name, $unlock_at, $prerequisite_module_ids, $published, null);
+        
+        $req = new ModulesRequest(ActionType::POST, null, null,  
+            false, false, $module, null , false);
+        
+        $roots = new Roots();
+        $res = $roots->modules($req);
+        return json_encode($res);
+    }
+    
+    public function addModuleModule()
+    {
         
     }
-
-    public function getModuleStates()
+    public function updateModule()
     {
-        $moduleId = null;
+        $name = "Updated from backend";
+        
+        $format = DateTime::ISO8601;
+        $date = new DateTime("now");
+        $date->add(new DateInterval('P1D'));
+        $unlock_at = $date;
+        $prerequisite_module_ids =array("380199","380201");
+        $published = true;
+        $position = 4;
+        
+        $module = new Module($name, $unlock_at, $prerequisite_module_ids, $published, $position);
+        
+        
+        $moduleId = 457494;
         $moduleItemId = null;
-        $includeContentDetails = false;
         $includeContentItems = false;
-        $module = null;
+        $includeContentDetails = false;
         $moduleItem = null;
-        $freshData = true;
-                
-        $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems, 
-                $includeContentDetails, $module, $moduleItem , $freshData) ;
+        $freshData = false;
+        
+        //update a module (changing title and published to false)
+        $req = new ModulesRequest(ActionType::PUT, $moduleId, $moduleItemId,  
+            $includeContentItems, $includeContentDetails, $module, $moduleItem , $freshData);
         
         $roots = new Roots();
-        $res = $roots->getModuleStates($req);
+        $res = $roots->modules($req);
+    }
+    
+    public function updateModuleItem()
+    {
+         $tags = null;//array('New Tag', 'Another New Tag');
+        $title = "New Title from back end";
+        $modItemType = null;// Module type CANNOT be updated
+        $content_id = 2078183;
+        $completion_requirement_min_score = null;//7;
+        $completion_requirement_type = null;//CompletionRequirementType::MUST_SUBMIT;
+        $page_url = null;//"http://www.gmail.com";
+        $published = true;
+        $position = 1;//2;
         
+        $moduleItem = new ModuleItem($title, $modItemType, $content_id, $page_url, null, $completion_requirement_type, 
+                $completion_requirement_min_score, $published, $position, $tags);
+        //end added
+        
+        $moduleId = 457097;
+        $moduleItemId = 2885671;
+        $includeContentItems = false;
+        $includeContentDetails = false;
+        $module = null;
+        $freshData = false;
+        
+        $req = new ModulesRequest(ActionType::PUT, $moduleId, $moduleItemId,  
+            $includeContentItems, $includeContentDetails, $module, $moduleItem , $freshData);
+        
+        $roots = new Roots();
+        $res = $roots->modules($req);
+    
+    }
+    
+    public function deleteModule()
+    {
+        $moduleId = \Input::get('module_id');
+        
+        //delete module
+        $req = new ModulesRequest(ActionType::DELETE, $moduleId, null,false, false, null, null , false);
+        
+        $roots = new Roots();
+        $roots->modules($req);
+        
+        //return all modules again
+        $newReq = new ModulesRequest(ActionType::GET, null, null, true, true, null, null , false) ;
+        $res = $roots->modules($newReq);
         return $res;
     }
-
-    public function getStudentSubmissions()
+    
+    public function deleteModuleItem()
     {
-        $studentId = \Input::get('studentId');
+        $moduleId = \Input::get('module_id');
+        $moduleItemId = \Input::get('module_item_id');
         
-        $studentIds = array($studentId);
-        $assignmentIds = array();//if we leave this param empty it will return all of the available submissions 
-        //(see https://canvas.instructure.com/doc/api/submissions.html#method.submissions_api.for_students)
-        $multipleStudents = false;
-        $multipleAssignments = true;
-        $allStudents = false;
-        $allAssignments = true;
-        
-        //can have the student Id param null if multipleUsers is set to false (we'll only get the current user's submissions)
-        $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, 
-                $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
+        $req = new ModulesRequest(ActionType::DELETE, $moduleId, $moduleItemId, false, false, null, null , false);
         
         $roots = new Roots();
-        $res = $roots->submissions($req);
+        $roots->modules($req);
+        
+        //return all modules again
+        $newReq = new ModulesRequest(ActionType::GET, null, null, true, true, null, null , false) ;
+        $res = $roots->modules($newReq);
         return $res;
     }
 }

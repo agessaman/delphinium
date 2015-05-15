@@ -1,15 +1,8 @@
 /**
- * Created by Tara on 3/28/2015.
- */
-
-/**
  * Created by tjorgensen on 2/24/2015
  */
 'use strict';
-//var options = {
-//    "backdrop":"static"
-//}
-var ModalInstanceCtrl = function ($scope, $modalInstance, $location, itemIn) {
+var ModalInstanceCtrl = function ($scope, $modalInstance,$http, $location, itemIn) {
 
     $scope.item = itemIn;
     $scope.ok = function () {
@@ -18,25 +11,29 @@ var ModalInstanceCtrl = function ($scope, $modalInstance, $location, itemIn) {
     };
 
     $scope.cancel = function () {
-
         $modalInstance.dismiss('cancel');
-
     };
 
-    $scope.delete = function() {
-        //alert($scope.item);
-
-        alert('Are you sure you want to permanently delete this module?');
-        //<a href="" class="btn btn-primary pull-right" ng-click="ok()">Update</a>
-        //<a href="" class="cancel btn btn-default pull-right" ng-click="cancel()">Close</a>
+    $scope.delete = function(node) {
+        $http.post('deleteModuleItem', {
+            module_id: node.item.module_id,
+            module_item_id: node.item.module_item_id
+        }).
+        success(function (data) {
+            $scope.data = data;
+                console.log("success");
+        });
+        
         $modalInstance.dismiss('delete');
-    }
-        $scope.unpublish = function(scope){
-            $modalInstance.dismiss('unpublish');
-        }
-        $scope.publish = function(scope){
-            $modalInstance.dismiss('publish');
-        }
+    };
+    
+    $scope.unpublish = function(scope){
+        $modalInstance.dismiss('unpublish');
+    };
+    
+    $scope.publish = function(scope){
+        $modalInstance.dismiss('publish');
+    };
     
 };
 
