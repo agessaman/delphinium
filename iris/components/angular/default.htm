@@ -21,7 +21,7 @@
                 <span class="icon-chevron-down" aria-hidden="true" ng-click="expandAll"></span> Expand all
             </button>
             <button type="button" class="btn btn-primary pull-right" aria-label="Left Align" ng-click="open(item)">
-                <span class="icon-plus" aria-hidden="true"></span> Module
+                <span class="icon-plus" aria-hidden="true" ></span> Module
             </button>
 
         </div>
@@ -320,15 +320,15 @@
                     <ng-switch on="item.published">
                         <span class="icon-plus publishedModuleIcon pull-right btn" ng-click="open(item)"
                               ng-switch-when="1"></span>
-                        <span class="icon-plus unpublishedModuleIcon pull-right btn" ng-switch-when="0"></span>
+                        <span class="icon-plus unpublishedModuleIcon pull-right btn" ng-click="open(item)" ng-switch-when="0"></span>
                     </ng-switch>
                 </div>
 
 
                 <ng-switch on="item.published">
-                    <span class="icon-eye-close unpublishedModuleIcon pull-right btn" ng-switch-when="0"
+                    <span class="icon-cloud unpublishedModuleIcon pull-right btn" ng-switch-when="0"
                           tooltip="Unpublished" ng-click="item.published='1'"></span>
-                    <span class="icon-eye-open publishedModuleIcon pull-right btn" ng-switch-when="1"
+                    <span class="icon-cloud publishedModuleIcon pull-right btn" ng-switch-when="1"
                           tooltip="Published" ng-click="item.published='0'"></span>
                 </ng-switch>
 
@@ -349,13 +349,24 @@
                            nodrag ng-click="showTagsFunc(this)">
                         </a>
 
-                        <div ng-controller="ModalCtrl">
-                            <ng-switch on="item.published">
-                                <a class="icon-gear gearMod pull-right" ng-click="open(item)" ng-switch-when="1"></a>
-                                <a class="icon-gear unpublishedGearMod pull-right" ng-click="open(item)"
-                                   ng-switch-when="0"></a>
-                            </ng-switch>
+                        <!--ng-class="{'unpublishedModule': (item.published==='0')}">-->
+                         <!--<a class=" btn-lg" ng-if="item.children && item.children.length > 0" nodrag ng-click="toggle(this)"-->
+                              <!--ng-disabled="buttonDisabled">-->
+                         <!--<span ng-class="{'icon-chevron-down': collapsed, 'icon-chevron-right ': !collapsed}"></span></a>-->
+                        <!--<a href={{item.items[0].html_url}} target="_blank"> </a>-->
+
+                        <!--<div ui-tree-handle class="tree-node tree-node-content" >-->
+                        <div ng-controller="ModalCtrl" ng-class="{'unpublishedModule': (item.published==='0')}">
+                            <span ng-class="{'icon-gear gearMod pull-right:item.published= 1, 'icon-gear unpublishedGearMod pull-right': item.published= 0}"></span>
                         </div>
+
+                        <!--<div ng-controller="ModalCtrl">-->
+                            <!--<ng-switch on="item.published">-->
+                                <!--<a class="icon-gear gearMod pull-right" ng-click="open(item)" ng-switch-when="1"></a>-->
+                                <!--<a class="icon-gear unpublishedGearMod pull-right" ng-click="open(item)"-->
+                                   <!--ng-switch-when="0"></a>-->
+                            <!--</ng-switch>-->
+                        <!--</div>-->
 
                         <ng-switch on="item.published">
                             <a class="icon-eye-close unpublishedMod pull-right btn" ng-switch-when="0"
