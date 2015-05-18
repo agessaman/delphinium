@@ -1,11 +1,23 @@
 $(document).ready(function(){
-	scaleLeaderboard();
+	//scaleLeaderboard();
 	makeAccordion();
 	animateAccordion();
 });
 
 function scaleLeaderboard(){
-
+	var height,width;
+	if(leaderboardSize == "Small"){
+		height = "350px";
+		width = "200px";
+	}else if(leaderboardSize == "Medium"){
+		height = "525px";
+		width = "300px";
+	}else{
+		height = "787px";
+		width = "450px";
+	}
+	document.getElementById("accordion").style.height = height;
+	document.getElementById("accordion").style.width = width;
 }
 
 function makeAccordion(){
@@ -65,7 +77,8 @@ function makeAccordion(){
 		var content = document.createElement('div');
 		content.className='accordionTabContent';
 		content.id="tab-" + i;
-		
+		content.style.overflow='auto';
+		content.style.height= '250px';
 		for (var j = contentNumber * (i); j < contentNumber * (i+1); j++) {
 			var student = document.createElement('div');
 			var competition;
@@ -78,6 +91,9 @@ function makeAccordion(){
 			}else if(scores[j].place == 0){
 				competition = "You";
 				student.className='accordionTabContentStudentCurrent';
+				tab.innerHTML="<a class='accordionTabTitle active' href='#tab-" + i + "'>" + tabs[i] + "</a>";
+				content.className='accordionTabContent open';
+				content.style.display='block';
 			}else if(scores[j].place == -1){
 				competition = "Your Last Conquest";
 				student.className='accordionTabContentStudent';
@@ -134,7 +150,7 @@ function animateAccordion(){
 	
 	function closeContent() {
 		$('#accordion .accordionTabTitle').removeClass('active');
-		$('#accordion .accordionTabContent').slideUp(300).removeClass('open');
+		$('#accordion .accordionTabContent').slideUp(100).removeClass('open');
 	}
  
 	$('.accordionTabTitle').click(function(e) {
@@ -149,7 +165,7 @@ function animateAccordion(){
 			// Add active class to tab title
 			$(this).addClass('active');
 			// Open up the hidden content panel
-			$('#accordion ' + currentAttrValue).slideDown(300).addClass('open'); 
+			$('#accordion ' + currentAttrValue).slideDown(100).addClass('open'); 
 		}
  
 		e.preventDefault();

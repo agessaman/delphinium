@@ -85,12 +85,16 @@ function drawBonus(){
 
 
 	var text = d3.select('#bonusView').append("text")
-      .attr("fill", "black")
-      .style("text-anchor", "middle")
-      .attr('font-size', "20px")
-      .attr('x', textx)
-      .attr('y', height/2)
-      .text(bonus);
+		.attr("fill", "none")
+	    .style("text-anchor", "middle")
+	    .attr('font-size', "20px")
+	    .attr('x', textx)
+	    .attr('y', height/2)
+	    .text(bonus)
+	
+	text.transition()
+		.delay(1000)
+		.attr("fill", "black");
 
 }
 
