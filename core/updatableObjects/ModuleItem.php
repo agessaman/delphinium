@@ -43,16 +43,6 @@ class ModuleItem {
             throw new InvalidParameterInRequestObjectException(get_class($this),"content_id", "Parameter must be an integer");
         }
         
-        if(($page_url)&&(filter_var($page_url, FILTER_VALIDATE_URL) === false))
-        {
-            throw new InvalidParameterInRequestObjectException(get_class($this),"page_url", "URL is invalid");
-        }
-        
-        if(($external_url)&&(filter_var($external_url, FILTER_VALIDATE_URL) === false))
-        {
-            throw new InvalidParameterInRequestObjectException(get_class($this),"external_url", "URL is invalid");
-        }
-        
         if(($completion_requirement_type)&&(!CompletionRequirementType::isValidValue($completion_requirement_type)))
         {
             throw new InvalidParameterInRequestObjectException(get_class($this),"completion_requirement_type");

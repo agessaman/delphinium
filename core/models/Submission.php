@@ -1,7 +1,5 @@
 <?php namespace Delphinium\Core\Models;
 
-use Model;
-
 class Submission
 {   
     public $submission_id;

@@ -67,6 +67,25 @@ class RestApi extends Controller
         return $res;
     }
     
+    public function getModuleItemTypes()
+    {
+        $roots = new Roots();
+        $arr = $roots->getModuleItemTypes();
+        $result = array();
+        $i=0;
+        foreach($arr as $key => $type)
+        {   
+            $item = new \stdClass();
+            
+            $item->id = $i;
+            $item->value=$type;
+            $result[] = $item;
+            
+            $i++;
+        }
+        return json_encode($result);
+    }
+    
     public function moveItemToTop()
     {
         $parent = json_decode(\Input::get('parent'), true);
@@ -181,28 +200,6 @@ class RestApi extends Controller
     
     }
     
-    public function addModule()
-    {
-        $name = \Input::get('name');
-        $unlock_at =\Input::get('unlock_at');
-        
-        $prerequisite_module_ids =null;//\Input::get('prerequisites');
-        $published = \Input::get('published');
-        
-        $module = new Module($name, $unlock_at, $prerequisite_module_ids, $published, null);
-        
-        $req = new ModulesRequest(ActionType::POST, null, null,  
-            false, false, $module, null , false);
-        
-        $roots = new Roots();
-        $res = $roots->modules($req);
-        return json_encode($res);
-    }
-    
-    public function addModuleModule()
-    {
-        
-    }
     public function updateModule()
     {
         $name = "Updated from backend";
