@@ -45,7 +45,8 @@ var ModalJobCtrl = function ($scope, $modal, $log ) {
         $scope.item = item;
         var modalInstance = $modal.open({
             templateUrl: "modalTemplate.html",
-            controller: "JobModalInstanceCtrl",
+            //templateUrl: "../../delphinium/plugins/delphinium/iris/components/angular/moduleSettingsModal.html",
+            controller: 'JobModalInstanceCtrl',
             resolve: {
                 itemIn: function() {
                     return item;
