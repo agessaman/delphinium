@@ -14,7 +14,7 @@
     <span ng-show="loading">Loading data. Please wait...</span>
     <div class="buttons">
 
-        <div ng-controller="addModalCtrl">
+        <div ng-controller="addModuleCtrl">
             <button type="button" class="btn btn-default pull-left" aria-label="Left Align" ng-click="collapseAll()">
                 <span class="icon-chevron-right" aria-hidden="true" ng-click="collapseAll()"></span> Collapse all
             </button>
@@ -33,8 +33,6 @@
         <div class='treeLine'>
             <!--EDIT MODULE ITEM-->
             <script type="text/ng-template" id="modalTemp.html">
-
-
                 <div class="modal-header">
                     <h3 class="modal-title">Edit Item Details</h3>
                 </div>
@@ -44,14 +42,12 @@
                         <a href="#" editable-textarea="item.title">
                             <pre>{{item.title}}</pre>
                         </a>
-
                         <br>
                         Url:
 
                         <a href="#" editable-textarea=" item.external_url">
                             <pre>{{item.external_url}}</pre>
                         </a>
-
 
                     </div>
                 </div>
@@ -74,7 +70,6 @@
                         <input type="checkbox" ng-model="checked" name="chklabl" id="chklabl"> Lock module until a give
                         date
                         <br>
-
               <span ng-show="checked">
                   Unlock At:
                   <div class="prereqMenu" ng-controller="DatepickerCtrl">
@@ -218,54 +213,45 @@
 
                         <div class="modal-footer">
 
-
                             <a href="" class="btn btn-primary pull-right" ng-click="ok()">Add Module</a>
                             <a href="" class="cancel btn btn-default pull-right" ng-click="cancel()">Cancel</a>
                         </div>
                     </div>
                 </div>
             </script>
-
+            <!--<html>-->
             <!--Modal Template-->
             <script type="text/ng-template" id="addItem.html">
                 <div class="modalText">
                     <div class="modal-header">
-                        <h3 class="modal-title">Add Item to Course Documents</h3>
+                        <h3 class="modal-title">Add Item to "{{item.name}}"</h3>
                     </div>
                     <div class="modal-body">
 
                         <div class="row">
 
-                            Add <select>
-
-                            <option>Assignment</option>
-                            <option>Quiz</option>
-                            <option>File</option>
-                            <option>Content Page</option>
-                            <option>Discussion</option>
-                            <option>Text Header</option>
-                            <option>External URL</option>
-                            <option>External Tool</option>
-                        </select> to Course Documents
+                            <pre>Add <select ng-model="selectedModuleItemType" ng-options="item.value for item in moduleItemTypes"
+                                        ng-change="changedItemType(selectedModuleItemType)">
+                                <option value="" disabled selected>Select Item Type</option>
+                                </select> to Course Documents</pre>
                         </div>
-
                         <h6>
-                            <span class=" icon-file-text-o" ng-model="hidden"> </span>Select the assignment you want to
-                            associate with this module, or add an assignment by selecting "New Assignment"
+                            <span class=" icon-file-text-o" ng-model="hidden"> </span>Select the item you want to
+                            associate with this module, or add a new item by selecting "New"
 
                         </h6>
-                      <textarea rows="4" cols="77">
-
-                      </textarea>
+                        <select class="dropdown-multiple" multiple ng-multiple="true" ng-model="selectedItemToAdd" ng-options="item.name for item in itemOptions"
+                                ng-change="changedItem(selectedItemToAdd)">
+                            <!--<option value="" disabled selected>Select Item</option>-->
+                            <option value="new">[New item]</option>
+                        </select>
                     </div>
                 </div>
 
                 <br>
                 <div class="modal-footer">
-                    <a href="" class="btn btn-primary pull-right" ng-click="ok()">Add Item</a>
+                    <a href="" class="btn btn-primary pull-right" ng-click="addItem()">Add Item</a>
                     <a href="" class="cancel btn btn-default pull-right" ng-click="cancel()">Cancel</a>
-                </div>
-                </div>
                 </div>
             </script>
             <!-- Nested node template -->
@@ -280,7 +266,6 @@
                         <a href="#" editable-text=" item.name" ng-switch-when="1">
                             {{item.name}}
                         </a>
-
                         <a href="#" editable-text=" item.name" class="unpublishedText" ng-switch-when="0">
                             {{item.name}}
                         </a>
@@ -304,7 +289,6 @@
 
                     </div>
                 </div>
-
                 <div ng-controller="addItemCtrl">
                     <div ng-switch on="item.published">
                         <span class="icon-plus publishedModuleIcon pull-right btn" ng-click="open(item)"

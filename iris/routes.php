@@ -9,15 +9,10 @@ Route::post('toggleModulePublishedState','Delphinium\Iris\Controllers\RestApi@to
 Route::post('toggleModuleItemPublishedState','Delphinium\Iris\Controllers\RestApi@toggleModuleItemPublishedState');
 
 Route::get('getAvailableTags', 'Delphinium\Iris\Controllers\RestApi@getAvailableTags');
-
 Route::get('getModuleStates', 'Delphinium\Iris\Controllers\RestApi@getModuleStates');
 Route::get('getStudentSubmissions', 'Delphinium\Iris\Controllers\RestApi@getStudentSubmissions');
 Route::get('getFreshData', 'Delphinium\Iris\Controllers\RestApi@getFreshData');
-
-Route::post('addModule', 'Delphinium\Iris\Controllers\RestApi@addModule');
-Route::post('addModuleItem', 'Delphinium\Iris\Controllers\RestApi@addModuleItem');
-Route::post('updateModule', 'Delphinium\Iris\Controllers\RestApi@updateModule');
-Route::post('updateModuleItem', 'Delphinium\Iris\Controllers\RestApi@updateModuleItem');
+Route::get('getModuleItemTypes', 'Delphinium\Iris\Controllers\RestApi@getModuleItemTypes');
 
 Route::post('deleteModule', 'Delphinium\Iris\Controllers\RestApi@deleteModule');
 Route::post('deleteModuleItem', 'Delphinium\Iris\Controllers\RestApi@deleteModuleItem');

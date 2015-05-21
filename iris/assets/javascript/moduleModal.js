@@ -24,7 +24,7 @@ var moduleCtrl = function ($scope, $modalInstance, $location, itemIn) {
     //}
 };
 
-var addModalCtrl = function ($scope, $modal, $log ) {
+var addModuleCtrl = function ($scope, $modal, $log ) {
     //$scope.saveModule=function(addModuleName){
     //
     //}

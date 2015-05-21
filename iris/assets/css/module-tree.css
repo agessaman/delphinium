@@ -34,7 +34,10 @@ body{margin:10px;}
 
 
 
-
+.dropdown-multiple{
+    width:545px;
+    height:150px;
+}
 #flashMsg{
     color:red;
 }

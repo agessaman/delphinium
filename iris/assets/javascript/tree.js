@@ -7,12 +7,8 @@
 
                 $scope.data = moduleData;
                 $scope.contentClass = "hidden";
-//    $scope.modalShown = false;
                 $scope.currentModuleItemId = 0;
-
-
                 $scope.contentId = 0;
-
                 $scope.isExpanded = false;
                 $scope.showTags = false;
                 $scope.loading = false;
@@ -207,7 +203,7 @@
 
                 $scope.deleteTag = function (scope, tag) {
                     var currTags = getCurrentTags(scope.$parent.item);
-                    var content_id = scope.$parent.item.content_id
+                    var content_id = scope.$parent.item.content_id;
                     var trimmed = tag.trim();
                     var diff = findDifference(currTags, [trimmed]);
 
@@ -274,19 +270,6 @@
                     }
                 };
                 
-                $scope.updateItem = function(item)
-                {
-                    var is_module = (item.module_item_id !== undefined) ? false : true;
-                    if(is_module)
-                    {
-                        
-                    }
-                };
-                
-                $scope.deleteItem = function(item)
-                {
-                    
-                };
                 $scope.reloadApp = function ()
                 {
                     $scope.loading = true;
@@ -312,10 +295,18 @@
                             });
                 };
 
-
-                //it is crucial that we save this initial order right away
-                $scope.saveOrder();//save the new order right away
-                $interval($scope.postOrderToLms, 60000);//post order to Canvas every  minute
+                $scope.initManager = function()
+                {
+                    $scope.saveOrder();//save the new order right away
+//                    $interval($scope.postOrderToLms, 60000);//post order to Canvas every  minute
+                    $http.get("getModuleItemTypes")
+                    .success(function (data, status) {
+                        $scope.moduleItemTypes = data;
+                    });
+                };
+                
+                $scope.initManager();
+                
             });
 
 })();

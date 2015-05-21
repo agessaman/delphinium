@@ -96,6 +96,68 @@ class CanvasHelper
         return $moduleStateInfo;
         
     }
+    
+    public function getFiles()
+    {
+        $urlPieces= $this->initUrl();
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $urlArgs = array();
+        $urlPieces[] = 'files';
+        
+        //Attach token
+        $urlArgs[]="access_token={$token}&per_page=5000";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+        
+        $response = GuzzleHelper::getAsset($url);
+        return $response->getBody();
+    }
+    
+    public function getPages()
+    {
+        $urlPieces= $this->initUrl();
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $urlArgs = array();
+        $urlPieces[] = 'pages';
+        
+        //Attach token
+        $urlArgs[]="access_token={$token}&per_page=5000";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+        $response = GuzzleHelper::getAsset($url);
+        return $response->getBody();
+    }
+    
+    public function getQuizzes()
+    {
+        $urlPieces= $this->initUrl();
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $urlArgs = array();
+        $urlPieces[] = 'quizzes';
+        
+        //Attach token
+        $urlArgs[]="access_token={$token}&per_page=5000";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+        $response = GuzzleHelper::getAsset($url);
+        return $response->getBody();
+    }
+    
+    public function getExternalTools()
+    {
+        $urlPieces= $this->initUrl();
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $urlArgs = array();
+        $urlPieces[] = 'external_tools';
+        
+        //Attach token
+        $urlArgs[]="access_token={$token}&per_page=5000";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+        $response = GuzzleHelper::getAsset($url);
+        return $response->getBody();
+    }
+    
     public function putModuleData(ModulesRequest $request)
     {   
         $updateCanvas = false;
@@ -264,60 +326,15 @@ class CanvasHelper
         
         if($request->getModuleId())
         {// "we're creating a moduleItem";
-            if (!$request->getModuleItem()->title) {
-                throw new InvalidParameterInRequestObjectException(get_class($this),"title", "Parameter is required");
-            }
-            
-            if (!$request->getModuleItem()->type) {
-                throw new InvalidParameterInRequestObjectException(get_class($this),"title", "Type is required");
-            }
             
             $urlPieces[] = "modules/{$request->getModuleId()}/items";
-
-            $modItem = $request->getModuleItem();
-            foreach($modItem as $key => $value) {
-                
-                if(($key==="tags")||($key==="published"))//tags will be handled by us (not by Canvas). Published cannot be set when creating 
-                {//a module item
-                    continue;
-                }
-                if(($key ==="completion_requirement_type")&&($value))
-                {
-                    $urlArgs[] = "module_item[completion_requirement][type]={$value}";
-                }
-                else if(($key ==="completion_requirement_min_score")&&($value))
-                {
-                    $urlArgs[] = "module_item[completion_requirement][min_score]={$value}";
-                }
-                else if ($value)
-                {
-                    $urlArgs[] = "module_item[{$key}]={$value}";
-                }
-            }
+            $urlArgs = $this->buildAddModuleItemArgs($request);
         }
         else
         {//we're creating a module obj
         
             $urlPieces[] = "modules";
-
-            $modItem = $request->getModule();
-            foreach($modItem as $key => $value) {
-                if(($key ==="name")&&(!$value))
-                {
-                    throw new InvalidParameterInRequestObjectException(get_class($request),"name", "Parameter must be a string");
-                }
-                if(($value) && ($key ==="prerequisite_module_ids") && is_array($value))
-                {
-                    foreach($value as $prereq)
-                    {
-                        $urlArgs[] = "module[prerequisite_module_ids][]={$prereq}";
-                    }
-                }
-                else if ($value)
-                {
-                    $urlArgs[] = "module[{$key}]={$value}";
-                }
-            }
+            $urlArgs = $this->buildAddModuleArgs($request);
         }
         
         //Attach token
@@ -326,7 +343,7 @@ class CanvasHelper
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs); 
         
         
-//        echo $url;return;
+        echo $url;//return;
         $response = GuzzleHelper::makeRequest($request, $url);
         
         //update DB if request was successful
@@ -476,7 +493,7 @@ class CanvasHelper
         $urlArgs[]="per_page=5000";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs); 
-        
+        echo $url;
         $response = GuzzleHelper::makeRequest($request, $url);
 
         return $this->processCanvasAssignmentData(json_decode($response->getBody()), $courseId, $singleRow);
@@ -515,6 +532,21 @@ class CanvasHelper
     /*
      * private functions
      */
+    
+    private function initUrl()
+    {
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $domain = $_SESSION['domain'];
+        $courseId = $_SESSION['courseID'];
+
+        $urlPieces= array();
+        //        GET /api/v1/courses/:course_id/files
+        $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
+        return $urlPieces;
+    }
     /*
      * MODULES
      */
@@ -571,10 +603,75 @@ class CanvasHelper
         return $urlArgs;
     }
     
+    private function buildAddModuleArgs(ModulesRequest $request)
+    {
+        $urlArgs = array();
+        $modItem = $request->getModule();
+        foreach($modItem as $key => $value) {
+            if(($key ==="name")&&(!$value))
+            {
+                throw new InvalidParameterInRequestObjectException(get_class($request),"name", "Parameter must be a string");
+            }
+            if(($value) && ($key ==="prerequisite_module_ids") && is_array($value))
+            {
+                foreach($value as $prereq)
+                {
+                    $urlArgs[] = "module[prerequisite_module_ids][]={$prereq}";
+                }
+            }
+            else if ($value)
+            {
+                $urlArgs[] = "module[{$key}]={$value}";
+            }
+        }
+    }
+    
+    private function buildAddModuleItemArgs(ModulesRequest $request)
+    {
+        $urlArgs = array();
+        if (!$request->getModuleItem()->title) {
+            throw new InvalidParameterInRequestObjectException(get_class($this),"Title", "Parameter is required");
+        }
+
+        if (!$request->getModuleItem()->type) {
+            throw new InvalidParameterInRequestObjectException(get_class($this),"Type", "Type is required");
+        }
+
+        $modItem = $request->getModuleItem();
+        foreach($modItem as $key => $value) {
+            if(($key==="content_id")&&($value))
+            {//Content Id is NOT required for ‘ExternalUrl’, ‘Page’, and ‘SubHeader’ types.
+                $type = $request->getModuleItem()->type;
+                if(($type==="ExternalUrl")||($type==="Page")||($type==="SubHeader"))
+                {
+                    continue;
+                }
+            }
+            if(($key==="tags")||($key==="published"))//tags will be handled by us (not by Canvas). Published cannot be set when creating 
+            {//a module item
+                continue;
+            }
+            if(($key ==="completion_requirement_type")&&($value))
+            {
+                $urlArgs[] = "module_item[completion_requirement][type]={$value}";
+            }
+            else if(($key ==="completion_requirement_min_score")&&($value))
+            {
+                $urlArgs[] = "module_item[completion_requirement][min_score]={$value}";
+            }
+            else if ($value)
+            {
+                $urlArgs[] = "module_item[{$key}]={$value}";
+            }
+        }
+        return $urlArgs;
+    }
+    
     private function processCanvasModuleData($data, $courseId)
     {   
         $items = array();
         $moduleIdsArray = array();
+        $moduleItemIdsArray = array();
         $i = 0;
         $firstItemId = null;
         foreach($data as $moduleRow)
@@ -586,7 +683,7 @@ class CanvasHelper
             }
              //we'll create an array with all the moduleIds that belong to this courseId
             $moduleIdsArray[] = $moduleRow->id;
-            $module = $this->processSingleModule($moduleRow, $courseId, $i, $firstItemId);
+            $module = $this->processSingleModule($moduleRow, $courseId, $i, $firstItemId, $moduleItemIdsArray);
             $items[] = $module;
             $i++;
         }
@@ -594,11 +691,12 @@ class CanvasHelper
         //since we are updating our DB with fresh Canvas data we MUST check against our DB and make sure we don't have "old" modules stored
         $dbHelper = new DbHelper();
         $dbHelper->qualityAssuranceModules($courseId, $moduleIdsArray);
+        $dbHelper->qualityAssuranceModuleItems($courseId, $moduleItemIdsArray);
                 
         return $items;
     }
     
-    private function processSingleModule($moduleRow, $courseId, $possibleOrder=null, $firstItemId = null)
+    private function processSingleModule($moduleRow, $courseId, $possibleOrder=null, $firstItemId = null, &$itemIdsArr = null)
     {
         //check if module exists
         $module = Module::firstOrNew(array('module_id' => $moduleRow->id));//('moduleId','=',$module->id);
@@ -617,7 +715,7 @@ class CanvasHelper
         
         if(isset($moduleRow->items)){
             //save moduleItems
-            $moduleItems = $this->saveModuleItems($moduleRow->items, $courseId);
+            $moduleItems = $this->saveModuleItems($moduleRow->items, $courseId, $itemIdsArr);
             $module->module_items = $moduleItems;
         }
         
@@ -653,11 +751,12 @@ class CanvasHelper
         return $orderedModule;
     }
     
-    private function saveModuleItems($moduleItems, $courseId)
+    private function saveModuleItems($moduleItems, $courseId, &$itemIdsArr = null)
     {
         $allItems = array();
         
         foreach($moduleItems as $mItem){
+            $itemIdsArr[] = $mItem->id;
             $moduleArr =$this->processSingleModuleItem($courseId, $mItem);
             array_push($allItems, $moduleArr);
         }

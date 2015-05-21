@@ -8,6 +8,7 @@ use Delphinium\Core\UpdatableObjects\Module;
 use Delphinium\Core\Enums\CommonEnums\Lms;
 use Delphinium\Core\Enums\CommonEnums\DataType;
 use Delphinium\Core\Enums\CommonEnums\ActionType;
+use Delphinium\Core\Enums\ModuleItemEnums\ModuleItemType;
 use Delphinium\Core\lmsClasses\CanvasHelper;
 use Delphinium\Core\Cache\CacheHelper;
 use Delphinium\Core\Exceptions\InvalidActionException;
@@ -216,6 +217,181 @@ class Roots
         }
     }
     
+    public function getModuleItemTypes()
+    {
+        return ModuleItemType::getConstants();
+    }
+    
+    public function getFiles()
+    {
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $lms = strtoupper($_SESSION['lms']);
+        if(Lms::isValidValue($lms))
+        {
+            $files = array();
+            switch ($lms)
+            {
+                case (Lms::CANVAS):
+                    $canvasHelper = new CanvasHelper();
+                    $files = json_decode($canvasHelper->getFiles());
+                    break;
+                default:
+                    $canvasHelper = new CanvasHelper();
+                    $files = json_decode($canvasHelper->getFiles());
+                    break;
+            }
+            
+            $return =array();
+            $i=0;
+            foreach($files as $item)
+            {
+                $file = new \stdClass();
+
+                $file->id = $item->id;
+                $file->name=$item->display_name;
+                $return[] = $file;
+
+                $i++;
+            }
+            return $return;
+        }
+        else
+        {
+           throw new \Exception("Invalid LMS");  
+        }
+    }
+    
+    public function getPages()
+    {
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $lms = strtoupper($_SESSION['lms']);
+        if(Lms::isValidValue($lms))
+        {
+            $pages = array();
+            switch ($lms)
+            {
+                case (Lms::CANVAS):
+                    $canvasHelper = new CanvasHelper();
+                    $pages = json_decode($canvasHelper->getPages());
+                    break;
+                default:
+                    $canvasHelper = new CanvasHelper();
+                    $pages = $canvasHelper->getPages();
+                    break;
+            }
+            
+            $return =array();
+            $i=0;
+            foreach($pages as $item)
+            {
+                $file = new \stdClass();
+
+                $file->id = $item->page_id;
+                $file->name=$item->title;
+                $file->url = $item->url;
+                $return[] = $file;
+
+                $i++;
+            }
+            return $return;
+        }
+        else
+        {
+           throw new \Exception("Invalid LMS");  
+        }
+    }
+    
+    public function getQuizzes()
+    {
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $lms = strtoupper($_SESSION['lms']);
+        if(Lms::isValidValue($lms))
+        {
+            $quizzes = array();
+            switch ($lms)
+            {
+                case (Lms::CANVAS):
+                    $canvasHelper = new CanvasHelper();
+                    $quizzes = json_decode($canvasHelper->getQuizzes());
+                    break;
+                default:
+                    $canvasHelper = new CanvasHelper();
+                    $quizzes = json_decode($canvasHelper->getQuizzes());
+                    break;
+            }
+            $return =array();
+            $i=0;
+            foreach($quizzes as $item)
+            {
+                $file = new \stdClass();
+
+                $file->id = $item->id;
+                $file->name=$item->title;
+                $return[] = $file;
+
+                $i++;
+            }
+            return $return;
+        }
+        else
+        {
+           throw new \Exception("Invalid LMS");  
+        }
+    }
+    
+    public function getExternalTools()
+    {
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $lms = strtoupper($_SESSION['lms']);
+        if(Lms::isValidValue($lms))
+        {
+            $tools = array();
+            switch ($lms)
+            {
+                case (Lms::CANVAS):
+                    $canvasHelper = new CanvasHelper();
+                    $tools =  json_decode($canvasHelper->getExternalTools());
+                    break;
+                default:
+                    $canvasHelper = new CanvasHelper();
+                    $tools = json_decode($canvasHelper->getExternalTools());
+                    break;
+            }
+            
+            $return =array();
+            $i=0;
+            foreach($tools as $item)
+            {
+                $file = new \stdClass();
+
+                $file->id = $item->id;
+                $file->name=$item->name;
+                $file->url = $item->url;
+                $return[] = $file;
+
+                $i++;
+            }
+            return $return;
+        }
+        else
+        {
+           throw new \Exception("Invalid LMS");  
+        }
+    }
+            
+    
     /*
      * PRIVATE METHODS
      */
@@ -266,4 +442,6 @@ class Roots
                 return $cacheHelper->serchAssignmentGroupDataInCache($request);
         }
     }
+    
+    
 }
