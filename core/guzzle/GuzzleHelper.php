@@ -28,6 +28,11 @@ class GuzzleHelper
         return $response;
     }
     
+    public static function getAsset($url)
+    {
+        $client = new Client();
+        return $client->get($url);
+    }
     public static function constructUrl($urlPieces, $urlArgs = null)
     {
         $urlStr = "";

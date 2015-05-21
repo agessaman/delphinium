@@ -6,6 +6,7 @@ use Delphinium\Core\Models\Content;
 use Delphinium\Core\Models\Tag;
 use Delphinium\Core\Models\OrderedModule;
 use Delphinium\Core\Models\CacheSetting;
+use Delphinium\Core\Models\Assignment;
 use Delphinium\Core\RequestObjects\AssignmentsRequest;
 use Delphinium\Core\RequestObjects\AssignmentGroupsRequest;
 use Delphinium\Core\RequestObjects\ModulesRequest;
@@ -343,8 +344,25 @@ class DbHelper
         $toBeDeleted =array_diff($fromDBArr,$currenModuleIdsArr);
         
         foreach($toBeDeleted as $module)
-        {
+        {//TODO: verify cascading delete
             Module::where('course_id','=',$courseId)->where('module_id','=',  intval($module))->delete();
+        }
+    }
+    
+    public function qualityAssuranceModuleItems($courseId, $moduleItemIds)
+    {
+        $modulesItems = ModuleItem::where('course_id','=',$courseId)->select('module_item_id')->get();
+        $fromDBArr = array();
+        foreach($modulesItems as $item)
+        {
+            $fromDBArr[] = $item['module_item_id'];
+        }
+        
+        $toBeDeleted =array_diff($fromDBArr,$moduleItemIds);
+        
+        foreach($toBeDeleted as $module_item_id)
+        {
+            ModuleItem::where('course_id','=',$courseId)->where('module_item_id','=',  intval($module_item_id))->delete();
         }
     }
 }

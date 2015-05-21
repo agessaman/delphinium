@@ -11,10 +11,7 @@ use Delphinium\Core\Enums\CommonEnums\ActionType;
 use Delphinium\Core\Enums\ModuleItemEnums\ModuleItemType;
 use Delphinium\Core\Enums\ModuleItemEnums\CompletionRequirementType;
 use Cms\Classes\ComponentBase;
-use Illuminate\Support\Facades\Cache;
 use \DateTime;
-use \DateInterval;
-use Delphinium\Core\DB\DbHelper;
 
 class TestRoots extends ComponentBase
 {
@@ -40,7 +37,7 @@ class TestRoots extends ComponentBase
 //        $this->testDeletingModuleItem();
 //        $this->testDeletingModule();   //need to double check this one
         
-        $this->testAddingModule();
+//        $this->testAddingModule();
 //        $this->testAddingModuleItem();
 //        
 //        $this->testingGettingAssignments();
@@ -59,8 +56,8 @@ class TestRoots extends ComponentBase
     
     private function testBasicModulesRequest()
     { 
-        $moduleId = 457494;
-        $moduleItemId = 2887055;
+        $moduleId = null;//457494;
+        $moduleItemId = null;//2887055;
         $includeContentDetails = true;
         $includeContentItems = true;
         $module = null;

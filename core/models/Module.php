@@ -23,7 +23,9 @@ class Module extends Model
 
 
     public $hasMany = [
-        'module_items' => ['Delphinium\Core\Models\ModuleItem', 'foreignKey' => 'module_item_id']
+            'module_items' => ['Delphinium\Core\Models\ModuleItem', 
+            'foreignKey' => 'module_item_id',
+            'delete'=>'true']
     ];
     
 }
