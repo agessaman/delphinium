@@ -25,35 +25,6 @@ class CanvasHelper
     /*
      * MODULES
      */
-    public function getModuleData(ModulesRequest $request)
-    {   
-        $moduleStates = false;
-        //As per Jared's & Damaris' discussion when users request fresh module data we wil retrieve ALL module data so we can store it in 
-        //DB and then we'll only return the data they asked for
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
-        $domain = $_SESSION['domain'];
-        $token = \Crypt::decrypt($_SESSION['userToken']);
-        $courseId = $_SESSION['courseID'];
-
-        $urlPieces= array();
-        $urlArgs = array();
-        $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
-
-        $urlPieces[] = 'modules';
-        $urlArgs[] = 'include[]=items';
-        $urlArgs[]= 'include[]=content_details';
-        //Attach token
-        $urlArgs[]="access_token={$token}&per_page=5000";
-
-        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs); 
-        
-        $response = GuzzleHelper::makeRequest($request, $url);
-        
-        return $this->processCanvasModuleData(json_decode($response->getBody()), $courseId);
-    }
     
     public function getModuleStates($request)
     {
@@ -156,6 +127,36 @@ class CanvasHelper
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
         $response = GuzzleHelper::getAsset($url);
         return $response->getBody();
+    }
+    
+    public function getModuleData(ModulesRequest $request)
+    {   
+        $moduleStates = false;
+        //As per Jared's & Damaris' discussion when users request fresh module data we wil retrieve ALL module data so we can store it in 
+        //DB and then we'll only return the data they asked for
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $domain = $_SESSION['domain'];
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $courseId = $_SESSION['courseID'];
+
+        $urlPieces= array();
+        $urlArgs = array();
+        $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
+
+        $urlPieces[] = 'modules';
+        $urlArgs[] = 'include[]=items';
+        $urlArgs[]= 'include[]=content_details';
+        //Attach token
+        $urlArgs[]="access_token={$token}&per_page=5000";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs); 
+        
+        $response = GuzzleHelper::makeRequest($request, $url);
+        
+        return $this->processCanvasModuleData(json_decode($response->getBody()), $courseId);
     }
     
     public function putModuleData(ModulesRequest $request)
