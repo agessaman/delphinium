@@ -405,35 +405,32 @@
        <div class ="treeLine">
 
 
-            <script type="text/ng-template" id="nodes_renderer.html">
-                <div ui-tree-handle class="tree-node tree-node-content"
-                     ng-class="{'unpublishedModule': (item.published==='0')}">
-                    <a class=" btn-lg" ng-if="item.children && item.children.length > 0" nodrag ng-click="toggle(this)"
-                       ng-disabled="buttonDisabled">
-                        <span ng-class="{'icon-chevron-down': collapsed, 'icon-chevron-right ': !collapsed}">
-                    <a href={{item.items[0].html_url}} target="_blank"> </a>
+           <script type="text/ng-template" id="nodes_renderer.html">
+               <div ui-tree-handle class="tree-node tree-node-content"
+                    ng-class="{'unpublishedModule': (item.published==='0')}">
+                   <a class=" btn-lg" ng-if="item.children && item.children.length > 0" nodrag ng-click="toggle(this)"
+                      ng-disabled="buttonDisabled">
+                       <span ng-class="{'icon-chevron-down': collapsed, 'icon-chevron-right ': !collapsed}"></span></a>
+                   <a href={{item.items[0].html_url}} target="_blank"> </a>
 
-                    <div ng-switch on="item.published">
-                        <a href="#" editable-text=" item.name" ng-switch-when="1">
-                            {{item.name}}
-                        </a>
-                        <a href="#" editable-text=" item.name" class="unpublishedText" ng-switch-when="0">
-                            {{item.name}}
-                        </a>
-
-                    </div>
-                            </span></a>
-                </div>
-        </div>
+                   <ng-switch on="item.published">
+                       <a href="#" editable-text=" item.name" ng-switch-when="1">
+                           {{item.name}}
+                       </a>
+                       <a href="#" editable-text=" item.name" class="unpublishedText" ng-switch-when="0">
+                           {{item.name}}
+                       </a>
+                   </ng-switch>
+               </div>
 
 
 
-                <div ng-switch on="item.published">
+                <ng-switch on="item.published">
                     <a ng-class="{'icon-reorder publishedModuleIcon': isExpanded, 'icon-navicon publishedModuleIcon': !isExpanded}"
                        class=" pull-right btn expand" nodrag ng-click="showContent(item)" ng-switch-when="1"></a>
                     <a ng-class="{'icon-reorder unpublishedModuleIcon': isExpanded, 'icon-navicon unpublishedModuleIcon': !isExpanded}"
                        class=" pull-right btn expand" nodrag ng-click="showContent(item)" ng-switch-when="0"></a>
-                </div>
+                </ng-switch>
                 <div ng-controller="ModalJobCtrl">
                     <div ng-switch on="item.published">
 
@@ -453,12 +450,12 @@
                     </div>
                 </div>
 
-                <div ng-switch on="item.published">
+                <ng-switch on="item.published">
                     <span class="icon-cloud unpublishedModuleIcon pull-right btn" ng-switch-when="0"
                           tooltip="Unpublished" ng-click="switchPublishedState(item)"></span>
                     <span class="icon-cloud publishedModuleIcon pull-right btn" ng-switch-when="1"
                           tooltip="Published" ng-click="switchPublishedState(item)"></span>
-                </div>
+                </ng-switch>
 
 
                 <div id="div{{item.module_id}}" class="node hidden">
