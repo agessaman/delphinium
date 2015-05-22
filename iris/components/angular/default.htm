@@ -67,7 +67,7 @@
                     </div>
                     <div class="modal-body">
                         <h4>{{item.name}}</h4>
-                        <input type="checkbox" ng-model="checked" name="chklabl" id="chklabl"> Lock module until a give
+                        <input type="checkbox" ng-model="checked" name="chklabl"> Lock module until a give
                         date
                         <br>
               <span ng-show="checked">
@@ -88,8 +88,6 @@
                           <button type="button" class="btn btn-default" ng-click="open($event)">
                               <i class="icon-calendar"></i>
                           </button>
-
-
                       </div>
                   </div>
                     <br>
@@ -97,40 +95,58 @@
                         <br>
                         Before students can view this module:
                         <br>
+                        <div class="prereqMenu" ng-show="!collapsed">
                         No prerequisites defined
-                        <br>
+                         </div>
 
+                        <BR>
+                        <div class="prereqMenu" ng-show="collapsed">They must complete:
+                            <form id="myForm">
+                                <select class="form-control" id="selectNumber">
+                                    <option>Select from menu</option>
+                                    <option>{{item.name}}</option>
+                                </select>
+                            </form>
+                        </div>
+
+                        <br>
+                        <!--<b>This module is complete when:</b>-->
+                        <!--<BR>-->
+                        <!--For user must score out of-->
                         <div class="addPrereqOrRequirement">
                             <span class=" icon-plus-sign" ng-model="collapsed" ng-click="collapsed=!collapsed"></span>
                             Add prerequisite<br>
                         </div>
                         <div class="row">
-                            <div class="prereqMenu" ng-show="collapsed">They must complete:
-                                <form id="myForm">
-                                    <select class="form-control" id="selectNumber">
 
-                                        <option>Select from menu</option>
-
-                                        <option>{{item.name}}</option>
-                                        <option>2</option>
-                                        <option>3</option>
-                                        <option>4</option>
-                                        <option>5</option>
-                                    </select>
-                                </form>
-                            </div>
                             <br><br>
                         </div>
                         This module is complete when:
                         <br>
+                        <div class="prereqMenu" ng-show="!collapsed1">
                         No requirements defined
-                        <br>
-
-                        <div class='addPrereqOrRequirement'>
-                      <span class=" icon-plus-sign" ng-model="hidden"
-                            ng-click="collapsed=!collapsed"></span> Add requirement
                         </div>
-
+                        <br>
+                        <div class="oneLine" ng-show="collapsed1">
+                        For <form id="selectFiles">
+                        <select class="form-control" id="selectOpt">
+                            <option>Select from menu</option>
+                            <option>Syllabus inside the quiz</option>
+                        </select>
+                    </form>
+                        users must
+                        <form id="selectFiles1">
+                            <select class="form-control" id="selectOpt1">
+                                <option>score at least</option>
+                                <option>submit the assignment</option>
+                                <option>view the item</option>
+                            </select>
+                        </form>
+                        </div>
+                        <div class='addPrereqOrRequirement'>
+                      <span class=" icon-plus-sign" ng-model="collapsed1" ng-click="collapsed1=!collapsed1"></span>
+                            Add requirement
+                        </div>
 
                         <div class="checkbox">
 
