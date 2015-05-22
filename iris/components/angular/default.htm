@@ -45,7 +45,6 @@
                         </a>
                         <br>
                         Url:
-
                         <a href="#" editable-textarea=" item.external_url">
                             <pre>{{item.external_url}}</pre>
                         </a>
@@ -141,7 +140,6 @@
                         <br>
 
                         <div class="modal-footer">
-
                             <a href="" class="btn btn-primary pull-right" ng-click="ok()">Update</a>
                             <a href="" class="cancel btn btn-default pull-right" ng-click="cancel()">Close</a>
                             <!--<a href="" class="cancel btn btn-danger pull-left " ng-click="delete()">Delete</a>-->
@@ -206,7 +204,6 @@
                             </select></div>
                             <br>
                         </div>
-
                         <div class="checkbox">
 
                             <input type="checkbox" onclick="if(this.check){myFunction()}"> Students must move through
@@ -237,20 +234,159 @@
 
 
                             <pre>Add <select ng-model="selectedModuleItemType" ng-options="item.value for item in moduleItemTypes"
-                                        ng-change="changedItemType(selectedModuleItemType)">
-                                <option value="" disabled selected>Select Item Type</option>
-                                </select> to Course Documents</pre>
+                                                        ng-change="changedItemType(selectedModuleItemType)">
+                                                <option value="" disabled selected>Select Item Type</option>
+                                                </select> to Course Documents</pre>
                         </div>
                         <h6>
                             <span class=" icon-file-text-o" ng-model="hidden"> </span>Select the item you want to
                             associate with this module, or add a new item by selecting "New"
-
                         </h6>
-                        <select class="dropdown-multiple" multiple ng-multiple="true" ng-model="selectedItemToAdd" ng-options="item.name for item in itemOptions"
-                                ng-change="changedItem(selectedItemToAdd)">
-                            <!--<option value="" disabled selected>Select Item</option>-->
-                            <option value="new">[New item]</option>
+                        <select ng-model="selectedItemToAdd" class="dropdown-multiple" multiple ng-multiple="true" 
+                                    ng-options="item.name for item in itemOptions"
+                                    ng-change="changedItem(selectedItemToAdd)">
                         </select>
+                <p></p>
+                        <div id="partialNewFile" class="form-horizontal" ng-show="newFile">
+                            <div class="form-group">
+                                <label for="file" class="col-sm-3 control-label">File:</label>
+                                <div class="col-sm-9">
+                                    <input class="file" type="file" class="form-control" id="file" name="file" value="">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="course-files" class="col-sm-3 control-label">Course Files</label>
+                                <div class="col-sm-9">
+                                    <select class=""></select>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="partialNewPage" class="form-horizontal" ng-show="newPage">
+                            <div class="form-group">
+                                <label for="page-page-name" class="col-sm-3 control-label">Page Name:</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="page-page-name" name="page-page-name" value="">
+                                </div>
+                            </div>
+                        </div>
+                        <div id="partialNewDiscussion" class="form-horizontal" ng-show="newDiscussion">
+                            <div class="form-group">
+                                <label for="topic-name" class="col-sm-3 control-label">Topic Name:</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="topic-name" name="topic-name" value="">
+                                </div>
+                            </div>
+                        </div>
+                        <div id="partialNewAssignment" class="form-horizontal" ng-show="newAssignment">
+
+                            <div class="form-group">
+                                <label for="points" class="col-sm-3 control-label">Points</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="points" name="points" placeholder="0" value="">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="group" class="col-sm-3 control-label">Assignment Group</label>
+                                <div class="col-sm-9">
+                                    <select class=""></select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="grade" class="col-sm-3 control-label">Display Grade as</label>
+                                <div class="col-sm-9">
+                                    <select class=""></select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="grade" class="col-sm-3 control-label">Submission Type</label>
+                                <div>
+                                    <div class="col-sm-9">
+                                        <select class="form-control"></select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="grade" class="col-sm-3 control-label">Group Assignment</label>
+                                <div class="col-sm-9 checkbox">
+                                    <label><input type="checkbox">This is a group assignment</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="grade" class="col-sm-3 control-label">Peer Reviews</label>
+                                <div class="col-sm-9 checkbox">
+                                    <label><input type="checkbox">Require peer reviews</label>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div id="partialNewQuiz" class="form-horizontal" ng-show="newQuiz">
+                            <div class="form-group">
+                                <label for="quiz-name" class="col-sm-3 control-label">Quiz Name:</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="quiz-name" name="quiz-name" value="">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="quiz-group" class="col-sm-3 control-label">Group:</label>
+                                <div>
+                                    <div class="col-sm-9">
+                                        <select class="form-control"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="partialNewSubHeader" class="form-horizontal" ng-show="newSubHeader">
+                            Type the text you\'d like to add as a module sub-header
+                            <div class="form-group">
+                                    <label for="subheader" class="col-sm-3 control-label">Header</label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" id="subheader" name="subheader" value="">
+                                    </div>
+                                </div>
+                            </div>
+                        <div id="partialNewExternalUrl" class="form-horizontal" ng-show="newExternalUrl">
+                            <i class="icon-link"></i> Enter a URL and page name to add a link to any website URL to this module.
+                            <div class="form-group">
+                                <label for="external-url-url" class="col-sm-3 control-label">URL:</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="external-url-url" name="external-url-url" value="">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="external-url-page-name" class="col-sm-3 control-label">Page Name:</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="external-url-page-name" name="external-url-page-name" value="">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="grade" class="col-sm-3 control-label"></label>
+                                <div class="col-sm-9 checkbox">
+                                    <label><input type="checkbox">Load in a new tab</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="partialNewExternalTool" class="form-horizontal" ng-show="newExternalTool">
+                            <i class="icon-link"></i> Enter a URL for an external tool you already know is configured with Basic LTI to add a link to it to this module.
+                            <div class="form-group">
+                                <label for="external-tool-url" class="col-sm-3 control-label">URL:</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="external-tool-url" name="external-tool-url" value="">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="external-tool-page-name" class="col-sm-3 control-label">Page Name:</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="external-tool-page-name" name="external-tool-page-name" value="">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="grade" class="col-sm-3 control-label"></label>
+                                <div class="col-sm-9 checkbox">
+                                    <label><input type="checkbox">Load in a new tab</label>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
                     </div>
 
                 </div>

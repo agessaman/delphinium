@@ -31,9 +31,15 @@ body{margin:10px;}
     background: #fff;
 }
 
+
+
+.modal-body {
+    height:520px !important;
+}
+
 .dropdown-multiple{
     width:545px;
-    height:150px;
+    height:150px !important;
 }
 
 #flashMsg{
