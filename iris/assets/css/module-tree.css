@@ -205,7 +205,7 @@ white-space: nowrap;
     position: absolute;
     top: 20px;
     width: 15px;
-    height: 20px;
+    height: 100%;
     right: auto;
     left: -15px;
     border-top: 1px solid #ccc;
@@ -214,8 +214,8 @@ white-space: nowrap;
 /*Remove connectors before root*/
 .treeLine > ul > li::after, .treeLine > ul > li::after{
     border: 0;
-    /*height: 30px;*/
-    /*width:20px;*/
+    height: 100%;
+
 
 }
 /*Remove connectors after last child*/

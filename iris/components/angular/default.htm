@@ -67,6 +67,7 @@
                     </div>
                     <div class="modal-body">
                         <h4>{{item.name}}</h4>
+                       <span ng-repeat="item in item.module_items"></span>
                         <input type="checkbox" ng-model="checked" name="chklabl"> Lock module until a give
                         date
                         <br>
@@ -202,23 +203,23 @@
                         <br>
                         Before students can view this module:
                         <br>
-                        No prerequisites defined
-                        <br>
-
-                        <div class="addPrereqOrRequirement">
-                            <span class="addPrereqOrRequirement" ng-model="collapsed" ng-click="collapsed=!collapsed">  Add prerequisite</span><br>
+                        <div class="prereqMenu" ng-show="!collapsed">
+                            No prerequisites defined
                         </div>
-                        <div class="row">
 
-                            <div class="prereqMenu" ng-show="collapsed">They must complete: <select
-                                    class="form-control">
-                                <option>1</option>
-                                <option>2</option>
-                                <option>3</option>
-                                <option>4</option>
-                                <option>5</option>
-                            </select></div>
-                            <br>
+                        <BR>
+                        <div class="prereqMenu" ng-show="collapsed">They must complete:
+                            <form id="theForm">
+                                <select class="form-control" id="selectItem">
+                                    <option>Select from menu</option>
+                                    <option>{{item.name}}</option>
+                                </select>
+                            </form>
+                        </div>
+                        <br>
+                        <div class="addPrereqOrRequirement">
+                            <span class=" icon-plus-sign" ng-model="collapsed" ng-click="collapsed=!collapsed"></span>
+                            Add prerequisite<br>
                         </div>
                         <div class="checkbox">
 
@@ -435,7 +436,9 @@
                        </a>
                        <a href="#" editable-text=" item.name" class="unpublishedText" ng-switch-when="0">
                            {{item.name}}
-                       </a>
+                       </a> <a href="#" editable-text=" item.name" ng-switch-when="1">
+                       {{item.name}}
+                   </a>
                    </ng-switch>
                </div>
 
@@ -458,12 +461,12 @@
                     </div>
                 </div>
                 <div ng-controller="addItemCtrl">
-                    <div ng-switch on="item.published">
+                    <ng-switch on="item.published">
                         <span class="icon-plus publishedModuleIcon pull-right btn" ng-click="open(item)"
                               ng-switch-when="1"></span>
 
                         <span class="icon-plus unpublishedModuleIcon pull-right btn" ng-switch-when="0"></span>
-                    </div>
+                    </ng-switch>
                 </div>
 
                 <ng-switch on="item.published">
@@ -479,10 +482,10 @@
                         <a href="" class="contentLink" ng-class="{'unpublishedItem': (item.published==='0')}">
                             <i class="icon-tasks contentType"></i>
 
-                            <div ng-switch on="item.published">
+                            <ng-switch on="item.published">
                                 <a href="{{item.html_url}}"> <span>{{item.title}}</span></a>
                                 <a href="{{item.html_url}}" class="unpublishedItem" ng-switch-when="0"> <span>{{item.title}}</span></a>
-                            </div>
+                            </ng-switch>
                         </a>
 
                         <a title="Click to edit tags" class="btn icon-tags dive"
@@ -500,17 +503,24 @@
                             </div>
                         </div>
 
-                        <div ng-switch on="item.published">
+                        <ng-switch on="item.published">
 
                             <a class="icon-cloud unpublishedMod pull-right btn" ng-switch-when="0"
                                ng-click="switchPublishedState(item)"></a>
                             <a class="icon-cloud publishedModItem pull-right btn" ng-switch-when="1"
                                ng-click="switchPublishedState(item)"></a>
-                        </div>
-                        <span class="itemMessage pull-right">
-                            <div ng-app ng controller="MyCtrl">
-                                {{item.content[0].due_at | date:'dd MMM yyyy - hh:mm a'}}
-                                &nbsp;&nbsp;&nbsp; {{item.content[0].points_possible}} pts
+                        </ng-switch>
+                        <span class="itemMessage pull-right" ng-show="getMillis({{item.content[0].due_at}})">
+                            <div ng-app ng controller="treeCtrl">
+                                <a href="#" editable-text="item.content[0].due_at">
+                                    {{item.content[0].due_at | date:'MMM dd, yyyy'}}
+                                </a>
+                                <!--{{item.content[0].due_at}} | date:'MM/dd/yyyy'>-->
+                                &nbsp;&nbsp;&nbsp;
+                                <a href="#" editable-text=" item.content[0].points_possible" >
+                                    {{item.content[0].points_possible}}
+                                </a>
+                                 pts
                             </div>
                         </span>
 

@@ -57,14 +57,14 @@ var ModalJobCtrl = function ($scope, $modal, $log ) {
     };
 };
 
-$(function () {
-    $('.treeLine li').on('click', function (e) {
-        var children = $(this).find('> ul > li');
-        if (children.is(":visible")) children.hide('fast');
-        else children.show('fast');
-        e.stopPropagation();
-    });
-});
+//$(function () {
+//    $('.treeLine li').on('click', function (e) {
+//        var children = $(this).find('> ul > li');
+//        if (children.is(":visible")) children.hide('fast');
+//        else children.show('fast');
+//        e.stopPropagation();
+//    });
+//});
 
 
 var DatepickerCtrl = function ($scope) {
