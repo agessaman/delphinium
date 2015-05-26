@@ -2,11 +2,7 @@
  * Created by tjorgensen on 2/24/2015
  */
 'use strict';
-//var options = {
-//    "backdrop":"static"
-//}
 var JobModalInstanceCtrl = function ($scope, $modalInstance, $location, itemIn) {
-
     $scope.item = itemIn;
     $scope.ok = function () {
         $scope.jobData.executeNow = false;
@@ -14,14 +10,10 @@ var JobModalInstanceCtrl = function ($scope, $modalInstance, $location, itemIn) 
     };
 
     $scope.cancel = function () {
-
         $modalInstance.dismiss('cancel');
-
     };
 
     $scope.delete = function(scope){
-        //alert($scope.item[4].name);
-                
         alert('Are you sure you want to permanently delete this module?');
 
         $modalInstance.dismiss('delete');
@@ -32,30 +24,22 @@ var JobModalInstanceCtrl = function ($scope, $modalInstance, $location, itemIn) 
     $scope.publish = function(scope){
         $modalInstance.dismiss('publish');
     }
-
 };
 
-
-
 var ModalJobCtrl = function ($scope, $modal, $log ) {
-
     $scope.open = function (item) {
-
-
         $scope.item = item;
         var modalInstance = $modal.open({
             templateUrl: "modalTemplate.html",
-            controller: "JobModalInstanceCtrl",
+            //templateUrl: "../../delphinium/plugins/delphinium/iris/components/angular/moduleSettingsModal.html",
+            controller: 'JobModalInstanceCtrl',
             resolve: {
                 itemIn: function() {
                     return item;
                 }
             }
-            //http://jsfiddle.net/alexsuch/RLQhh/
-
         });
         modalInstance.result.then(function (){
-
 
 
         }, function (input) {
@@ -73,19 +57,17 @@ var ModalJobCtrl = function ($scope, $modal, $log ) {
     };
 };
 
-$(function () {
-    $('.treeLine li').on('click', function (e) {
-        var children = $(this).find('> ul > li');
-        if (children.is(":visible")) children.hide('fast');
-        else children.show('fast');
-        e.stopPropagation();
-    });
-});
+//$(function () {
+//    $('.treeLine li').on('click', function (e) {
+//        var children = $(this).find('> ul > li');
+//        if (children.is(":visible")) children.hide('fast');
+//        else children.show('fast');
+//        e.stopPropagation();
+//    });
+//});
 
 
 var DatepickerCtrl = function ($scope) {
-
-
     $scope.open = function($event) {
         $event.preventDefault();
         $event.stopPropagation();
@@ -98,8 +80,6 @@ var DatepickerCtrl = function ($scope) {
         startingDay: 1,
         showWeeks:'false'
     };
-
-
     $scope.format = 'dd-MMMM-yyyy';
 };
 

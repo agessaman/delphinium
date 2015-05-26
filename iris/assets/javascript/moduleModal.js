@@ -3,9 +3,7 @@
  */
 
 'use strict';
-//var options = {
-//    "backdrop":"static"
-//}
+
 var moduleCtrl = function ($scope, $modalInstance, $location, itemIn) {
 
     $scope.item = itemIn;
@@ -16,18 +14,9 @@ var moduleCtrl = function ($scope, $modalInstance, $location, itemIn) {
     $scope.cancel = function () {
         $modalInstance.dismiss('cancel');
     };
-
-    //$scope.addModule = function(){
-    //    $modalInstance.dismiss('addModule');
-    //    alert('Are you sure you want to permanently add this module?');
-    //    $scope.remove();
-    //}
 };
 
 var addModuleCtrl = function ($scope, $modal, $log ) {
-    //$scope.saveModule=function(addModuleName){
-    //
-    //}
     $scope.open = function (item) {
         $scope.item = item;
         var modalInstance = $modal.open({
@@ -40,7 +29,7 @@ var addModuleCtrl = function ($scope, $modal, $log ) {
             }
         });
         modalInstance.result.then(function (){
-    
+
         }, function (input) {
             if (input === 'addModule'){
                 $scope.addSubItem();

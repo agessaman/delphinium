@@ -24,22 +24,26 @@ body{margin:10px;}
     left: 80%;
 }
 
-
-/* Customize your modal window here, you can add background image too */
+/* Customize modal window */
 #boxes #dialog {
     width:375px;
     height:350px;
     background: #fff;
 }
 
+.oneLine{
+    display:inline-flex;
+}
 
 .modal-body {
     height:520px !important;
 }
+
 .dropdown-multiple{
     width:545px;
     height:150px !important;
 }
+
 #flashMsg{
     color:red;
 }
@@ -58,9 +62,6 @@ body{margin:10px;}
     color:#428bca;
     padding: 10px 10px;
 }
-
-
-
 .unpublishedModuleIcon {
     font-size:10px;
     position:relative;
@@ -84,8 +85,6 @@ body{margin:10px;}
 .unpublishedItem
 {
     color:darkslategray;
-    /*background:purple;*/
-    /*background-color:orange;*/
 }
 .angular-ui-tree-handle:hover {
     color: #438eb9;
@@ -101,7 +100,6 @@ body{margin:10px;}
     box-sizing: border-box;
 }
 
-
 .manager{
     margin:10px 30px 15px 15px;
 }
@@ -109,7 +107,6 @@ body{margin:10px;}
     background-color: #687074 !important;
     color: #FFF !important;
 }
-
 
 .removeTags{
     color:#428bca;
@@ -126,9 +123,9 @@ body{margin:10px;}
     padding: 8px 8px 14px 7px;
 
 }
+
 .treeItem{
     background:none repeat scroll 0 0 #ffffff;
-    /*border:1px solid #7c9eb2;*/
     border-radius:5px;
 }
 
@@ -179,28 +176,17 @@ top: -35px;
     color: #337ab7;
     font-family: "lato", sans-serif !important;
 }
+
 .treeLine li a {
-    /*display: inline-block;*/
-    /*border: 1px solid #ccc;*/
-    /*padding: 5px 10px;*/
-    /*text-decoration: none;*/
-    /*color: #666;*/
-    /*font-family: arial, verdana, tahoma;*/
-    /*color: deeppink;*/
     font-size: 14px;
     font-weight: 400;
-    /*color:pink;*/
-
-    /*border-radius: px;*/
-    /*-webkit-border-radius: 5px;*/
-    /*-moz-border-radius: 5px;*/
+    display:inline
+white-space: nowrap;
 }
 .treeLine li {
     margin: -5px 0;
-    /*padding: 0;*/
     list-style-type: none;
     position: relative;
-    /*padding: 20px 5px 0px 5px;*/
 }
 
 .treeLine li::before{
@@ -219,17 +205,17 @@ top: -35px;
     position: absolute;
     top: 20px;
     width: 15px;
-    height: 20px;
+    height: 100%;
     right: auto;
     left: -15px;
     border-top: 1px solid #ccc;
 }
 
-
 /*Remove connectors before root*/
 .treeLine > ul > li::after, .treeLine > ul > li::after{
     border: 0;
-    width:20px;
+    height: 100%;
+
 
 }
 /*Remove connectors after last child*/
@@ -237,18 +223,10 @@ top: -35px;
     height: 20px;
 }
 
-/*Time for some hover effects*/
-/*We will apply the hover effect the the lineage of the element also*/
+/*hover effects*/
 .treeLine li a:hover, .treeLine li a:hover+ul li a {
-    /*background: #c8e4f8; color: #000; border: 1px solid #94a0b4;*/
 }
-/*Connector styles on hover*/
-/*.treeLine li a:hover+ul li::after,*/
-/*.treeLine li a:hover+ul li::before,*/
-/*.treeLine li a:hover+ul::before,*/
-/*.treeLine li a:hover+ul ul::before{*/
-    /*border-color:  #94a0b4;*/
-/*}*/
+
 .modalText{
     font-family: "lato", sans-serif !important;
 }
@@ -260,15 +238,10 @@ top: -35px;
     position:relative;
     top:-20px;
     color:darkslategray !important;
-    /*color:red !important;*/
-    /*background-color:white;*/
-    /*pointer:default;*/
 }
 .publishedMod{
     background: #f8faff;
     border: 1px solid #dae2ea;
-    /*color: #7c9eb2;*/
-    /*color:red;*/
     color:#428bca;
     padding: 10px 10px;
 
@@ -304,10 +277,4 @@ top: -35px;
     position:relative;
     top: -15px;
     color:gray;
-    /*text-align:right;*/
-    /*margin-right: 60px;*/
-    /*float:right;*/
-    /*position:*/
-    /*pointer:default;*/
-    /*display:inline;*/
 }
