@@ -270,12 +270,12 @@
                         });
                     }
                 };
-                $scope.getMillis = function ()
-                {
-                    var dueDate= item.content[0].due_at;
-                    var convertedDate= getMilliseconds(dueDate);
-                    return dueDate;
-                }
+                //$scope.getMillis = function ()
+                //{
+                //    var dueDate= item.content[0].due_at;
+                //    var convertedDate= getMilliseconds(dueDate);
+                //    return dueDate;
+                //}
                 $scope.reloadApp = function ()
                 {
                     $scope.loading = true;

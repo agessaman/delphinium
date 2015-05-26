@@ -430,26 +430,25 @@
                        <span ng-class="{'icon-chevron-down': collapsed, 'icon-chevron-right ': !collapsed}"></span></a>
                    <a href={{item.items[0].html_url}} target="_blank"> </a>
 
-                   <ng-switch on="item.published">
+                   <div ng-switch on="item.published">
                        <a href="#" editable-text=" item.name" ng-switch-when="1">
                            {{item.name}}
                        </a>
                        <a href="#" editable-text=" item.name" class="unpublishedText" ng-switch-when="0">
                            {{item.name}}
-                       </a> <a href="#" editable-text=" item.name" ng-switch-when="1">
-                       {{item.name}}
+                       </a>
                    </a>
-                   </ng-switch>
+                   </div>
                </div>
 
 
 
-                <ng-switch on="item.published">
+                <div ng-switch on="item.published">
                     <a ng-class="{'icon-reorder publishedModuleIcon': isExpanded, 'icon-navicon publishedModuleIcon': !isExpanded}"
                        class=" pull-right btn expand" nodrag ng-click="showContent(item)" ng-switch-when="1"></a>
                     <a ng-class="{'icon-reorder unpublishedModuleIcon': isExpanded, 'icon-navicon unpublishedModuleIcon': !isExpanded}"
                        class=" pull-right btn expand" nodrag ng-click="showContent(item)" ng-switch-when="0"></a>
-                </ng-switch>
+                </div>
                 <div ng-controller="ModalJobCtrl">
                     <div ng-switch on="item.published">
 
@@ -461,31 +460,38 @@
                     </div>
                 </div>
                 <div ng-controller="addItemCtrl">
-                    <ng-switch on="item.published">
+                    <div ng-switch on="item.published">
                         <span class="icon-plus publishedModuleIcon pull-right btn" ng-click="open(item)"
                               ng-switch-when="1"></span>
 
                         <span class="icon-plus unpublishedModuleIcon pull-right btn" ng-switch-when="0"></span>
-                    </ng-switch>
+                    </div>
                 </div>
 
-                <ng-switch on="item.published">
+                <div ng-switch on="item.published">
                     <span class="icon-cloud unpublishedModuleIcon pull-right btn" ng-switch-when="0"
                           tooltip="Unpublished" ng-click="switchPublishedState(item)"></span>
                     <span class="icon-cloud publishedModuleIcon pull-right btn" ng-switch-when="1"
                           tooltip="Published" ng-click="switchPublishedState(item)"></span>
-                </ng-switch>
+                </div>
 
 
                 <div id="div{{item.module_id}}" class="node hidden">
                     <div class="divContent" ng-repeat="item in item.module_items">
                         <a href="" class="contentLink" ng-class="{'unpublishedItem': (item.published==='0')}">
-                            <i class="icon-tasks contentType"></i>
+                            <!--{{item.type}}-->
+                            <ng-switch on="item.type">
+                                <i class="icon-download-alt" ng-switch-when="File"></i>
+                                <i class="icon-list-ol" ng-switch-when="Quiz"></i>
+                                <i class="icon-file" ng-switch-when="Page"></i>
+                                <i class="icon-external-link" ng-switch-when="ExternalUrl"></i>
+                            </ng-switch>
 
-                            <ng-switch on="item.published">
+
+                            <div ng-switch on="item.published">
                                 <a href="{{item.html_url}}"> <span>{{item.title}}</span></a>
                                 <a href="{{item.html_url}}" class="unpublishedItem" ng-switch-when="0"> <span>{{item.title}}</span></a>
-                            </ng-switch>
+                            </div>
                         </a>
 
                         <a title="Click to edit tags" class="btn icon-tags dive"
@@ -503,13 +509,13 @@
                             </div>
                         </div>
 
-                        <ng-switch on="item.published">
+                        <div ng-switch on="item.published">
 
                             <a class="icon-cloud unpublishedMod pull-right btn" ng-switch-when="0"
                                ng-click="switchPublishedState(item)"></a>
                             <a class="icon-cloud publishedModItem pull-right btn" ng-switch-when="1"
                                ng-click="switchPublishedState(item)"></a>
-                        </ng-switch>
+                        </div>
                         <span class="itemMessage pull-right" ng-show="getMillis({{item.content[0].due_at}})">
                             <div ng-app ng controller="treeCtrl">
                                 <a href="#" editable-text="item.content[0].due_at">
