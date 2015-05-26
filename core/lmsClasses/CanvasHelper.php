@@ -381,7 +381,26 @@ class CanvasHelper
         }
     }
      
-    
+    public function addPage(Page $page)
+    {///api/v1/courses/:course_id/pages
+        $urlPieces= $this->initUrl();
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $urlArgs = array();
+        $urlPieces[] = 'pages';
+        
+        foreach($page as $key => $value) {
+            if ($value)
+            {
+                $urlArgs[] = "wiki_page[{$key}]={$value}";
+            }
+        }
+        //Attach token
+        $urlArgs[]="access_token={$token}&per_page=5000";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+        $response = GuzzleHelper::postData($url);
+        return $response->getBody();
+    }
     /*
      * SUBMISSIONS
      */

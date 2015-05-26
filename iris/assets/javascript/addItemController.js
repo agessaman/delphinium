@@ -36,8 +36,6 @@ var ModalInstanceCtrl = function ($scope, $modalInstance, $location, $http, item
     $scope.changedItemType = function(selectedModuleItemType)
     {
         $scope.resetPartials();
-        $scope.selectedModuleItemType = null;
-        $scope.selectedItem = null;
         $scope.selectedModuleItemType = selectedModuleItemType;
         $http.get("core/getContentByType", {
             params: {
@@ -63,6 +61,7 @@ var ModalInstanceCtrl = function ($scope, $modalInstance, $location, $http, item
         var itemToAdd = selectedItemToAdd[0];
         if(itemToAdd.id === "new")
         {
+            $scope.newItem = true;
             var type = $scope.selectedModuleItemType.value;
             switch(type) {
                 case "Assignment":
@@ -79,6 +78,7 @@ var ModalInstanceCtrl = function ($scope, $modalInstance, $location, $http, item
                     break;
                 case "Page":
                     $scope.newPage = true;
+                    $scope.getPageEditingRoles();
                     break;
                 case "Discussion":
                     $scope.newDiscussion = true;
@@ -96,25 +96,68 @@ var ModalInstanceCtrl = function ($scope, $modalInstance, $location, $http, item
         }
         else
         {
-            $scope.selectedItem = selectedItemToAdd;
+            $scope.selectedItem = selectedItemToAdd[0];
         }
     };
     
     $scope.addItem = function()
     {
-        $http.post('core/addModuleItem', {
-            name:$scope.selectedItem.name,
-            id:parseInt($scope.selectedItem.id),
-            module_id: itemIn.module_id,
-            type: $scope.selectedModuleItemType.value,
-            url:$scope.selectedItem.url
+        if($scope.newItem)
+        {
+            $http.post('core/addModuleItem', {
+                name:$scope.selectedItem.name,
+                id:parseInt($scope.selectedItem.id),
+                module_id: itemIn.module_id,
+                type: $scope.selectedModuleItemType.value,
+                url:$scope.selectedItem.url
             
-        }).
-        success(function (data) {
-            $modalInstance.dismiss('cancel');
-        });
+            }).
+            success(function (data) {
+                $modalInstance.dismiss('cancel');
+            });
+        }
+        else
+        {
+            
+            switch($scope.selectedModuleItemType.value) {
+                case "Assignment":
+                    $scope.newAssignment = true;
+                    break;
+            }
+            $http.post('core/addModuleItem', {
+                name:$scope.selectedItem.name,
+                id:parseInt($scope.selectedItem.id),
+                module_id: itemIn.module_id,
+                type: $scope.selectedModuleItemType.value,
+                url:$scope.selectedItem.url
+            
+            }).
+            success(function (data) {
+                $modalInstance.dismiss('cancel');
+            });
+        }
+        
     };
 
+    $scope.addNewPage = function()
+    {   
+       $http.post('core/addPage', {
+                title:$scope.pageTitle,
+                body:parseInt($scope.selectedItem.id),
+                pageEditingRole: $scope.selectedPageEditingRole,
+                notifyOfUpdate: $scope.selectedModuleItemType.value,
+                published:$scope.selectedItem.url,
+                frontPage:no
+            }).
+            success(function (data) {
+                $modalInstance.dismiss('cancel');
+            }); 
+    }
+    $scope.newContent = function()
+    {
+        
+    };
+    
     $scope.cancel = function () {
         $modalInstance.dismiss('cancel');
     };
@@ -129,6 +172,14 @@ var ModalInstanceCtrl = function ($scope, $modalInstance, $location, $http, item
         $scope.newDiscussion = false;
         $scope.newExternalUrl = false;
         $scope.newExternalTool = false;
-    }
+    };
+    
+    $scope.getPageEditingRoles = function()
+    {
+        $http.get("getPageEditingRoles")
+        .success(function (data) {
+            $scope.pageEditingRoles = data;
+        });
+    };
 };
 

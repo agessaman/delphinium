@@ -1,6 +1,7 @@
 <?php
 
 Route::get('core/getContentByType', 'Delphinium\Core\Controllers\RestfulApi@getContentByType');
+Route::get('getPageEditingRoles', 'Delphinium\Core\Controllers\RestApi@getPageEditingRoles');
 
 
 Route::post('core/addModule', 'Delphinium\Core\Controllers\RestfulApi@addModule');

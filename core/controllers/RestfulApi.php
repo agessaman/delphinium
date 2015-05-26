@@ -4,14 +4,11 @@ use Illuminate\Routing\Controller;
 use Delphinium\Core\UpdatableObjects\Module;
 use Delphinium\Core\UpdatableObjects\ModuleItem;
 use Delphinium\Core\RequestObjects\AssignmentsRequest;
-use Delphinium\Core\RequestObjects\SubmissionsRequest;
 use Delphinium\Core\RequestObjects\ModulesRequest;
 use Delphinium\Core\Roots;
 use Delphinium\Core\Enums\ModuleItemEnums\CompletionRequirementType;
 use Delphinium\Core\Enums\CommonEnums\ActionType;
-use Delphinium\Iris\Classes\Iris as IrisClass;
-use Delphinium\Iris\Components\Angular;
-
+use Delphinium\Core\Models\Page;
 
 class RestfulApi extends Controller 
 {
@@ -60,6 +57,25 @@ class RestfulApi extends Controller
         return json_encode($response);
     }
     
+    public function getPageEditingRoles()
+    {
+        $roots = new Roots();
+        $arr = $roots->getPageEditingRoles();
+        $result = array();
+        $i=0;
+        foreach($arr as $type)
+        {   
+            $item = new \stdClass();
+            
+            $item->id = $i;
+            $item->value=$type;
+            $result[] = $item;
+            
+            $i++;
+        }
+        return json_encode($result);
+    }
+    
     public function addModule()
     {
         $name = \Input::get('name');
@@ -80,14 +96,6 @@ class RestfulApi extends Controller
     
     public function addModuleItem()
     {
-//         module_item[page_url]
-//String
-//Suffix for the linked wiki page (e.g. ‘front-page’). Required for ‘Page’ type.
-//
-// module_item[external_url]
-//String
-//External url that the item points to. [Required for ‘ExternalUrl’ and ‘ExternalTool’ types.
-//    
         $name = \Input::get('name');
         $contentId = \Input::get('id');
         $moduleId = \Input::get('module_id');
@@ -95,21 +103,10 @@ class RestfulApi extends Controller
         $url = \Input::get('url');
         $page_url = null;
         $external_url = null;
-        $completion_type = null;
         switch($type)
         {
-            case "Assignment":
-                $completion_type = CompletionRequirementType::MUST_SUBMIT;
-                break;
-            case "Discussion":
-                $completion_type = CompletionRequirementType::MUST_CONTRIBUTE;
-                break;
             case "Page":
-                $completion_type = CompletionRequirementType::MUST_CONTRIBUTE;
                 $page_url = $url;
-                break;
-            case "Quiz":
-                $completion_type = CompletionRequirementType::MUST_SUBMIT;
                 break;
             case "ExternalUrl":
                 $external_url = $url;
@@ -117,14 +114,12 @@ class RestfulApi extends Controller
             case "ExternalTool":
                 $external_url = $url;
                 break;
-            default:
-                $completion_type = null;
         }
         
         //$title = null, $module_item_type=null, $content_id = null, $page_url = null, $external_url = null, 
 //        $completion_requirement_type = null, $completion_requirement_min_score = null, $published = false, $position = 1,array $tags = null)
         //TODO: look into completion requirement type
-        $moduleItem = new ModuleItem($name, $type, $contentId, $page_url,$external_url, $completion_type, 
+        $moduleItem = new ModuleItem($name, $type, $contentId, $page_url,$external_url, null, 
                 null, true, null, null);
                 
         $req = new ModulesRequest(ActionType::POST, $moduleId, null,  
@@ -162,5 +157,19 @@ class RestfulApi extends Controller
         $roots = new Roots();
         $res = $roots->modules($req);
         echo json_encode($res);
+    }
+    
+    public function addPage()
+    {
+        $title = \Input::get('title');
+        $body = \Input::get('body');
+        $pageEditingRole = \Input::get('pageEditingRole ');
+        $notifyOfUpdate = \Input::get('notifyOfUpdate');
+        $published = \Input::get('published');
+        $frontPage = \Input::get('frontPage');
+        
+        $page = new Page($title, $body, $pageEditingRole,  $notifyOfUpdate, $published, $frontPage);
+        $roots = new Roots();
+        $roots->addPage($page);
     }
 }
