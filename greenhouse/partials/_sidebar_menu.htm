@@ -6,7 +6,7 @@
     $categories = [];
     foreach ($sideMenuItems as $sideItemCode => $item){
         if(!property_exists($item, 'group'))
-            $item->group = 'default';
+            $item->group = 'core';
         if(!property_exists($item, 'keywords'))
             $item->keywords = '';
         if(!property_exists($item, 'description'))

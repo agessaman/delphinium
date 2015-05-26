@@ -33,6 +33,7 @@ class Plugin extends PluginBase
 					'icon' => 'icon-ellipsis-v',
 					'owner' => 'Delphinium.Greenhouse',
 					'url' => Backend::url('delphinium/orchid/board'),
+                    'group'       => 'Orchid',
 				]
             ]);
             

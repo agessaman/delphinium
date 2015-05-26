@@ -38,18 +38,57 @@ function drawBonus(){
 		.domain([.001, maxBonus])
 		.range([0, 163]);
 	
-	var rectangle = d3.select("#bonusRect");
+	var prectangle = d3.select("#penaltyRect");
+	var brectangle = d3.select("#bonusRect");
 
-	rectangle.style("fill","white")
+	d3.select("#center").style("fill", "black")
+			.attr('x', origin)
+			.attr('width', 2);
+
+	prectangle.style("fill", "white")
 			.attr('x', origin);
 
-	if(bonusAnimate){
+	brectangle.style("fill","white")
+			.attr('x', origin);
+
+	prectangle.transition()
+		.delay(2000)
+		.duration(1000)
+		.style('fill', "#FF4747")
+		.attr('width', minScale(penalty))
+		.attr('x', origin - minScale(penalty))
+		.ease('bounce');
+
+
+	prectangle.transition()
+		.delay(3000)
+		.duration(500)
+		.style('fill', "#66FF33")
+		.attr('x', origin - minScale(penalty))
+		.ease('bounce');
+
+
+	textx = origin + (maxScale(bonus + penalty) / 2);
+	brectangle.transition()
+		.delay(3500)
+		.duration(1000)
+		.style('fill', "#66FF33")
+		.attr('width', maxScale(bonus + penalty))
+		.attr('x', origin)
+		.ease('bounce');
+
+	prectangle.transition()
+		.delay(4000)
+		.duration(500)
+		.style('fill', "white");
+	
+	/*if(bonusAnimate){
 		if(bonus == 0){
 
 		}
 		if(bonus <0){
 			textx = origin - (minScale(bonus) / 2);
-				rectangle.transition()
+				brectangle.transition()
 					.delay(1000)
 					.style('fill', "#FF4747")
 					.attr('width', minScale(bonus))
@@ -58,7 +97,7 @@ function drawBonus(){
 					.ease('bounce');
 		} else{
 			textx = origin + (maxScale(bonus) / 2);
-				rectangle.transition()
+				brectangle.transition()
 					.delay(1000)
 					.style('fill', "#66FF33")
 					.attr('width', maxScale(bonus))
@@ -72,16 +111,16 @@ function drawBonus(){
 		}
 		if(bonus <0){
 			textx = origin - (minScale(bonus) / 2);
-					rectangle.style('fill', "#FF4747")
+					brectangle.style('fill', "#FF4747")
 					.attr('width', minScale(bonus))
 					.attr('x', origin - minScale(bonus));
 		} else{
 			textx = origin + (maxScale(bonus) / 2);
-					rectangle.style('fill', "#66FF33")
+					brectangle.style('fill', "#66FF33")
 					.attr('width', maxScale(bonus))
 					.attr('x', origin);
 		}
-	}
+	}*/
 
 
 	var text = d3.select('#bonusView').append("text")
@@ -90,10 +129,10 @@ function drawBonus(){
 	    .attr('font-size', "20px")
 	    .attr('x', textx)
 	    .attr('y', height/2)
-	    .text(bonus)
+	    .text(bonus + penalty)
 	
 	text.transition()
-		.delay(1000)
+		.delay(3000)
 		.attr("fill", "black");
 
 }

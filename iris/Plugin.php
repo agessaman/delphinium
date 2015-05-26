@@ -44,6 +44,7 @@ class Plugin extends PluginBase
 					'icon' => 'icon-bullseye',
 					'owner' => 'Delphinium.Greenhouse',
 					'url' => Backend::url('delphinium/iris/home'),
+                    'group'       => 'Iris',
 				]
             ]);
             

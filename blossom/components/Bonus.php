@@ -21,7 +21,14 @@ class Bonus extends ComponentBase
 				'title'        => 'Bonus',
 				'description'  => 'Enter Bonus',
 				'type'         => 'string',
-				'default'      => '168'
+				'default'      => '200'
+			],
+
+			'Penalty' => [
+				'title'        => 'Penalty',
+				'description'  => 'Enter Penalty',
+				'type'         => 'string',
+				'default'      => '-32'
 			],
 			
 			'maxBonus' => [
@@ -59,6 +66,7 @@ class Bonus extends ComponentBase
 	 public function onRender()
     {
 		$this->page['Bonus'] = $this->property('Bonus');
+		$this->page['Penalty'] = $this->property('Penalty');
 		$this->page['maxBonus'] = $this->property('maxBonus');
 		$this->page['minBonus'] = $this->property('minBonus');
 		$this->page['bonusAnimate'] = $this->property('Animate');
