@@ -1,8 +1,6 @@
-
 var addItemCtrl = function ($scope, $modal, $log, $http) {
         
     $scope.open = function (item) { 
-
         var modalInstance = $modal.open({
             templateUrl: "addItem.html",
             controller: "ModalInstanceCtrl",
@@ -15,7 +13,6 @@ var addItemCtrl = function ($scope, $modal, $log, $http) {
                     return $scope.moduleItemTypes;
                 }
             }
-
         });
         
         modalInstance.result.then(function () {
@@ -164,6 +161,7 @@ var ModalInstanceCtrl = function ($scope, $modalInstance, $location, $http, item
     $scope.cancel = function () {
         $modalInstance.dismiss('cancel');
     };
+    
     $scope.resetPartials = function()
     {
         $scope.newAssignment = false;

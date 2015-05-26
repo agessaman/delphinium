@@ -1,0 +1,22 @@
+Revert "Merge branch 'tarajorgensen-master'"
+
+This reverts commit 51e9d97fe578f564106cb52b33716faa1101aaf3, reversing
+changes made to 433d79c1e6cc92e679304e12443e5d5af1842d71.
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+# On branch revert_pull_request_1
+# Changes to be committed:
+#	modified:   iris/assets/css/module-tree.css
+#	modified:   iris/assets/javascript/addItemController.js
+#	deleted:    iris/assets/javascript/angular.min.js.map
+#	modified:   iris/assets/javascript/itemModal.controller.js
+#	modified:   iris/assets/javascript/jobid.modal.controller.js
+#	modified:   iris/assets/javascript/moduleModal.js
+#	modified:   iris/assets/javascript/tree.js
+#	modified:   iris/components/angular/default.htm
+#	deleted:    iris/components/angular/moduleSettingsModal.html
+#
+# Untracked files:
+#	'
+#
