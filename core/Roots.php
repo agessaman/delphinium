@@ -4,11 +4,13 @@ use Delphinium\Core\RequestObjects\SubmissionsRequest;
 use Delphinium\Core\RequestObjects\ModulesRequest;
 use Delphinium\Core\RequestObjects\AssignmentsRequest;
 use Delphinium\Core\RequestObjects\AssignmentGroupsRequest;
+use Delphinium\Core\Models\Page;
 use Delphinium\Core\UpdatableObjects\Module;
 use Delphinium\Core\Enums\CommonEnums\Lms;
 use Delphinium\Core\Enums\CommonEnums\DataType;
 use Delphinium\Core\Enums\CommonEnums\ActionType;
 use Delphinium\Core\Enums\ModuleItemEnums\ModuleItemType;
+use Delphinium\Core\Enums\ModuleItemEnums\PageEditingRoles;
 use Delphinium\Core\lmsClasses\CanvasHelper;
 use Delphinium\Core\Cache\CacheHelper;
 use Delphinium\Core\Exceptions\InvalidActionException;
@@ -198,6 +200,26 @@ class Roots
         return $ordered;
     }
     
+    public function addPage(Page $page)
+    {
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $lms = strtoupper($_SESSION['lms']);
+        switch ($lms)
+        {
+            case (Lms::CANVAS):
+                $canvas = new CanvasHelper();
+                $canvas->addPage($page);
+                break;
+            default:
+                $canvas = new CanvasHelper();
+                $canvas->addPage($page);
+                break;
+        }
+    }
+    
     public function getAvailableTags()
     {
         $dbHelper = new DbHelper();
@@ -220,6 +242,11 @@ class Roots
     public function getModuleItemTypes()
     {
         return ModuleItemType::getConstants();
+    }
+    
+    public function getPageEditingRoles()
+    {
+         return PageEditingRoles::getConstants();
     }
     
     public function getFiles()

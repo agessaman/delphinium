@@ -226,11 +226,10 @@
                     <div class="modal-body">
 
                         <div class="row">
-
                             <pre>Add <select ng-model="selectedModuleItemType" ng-options="item.value for item in moduleItemTypes"
                                                         ng-change="changedItemType(selectedModuleItemType)">
                                                 <option value="" disabled selected>Select Item Type</option>
-                                                </select> to Course Documents</pre>
+                                                </select> to "{{item.name}}"</pre>
                         </div>
                         <h6>
                             <span class=" icon-file-text-o" ng-model="hidden"> </span>Select the item you want to
@@ -240,7 +239,7 @@
                                     ng-options="item.name for item in itemOptions"
                                     ng-change="changedItem(selectedItemToAdd)">
                         </select>
-                <p></p>
+                        <p></p>
                         <div id="partialNewFile" class="form-horizontal" ng-show="newFile">
                             <div class="form-group">
                                 <label for="file" class="col-sm-3 control-label">File:</label>
@@ -259,7 +258,22 @@
                             <div class="form-group">
                                 <label for="page-page-name" class="col-sm-3 control-label">Page Name:</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="page-page-name" name="page-page-name" value="">
+                                    <input type="text" class="form-control" ng-model="pageTitle" value="">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="course-files" class="col-sm-3 control-label">Options:</label>
+                                <div class="col-sm-9">
+                                    <select ng-model="selectedPageEditingRole"  
+                                        ng-options="item.value for item in pageEditingRoles">
+                                                <option value="" disabled selected>[Select who]</option>
+                                        </select> can edit this page
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="topic-name" class="col-sm-3 control-label"></label>
+                                <div class="col-sm-9 checkbox">
+                                    <label><input type="checkbox">Notify users that this content has changed</label>
                                 </div>
                             </div>
                         </div>

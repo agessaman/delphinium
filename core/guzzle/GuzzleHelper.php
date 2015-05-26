@@ -33,6 +33,12 @@ class GuzzleHelper
         $client = new Client();
         return $client->get($url);
     }
+    
+    public static function postData($url)
+    {
+        $client = new Client();
+        return $client->post($url);
+    }
     public static function constructUrl($urlPieces, $urlArgs = null)
     {
         $urlStr = "";
