@@ -412,15 +412,38 @@
                        ng-disabled="buttonDisabled">
                         <span ng-class="{'icon-chevron-down': collapsed, 'icon-chevron-right ': !collapsed}"></span></a>
                     <a href={{item.items[0].html_url}} target="_blank"> </a>
-                    <div ng-switch on="item.published">
+                    <ng-switch on="item.published">
                         <a href="#" editable-text=" item.name" ng-switch-when="1">
                             {{item.name}}
                         </a>
                         <a href="#" editable-text=" item.name" class="unpublishedText" ng-switch-when="0">
                             {{item.name}}
                         </a>
-                    </div>
+                    </ng-switch>
                 </div>
+
+            </script>
+       <div class ="treeLine">
+
+
+           <script type="text/ng-template" id="nodes_renderer.html">
+               <div ui-tree-handle class="tree-node tree-node-content"
+                    ng-class="{'unpublishedModule': (item.published==='0')}">
+                   <a class=" btn-lg" ng-if="item.children && item.children.length > 0" nodrag ng-click="toggle(this)"
+                      ng-disabled="buttonDisabled">
+                       <span ng-class="{'icon-chevron-down': collapsed, 'icon-chevron-right ': !collapsed}"></span></a>
+                   <a href={{item.items[0].html_url}} target="_blank"> </a>
+
+                   <div ng-switch on="item.published">
+                       <a href="#" editable-text=" item.name" ng-switch-when="1">
+                           {{item.name}}
+                       </a>
+                       <a href="#" editable-text=" item.name" class="unpublishedText" ng-switch-when="0">
+                           {{item.name}}
+                       </a>
+                   </a>
+                   </div>
+               </div>
 
                 <div ng-switch on="item.published">
                     <a ng-class="{'icon-reorder publishedModuleIcon': isExpanded, 'icon-navicon publishedModuleIcon': !isExpanded}"
@@ -447,7 +470,8 @@
                 </div>
 
                 <div ng-switch on="item.published">
-                    <span class="icon-eye-close unpublishedModuleIcon pull-right btn" ng-switch-when="0"
+
+                    <span class="icon-cloud unpublishedModuleIcon pull-right btn" ng-switch-when="0"
                           tooltip="Unpublished" ng-click="switchPublishedState(item)"></span>
                     <span class="icon-eye-open publishedModuleIcon pull-right btn" ng-switch-when="1"
                           tooltip="Published" ng-click="switchPublishedState(item)"></span>
@@ -456,7 +480,13 @@
                 <div id="div{{item.module_id}}" class="node hidden">
                     <div class="divContent" ng-repeat="item in item.module_items">
                         <a href="" class="contentLink" ng-class="{'unpublishedItem': (item.published==='0')}">
-                            <i class="icon-tasks contentType"></i>
+                            <!--{{item.type}}-->
+                            <ng-switch on="item.type">
+                                <i class="icon-download-alt" ng-switch-when="File"></i>
+                                <i class="icon-list-ol" ng-switch-when="Quiz"></i>
+                                <i class="icon-file" ng-switch-when="Page"></i>
+                                <i class="icon-external-link" ng-switch-when="ExternalUrl"></i>
+                            </ng-switch>
 
                             <div ng-switch on="item.published">
                                 <a href="{{item.html_url}}"> <span>{{item.title}}</span></a>
@@ -479,15 +509,24 @@
                         </div>
 
                         <div ng-switch on="item.published">
-                            <a class="icon-eye-close unpublishedMod pull-right btn" ng-switch-when="0"
+
+                            <a class="icon-cloud unpublishedMod pull-right btn" ng-switch-when="0"
                                ng-click="switchPublishedState(item)"></a>
                             <a class="icon-eye-open publishedModItem pull-right btn" ng-switch-when="1"
                                ng-click="switchPublishedState(item)"></a>
                         </div>
-                        <span class="itemMessage pull-right">
-                            <div ng-app ng controller="MyCtrl">
-                                {{item.content[0].due_at | date:'dd MMM yyyy - hh:mm a'}}
-                                &nbsp;&nbsp;&nbsp; {{item.content[0].points_possible}} pts
+
+                        <span class="itemMessage pull-right" >
+                            <div ng-app ng controller="treeCtrl">
+                                <a href="#" editable-text="item.content[0].due_at">
+                                    {{item.content[0].due_at | date:'MMM dd, yyyy'}}
+                                </a>
+                                <!--{{item.content[0].due_at}} | date:'MM/dd/yyyy'>-->
+                                &nbsp;&nbsp;&nbsp;
+                                <a href="#" editable-text=" item.content[0].points_possible" >
+                                    {{item.content[0].points_possible}}
+                                </a>
+                                 pts
                             </div>
                         </span>
 
@@ -518,7 +557,8 @@
                     <li ng-repeat="item in item.children" ui-tree-node ng-include="'nodes_renderer.html'">
                     </li>
                 </ol>
-            </script>
+               </script>
+
             <div ui-tree callbacks="treeOptions" id="tree-root">
                 <ol ui-tree-nodes="" ng-model="data">
                     <li class="treeItem" ng-repeat="item in data" ui-tree-node ng-include="'nodes_renderer.html'"></li>
