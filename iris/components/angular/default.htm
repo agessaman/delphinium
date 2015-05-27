@@ -414,7 +414,7 @@
                     <a href={{item.items[0].html_url}} target="_blank"> </a>
                     <ng-switch on="item.published">
                         <a href="#" editable-text=" item.name" ng-switch-when="1">
-                            {{item.name}}
+                           {{item.type}}
                         </a>
                         <a href="#" editable-text=" item.name" class="unpublishedText" ng-switch-when="0">
                             {{item.name}}
@@ -434,7 +434,7 @@
                        <span ng-class="{'icon-chevron-down': collapsed, 'icon-chevron-right ': !collapsed}"></span></a>
                    <a href={{item.items[0].html_url}} target="_blank"> </a>
 
-                   <div ng-switch on="item.published">
+                   <ng-switch on="item.published">
                        <a href="#" editable-text=" item.name" ng-switch-when="1">
                            {{item.name}}
                        </a>
@@ -442,7 +442,7 @@
                            {{item.name}}
                        </a>
                    </a>
-                   </div>
+                   </ng-switch>
                </div>
 
                 <div ng-switch on="item.published">
@@ -501,11 +501,11 @@
                         </a>
 
                         <div ng-controller="ModalCtrl">
-                            <div ng-switch on="item.published">
+                            <ng-switch on="item.published">
                                 <a class="icon-gear gearMod pull-right" ng-click="open(item)" ng-switch-when="1"></a>
                                 <a class="icon-gear unpublishedGearMod pull-right" ng-click="open(item)"
                                    ng-switch-when="0"></a>
-                            </div>
+                            </ng-switch>
                         </div>
 
                         <div ng-switch on="item.published">
