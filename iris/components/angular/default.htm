@@ -7,7 +7,7 @@
 <div id="flashMsg" class="hidden"><span >This item can't be dragged to the top because it is unpublished</span></div>
 
 <div ng-app="treeApp" ng-controller="treeCtrl">
-    
+
     {% verbatim %}
     <a href="" class="btn btn btn-primary" ng-click="reloadApp()">Refresh Data from Canvas</a>
     <i class="icon-spinner icon-spin icon-large" ng-show="loading"></i>
@@ -63,10 +63,11 @@
                 <div class="modalText">
                     <div class="modal-header">
                         <h3 class="modal-title">Edit Module Settings</h3>
-                     </div>
+                    </div>
                     <div class="modal-body">
                         <h4>{{item.name}}</h4>
-                        <input type="checkbox" ng-model="checked" name="chklabl" id="chklabl"> Lock module until a give
+                        <span ng-repeat="item in item.module_items"></span>
+                        <input type="checkbox" ng-model="checked" name="chklabl"> Lock module until a give
                         date
                         <br>
               <span ng-show="checked">
@@ -84,9 +85,9 @@
                                  ng-required="true" close-text="Close"/>
 
                       <div class="input-group-btn">
-                            <button type="button" class="btn btn-default" ng-click="open($event)">
-                              <i class="icon-calendar"></i>\n\
-                            </button>
+                          <button type="button" class="btn btn-default" ng-click="open($event)">
+                              <i class="icon-calendar"></i>
+                          </button>
                       </div>
                   </div>
                     <br>
@@ -94,40 +95,58 @@
                         <br>
                         Before students can view this module:
                         <br>
-                        No prerequisites defined
-                        <br>
+                        <div class="prereqMenu" ng-show="!collapsed">
+                            No prerequisites defined
+                        </div>
 
+                        <BR>
+                        <div class="prereqMenu" ng-show="collapsed">They must complete:
+                            <form id="myForm">
+                                <select class="form-control" id="selectNumber">
+                                    <option>Select from menu</option>
+                                    <option>{{item.name}}</option>
+                                </select>
+                            </form>
+                        </div>
+
+                        <br>
+                        <!--<b>This module is complete when:</b>-->
+                        <!--<BR>-->
+                        <!--For user must score out of-->
                         <div class="addPrereqOrRequirement">
                             <span class=" icon-plus-sign" ng-model="collapsed" ng-click="collapsed=!collapsed"></span>
                             Add prerequisite<br>
                         </div>
                         <div class="row">
-                            <div class="prereqMenu" ng-show="collapsed">They must complete:
-                                <form id="myForm">
-                                    <select class="form-control" id="selectNumber">
 
-                                        <option>Select from menu</option>
-
-                                        <option>{{item.name}}</option>
-                                        <option>2</option>
-                                        <option>3</option>
-                                        <option>4</option>
-                                        <option>5</option>
-                                    </select>
-                                </form>
-                            </div>
                             <br><br>
                         </div>
                         This module is complete when:
                         <br>
-                        No requirements defined
-                        <br>
-
-                        <div class='addPrereqOrRequirement'>
-                      <span class=" icon-plus-sign" ng-model="hidden"
-                            ng-click="collapsed=!collapsed"></span> Add requirement
+                        <div class="prereqMenu" ng-show="!collapsed1">
+                            No requirements defined
                         </div>
-
+                        <br>
+                        <div class="oneLine" ng-show="collapsed1">
+                            For <form id="selectFiles">
+                            <select class="form-control" id="selectOpt">
+                                <option>Select from menu</option>
+                                <option>Syllabus inside the quiz</option>
+                            </select>
+                        </form>
+                            users must
+                            <form id="selectFiles1">
+                                <select class="form-control" id="selectOpt1">
+                                    <option>score at least</option>
+                                    <option>submit the assignment</option>
+                                    <option>view the item</option>
+                                </select>
+                            </form>
+                        </div>
+                        <div class='addPrereqOrRequirement'>
+                            <span class=" icon-plus-sign" ng-model="collapsed1" ng-click="collapsed1=!collapsed1"></span>
+                            Add requirement
+                        </div>
 
                         <div class="checkbox">
 
@@ -235,7 +254,7 @@
                             <span class=" icon-file-text-o" ng-model="hidden"> </span>Select the item you want to
                             associate with this module, or add a new item by selecting "New"
                         </h6>
-                        <select ng-model="selectedItemToAdd" class="dropdown-multiple" multiple ng-multiple="true" 
+                        <select ng-model="selectedItemToAdd" class="dropdown-multiple" multiple ng-multiple="true"
                                     ng-options="item.name for item in itemOptions"
                                     ng-change="changedItem(selectedItemToAdd)">
                         </select>
@@ -264,7 +283,7 @@
                             <div class="form-group">
                                 <label for="course-files" class="col-sm-3 control-label">Options:</label>
                                 <div class="col-sm-9">
-                                    <select ng-model="selectedPageEditingRole"  
+                                    <select ng-model="selectedPageEditingRole"
                                         ng-options="item.value for item in pageEditingRoles">
                                                 <option value="" disabled selected>[Select who]</option>
                                         </select> can edit this page
@@ -501,11 +520,10 @@
                         </a>
 
                         <div ng-controller="ModalCtrl">
-                            <ng-switch on="item.published">
+                            <div ng-switch on="item.published">
                                 <a class="icon-gear gearMod pull-right" ng-click="open(item)" ng-switch-when="1"></a>
-                                <a class="icon-gear unpublishedGearMod pull-right" ng-click="open(item)"
-                                   ng-switch-when="0"></a>
-                            </ng-switch>
+                                <a class="icon-gear unpublishedGearMod pull-right" ng-click="open(item)" ng-switch-when="0"></a>
+                            </div>
                         </div>
 
                         <div ng-switch on="item.published">
@@ -568,3 +586,4 @@
     </div>
 </div>
 {% endverbatim %}
+

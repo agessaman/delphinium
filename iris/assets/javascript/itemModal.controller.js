@@ -23,18 +23,18 @@ var ModalInstanceCtrl = function ($scope, $modalInstance,$http, $location, itemI
             $scope.data = data;
                 console.log("success");
         });
-        
+
         $modalInstance.dismiss('delete');
     };
-    
+
     $scope.unpublish = function(scope){
         $modalInstance.dismiss('unpublish');
     };
-    
+
     $scope.publish = function(scope){
         $modalInstance.dismiss('publish');
     };
-    
+
 };
 
 
@@ -52,7 +52,6 @@ var ModalCtrl = function ($scope, $modal, $log ) {
                     return item;
                 }
             }
-            //http://jsfiddle.net/alexsuch/RLQhh/
 
         });
         modalInstance.result.then(function (input){

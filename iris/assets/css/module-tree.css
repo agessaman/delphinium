@@ -311,3 +311,6 @@ top: -35px;
     /*pointer:default;*/
     /*display:inline;*/
 }
+.oneLine{
+    display:inline-flex;
+}
