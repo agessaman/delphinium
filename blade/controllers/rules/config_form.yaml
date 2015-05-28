@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Rule
+
+# Model Form Field configuration
+form: $/delphinium/blade/models/rule/fields.yaml
+
+# Model Class name
+modelClass: Delphinium\Blade\Models\Rule
+
+# Default redirect location
+defaultRedirect: delphinium/blade/rules
+
+# Create page
+create:
+    title: Create Rule
+    redirect: delphinium/blade/rules/update/:id
+    redirectClose: delphinium/blade/rules
+
+# Update page
+update:
+    title: Edit Rule
+    redirect: delphinium/blade/rules
+    redirectClose: delphinium/blade/rules
+
+# Preview page
+preview:
+    title: Preview Rule
