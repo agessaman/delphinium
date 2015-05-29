@@ -24,42 +24,36 @@ body{margin:10px;}
     left: 80%;
 }
 
-
-/* Customize your modal window here, you can add background image too */
+/* Customize modal window */
 #boxes #dialog {
     width:375px;
     height:350px;
     background: #fff;
 }
 
-
 .modal-body {
     height:520px !important;
 }
+
 .dropdown-multiple{
     width:545px;
     height:150px !important;
 }
+
 #flashMsg{
     color:red;
 }
+
 .unpublishedModule {
-    /*background-color: rgba(60, 70, 80, 0.11) !important;*/
-    /*text-color:orangered;*/
-    /*color:pink !important;*/
-    /*font-color:red !important;*/
     color:darkslategray !important;
 }
+
 .angular-ui-tree-handle {
     background: #f8faff;
     border: 1px solid #dae2ea;
-    /*color: #7c9eb2;*/
-    /*color:red;*/
     color:#428bca;
     padding: 10px 10px;
 }
-
-
 
 .unpublishedModuleIcon {
     font-size:10px;
@@ -68,6 +62,7 @@ body{margin:10px;}
     color:darkslategray;
     pointer:default;
 }
+
 .publishedModuleIcon{
     font-size:10px;
     position:relative;
@@ -84,9 +79,8 @@ body{margin:10px;}
 .unpublishedItem
 {
     color:darkslategray;
-    /*background:purple;*/
-    /*background-color:orange;*/
 }
+
 .angular-ui-tree-handle:hover {
     color: #438eb9;
     background: rgba(54, 113, 150, 0.27);
@@ -101,15 +95,14 @@ body{margin:10px;}
     box-sizing: border-box;
 }
 
-
 .manager{
     margin:10px 30px 15px 15px;
 }
+
 .group-title {
     background-color: #687074 !important;
     color: #FFF !important;
 }
-
 
 .removeTags{
     color:#428bca;
@@ -124,11 +117,10 @@ body{margin:10px;}
     margin-left:20px;  
     border: 1px solid rgba(160, 208, 228, 0.11);
     padding: 8px 8px 14px 7px;
-
 }
+
 .treeItem{
     background:none repeat scroll 0 0 #ffffff;
-    /*border:1px solid #7c9eb2;*/
     border-radius:5px;
 }
 
@@ -171,30 +163,21 @@ top: -35px;
     display: inline-flex;
     font-family: "lato", sans-serif !important;
 }
+
 .itemModal{
-    /*display: inline;*/
     font-family: "lato", sans-serif !important;
 }
+
 .addPrereqOrRequirement{
     color: #337ab7;
     font-family: "lato", sans-serif !important;
 }
+
 .treeLine li a {
-    /*display: inline-block;*/
-    /*border: 1px solid #ccc;*/
-    /*padding: 5px 10px;*/
-    /*text-decoration: none;*/
-    /*color: #666;*/
-    /*font-family: arial, verdana, tahoma;*/
-    /*color: deeppink;*/
     font-size: 14px;
     font-weight: 400;
-    /*color:pink;*/
-
-    /*border-radius: px;*/
-    /*-webkit-border-radius: 5px;*/
-    /*-moz-border-radius: 5px;*/
 }
+
 .treeLine li {
     margin: -5px 0;
     /*padding: 0;*/
@@ -225,68 +208,50 @@ top: -35px;
     border-top: 1px solid #ccc;
 }
 
-
 /*Remove connectors before root*/
 .treeLine > ul > li::after, .treeLine > ul > li::after{
     border: 0;
     width:20px;
-
 }
 /*Remove connectors after last child*/
 .treeLine li:last-child::before{
     height: 20px;
 }
 
-/*Time for some hover effects*/
-/*We will apply the hover effect the the lineage of the element also*/
-.treeLine li a:hover, .treeLine li a:hover+ul li a {
-    /*background: #c8e4f8; color: #000; border: 1px solid #94a0b4;*/
-}
-/*Connector styles on hover*/
-/*.treeLine li a:hover+ul li::after,*/
-/*.treeLine li a:hover+ul li::before,*/
-/*.treeLine li a:hover+ul::before,*/
-/*.treeLine li a:hover+ul ul::before{*/
-    /*border-color:  #94a0b4;*/
-/*}*/
 .modalText{
     font-family: "lato", sans-serif !important;
 }
-.unpublishedText{
-    color:darkslategray !important;
+
+.unpublishedText {
+    color: darkslategray !important;
 }
+
 .unpublishedMod{
     font-size:10px;
     position:relative;
     top:-20px;
     color:darkslategray !important;
-    /*color:red !important;*/
-    /*background-color:white;*/
-    /*pointer:default;*/
 }
+
 .publishedMod{
     background: #f8faff;
     border: 1px solid #dae2ea;
-    /*color: #7c9eb2;*/
-    /*color:red;*/
     color:#428bca;
     padding: 10px 10px;
-
 }
+
 .gearMod{
     font-size:10px;
     position:relative;
     top:-13px;
-    /*color: #337ab7;*/
     color:#008000;
     pointer:default;
-
 }
+
 .unpublishedGearMod{
     font-size:10px;
     position:relative;
     top:-13px;
-    /*color: #337ab7;*/
     color:darkslategray;
     pointer:default;
 }
@@ -298,16 +263,15 @@ top: -35px;
     color:#008000;
     pointer:default;
 }
+
 .itemMessage
 {
     font-size:12px;
     position:relative;
     top: -15px;
     color:gray;
-    /*text-align:right;*/
-    /*margin-right: 60px;*/
-    /*float:right;*/
-    /*position:*/
-    /*pointer:default;*/
-    /*display:inline;*/
+}
+
+.oneLine{
+    display:inline-flex;
 }

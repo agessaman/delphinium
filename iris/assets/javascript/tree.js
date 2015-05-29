@@ -14,6 +14,9 @@
                 $scope.loading = false;
 
 
+
+
+
                 /*
                  * ***********************  Functions  ***********************
                  */
@@ -35,6 +38,8 @@
                         node.className = "visible node";
                     }
                 };
+
+
 
                 $scope.showTagsFunc = function (scope) {
                     this.showTags = !this.showTags;
@@ -172,6 +177,7 @@
                             success(function (data) {
                                 $scope.tags = data.split(", ");
                                 scope.item.content[0].tags = data;
+
                                 $scope.updateAvailableTags();
                             });
                     this.tagValue = "";
@@ -269,7 +275,9 @@
                         });
                     }
                 };
-                
+
+
+
                 $scope.reloadApp = function ()
                 {
                     $scope.loading = true;
@@ -297,11 +305,13 @@
 
                 $scope.initManager = function()
                 {
+
                     $scope.saveOrder();//save the new order right away
 //                    $interval($scope.postOrderToLms, 60000);//post order to Canvas every  minute
                     $http.get("getModuleItemTypes")
                     .success(function (data, status) {
-                        $scope.moduleItemTypes = data;
+
+                            $scope.moduleItemTypes = data;
                     });
                 };
                 
