@@ -57,25 +57,6 @@ class RestfulApi extends Controller
         return json_encode($response);
     }
     
-    public function getPageEditingRoles()
-    {
-        $roots = new Roots();
-        $arr = $roots->getPageEditingRoles();
-        $result = array();
-        $i=0;
-        foreach($arr as $type)
-        {   
-            $item = new \stdClass();
-            
-            $item->id = $i;
-            $item->value=$type;
-            $result[] = $item;
-            
-            $i++;
-        }
-        return json_encode($result);
-    }
-    
     public function addModule()
     {
         $name = \Input::get('name');
@@ -130,46 +111,4 @@ class RestfulApi extends Controller
         echo json_encode($res);
     }
     
-    public function addNewModuleItem()
-    {
-        $title = \Input::get('title');
-        $tags = array('Brand', 'New');
-        $modItemType = \Input::get('type');
-        $content_id = 49051689;
-        $completion_requirement_min_score = 6;
-        $page_url = "http://www.google.com";
-        $published = true;
-        $position = 1;
-        
-        $moduleItem = new ModuleItem($title, $modItemType, $content_id, $page_url, null, CompletionRequirementType::MUST_SUBMIT, 
-                $completion_requirement_min_score, $published, $position, $tags);
-                
-        $moduleId = 457494;
-        $moduleItemId = null;
-        $includeContentItems = false;
-        $includeContentDetails = false;
-        $freshData = false;
-        $module = null;
-        
-        $req = new ModulesRequest(ActionType::POST, $moduleId, $moduleItemId,  
-            $includeContentItems, $includeContentDetails,  $module, $moduleItem , $freshData);
-        
-        $roots = new Roots();
-        $res = $roots->modules($req);
-        echo json_encode($res);
-    }
-    
-    public function addPage()
-    {
-        $title = \Input::get('title');
-        $body = \Input::get('body');
-        $pageEditingRole = \Input::get('pageEditingRole ');
-        $notifyOfUpdate = \Input::get('notifyOfUpdate');
-        $published = \Input::get('published');
-        $frontPage = \Input::get('frontPage');
-        
-        $page = new Page($title, $body, $pageEditingRole,  $notifyOfUpdate, $published, $frontPage);
-        $roots = new Roots();
-        $roots->addPage($page);
-    }
 }

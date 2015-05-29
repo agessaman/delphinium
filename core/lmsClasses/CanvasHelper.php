@@ -10,6 +10,9 @@ use Delphinium\Core\Models\Module;
 use Delphinium\Core\Models\Assignment;
 use Delphinium\Core\Models\AssignmentGroup;
 use Delphinium\Core\Models\Submission;
+use Delphinium\Core\Models\Page;
+use Delphinium\Core\Models\File;
+use Delphinium\Core\Models\Discussion;
 use Delphinium\Core\RequestObjects\SubmissionsRequest;
 use Delphinium\Core\RequestObjects\ModulesRequest;
 use Delphinium\Core\RequestObjects\AssignmentsRequest;
@@ -388,19 +391,67 @@ class CanvasHelper
         $urlArgs = array();
         $urlPieces[] = 'pages';
         
-        foreach($page as $key => $value) {
+        foreach($page as $key => $value) 
+        {
             if ($value)
             {
                 $urlArgs[] = "wiki_page[{$key}]={$value}";
             }
         }
         //Attach token
-        $urlArgs[]="access_token={$token}&per_page=5000";
+        $urlArgs[]="access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
         $response = GuzzleHelper::postData($url);
         return $response->getBody();
     }
+    
+    public function addDiscussion(Discussion $discussion)
+    {///api/v1/courses/:course_id/discussion_topics
+        $urlPieces= $this->initUrl();
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $urlArgs = array();
+        $urlPieces[] = 'discussion_topics';
+        
+        foreach($discussion as $key => $value) 
+        {
+            if ($value)
+            {
+                $urlArgs[] = "{$key}={$value}";
+            }
+        }
+        //Attach token
+        $urlArgs[]="access_token={$token}";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+        $response = GuzzleHelper::postData($url);
+        return $response->getBody();
+    }
+    
+    public function uploadFile(File $file)
+    {
+        $urlPieces= $this->initUrl();
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $urlPieces[] = 'files';
+        $urlArgs = array();
+        
+        foreach($file as $key => $value) 
+        {
+            if ($value)
+            {
+                $urlArgs[] = "{$key}={$value}";
+            }
+        }
+        
+        //Attach token
+        $urlArgs[]="access_token={$token}";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+        echo $url;
+        $response = GuzzleHelper::postData($url);
+        return $response->getBody();
+    }
+    
     /*
      * SUBMISSIONS
      */

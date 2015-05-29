@@ -25,13 +25,13 @@ var JobModalInstanceCtrl = function ($scope, $modalInstance, $location, itemIn) 
         alert('Are you sure you want to permanently delete this module?');
 
         $modalInstance.dismiss('delete');
-    }
+    };
     $scope.unpublish = function(scope){
         $modalInstance.dismiss('unpublish');
-    }
+    };
     $scope.publish = function(scope){
         $modalInstance.dismiss('publish');
-    }
+    };
 
 };
 

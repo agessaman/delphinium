@@ -7,6 +7,7 @@ use Delphinium\Core\Models\Tag;
 use Delphinium\Core\Models\OrderedModule;
 use Delphinium\Core\Models\CacheSetting;
 use Delphinium\Core\Models\Assignment;
+use Delphinium\Core\Models\AssignmentGroup;
 use Delphinium\Core\RequestObjects\AssignmentsRequest;
 use Delphinium\Core\RequestObjects\AssignmentGroupsRequest;
 use Delphinium\Core\RequestObjects\ModulesRequest;

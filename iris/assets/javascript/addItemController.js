@@ -17,8 +17,8 @@ var addItemCtrl = function ($scope, $modal, $log, $http) {
         
         modalInstance.result.then(function () {
         }, function () {
-            console.log("hello");
         });
+          
     };
 };
 
@@ -62,6 +62,7 @@ var ModalInstanceCtrl = function ($scope, $modalInstance, $location, $http, item
             switch(type) {
                 case "Assignment":
                     $scope.newAssignment = true;
+                    $scope.getAssignmentGroups();
                     break;
                 case "Quiz":
                     $scope.newQuiz = true;
@@ -78,6 +79,8 @@ var ModalInstanceCtrl = function ($scope, $modalInstance, $location, $http, item
                     break;
                 case "Discussion":
                     $scope.newDiscussion = true;
+                    $scope.newDiscussionStartDate = new Date();
+                    $scope.newDiscussionEndDate = new Date();
                     break;
                 case "ExternalUrl":
                     $scope.newExternalUrl = true;
@@ -96,42 +99,166 @@ var ModalInstanceCtrl = function ($scope, $modalInstance, $location, $http, item
         }
     };
     
-    $scope.addItem = function()
+    $scope.addNewItem = function()
+    {
+        if($scope.newPage)
+        {
+            $scope.addNewPage();
+        }
+        else if ($scope.newAssignment)
+        {
+            
+        }
+        else if ($scope.newQuiz)
+        {
+            
+        }
+        else if ($scope.newSubHeader)
+        {
+            
+        }
+        else if($scope.newFile)
+        {
+            $scope.addNewFile();
+        }
+        else if($scope.newDiscussion)
+        {
+            $scope.addNewDiscussionTopic();
+        }
+        else if($scope.newExternalUrl)
+        {
+            
+        }
+        $modalInstance.dismiss('cancel');
+    };
+    
+    $scope.addNewPage = function()
+    {
+        $http.post('addNewPage', {
+            title:$scope.newPageTitle,
+            pageEditingRole: $scope.selectedPageEditingRole.value,
+            body:"hello, testing",
+            notifyOfUpdate: $scope.newPageNotify
+        })
+        .success(function (data) {
+            //add the newly created item as a module item to the module
+            $scope.newItem = false;
+            $scope.addItem(data.title, data.page_id, itemIn.module_id, $scope.selectedModuleItemType.value, data.url);
+        });
+    };
+    
+    $scope.addNewDiscussionTopic = function()
+    {
+        
+        $http.post('addNewDiscussionTopic', {
+            title:$scope.newDiscussionTopic,
+            message:"hello, testing",
+            threaded:$scope.newDiscussionThreaded,
+            delayed_post_at:new Date($scope.newDiscussionStartDate),
+            lock_at:new Date($scope.newDiscussionEndDate),
+            podcast_enabled: $scope.newDiscussionPodcast,
+            require_initial_post: $scope.newDiscussionMustPost,
+            podcast_has_student_posts: true,
+            is_announcement:$scope.newDiscussionAnnouncement
+        })
+        .success(function (data) {
+            if(data.subscription_hold!=="topic_is_announcement")
+            {
+        //add the newly created item as a module item to the module
+                $scope.newItem = false;
+                $scope.addItem(data.title, data.id, itemIn.module_id, $scope.selectedModuleItemType.value, data.url);
+            }
+            
+        });
+    };
+    $scope.addNewAssignment = function()
+    {
+        $http.post('addNewDiscussionTopic', {
+            title:$scope.newDiscussionTopic,
+            message:"hello, testing",
+            threaded:$scope.newDiscussionThreaded,
+            delayed_post_at:new Date($scope.newDiscussionStartDate),
+            lock_at:new Date($scope.newDiscussionEndDate),
+            podcast_enabled: $scope.newDiscussionPodcast,
+            require_initial_post: $scope.newDiscussionMustPost,
+            podcast_has_student_posts: true,
+            is_announcement:$scope.newDiscussionAnnouncement
+        })
+        .success(function (data) {
+             //add the newly created item as a module item to the module
+            $scope.newItem = false;
+            $scope.addItem(data.title, data.id, itemIn.module_id, $scope.selectedModuleItemType.value, data.url);
+        });
+    };
+    
+    $scope.addNewFile = function()
+    {
+        $http.post('uploadFile', {
+            name:$scope.newFileUp.name,
+            size:$scope.newFileUp.size,
+            content_type:$scope.newFileUp.content_type
+        })
+        .success(function (data) {
+            console.log(data);
+//            now we have to upload the file to the upload_url given by Canvas
+//            $http.post(data.upload_url,{
+//                key: data.upload_params.key,
+//                acl: data.upload_params.acl,
+//                Filename: data.upload_params.Filename,
+//                AWSAccessKeyId:data.upload_params.AWSAccessKeyId,
+//                Policy:data.upload_params.Policy,
+//                Signature:data.upload_params.Signature,
+//                'Content-Type':data.upload_params.Content-Type,
+//                File:
+//            }).success(function(data)
+//            {
+//                
+//            });
+             //add the newly created item as a module item to the module
+//            $scope.newItem = false;
+//            $scope.addItem(data.display_name, data.id, itemIn.module_id, $scope.selectedModuleItemType.value, data.url);
+        });
+    };
+    
+    $scope.fileNameChanged = function(ele)
+    {
+        var files = ele.files;
+        var fileUp;
+        for (var i=0;i<=ele.files.length-1;i++)
+        {
+            fileUp = { 'name': files[i].name ,'size':files[i].size,'content_type':files[i].type};
+        };
+        
+        $scope.newFileUp = (fileUp)?fileUp:null;
+        $scope.$apply();
+    };
+    $scope.addItem = function(name, itemId, moduleId, type, url)
     {
         if($scope.newItem)
         {
-            $http.post('core/addModuleItem', {
-                name:$scope.selectedItem.name,
-                id:parseInt($scope.selectedItem.id),
-                module_id: itemIn.module_id,
-                type: $scope.selectedModuleItemType.value,
-                url:$scope.selectedItem.url
-            
-            }).
-            success(function (data) {
-                $modalInstance.dismiss('cancel');
-            });
+            $scope.addNewItem();
         }
         else
         {
+            //optional params; if not provided, we will select them from scope
+            name=name||$scope.selectedItem.name;
+            itemId = itemId ||parseInt($scope.selectedItem.id);
+            moduleId = moduleId||itemIn.module_id;
+            type = type ||$scope.selectedModuleItemType.value;
+            url = url ||$scope.selectedItem.url;
             
-            switch($scope.selectedModuleItemType.value) {
-                case "Assignment":
-                    $scope.newAssignment = true;
-                    break;
-            }
             $http.post('core/addModuleItem', {
-                name:$scope.selectedItem.name,
-                id:parseInt($scope.selectedItem.id),
-                module_id: itemIn.module_id,
-                type: $scope.selectedModuleItemType.value,
-                url:$scope.selectedItem.url
-            
+                name:name,
+                id:itemId,
+                module_id: moduleId,
+                type:type,
+                url:url
             }).
             success(function (data) {
                 $modalInstance.dismiss('cancel');
             });
         }
+        
         
     };
 
@@ -175,6 +302,14 @@ var ModalInstanceCtrl = function ($scope, $modalInstance, $location, $http, item
         $http.get("getPageEditingRoles")
         .success(function (data) {
             $scope.pageEditingRoles = data;
+        });
+    };
+    
+    $scope.getAssignmentGroups = function()
+    {
+        $http.get("getAssignmentGroups")
+        .success(function (data) {
+            $scope.assignmentGroups = data;
         });
     };
 };

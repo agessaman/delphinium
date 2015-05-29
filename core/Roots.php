@@ -5,6 +5,8 @@ use Delphinium\Core\RequestObjects\ModulesRequest;
 use Delphinium\Core\RequestObjects\AssignmentsRequest;
 use Delphinium\Core\RequestObjects\AssignmentGroupsRequest;
 use Delphinium\Core\Models\Page;
+use Delphinium\Core\Models\File;
+use Delphinium\Core\Models\Discussion;
 use Delphinium\Core\UpdatableObjects\Module;
 use Delphinium\Core\Enums\CommonEnums\Lms;
 use Delphinium\Core\Enums\CommonEnums\DataType;
@@ -148,8 +150,8 @@ class Roots
             case(ActionType::GET):
                 if(!$request->getFresh_data())
                 {
-                    $cacheHelper = new CacheHelper();
-                    $data = $cacheHelper->serchAssignmentGroupDataInCache($request);
+                    $dbHelper = new DbHelper();
+                    $data = $dbHelper->getAssignmentGroupData($request);
                     switch(get_class($data))
                     {
                         case "Illuminate\Database\Eloquent\Collection":
@@ -211,15 +213,52 @@ class Roots
         {
             case (Lms::CANVAS):
                 $canvas = new CanvasHelper();
-                $canvas->addPage($page);
+                return $canvas->addPage($page);
                 break;
             default:
                 $canvas = new CanvasHelper();
-                $canvas->addPage($page);
+                return $canvas->addPage($page);
                 break;
         }
     }
     
+    public function addDiscussion(Discussion $discussion)
+    {
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $lms = strtoupper($_SESSION['lms']);
+        switch ($lms)
+        {
+            case (Lms::CANVAS):
+                $canvas = new CanvasHelper();
+                return $canvas->addDiscussion($discussion);
+                break;
+            default:
+                $canvas = new CanvasHelper();
+                return $canvas->addDiscussion($discussion);
+                break;
+        }
+    }
+    
+    public function uploadFile(File $file)
+    {
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $lms = strtoupper($_SESSION['lms']);
+        switch ($lms)
+        {
+            case (Lms::CANVAS):
+                $canvas = new CanvasHelper();
+                return $canvas->uploadFile($file);
+            default:
+                $canvas = new CanvasHelper();
+                return $canvas->uploadFile($file);
+        }
+    }
     public function getAvailableTags()
     {
         $dbHelper = new DbHelper();
@@ -456,17 +495,17 @@ class Roots
     
     private function getAssignmentGroupDataFromLms(AssignmentGroupsRequest $request)
     {
-        $cacheHelper = new CacheHelper();
+        $dbHelper = new DbHelper();
         switch ($request->getLms())
         {
             case (Lms::CANVAS):
                 $canvas = new CanvasHelper(DataType::ASSIGNMENTS);
                 $canvas->processAssignmentGroupsRequest($request);
-                return $cacheHelper->serchAssignmentGroupDataInCache($request);
+                return $dbHelper->getAssignmentGroupData($request);
             default:
                 $canvas = new CanvasHelper(DataType::ASSIGNMENTS);
                 $canvas->processAssignmentGroupsRequest($request);
-                return $cacheHelper->serchAssignmentGroupDataInCache($request);
+                return $dbHelper->getAssignmentGroupData($request);
         }
     }
     
