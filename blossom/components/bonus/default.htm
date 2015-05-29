@@ -2,6 +2,7 @@
 	var maxBonus = {{maxBonus}};
 	var minBonus = {{minBonus}};
 	var bonus = {{Bonus}};
+	var penalty = {{Penalty}};
 	var bonusAnimate = {{bonusAnimate}};
 	var bonusSize = '{{bonusSize}}';
 </script>
@@ -19,7 +20,9 @@
 						L26,80
 						A 25 25, 0, 0, 1, 26 30" />
 		</clipPath>
+		<rect  id = "penaltyRect" width="0" height="115" style=" fill:none; clip-path: url(#bonusClipPath); "/>
 		<rect  id = "bonusRect" width="0" height="115" style=" fill:none; clip-path: url(#bonusClipPath); "/>
+		<rect  id = "center" width="0" height="115" style=" fill:none; clip-path: url(#bonusClipPath); "/>
 		<path d ="  	M26,30 
 						L126,30 
 						A 50 50, 0, 0, 1, 214 30  

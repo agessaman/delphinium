@@ -233,7 +233,7 @@ function drawScatterplot() {
 	g.selectAll("scatter-dots")
 	  .data(data)
 	  .enter().append("svg:circle")
-		  .attr("cx", function (d,i) { return x(d[0]); } )
+		  .attr("cx", function (d) { return x(d[0]); } )
 		  .attr("cy", function (d) { return y(d[1]); } )
 		  .attr("r", 6)
 		  .attr("class","dot")

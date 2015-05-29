@@ -50,7 +50,7 @@ class Grade extends ComponentBase
 		];
     }
 	
-	 public function onRender()
+	public function onRender()
     {
         $this->page['XP'] = $this->property('XP');
 		$this->page['gradeBonus'] = $this->property('Bonus');

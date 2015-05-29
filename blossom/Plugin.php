@@ -33,6 +33,7 @@ class Plugin extends PluginBase
             '\Delphinium\Blossom\Components\Experience' => 'experience',
             '\Delphinium\Blossom\Components\Leaderboard' => 'leaderboard',
             '\Delphinium\Blossom\Components\Competencies' => 'competencies',
+            '\Delphinium\Blossom\Components\StudentsGraph' => 'studentsgraph',
         ];
     }
 	
@@ -80,6 +81,14 @@ class Plugin extends PluginBase
                     'icon' => 'icon-sitemap',
                     'owner' => 'Delphinium.Greenhouse',
                     'url' => Backend::url('delphinium/blossom/leaderboard'),
+                    'group'       => 'Blossom',
+                ],
+
+                'StudentsGraph' => [
+                    'label' => 'StudentsGraph',
+                    'icon' => 'icon-bar-chart',
+                    'owner' => 'Delphinium.Greenhouse',
+                    'url' => Backend::url('delphinium/blossom/studentsgraph'),
                     'group'       => 'Blossom',
                 ]
             ]);
