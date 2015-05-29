@@ -18,11 +18,7 @@ var addItemCtrl = function ($scope, $modal, $log, $http) {
         modalInstance.result.then(function () {
         }, function () {
             console.log("hello");
-            $log.info('Modal clooooosed at: ' + new Date());
         });
-          
-        $log.info('Modal opened at: ' + new Date());
-        
     };
 };
 
