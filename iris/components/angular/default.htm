@@ -40,18 +40,67 @@
                     <div class="modal-body">
                         Name:
                         <a href="#" editable-textarea="item.title">
-                            <pre>{{item.title}}</pre>
+                            {{item.title}}
                         </a>
                         <br>
-                        Url:
+                        <div ng-if="item.type === 'ExternalUrl'">
+                            Url:
                         <a href="#" editable-textarea=" item.external_url">
-                            <pre>{{item.external_url}}</pre>
+                              {{item.external_url}}
                         </a>
+                        </div>
+                        <BR>
+                        Points
+                        <a href="#" editable-textarea="item.content[0].points_possible">
+                        {{item.content[0].points_possible}}
+                        </a>
+                        <BR>
+                        <div class="oneLine">
+                        Assignment Group &nbsp;
+                        <form id="assignmentGroup">
+                            <select class="form-control" id="assngrp">
+                                <option>Other </option>
+                                <option>Pre-class Quizzes</option>
+                                <option>OB Project</option>
+                                <option>Study Guide Quizzes</option>
+                                <option>Exams</option>
+                                <option>[ New Group ]</option>
 
+                            </select>
+                        </form>
+                        </div>
+                        <BR>
+                        <div class="oneLine">
+                        Display Grade As &nbsp;&nbsp;&nbsp;&nbsp;
+                        <form id="assignmentGroup1">
+                            <select class="form-control" id="assngrp1">
+                                <option>Percentage </option>
+                                <option>Complete/Incomplete</option>
+                                <option>Points</option>
+                                <option>Letter Grade</option>
+                                <option>GPA Scale</option>
+                                <option>Not Graded</option>
+
+                            </select>
+                        </form>
+                        </div>
+                        <BR>
+                        <div class="oneLine">
+                            Submission Type &nbsp;&nbsp;&nbsp;&nbsp;
+                            <form id="assignmentGroup2">
+                                <select class="form-control" id="assngrp2">
+                                    <option>No Submission </option>
+                                    <option>Online</option>
+                                    <option>External Tool</option>
+                                    <option>On Paper</option>
+                                </select>
+                            </form>
+                        </div>
+
+                    </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-
                     <a href="" class="btn btn-primary pull-right" ng-click="ok(item)">Update</a>
                     <a href="" class="cancel btn btn-default pull-right" ng-click="cancel()">Close</a>
                     <a href="" class="btn btn-danger pull-left" ng-click="delete(this)">Remove</a>
@@ -504,12 +553,9 @@
                                 <i class="icon-list-ol" ng-switch-when="Quiz"></i>
                                 <i class="icon-file" ng-switch-when="Page"></i>
                                 <i class="icon-external-link" ng-switch-when="ExternalUrl"></i>
+                                <i class="icon-tasks" ng-switch-when="Assignment"></i>
                             </ng-switch>
-
-                            <div ng-switch on="item.published">
                                 <a href="{{item.html_url}}"> <span>{{item.title}}</span></a>
-                                <a href="{{item.html_url}}" class="unpublishedItem" ng-switch-when="0"> <span>{{item.title}}</span></a>
-                            </div>
                         </a>
 
                         <a title="Click to edit tags" class="btn icon-tags dive"
@@ -535,15 +581,19 @@
 
                         <span class="itemMessage pull-right" >
                             <div ng-app ng controller="treeCtrl">
-                                <a href="#" editable-text="item.content[0].due_at">
-                                    {{item.content[0].due_at | date:'MMM dd, yyyy'}}
-                                </a>
-                                <!--{{item.content[0].due_at}} | date:'MM/dd/yyyy'>-->
+
+                                        <a href="#" editable-text="item.content[0].due_at" ng-if="item.content[0].due_at != '0000-00-00 00:00:00'">
+                                            {{item.content[0].due_at | date:'yyyy-MM-dd'}}
+                                        </a>
+
                                 &nbsp;&nbsp;&nbsp;
-                                <a href="#" editable-text=" item.content[0].points_possible" >
-                                    {{item.content[0].points_possible}}
+                                <a href="#" editable-text=" item.content[0].points_possible" ng-if="item.content[0].points_possible > 0" >
+                                    {{item.content[0].points_possible}}pts
                                 </a>
-                                 pts
+                                <a href="#" editable-text="item.content[0].points_possible" ng-if="item.content[0].points_possible === 0" >
+                                    --pts
+                                </a>
+
                             </div>
                         </span>
 
