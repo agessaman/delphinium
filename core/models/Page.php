@@ -1,5 +1,7 @@
 <?php namespace Delphinium\Core\Models;
+
 use Delphinium\Core\Enums\ModuleItemEnums\PageEditingRoles;
+use Delphinium\Core\Exceptions\InvalidParameterInRequestObjectException;
 
 class Page
 {   
@@ -10,7 +12,7 @@ class Page
     public $published;
     public $frontPage;
     
-    function __construct($title, $body, $pageEditingRole,  $notifyOfUpdate, $published, $frontPage) 
+    function __construct($title, $body, $pageEditingRole,  $notifyOfUpdate, $published) 
     {
         if(!is_string($title))
         {
@@ -18,7 +20,7 @@ class Page
         }
         if(!PageEditingRoles::isValidValue($pageEditingRole))
         {
-            throw new InvalidParameterInRequestObjectException(get_class($this),"pageEditingRole", "Parameter is not valid");
+            throw new InvalidParameterInRequestObjectException(get_class($this),"pageEditingRole", "Page Editing Role is not valid");
         }
         if(!is_bool($notifyOfUpdate))
         {
@@ -28,16 +30,11 @@ class Page
         {
             throw new InvalidParameterInRequestObjectException(get_class($this),"published", "Parameter must be a boolean");
         }
-        if(!is_bool($frontPage))
-        {
-            throw new InvalidParameterInRequestObjectException(get_class($this),"frontPage", "Parameter must be a boolean");
-        }
         $this->title = $title;
         $this->body = $body;
         $this->pageEditingRole = $pageEditingRole;
-        $this->notifyOfUpdate = $notifyOfUpdate;
-        $this->published = $published;
-        $this->frontPage = $frontPage;
+        $this->notifyOfUpdate = ($notifyOfUpdate)?true:false;
+        $this->published = ($published)?true:false;
     }
     
 }

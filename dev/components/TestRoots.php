@@ -13,6 +13,9 @@ use Delphinium\Core\Enums\ModuleItemEnums\CompletionRequirementType;
 use Cms\Classes\ComponentBase;
 use \DateTime;
 
+use Delphinium\Core\Guzzle\GuzzleHelper;
+
+
 class TestRoots extends ComponentBase
 {
     public function componentDetails()
@@ -52,6 +55,7 @@ class TestRoots extends ComponentBase
 //        $this->testGettingMultipleSubmissionsAllStudents();
 //        $this->testGettingMultipleSubmissionsMultipleStudents();
 //        $this->testGettingSubmissions();
+        $this->testFileUpload();
     }
     
     private function testBasicModulesRequest()
@@ -485,6 +489,12 @@ class TestRoots extends ComponentBase
         $roots = new Roots();
         $res = $roots->modules($req);
         return $res;
+    }
+    
+    public function testFileUpload()
+    {
+//        /api/v1/courses/:course_id/files
+        
     }
 }
 

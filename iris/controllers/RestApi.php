@@ -1,9 +1,13 @@
 <?php namespace Delphinium\Iris\Controllers;
 
 use Illuminate\Routing\Controller;
+use Delphinium\Core\Models\Page;
+use Delphinium\Core\Models\Discussion;
+use Delphinium\Core\Models\File;
 use Delphinium\Core\UpdatableObjects\Module;
 use Delphinium\Core\UpdatableObjects\ModuleItem;
 use Delphinium\Core\RequestObjects\SubmissionsRequest;
+use Delphinium\Core\RequestObjects\AssignmentGroupsRequest;
 use Delphinium\Core\RequestObjects\ModulesRequest;
 use Delphinium\Core\Roots;
 use Delphinium\Core\Enums\CommonEnums\ActionType;
@@ -74,6 +78,33 @@ class RestApi extends Controller
         $result = array();
         $i=0;
         foreach($arr as $key => $type)
+        {   
+            $item = new \stdClass();
+            
+            $item->id = $i;
+            $item->value=$type;
+            $result[] = $item;
+            
+            $i++;
+        }
+        return json_encode($result);
+    }
+    
+    public function getAssignmentGroups()
+    {
+        $req = new AssignmentGroupsRequest(ActionType::GET, false, null, true);
+        
+        $roots = new Roots();
+        return $res = $roots->assignmentGroups($req);
+    }
+    
+    public function getPageEditingRoles()
+    {
+        $roots = new Roots();
+        $arr = $roots->getPageEditingRoles();
+        $result = array();
+        $i=0;
+        foreach($arr as $type)
         {   
             $item = new \stdClass();
             
@@ -291,5 +322,65 @@ class RestApi extends Controller
         $newReq = new ModulesRequest(ActionType::GET, null, null, true, true, null, null , false) ;
         $res = $roots->modules($newReq);
         return $res;
+    }
+   
+    public function addNewPage()
+    {
+        $title = \Input::get('title');
+        $body = \Input::get('body');
+        $pageEditingRole = \Input::get('pageEditingRole');
+        $notifyOfUpdate = \Input::get('notifyOfUpdate');
+        $published = true;
+        
+        $page = new Page($title, $body, $pageEditingRole,  $notifyOfUpdate, $published);
+        $roots = new Roots();
+        return $roots->addPage($page);
+    }
+    
+    public function addNewDiscussionTopic()
+    {
+        $title = \Input::get('title');
+        $message = \Input::get('message');
+        $threaded = \Input::get('threaded');
+        $delayed_post_at = \Input::get('delayed_post_at');
+        $lock_at = \Input::get('lock_at');
+        $podcast_enabled = \Input::get('podcast_enabled');
+        $require_initial_post = \Input::get('require_initial_post');
+        $podcast_has_student_posts = \Input::get('podcast_has_student_posts');
+        $is_announcement= \Input::get('is_announcement');
+        $published = true;
+        
+        $discussion = new Discussion($title, $message, $threaded,  $delayed_post_at, $lock_at, $podcast_enabled,
+                $podcast_has_student_posts, $require_initial_post,$is_announcement, $published, null);
+        $roots = new Roots();
+        return $roots->addDiscussion($discussion);
+    }
+    
+    public function addNewAssignment()
+    {
+//        $title = \Input::get('title');
+//        $message = \Input::get('message');
+//        $threaded = \Input::get('threaded');
+//        $delayed_post_at = \Input::get('delayed_post_at');
+//        $lock_at = \Input::get('lock_at');
+//        $podcast_enabled = \Input::get('podcast_enabled');
+//        $require_initial_post = \Input::get('require_initial_post');
+//        $podcast_has_student_posts = \Input::get('podcast_has_student_posts');
+//        $assignment = \Input::get('assignment');
+//        $is_announcement= \Input::get('is_announcement');
+////        $group_category_id= \Input::get('group_category_id');
+//        $published = \Input::get('published');
+    }
+    
+    public function uploadFile()
+    {
+        $name = \Input::get('name');
+        $size = \Input::get('size');
+        $content_type = \Input::get('content_type');
+        $on_duplicate = "rename";
+        
+        $file = new File($name, $size, $content_type, $on_duplicate);
+        $roots = new Roots();
+        $roots->uploadFile($file);
     }
 }

@@ -12,11 +12,6 @@
                 $scope.isExpanded = false;
                 $scope.showTags = false;
                 $scope.loading = false;
-
-
-
-
-
                 /*
                  * ***********************  Functions  ***********************
                  */
