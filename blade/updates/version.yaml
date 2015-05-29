@@ -1,0 +1,12 @@
+1.0.1: First version of Blade
+1.0.2:
+    - Create Rules Table
+    - create_rules_table.php
+1.0.3:
+    - Added tables for Operators RuleGroups and Variables
+    - create_operators_table.php
+    - create_variables_table.php
+    - create_rule_groups_table.php
+1.0.4:
+    - Added table for Actions
+    - create_actions_table.php

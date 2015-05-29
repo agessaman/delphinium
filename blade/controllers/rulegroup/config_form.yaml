@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: RuleGroup
+
+# Model Form Field configuration
+form: $/delphinium/blade/models/rulegroup/fields.yaml
+
+# Model Class name
+modelClass: Delphinium\Blade\Models\RuleGroup
+
+# Default redirect location
+defaultRedirect: delphinium/blade/rulegroup
+
+# Create page
+create:
+    title: Create RuleGroup
+    redirect: delphinium/blade/rulegroup/update/:id
+    redirectClose: delphinium/blade/rulegroup
+
+# Update page
+update:
+    title: Edit RuleGroup
+    redirect: delphinium/blade/rulegroup
+    redirectClose: delphinium/blade/rulegroup
+
+# Preview page
+preview:
+    title: Preview RuleGroup
