@@ -95,8 +95,79 @@
                                     <option>On Paper</option>
                                 </select>
                             </form>
+                        </div><BR>
+                        <div class="oneLine">
+                           For &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <form id="assignmentGroup3">
+                                <select class="form-control" id="assngrp3">
+                                    <option>Everyone </option>
+                                </select>
+                            </form>
                         </div>
+                        <BR>
+                        <div class="oneLine">
+                            Due Date &nbsp;&nbsp;&nbsp;<div class="prereqMenu" ng-controller="DatepickerCtrl">
+                            <p class="input-group">
+                                <input type="text" class="form-control"
+                                       datepicker-popup="{{format}}"
+                                       show-weeks="false"
+                                       ng-model="dt"
+                                       is-open="opened" min-date="minDate"
+                                       max-date="'3015-06-22'"
+                                       datepicker-options="dateOptions"
+                                       date-disabled="disabled(date, mode)"
+                                       ng-required="true" close-text="Close"/>
 
+                            <div class="input-group-btn">
+                                <button type="button" class="btn btn-default" ng-click="open($event)">
+                                    <i class="icon-calendar"></i>
+                                </button>
+                            </div>
+                        </div>
+                        </div>
+                        <BR>
+                        <div class="oneLine">
+                            Available &nbsp;&nbsp;&nbsp;&nbsp;
+                            <div class="prereqMenu" ng-controller="DatepickerCtrl">
+                                <p class="input-group">
+                                    <input type="text" class="form-control"
+                                           datepicker-popup="{{format}}"
+                                           show-weeks="false"
+                                           ng-model="dt"
+                                           is-open="opened" min-date="minDate"
+                                           max-date="'3015-06-22'"
+                                           datepicker-options="dateOptions"
+                                           date-disabled="disabled(date, mode)"
+                                           ng-required="true" close-text="Close"/>
+
+                                <div class="input-group-btn">
+                                    <button type="button" class="btn btn-default" ng-click="open($event)">
+                                        <i class="icon-calendar"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <BR>
+                        <div class="oneLine">
+                            From Until&nbsp; <div class="prereqMenu" ng-controller="DatepickerCtrl">
+                            <p class="input-group">
+                                <input type="text" class="form-control"
+                                       datepicker-popup="{{format}}"
+                                       show-weeks="false"
+                                       ng-model="dt"
+                                       is-open="opened" min-date="minDate"
+                                       max-date="'3015-06-22'"
+                                       datepicker-options="dateOptions"
+                                       date-disabled="disabled(date, mode)"
+                                       ng-required="true" close-text="Close"/>
+
+                            <div class="input-group-btn">
+                                <button type="button" class="btn btn-default" ng-click="open($event)">
+                                    <i class="icon-calendar"></i>
+                                </button>
+                            </div>
+                        </div>
+                        </div>
                     </div>
                     </div>
                 </div>
@@ -583,7 +654,7 @@
                             <div ng-app ng controller="treeCtrl">
 
                                         <a href="#" editable-text="item.content[0].due_at" ng-if="item.content[0].due_at != '0000-00-00 00:00:00'">
-                                            {{item.content[0].due_at | date:'yyyy-MM-dd'}}
+                                            {{item.content[0].due_at | date:'mmm-dd-yyyy'}}
                                         </a>
 
                                 &nbsp;&nbsp;&nbsp;
