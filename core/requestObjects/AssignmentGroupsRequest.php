@@ -22,7 +22,7 @@ class AssignmentGroupsRequest extends RootsRequest
         return $this->fresh_data;
     }
 
-        function __construct($actionType, $include_assignments, $assignment_group_id = null,  $fresh_data = false) 
+    function __construct($actionType, $include_assignments, $assignment_group_id = null,  $fresh_data = false) 
     {
         //this takes care of setting the lms and the ActionType in the parent class (RootsRequest)
         parent::__construct($actionType);

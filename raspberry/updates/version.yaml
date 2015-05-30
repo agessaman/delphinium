@@ -1,8 +1,0 @@
-1.0.0:
-    - Initialize plugin
-    - create_raspberry_modules_table.php
-    - create_raspberry_ordered_modules_table.php
-    - create_raspberry_module_items_table.php
-    - create_raspberry_content_tags_table.php
-    - create_raspberry_content_table.php
-    - create_raspberry_assignments_table.php

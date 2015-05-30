@@ -25,11 +25,11 @@ class ModuleItem {
 //        $this->tags = $tags;
 //    }
 
-    function __construct($title, $module_item_type, $content_id = null, $page_url = null, $external_url = null, 
+    function __construct($title = null, $module_item_type=null, $content_id = null, $page_url = null, $external_url = null, 
         $completion_requirement_type = null, $completion_requirement_min_score = null, $published = false, $position = 1,array $tags = null)
     {
         
-        if (!is_string($title)) {
+        if (($title)&&(!is_string($title))) {
             throw new InvalidParameterInRequestObjectException(get_class($this),"title", "Parameter must be a string");
         }
         
@@ -41,16 +41,6 @@ class ModuleItem {
         if(($content_id) && !is_integer($content_id))
         {
             throw new InvalidParameterInRequestObjectException(get_class($this),"content_id", "Parameter must be an integer");
-        }
-        
-        if(($page_url)&&(filter_var($page_url, FILTER_VALIDATE_URL) === false))
-        {
-            throw new InvalidParameterInRequestObjectException(get_class($this),"page_url", "URL is invalid");
-        }
-        
-        if(($external_url)&&(filter_var($external_url, FILTER_VALIDATE_URL) === false))
-        {
-            throw new InvalidParameterInRequestObjectException(get_class($this),"external_url", "URL is invalid");
         }
         
         if(($completion_requirement_type)&&(!CompletionRequirementType::isValidValue($completion_requirement_type)))

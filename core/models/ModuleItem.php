@@ -18,7 +18,9 @@ class ModuleItem extends Model {
     public $table = 'delphinium_core_module_items';
     
     public $belongsTo = [
-        'module' => ['Delphinium\Core\Models\Module', 'foreignKey' => 'module_id']
+        'module' => ['Delphinium\Core\Models\Module', 
+        'foreignKey' => 'module_id',
+        'delete'=>'true']
     ];
     
     public $rules = [

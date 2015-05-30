@@ -60,6 +60,9 @@ class CacheHelper
                 $res;
                 if($module)
                 {
+                    $positionInfo = $this->stitchPosition($courseId, $request->getModuleId());
+                    $data['parent_id'] = $positionInfo->parent_id;
+                    $data['order'] = $positionInfo->order;
                     foreach($data['module_items'] as $item)
                     {
                         //need to attach the tags (we don't cache tags or position)
@@ -93,6 +96,10 @@ class CacheHelper
                     if (Cache::has($key))
                     {
                         $value = Cache::get($key);
+                        
+                        $positionInfo = $this->stitchPosition($courseId, $id);
+                        $value['parent_id'] = $positionInfo->parent_id;
+                        $value['order'] = $positionInfo->order;
                         array_push($items,$value);
                     }
                     else
@@ -328,5 +335,12 @@ class CacheHelper
         $tags = $dbHelper->getTagsByContentId($content['content_id']);
         $content['tags'] = $tags;
         return $content;
+    }
+    
+    private function stitchPosition($courseId, $moduleId)
+    {
+        $dbHelper = new DbHelper();
+        $orderedModule = $dbHelper->getOrderedModuleByModuleId($courseId, $moduleId);
+        return $orderedModule;
     }
 }

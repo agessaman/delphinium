@@ -3,42 +3,87 @@ body{margin:10px;}
     margin-right: 8px;
 }
 
+/* Z-index of #mask must lower than #boxes .window */
+#mask {
+    position:absolute;
+    top: 0px;
+    left: 0px;
+    z-index:9000;
+    background-color:#000;
+    display:none;
+}
+
+#boxes .window {
+    position:fixed;
+    width:440px;
+    height:300px;
+    display:none;
+    z-index:9999;
+    padding:5px;
+    top: 10%;
+    left: 80%;
+}
+
+/* Customize modal window */
+#boxes #dialog {
+    width:375px;
+    height:350px;
+    background: #fff;
+}
+
+.modal-body {
+    height:520px !important;
+}
+
+.dropdown-multiple{
+    width:545px;
+    height:150px !important;
+}
+
 #flashMsg{
     color:red;
+}
+
+.unpublishedModule {
+    color:darkslategray !important;
 }
 
 .angular-ui-tree-handle {
     background: #f8faff;
     border: 1px solid #dae2ea;
-    color: #7c9eb2;
+    color:#428bca;
     padding: 10px 10px;
-}
-
-.unpublishedModule {
-    background-color:#E0E0E0 !important;
-    color:gray;
 }
 
 .unpublishedModuleIcon {
     font-size:10px;
     position:relative;
     top:-35px;
-    color:gray;
+    color:darkslategray;
+    pointer:default;
+}
+
+.publishedModuleIcon{
+    font-size:10px;
+    position:relative;
+    top:-35px;
+    color:#008000;
     pointer:default;
 }
 
 .unpublishedTagIcon {
     font-size:10px;
-    color:gray;
+    color:darkslategray;
 }
 
 .unpublishedItem
 {
-    color:gray;
+    color:darkslategray;
 }
+
 .angular-ui-tree-handle:hover {
     color: #438eb9;
-    background: #f4f6f7;
+    background: rgba(54, 113, 150, 0.27);
     border-color: #dce2e8;
 }
 
@@ -50,15 +95,14 @@ body{margin:10px;}
     box-sizing: border-box;
 }
 
-
 .manager{
     margin:10px 30px 15px 15px;
 }
+
 .group-title {
     background-color: #687074 !important;
     color: #FFF !important;
 }
-
 
 .removeTags{
     color:#428bca;
@@ -71,12 +115,12 @@ body{margin:10px;}
 
 .divContent{
     margin-left:20px;  
-    border: 1px solid #7c9eb2;
+    border: 1px solid rgba(160, 208, 228, 0.11);
     padding: 8px 8px 14px 7px;
 }
+
 .treeItem{
     background:none repeat scroll 0 0 #ffffff;
-    border:1px solid #7c9eb2;
     border-radius:5px;
 }
 
@@ -113,4 +157,121 @@ top: -35px;
     background: none repeat scroll 0 0 #f8faff;
     color: #7c9eb2;
     cursor:pointer;
+}
+
+.prereqMenu{
+    display: inline-flex;
+    font-family: "lato", sans-serif !important;
+}
+
+.itemModal{
+    font-family: "lato", sans-serif !important;
+}
+
+.addPrereqOrRequirement{
+    color: #337ab7;
+    font-family: "lato", sans-serif !important;
+}
+
+.treeLine li a {
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.treeLine li {
+    margin: -5px 0;
+    /*padding: 0;*/
+    list-style-type: none;
+    position: relative;
+    /*padding: 20px 5px 0px 5px;*/
+}
+
+.treeLine li::before{
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 1px;
+    height: 100%;
+    right: auto;
+    left: -15px;
+    border-left: 1px solid #ccc;
+    bottom: 50px;
+}
+.treeLine li::after{
+    content: '';
+    position: absolute;
+    top: 20px;
+    width: 15px;
+    height: 20px;
+    right: auto;
+    left: -15px;
+    border-top: 1px solid #ccc;
+}
+
+/*Remove connectors before root*/
+.treeLine > ul > li::after, .treeLine > ul > li::after{
+    border: 0;
+    width:20px;
+}
+/*Remove connectors after last child*/
+.treeLine li:last-child::before{
+    height: 20px;
+}
+
+.modalText{
+    font-family: "lato", sans-serif !important;
+}
+
+.unpublishedText {
+    color: darkslategray !important;
+}
+
+.unpublishedMod{
+    font-size:10px;
+    position:relative;
+    top:-20px;
+    color:darkslategray !important;
+}
+
+.publishedMod{
+    background: #f8faff;
+    border: 1px solid #dae2ea;
+    color:#428bca;
+    padding: 10px 10px;
+}
+
+.gearMod{
+    font-size:10px;
+    position:relative;
+    top:-13px;
+    color:#008000;
+    pointer:default;
+}
+
+.unpublishedGearMod{
+    font-size:10px;
+    position:relative;
+    top:-13px;
+    color:darkslategray;
+    pointer:default;
+}
+
+.publishedModItem{
+    font-size:10px;
+    position:relative;
+    top:-20px;
+    color:#008000;
+    pointer:default;
+}
+
+.itemMessage
+{
+    font-size:12px;
+    position:relative;
+    top: -15px;
+    color:gray;
+}
+
+.oneLine{
+    display:inline-flex;
 }

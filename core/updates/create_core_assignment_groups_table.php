@@ -18,6 +18,7 @@ class CreateCoreAssignmentGroupsTable extends Migration
                 $table->integer('position');
                 $table->integer('group_weight');
                 $table->text('rules');
+                $table->integer('course_id');
                 $table->timestamps();
        	 	});
        	 }

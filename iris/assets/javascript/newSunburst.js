@@ -9,7 +9,6 @@ var backColors = {locked:"#DDDDDD", unlocked:"#588238", started:"#3087B4", compl
 
 
 $(document).ready(function() {
-//    console.log(graphData);
     graphData =graphData[0];
     console.log(graphData);
     
@@ -41,7 +40,7 @@ $(document).ready(function() {
         var path = svg.datum(graphData).selectAll("path")
                 .data(partition.nodes)
                 .enter().append("path")
-                .attr("id", function(d) { return "path"+d.moduleId; })
+                .attr("id", function(d) { return "path"+d.module_id; })
                 .attr("d", arc)
                 .on("mouseenter", function(d){
                     showTooltip(d);
@@ -88,8 +87,8 @@ function showTooltip(d)
     {
         var ob = moduleStates.filter(function (ob) 
         {
-            var id = parseInt(d.moduleId);
-            if(ob.moduleId === id)
+            var id = parseInt(d.module_id);
+            if(ob.module_id === id)
             {
                 return ob;
             }
@@ -126,7 +125,7 @@ function showTooltip(d)
                var obj = moduleStates.filter(function (obj) 
                {
                    var id = parseInt(d);
-                   if(obj.moduleId === id)
+                   if(obj.module_id === id)
                    {
                        return obj;
                    }
@@ -165,9 +164,9 @@ function showTooltip(d)
                     var obj = rawData.filter(function (obj) {
 
                         //add each prereq to an array
-                        if(obj.moduleId === prereqs)
+                        if(obj.module_id === prereqs)
                         {
-                            prereqObjArr[obj.moduleId] = obj;
+                            prereqObjArr[obj.module_id] = obj;
                             return obj;
                         }
                    })[0];
@@ -231,8 +230,7 @@ function showTooltip(d)
 
 
     //FILL OUT CONTENT (ASSIGNMENTS)
-    
-    var contentItems = d.items;
+    var contentItems = d.module_items;
     if (contentItems !== undefined)
     {
         var tooltip = d3.select("#tooltip");
@@ -352,12 +350,17 @@ function highlightPrerequisite(liSelect, prereqId)
 
 function getTags(dd)
 {
+    if(dd.content.length<1)
+    {
+        return null;
+    }
     var icon = "";
     var selection = null;
     var optional = false;
     var markup="";
 
-    var itemTags = dd.tags;
+//TODO: verify that this works
+    var itemTags = dd.content[0].tags;
     itemTags = itemTags.toLowerCase();
     var tags = itemTags.split(", ");
 
@@ -427,7 +430,7 @@ function getTags(dd)
                 "<div class='divRight'>" +
                     "<span id='spanAStatus' class='fa icon-check'></span>"+
                     "<span id='divStatusDesc'>Complete</span>" +
-                    "<div class='divPoints'>Score:"+ ob["score"]+"/"+dd.content_details[0].points_possible + "</div>" +
+                    "<div class='divPoints'>Score:"+ ob["score"]+"/"+dd.content[0].points_possible + "</div>" +
                 "</div>" +
             "</div>" +
         "</a>" +
@@ -458,7 +461,7 @@ function getTags(dd)
                         "<span class='" + icon + "'></span><span id='spanAName'>" + dd.title+ "</span><div id='divOptionalAssig'></div>" +
                     "</div>" +
                     "<div class='divRight'>" +
-                    "<div class='divPoints'>--/"+dd.content_details[0].points_possible + " pts</div>" +
+                    "<div class='divPoints'>--/"+dd.content[0].points_possible + " pts</div>" +
                     "</div>" +
                 "</div>" +
             "</a>" +
@@ -626,7 +629,7 @@ function getAncestors(node) {
                 {
                     var ob = moduleStates.filter(function (ob) 
                     {
-                        var id = parseInt(d.moduleId);
+                        var id = parseInt(d.module_id);
                         if(ob.moduleId === id)
                         {
                             return ob;
@@ -693,7 +696,7 @@ function getAncestors(node) {
         }
         else
         {
-            moduleStates = getModuleStates(studentId, courseId);
+            moduleStates = getModuleStates();
             
             getSubmissionData(studentId, courseId);
             
@@ -727,14 +730,13 @@ function recursive()
 {
     
 }
-function getModuleStates(studentId, courseId)
+function getModuleStates()
 {
     var tempStates;
     var colors = stateColors;
     jQuery.ajax({
             url: "getModuleStates",
             type: "GET",
-            data: {studentId: studentId,courseId:courseId},
             success: function (data) {
                 
                 if(data !== "Unauthorized user")
@@ -745,9 +747,7 @@ function getModuleStates(studentId, courseId)
                     for(var i=0;i<=data.length-1;i++)
                     {
                         d = data[i];
-//                        console.log(d.moduleId + " -- "+ d.state);
-                        //select the path that corresponds
-                        var mod = d3.select("#path" + d.moduleId);
+                        var mod = d3.select("#path" + d.module_id);
                         if(mod[0][0]!==null)
                         {
                             var originalColor = mod.style("fill");
@@ -755,14 +755,12 @@ function getModuleStates(studentId, courseId)
 
                             mod.style("fill", newColor);   
                         }
-                        
                     }
                     moduleStates = tempStates;
                 }
                 return tempStates;
             }
         });
-            
 }
 
 
@@ -775,7 +773,6 @@ function getSubmissionData(studentId, courseId)
         data: {studentId: studentId,courseId:courseId},
         success: function (data) {
             showScores(data);
-
         }
     });
 }
