@@ -2,6 +2,7 @@
 
 use Delphinium\Core\Enums\CommonEnums\ActionType;
 use GuzzleHttp\Client;
+use GuzzleHttp\Stream\Stream;
 
 class GuzzleHelper
 {
@@ -39,6 +40,47 @@ class GuzzleHelper
         $client = new Client();
         return $client->post($url);
     }
+    
+    public static function postMultipartRequest($params, $file, $upload_url)
+    {
+        $client = new Client();
+        $response = $client->post($upload_url, [
+            'body' => [
+                $params,
+                'file' => $file,
+                'file_name'   => fopen('/Users/damaris/Desktop/', 'r'),
+                'other_file'  => Stream::factory($file)
+            ]
+        ]);
+//        $response = $client->post($url, [
+//            'body' => [
+//                'field'       => 'abc',
+//                'other_field' => '123',
+//                'file_name'   => fopen('/path/to/file', 'r'),
+//                'other_file'  => Stream::factory('file contents')
+//            ]
+//        ]);
+//        
+//        $client->post(
+//            '/my/great/url',
+//            null,
+//            ['file' => '@'.$filename]
+//        );
+        
+//        $response = $client->post($upload_url, [
+//            
+//            'multipart' => [
+//                $params,
+//                [
+//                    'name'     => 'file',
+//                    'contents' => fopen('/Users/damaris/Desktop/'.$file, 'r')
+//                ]
+//            ]
+//        ]);
+//        
+        return $response;
+    }
+            
     public static function constructUrl($urlPieces, $urlArgs = null)
     {
         $urlStr = "";

@@ -87,6 +87,7 @@ var DatepickerCtrl = function ($scope) {
 
 
     $scope.open = function($event) {
+        console.log($event);
         $event.preventDefault();
         $event.stopPropagation();
 
@@ -99,7 +100,7 @@ var DatepickerCtrl = function ($scope) {
         showWeeks:'false'
     };
 
-
+    $scope.minDate = new Date();
     $scope.format = 'dd-MMMM-yyyy';
 };
 

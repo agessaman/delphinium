@@ -6,6 +6,7 @@
             .controller('treeCtrl', function ($scope, $http, $interval) {
 
                 $scope.data = moduleData;
+//                $scope.canvasUrl = canvasUrl;
                 $scope.contentClass = "hidden";
                 $scope.currentModuleItemId = 0;
                 $scope.contentId = 0;

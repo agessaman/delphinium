@@ -2,6 +2,7 @@
 
 use Delphinium\Core\UpdatableObjects\Module;
 use Delphinium\Core\UpdatableObjects\ModuleItem;
+use Delphinium\Core\Models\Assignment;
 use Delphinium\Core\Roots;
 use Delphinium\Core\RequestObjects\SubmissionsRequest;
 use Delphinium\Core\RequestObjects\ModulesRequest;
@@ -29,7 +30,8 @@ class TestRoots extends ComponentBase
     public function onRun()
     {  
 //        $this->refreshCache();
-//        $this->test();
+        $this->test();
+        
 //        Cache::flush();
 //        $this->testBasicModulesRequest();
 //        $this->testDeleteTag();
@@ -55,7 +57,8 @@ class TestRoots extends ComponentBase
 //        $this->testGettingMultipleSubmissionsAllStudents();
 //        $this->testGettingMultipleSubmissionsMultipleStudents();
 //        $this->testGettingSubmissions();
-        $this->testFileUpload();
+//        $this->testFileUpload();
+//        $this->testAddingAssignment();
     }
     
     private function testBasicModulesRequest()
@@ -395,6 +398,10 @@ class TestRoots extends ComponentBase
     
     private function test()
     {
+        $date = '2015-06-02T22:33:14.798Z';
+        echo strtotime($date)."--";
+        $due_at = new DateTime("2010-12-07T23:00:00.000Z");//DateTime::createFromFormat(DateTime::ISO8601, $date);
+        echo json_encode($due_at);
 //        $format = DateTime::ISO8601;
 //        $date = new DateTime("now");
 ////        $date->add(new DateInterval('P1D'));
@@ -410,20 +417,20 @@ class TestRoots extends ComponentBase
         
         
         
-        $moduleId = null;
-        $moduleItemId = null;
-        $includeContentDetails = true;
-        $includeContentItems = true;
-        $module = null;
-        $moduleItem = null;
-        $freshData = false;
-                
-        $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems, 
-                $includeContentDetails, $module, $moduleItem , $freshData);
-        
-        $roots = new Roots();
-        $moduleData = $roots->modules($req);
-        echo $moduleData;
+//        $moduleId = null;
+//        $moduleItemId = null;
+//        $includeContentDetails = true;
+//        $includeContentItems = true;
+//        $module = null;
+//        $moduleItem = null;
+//        $freshData = false;
+//                
+//        $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems, 
+//                $includeContentDetails, $module, $moduleItem , $freshData);
+//        
+//        $roots = new Roots();
+//        $moduleData = $roots->modules($req);
+//        echo $moduleData;
     }
     
     function testAddingUpdatingTags()
@@ -495,6 +502,22 @@ class TestRoots extends ComponentBase
     {
 //        /api/v1/courses/:course_id/files
         
+    }
+    
+    public function testAddingAssignment()
+    {
+        $date = new DateTime("now");
+        $assignment = new Assignment();
+        $assignment->name = "my new name";
+        $assignment->description = "This assignment was created from backend";
+        $assignment->points_possible = 30;
+        $assignment->due_at = $date;
+        
+        $req = new AssignmentsRequest(ActionType::POST, null, null, $assignment);
+        
+        $roots = new Roots();
+        $res = $roots->assignments($req);
+        echo json_encode($res);
     }
 }
 

@@ -4,15 +4,19 @@ use Illuminate\Routing\Controller;
 use Delphinium\Core\Models\Page;
 use Delphinium\Core\Models\Discussion;
 use Delphinium\Core\Models\File;
+use Delphinium\Core\Models\Quiz;
+use Delphinium\Core\Models\Assignment;
 use Delphinium\Core\UpdatableObjects\Module;
 use Delphinium\Core\UpdatableObjects\ModuleItem;
 use Delphinium\Core\RequestObjects\SubmissionsRequest;
 use Delphinium\Core\RequestObjects\AssignmentGroupsRequest;
+use Delphinium\Core\RequestObjects\AssignmentsRequest;
 use Delphinium\Core\RequestObjects\ModulesRequest;
 use Delphinium\Core\Roots;
 use Delphinium\Core\Enums\CommonEnums\ActionType;
 use Delphinium\Iris\Classes\Iris as IrisClass;
 use Delphinium\Iris\Components\Angular;
+use \DateTime;
 
 
 class RestApi extends Controller 
@@ -356,20 +360,50 @@ class RestApi extends Controller
         return $roots->addDiscussion($discussion);
     }
     
-    public function addNewAssignment()
+    public function addNewAssignment()//date must be in UTC
     {
-//        $title = \Input::get('title');
-//        $message = \Input::get('message');
-//        $threaded = \Input::get('threaded');
-//        $delayed_post_at = \Input::get('delayed_post_at');
-//        $lock_at = \Input::get('lock_at');
-//        $podcast_enabled = \Input::get('podcast_enabled');
-//        $require_initial_post = \Input::get('require_initial_post');
-//        $podcast_has_student_posts = \Input::get('podcast_has_student_posts');
-//        $assignment = \Input::get('assignment');
-//        $is_announcement= \Input::get('is_announcement');
-////        $group_category_id= \Input::get('group_category_id');
-//        $published = \Input::get('published');
+        $name = \Input::get('name');
+        $date = \Input::get('due_at');
+        $due_at= new DateTime($date);
+        $points_possible = \Input::get('points');
+            
+        $assignment = new Assignment();
+        $assignment->name = $name;
+        $assignment->points_possible = $points_possible;
+        $assignment->due_at = $due_at;
+        
+        $req = new AssignmentsRequest(ActionType::POST, null, null, $assignment);
+        
+        $roots = new Roots();
+        $res = $roots->assignments($req);
+        return json_encode($res);
+    }
+    
+    public function addNewQuiz()//date must be in UTC
+    {
+        $title = \Input::get('title');
+        $date = \Input::get('due_at');
+        $due_at= new DateTime($date);
+        $published = true;
+        
+        $quiz = new Quiz($title, $due_at, $published);
+        
+        $roots = new Roots();
+        $res = $roots->addQuiz($quiz);
+        return json_encode($res);
+    }
+    
+    public function addNewExternalTool()
+    {
+        $name = \Input::get('name');
+        $url = \Input::get('url');
+        
+        $externalTool = new \stdClass();
+        $externalTool->name = $name;
+        $externalTool->url = json_encode($url);
+        
+        $roots = new Roots();
+        return $roots->addExternalTool($externalTool);
     }
     
     public function uploadFile()
@@ -381,6 +415,15 @@ class RestApi extends Controller
         
         $file = new File($name, $size, $content_type, $on_duplicate);
         $roots = new Roots();
-        $roots->uploadFile($file);
+        return $roots->uploadFile($file);
+    }
+    
+    public function uploadFileStepTwo()
+    {
+        $params = \Input::get('params');
+        $file = \Input::get('file');
+        $upload_url = \Input::get('upload_url');
+        $roots = new Roots();
+        return $roots->uploadFileStepTwo($params, $file, $upload_url);
     }
 }

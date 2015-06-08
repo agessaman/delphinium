@@ -15,7 +15,9 @@ var addItemCtrl = function ($scope, $modal, $log, $http) {
             }
         });
         
-        modalInstance.result.then(function () {
+        modalInstance.result.then(function (itemOut) {
+            console.log(itemOut);
+            item.module_items.push(itemOut);
         }, function () {
         });
           
@@ -25,7 +27,7 @@ var addItemCtrl = function ($scope, $modal, $log, $http) {
 
 
 
-var ModalInstanceCtrl = function ($scope, $modalInstance, $location, $http, itemIn, moduleItemTypes) {
+var ModalInstanceCtrl = function ($scope, $window, $modalInstance, $location, $http, itemIn, moduleItemTypes) {
     $scope.item = itemIn;
     $scope.moduleItemTypes = moduleItemTypes;
     
@@ -46,11 +48,11 @@ var ModalInstanceCtrl = function ($scope, $modalInstance, $location, $http, item
     };
     
     
-    $scope.ok = function () {
-        $scope.jobData.executeNow = false;
-        $modalInstance.close($scope.item);
-    };
-    
+//    $scope.ok = function (itemIn, newItemOut) {
+////        $scope.jobData.executeNow = false;
+//        
+//    };
+//    
     $scope.changedItem = function(selectedItemToAdd)
     {
         $scope.resetPartials();
@@ -61,11 +63,14 @@ var ModalInstanceCtrl = function ($scope, $modalInstance, $location, $http, item
             var type = $scope.selectedModuleItemType.value;
             switch(type) {
                 case "Assignment":
+                    $scope.redirectUrl = lmsUrl+"/"+"assignments";
                     $scope.newAssignment = true;
-                    $scope.getAssignmentGroups();
+                    $scope.newAssignmentDueDate = new Date();
                     break;
                 case "Quiz":
                     $scope.newQuiz = true;
+                    $scope.newQuizDueDate = new Date();
+                    $scope.redirectUrl = lmsUrl+"/"+"quizzes";
                     break;
                 case "SubHeader":
                     $scope.newSubHeader = true;
@@ -107,11 +112,11 @@ var ModalInstanceCtrl = function ($scope, $modalInstance, $location, $http, item
         }
         else if ($scope.newAssignment)
         {
-            
+            $scope.addNewAssignment();
         }
         else if ($scope.newQuiz)
         {
-            
+            $scope.addNewQuiz();
         }
         else if ($scope.newSubHeader)
         {
@@ -127,9 +132,39 @@ var ModalInstanceCtrl = function ($scope, $modalInstance, $location, $http, item
         }
         else if($scope.newExternalUrl)
         {
-            
+            $scope.addNewExternalUrl();
         }
+        else if ($scope.newExternalTool)
+        {
+            $scope.addNewExternalTool();
+        }
+        
         $modalInstance.dismiss('cancel');
+    };
+    
+    $scope.addNewFile = function()
+    {
+        var file = $scope.newFileUp.name;
+        $http.post('uploadFile', {
+            name:file,
+            size:$scope.newFileUp.size,
+            content_type:$scope.newFileUp.content_type
+        })
+        .success(function (data) {
+            console.log(data);
+//            now we have to upload the file to the upload_url given by Canvas
+            $http.post('uploadFileStepTwo',{
+                params: data.upload_params,
+                upload_url:data.upload_url,
+                file:file
+            }).success(function(data)
+            {
+                console.log(data);
+            });
+             //add the newly created item as a module item to the module
+//            $scope.newItem = false;
+//            $scope.addItem(data.display_name, data.id, itemIn.module_id, $scope.selectedModuleItemType.value, data.url);
+        });
     };
     
     $scope.addNewPage = function()
@@ -173,53 +208,33 @@ var ModalInstanceCtrl = function ($scope, $modalInstance, $location, $http, item
     };
     $scope.addNewAssignment = function()
     {
-        $http.post('addNewDiscussionTopic', {
-            title:$scope.newDiscussionTopic,
-            message:"hello, testing",
-            threaded:$scope.newDiscussionThreaded,
-            delayed_post_at:new Date($scope.newDiscussionStartDate),
-            lock_at:new Date($scope.newDiscussionEndDate),
-            podcast_enabled: $scope.newDiscussionPodcast,
-            require_initial_post: $scope.newDiscussionMustPost,
-            podcast_has_student_posts: true,
-            is_announcement:$scope.newDiscussionAnnouncement
+        var date = new Date($scope.newAssignmentDueDate).toISOString();
+        $http.post('addNewAssignment', {
+            name:$scope.newAssignmentName,
+            points:$scope.newAssignmentPoints,
+            due_at:date
         })
         .success(function (data) {
              //add the newly created item as a module item to the module
             $scope.newItem = false;
-            $scope.addItem(data.title, data.id, itemIn.module_id, $scope.selectedModuleItemType.value, data.url);
+            $scope.addItem(data.name, data.id, itemIn.module_id, $scope.selectedModuleItemType.value, data.html_url);
         });
     };
     
-    $scope.addNewFile = function()
+    $scope.addNewQuiz = function()
     {
-        $http.post('uploadFile', {
-            name:$scope.newFileUp.name,
-            size:$scope.newFileUp.size,
-            content_type:$scope.newFileUp.content_type
+        var date = new Date($scope.newQuizDueDate).toISOString();
+        console.log(date);
+        $http.post('addNewQuiz', {
+            title:$scope.newQuizTitle,
+            due_at:date
         })
         .success(function (data) {
-            console.log(data);
-//            now we have to upload the file to the upload_url given by Canvas
-//            $http.post(data.upload_url,{
-//                key: data.upload_params.key,
-//                acl: data.upload_params.acl,
-//                Filename: data.upload_params.Filename,
-//                AWSAccessKeyId:data.upload_params.AWSAccessKeyId,
-//                Policy:data.upload_params.Policy,
-//                Signature:data.upload_params.Signature,
-//                'Content-Type':data.upload_params.Content-Type,
-//                File:
-//            }).success(function(data)
-//            {
-//                
-//            });
              //add the newly created item as a module item to the module
-//            $scope.newItem = false;
-//            $scope.addItem(data.display_name, data.id, itemIn.module_id, $scope.selectedModuleItemType.value, data.url);
+            $scope.newItem = false;
+            $scope.addItem(data.title, data.id, itemIn.module_id, $scope.selectedModuleItemType.value, data.html_url);
         });
     };
-    
     $scope.fileNameChanged = function(ele)
     {
         var files = ele.files;
@@ -232,6 +247,7 @@ var ModalInstanceCtrl = function ($scope, $modalInstance, $location, $http, item
         $scope.newFileUp = (fileUp)?fileUp:null;
         $scope.$apply();
     };
+    
     $scope.addItem = function(name, itemId, moduleId, type, url)
     {
         if($scope.newItem)
@@ -255,7 +271,10 @@ var ModalInstanceCtrl = function ($scope, $modalInstance, $location, $http, item
                 url:url
             }).
             success(function (data) {
-                $modalInstance.dismiss('cancel');
+                $scope.newItemOut = {
+                    item: data
+                };
+                $modalInstance.close($scope.newItemOut.item);
             });
         }
         
@@ -276,10 +295,26 @@ var ModalInstanceCtrl = function ($scope, $modalInstance, $location, $http, item
                 $modalInstance.dismiss('cancel');
             }); 
     }
+    
+    
+    $scope.addNewExternalTool = function()
+    {
+        $http.post('addNewExternalTool', {
+            name:$scope.newExternalToolName,
+            url:$scope.newExternalToolUrl
+        })
+        .success(function (data) {
+             //add the newly created item as a module item to the module
+            $scope.newItem = false;
+            $scope.addItem(data.title, data.id, itemIn.module_id, $scope.selectedModuleItemType.value, data.html_url);
+        });
+    }
+    
     $scope.newContent = function()
     {
         
     };
+    
     
     $scope.cancel = function () {
         $modalInstance.dismiss('cancel');
@@ -305,12 +340,10 @@ var ModalInstanceCtrl = function ($scope, $modalInstance, $location, $http, item
         });
     };
     
-    $scope.getAssignmentGroups = function()
+    $scope.moreOptions = function()
     {
-        $http.get("getAssignmentGroups")
-        .success(function (data) {
-            $scope.assignmentGroups = data;
-        });
+        $modalInstance.dismiss('cancel');
+        $window.open($scope.redirectUrl);
     };
 };
 
