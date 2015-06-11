@@ -161,12 +161,12 @@ class Angular  extends ComponentBase
                 case (Lms::CANVAS):
                     $domain = $_SESSION['domain'];
                     $courseId = $_SESSION['courseID'];
-                    $url= "https://{$domain}/courses/{$courseId}";
+                    $url= "https://{$domain}/courses/{$courseId}/";
                     return $url;
                 default:
                     $domain = $_SESSION['domain'];
                     $courseId = $_SESSION['courseID'];
-                    $url= "https://{$domain}/api/v1/courses/{$courseId}";
+                    $url= "https://{$domain}/courses/{$courseId}/";
                     return $url;
             }
         }

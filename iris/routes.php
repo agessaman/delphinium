@@ -22,6 +22,7 @@ Route::post('addNewAssignment', 'Delphinium\Iris\Controllers\RestApi@addNewAssig
 Route::post('addNewQuiz', 'Delphinium\Iris\Controllers\RestApi@addNewQuiz');
 Route::post('uploadFile', 'Delphinium\Iris\Controllers\RestApi@uploadFile');
 Route::post('uploadFileStepTwo', 'Delphinium\Iris\Controllers\RestApi@uploadFileStepTwo');
+Route::post('uploadFileStepThree', 'Delphinium\Iris\Controllers\RestApi@uploadFileStepThree');
 Route::post('addNewExternalTool', 'Delphinium\Iris\Controllers\RestApi@addNewExternalTool');
 
 Route::post('deleteModule', 'Delphinium\Iris\Controllers\RestApi@deleteModule');

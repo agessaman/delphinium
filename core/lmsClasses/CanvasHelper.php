@@ -346,6 +346,7 @@ class CanvasHelper
         $urlArgs[]="access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs); 
+//        echo $url;
         //return;
         $response = GuzzleHelper::makeRequest($request, $url);
         
@@ -455,7 +456,7 @@ class CanvasHelper
         $urlArgs[]="access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
-        echo $url;
+//        echo $url;
 //        return;
         $response = GuzzleHelper::makeRequest($request, $url);
         return json_decode($response->getBody());
@@ -535,9 +536,22 @@ class CanvasHelper
         return $response->getBody();
     }
     
-    public function multipartStepTwo($params, $file, $upload_url)
+    public function uploadFileStepTwo($params, $file, $upload_url)
     {
         return GuzzleHelper::postMultipartRequest($params, $file, $upload_url);
+    }
+    
+    public function uploadFileStepThree($location)
+    {
+        $urlPieces= $location;
+        $urlArgs = array();
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $urlArgs[]="access_token={$token}";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+        echo $url;
+        $response = GuzzleHelper::postData($url);
+        return json_decode($response->getBody());
     }
     /*
      * SUBMISSIONS

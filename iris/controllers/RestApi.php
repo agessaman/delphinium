@@ -333,7 +333,7 @@ class RestApi extends Controller
         $title = \Input::get('title');
         $body = \Input::get('body');
         $pageEditingRole = \Input::get('pageEditingRole');
-        $notifyOfUpdate = \Input::get('notifyOfUpdate');
+        $notifyOfUpdate = (\Input::get('notifyOfUpdate'))?true:false;
         $published = true;
         
         $page = new Page($title, $body, $pageEditingRole,  $notifyOfUpdate, $published);
@@ -425,5 +425,12 @@ class RestApi extends Controller
         $upload_url = \Input::get('upload_url');
         $roots = new Roots();
         return $roots->uploadFileStepTwo($params, $file, $upload_url);
+    }
+    
+    public function uploadFileStepThree()
+    {
+        $location = \Input::get('location');
+        $roots = new Roots();
+        return $roots->uploadFileStepThree($location);
     }
 }

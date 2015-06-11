@@ -13,6 +13,8 @@ use Delphinium\Core\Enums\ModuleItemEnums\ModuleItemType;
 use Delphinium\Core\Enums\ModuleItemEnums\CompletionRequirementType;
 use Cms\Classes\ComponentBase;
 use \DateTime;
+use GuzzleHttp\Client;
+use GuzzleHttp\Post\PostFile;
 
 use Delphinium\Core\Guzzle\GuzzleHelper;
 
@@ -396,12 +398,77 @@ class TestRoots extends ComponentBase
     }
     
     
-    private function test()
+    public function test()
     {
-        $date = '2015-06-02T22:33:14.798Z';
-        echo strtotime($date)."--";
-        $due_at = new DateTime("2010-12-07T23:00:00.000Z");//DateTime::createFromFormat(DateTime::ISO8601, $date);
-        echo json_encode($due_at);
+        $file = "file.txt";
+        $url = "https://uvu.instructure.com/api/v1/courses/343331/files?name=file.txt&size=19&content_type=text/plain&on_duplicate=rename&access_token=14~VsT5x3fmVUN5fmVzHhDvfTLxurX2RYlIBcVxzgSs4SKBUTMcObOGgGW8iROy93M1";
+        $client = new Client();
+        $response = $client->post($url);
+        
+        
+        echo json_encode($response->getBody());
+        return $response;
+        
+//        $upload_url ="https://instructure-uploads-2.s3.amazonaws.com/";
+//        $arrParams=["AWSAccessKeyId"=>"AKIAJFNFXH2V2O7RPCAA",
+//                        "Filename"=>"",
+//                        "key"=>"account_140000000000016/attachments/59365510/file.txt",
+//                        "acl"=>"private",
+//                        "Policy"=>"eyJleHBpcmF0aW9uIjoiMjAxNS0wNi0xMFQyMjo1MjozMVoiLCJjb25kaXRpb25zIjpbeyJidWNrZXQiOiJpbnN0cnVjdHVyZS11cGxvYWRzLTIifSx7ImtleSI6ImFjY291bnRfMTQwMDAwMDAwMDAwMDE2XC9hdHRhY2htZW50c1wvNTkzNjU1MTBcL2ZpbGUudHh0In0seyJhY2wiOiJwcml2YXRlIn0sWyJzdGFydHMtd2l0aCIsIiRGaWxlbmFtZSIsIiJdLFsiY29udGVudC1sZW5ndGgtcmFuZ2UiLDEsMTA3Mzc0MTgyNDBdLHsic3VjY2Vzc19hY3Rpb25fcmVkaXJlY3QiOiJodHRwczpcL1wvdXZ1Lmluc3RydWN0dXJlLmNvbVwvYXBpXC92MVwvZmlsZXNcLzU5MzY1NTEwXC9jcmVhdGVfc3VjY2Vzcz9vbl9kdXBsaWNhdGU9cmVuYW1lXHUwMDI2dXVpZD1qbThsQVVuMDJwVXhRUVVweHVnWlhxVnMzRmp4QXhFSlY2WXBYQ2tyIn0seyJjb250ZW50LXR5cGUiOiJ0ZXh0XC9wbGFpbiJ9XX0=",
+//                        "Signature"=>"B89+tKziB4y6+IdnCG7EiYa4+aY=",
+//                        "success_action_redirect"=>"https://uvu.instructure.com/api/v1/files/59365510/create_success?on_duplicate=rename\u0026uuid=jm8lAUn02pUxQQUpxugZXqVs3FjxAxEJV6YpXCkr",
+//                        "content-type"=>"text/plain"];
+
+        
+        
+        
+/*
+        // Create the request.
+        $request = $client->createRequest("POST", $upload_url);
+
+        // Set the POST information.
+        $postBody = $request->getBody();
+        foreach($arrParams as $key=>$value)
+        {
+            $postBody->setField($key, $value);
+        }
+        $fileName = "/Users/damaris/Desktop/".$file;
+        $postBody->addFile(new PostFile('file', fopen($fileName, 'r', 1)));
+
+        echo json_encode($request);
+        // Send the request and get the response.
+        $result = $client->send($request);
+        echo json_encode($result);
+        return $result;
+        
+        
+        
+        $client = new Client();
+        $result = $client->post($upload_url, [
+            'body' => [
+                $arrParams,
+                'file'   => fopen('/Users/damaris/Desktop/'.$file, 'r')
+            ]
+        ]);
+        
+        */
+//        $upload_url="https://instructure-uploads-2.s3.amazonaws.com/";
+//        $arrParams = ["AWSAccessKeyId"=>"AKIAJFNFXH2V2O7RPCAA",
+//                    "Filename"=>"",
+//                    "key"=>"account_140000000000016/attachments/59365336/file.txt",
+//                    "acl"=>"private",
+//                    "Policy"=>"eyJleHBpcmF0aW9uIjoiMjAxNS0wNi0xMFQyMjo0MjowNFoiLCJjb25kaXRpb25zIjpbeyJidWNrZXQiOiJpbnN0cnVjdHVyZS11cGxvYWRzLTIifSx7ImtleSI6ImFjY291bnRfMTQwMDAwMDAwMDAwMDE2XC9hdHRhY2htZW50c1wvNTkzNjUzMzZcL2ZpbGUudHh0In0seyJhY2wiOiJwcml2YXRlIn0sWyJzdGFydHMtd2l0aCIsIiRGaWxlbmFtZSIsIiJdLFsiY29udGVudC1sZW5ndGgtcmFuZ2UiLDEsMTA3Mzc0MTgyNDBdLHsic3VjY2Vzc19hY3Rpb25fcmVkaXJlY3QiOiJodHRwczpcL1wvdXZ1Lmluc3RydWN0dXJlLmNvbVwvYXBpXC92MVwvZmlsZXNcLzU5MzY1MzM2XC9jcmVhdGVfc3VjY2Vzcz9vbl9kdXBsaWNhdGU9cmVuYW1lXHUwMDI2dXVpZD1GaW5WS0tjM1NLT1huNkpMZlc3VXp6Y3ptem1BaGpVZlFwajBrbndXIn0seyJjb250ZW50LXR5cGUiOiJ0ZXh0XC9wbGFpbiJ9XX0=",
+//                    "Signature"=>"O315NNvI3/TzZNPWXoyIheGhxg4=",
+//                    "success_action_redirect"=>"https://uvu.instructure.com/api/v1/files/59365336/create_success?on_duplicate=rename\u0026uuid=FinVKKc3SKOXn6JLfW7UzzczmzmAhjUfQpj0knwW",
+//                    "content-type"=>"text/plain"];
+        
+        
+//        $date = '2015-06-02T22:33:14.798Z';
+//        echo strtotime($date)."--";
+//        $due_at = new DateTime("2010-12-07T23:00:00.000Z");//DateTime::createFromFormat(DateTime::ISO8601, $date);
+//        echo json_encode($due_at);
+//        
+//        
 //        $format = DateTime::ISO8601;
 //        $date = new DateTime("now");
 ////        $date->add(new DateInterval('P1D'));

@@ -27,10 +27,12 @@ var addItemCtrl = function ($scope, $modal, $log, $http) {
 
 
 
-var ModalInstanceCtrl = function ($scope, $window, $modalInstance, $location, $http, itemIn, moduleItemTypes) {
+var ModalInstanceCtrl = function ($scope, $window, $modalInstance, $location, $http,$q, itemIn, moduleItemTypes) {
     $scope.item = itemIn;
     $scope.moduleItemTypes = moduleItemTypes;
-    
+    $scope.moreOptions = {
+                    value: false
+                };;
     $scope.changedItemType = function(selectedModuleItemType)
     {
         $scope.resetPartials();
@@ -47,12 +49,6 @@ var ModalInstanceCtrl = function ($scope, $window, $modalInstance, $location, $h
         });
     };
     
-    
-//    $scope.ok = function (itemIn, newItemOut) {
-////        $scope.jobData.executeNow = false;
-//        
-//    };
-//    
     $scope.changedItem = function(selectedItemToAdd)
     {
         $scope.resetPartials();
@@ -63,14 +59,12 @@ var ModalInstanceCtrl = function ($scope, $window, $modalInstance, $location, $h
             var type = $scope.selectedModuleItemType.value;
             switch(type) {
                 case "Assignment":
-                    $scope.redirectUrl = lmsUrl+"/"+"assignments";
                     $scope.newAssignment = true;
-                    $scope.newAssignmentDueDate = new Date();
+                    $scope.assignmentDate = {newAssignmentDueDate : new Date()}
                     break;
                 case "Quiz":
                     $scope.newQuiz = true;
-                    $scope.newQuizDueDate = new Date();
-                    $scope.redirectUrl = lmsUrl+"/"+"quizzes";
+                    $scope.quizDate= {newQuizDueDate : new Date()};
                     break;
                 case "SubHeader":
                     $scope.newSubHeader = true;
@@ -144,9 +138,9 @@ var ModalInstanceCtrl = function ($scope, $window, $modalInstance, $location, $h
     
     $scope.addNewFile = function()
     {
-        var file = $scope.newFileUp.name;
+        var fileName = $scope.newFileUp.name;
         $http.post('uploadFile', {
-            name:file,
+            name:fileName,
             size:$scope.newFileUp.size,
             content_type:$scope.newFileUp.content_type
         })
@@ -156,14 +150,17 @@ var ModalInstanceCtrl = function ($scope, $window, $modalInstance, $location, $h
             $http.post('uploadFileStepTwo',{
                 params: data.upload_params,
                 upload_url:data.upload_url,
-                file:file
+                file:fileName
             }).success(function(data)
             {
-                console.log(data);
+                $http.post('uploadFileStepThree',{
+                    location: data.location
+                }).success(function(data)
+                {
+                    console.log(data);
+                });
             });
-             //add the newly created item as a module item to the module
-//            $scope.newItem = false;
-//            $scope.addItem(data.display_name, data.id, itemIn.module_id, $scope.selectedModuleItemType.value, data.url);
+             
         });
     };
     
@@ -206,35 +203,59 @@ var ModalInstanceCtrl = function ($scope, $window, $modalInstance, $location, $h
             
         });
     };
-    $scope.addNewAssignment = function()
+    
+    $scope.addNewAssignment = function(addModuleItem)
     {
-        var date = new Date($scope.newAssignmentDueDate).toISOString();
+        var deferred = $q.defer();
+        var date = new Date($scope.assignmentDate.newAssignmentDueDate).toISOString();
         $http.post('addNewAssignment', {
             name:$scope.newAssignmentName,
             points:$scope.newAssignmentPoints,
             due_at:date
         })
         .success(function (data) {
-             //add the newly created item as a module item to the module
+            
             $scope.newItem = false;
-            $scope.addItem(data.name, data.id, itemIn.module_id, $scope.selectedModuleItemType.value, data.html_url);
+            var itemPromise = $scope.addItem(data.name, data.id, itemIn.module_id, $scope.selectedModuleItemType.value, data.html_url);
+
+             //add the newly created item as a module item to the module
+            if(!addModuleItem)
+            {//when the module item is added return the promise of the new assignment
+                itemPromise.then(function(resolve){
+                    deferred.resolve(data);
+                }, function(reject){
+                    console.log(reject);      
+                });
+            }
         });
+        
+        return deferred.promise;
     };
     
-    $scope.addNewQuiz = function()
+    $scope.addNewQuiz = function(addModuleItem)
     {
-        var date = new Date($scope.newQuizDueDate).toISOString();
-        console.log(date);
+        var deferred = $q.defer();
+        var date = new Date($scope.quizDate.newQuizDueDate).toISOString();
         $http.post('addNewQuiz', {
             title:$scope.newQuizTitle,
             due_at:date
         })
-        .success(function (data) {
-             //add the newly created item as a module item to the module
+        .success(function (data) {//add the newly created item as a module item to the module
             $scope.newItem = false;
-            $scope.addItem(data.title, data.id, itemIn.module_id, $scope.selectedModuleItemType.value, data.html_url);
+            var itemPromise = $scope.addItem(data.title, data.id, itemIn.module_id, $scope.selectedModuleItemType.value, data.html_url);
+            
+            if(!addModuleItem)
+            {
+                itemPromise.then(function(resolve){
+                    deferred.resolve(data);
+                }, function(reject){
+                    console.log(reject);      
+                });
+            }
         });
+        return deferred.promise;
     };
+    
     $scope.fileNameChanged = function(ele)
     {
         var files = ele.files;
@@ -256,6 +277,7 @@ var ModalInstanceCtrl = function ($scope, $window, $modalInstance, $location, $h
         }
         else
         {
+            var deferred = $q.defer();//return a promise of when the item is added
             //optional params; if not provided, we will select them from scope
             name=name||$scope.selectedItem.name;
             itemId = itemId ||parseInt($scope.selectedItem.id);
@@ -274,28 +296,27 @@ var ModalInstanceCtrl = function ($scope, $window, $modalInstance, $location, $h
                 $scope.newItemOut = {
                     item: data
                 };
+                deferred.resolve(data);
                 $modalInstance.close($scope.newItemOut.item);
             });
         }
         
-        
+        return deferred.promise;
     };
 
     $scope.addNewPage = function()
     {   
-       $http.post('core/addPage', {
-                title:$scope.pageTitle,
-                body:parseInt($scope.selectedItem.id),
-                pageEditingRole: $scope.selectedPageEditingRole,
-                notifyOfUpdate: $scope.selectedModuleItemType.value,
-                published:$scope.selectedItem.url,
-                frontPage:no
-            }).
-            success(function (data) {
-                $modalInstance.dismiss('cancel');
-            }); 
-    }
-    
+       $http.post('addNewPage', {
+            title:$scope.newPageTitle,
+            body:"test body",//parseInt($scope.selectedItem.id),
+            pageEditingRole: $scope.selectedPageEditingRole.value,
+            notifyOfUpdate: $scope.newPageNotify.value
+        }).
+        success(function (data) {
+            $scope.newItem = false;
+            $scope.addItem(data.title, data.page_id, itemIn.module_id, $scope.selectedModuleItemType.value, data.html_url);
+        }); 
+    };
     
     $scope.addNewExternalTool = function()
     {
@@ -308,14 +329,13 @@ var ModalInstanceCtrl = function ($scope, $window, $modalInstance, $location, $h
             $scope.newItem = false;
             $scope.addItem(data.title, data.id, itemIn.module_id, $scope.selectedModuleItemType.value, data.html_url);
         });
-    }
+    };
     
     $scope.newContent = function()
     {
         
     };
-    
-    
+   
     $scope.cancel = function () {
         $modalInstance.dismiss('cancel');
     };
@@ -340,10 +360,39 @@ var ModalInstanceCtrl = function ($scope, $window, $modalInstance, $location, $h
         });
     };
     
+    $scope.enableOptions = function()
+    {
+        $scope.moreOptions.value = true;  
+    };
+    
     $scope.moreOptions = function()
     {
-        $modalInstance.dismiss('cancel');
-        $window.open($scope.redirectUrl);
+        if ($scope.newAssignment)
+        {
+            var newAssignPromise =  $scope.addNewAssignment(false);
+
+            newAssignPromise.then(function(resolve){
+                var url = "assignments/"+resolve.id+"/edit";
+                $modalInstance.dismiss('cancel');
+                $window.open(lmsUrl+url);
+            }, function(reject){
+                console.log(reject);      
+            });
+    
+    
+        }
+        else if ($scope.newQuiz)
+        {
+            var newQuizPromise =  $scope.addNewQuiz(false);
+            newQuizPromise.then(function(resolve){
+                var url = "quizzes/"+resolve.id+"/edit";
+                $modalInstance.dismiss('cancel');
+                $window.open(lmsUrl+url);
+            }, function(reject){
+                console.log(reject);      
+            });
+            
+        }
     };
 };
 

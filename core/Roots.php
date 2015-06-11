@@ -319,14 +319,32 @@ class Roots
         {
             case (Lms::CANVAS):
                 $canvas = new CanvasHelper();
-                return $canvas->multipartStepTwo($params, $file, $upload_url);
+                return $canvas->uploadFileStepTwo($params, $file, $upload_url);
             default:
                 $canvas = new CanvasHelper();
-                return $canvas->multipartStepTwo($params, $file, $upload_url);
+                return $canvas->uploadFileStepTwo($params, $file, $upload_url);
         }
         
     }
     
+    public function uploadFileStepThree($location)
+    {
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $lms = strtoupper($_SESSION['lms']);
+        switch ($lms)
+        {
+            case (Lms::CANVAS):
+                $canvas = new CanvasHelper();
+                return $canvas->uploadFileStepThree($location);
+            default:
+                $canvas = new CanvasHelper();
+                return $canvas->uploadFileStepThree($location);
+        }
+        
+    }
     public function getAvailableTags()
     {
         $dbHelper = new DbHelper();

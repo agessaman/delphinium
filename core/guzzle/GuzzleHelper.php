@@ -2,7 +2,7 @@
 
 use Delphinium\Core\Enums\CommonEnums\ActionType;
 use GuzzleHttp\Client;
-use GuzzleHttp\Stream\Stream;
+use GuzzleHttp\Post\PostFile;
 
 class GuzzleHelper
 {
@@ -44,41 +44,37 @@ class GuzzleHelper
     public static function postMultipartRequest($params, $file, $upload_url)
     {
         $client = new Client();
-        $response = $client->post($upload_url, [
+        $result = $client->post($upload_url, [
             'body' => [
                 $params,
-                'file' => $file,
-                'file_name'   => fopen('/Users/damaris/Desktop/', 'r'),
-                'other_file'  => Stream::factory($file)
+                'file'   => fopen('/Users/damaris/Desktop/'.$file, 'r')
             ]
         ]);
-//        $response = $client->post($url, [
-//            'body' => [
-//                'field'       => 'abc',
-//                'other_field' => '123',
-//                'file_name'   => fopen('/path/to/file', 'r'),
-//                'other_file'  => Stream::factory('file contents')
-//            ]
-//        ]);
-//        
-//        $client->post(
-//            '/my/great/url',
-//            null,
-//            ['file' => '@'.$filename]
-//        );
-        
-//        $response = $client->post($upload_url, [
-//            
-//            'multipart' => [
-//                $params,
-//                [
-//                    'name'     => 'file',
-//                    'contents' => fopen('/Users/damaris/Desktop/'.$file, 'r')
-//                ]
-//            ]
-//        ]);
-//        
-        return $response;
+
+        echo "here";
+        echo json_encode($result);
+        return $result;
+        //good but it didnt work
+//        $client = new Client();
+//
+//        // Create the request.
+//        $request = $client->createRequest("POST", $upload_url);
+//
+//        // Set the POST information.
+//        $postBody = $request->getBody();
+//        foreach($params as $key=>$value)
+//        {
+//            $postBody->setField($key, $value);
+//        }
+//        $fileName = "/Users/damaris/Desktop/".$file;
+//        $postBody->addFile(new PostFile('file', fopen($fileName, 'r', 1)));
+//
+//        echo json_encode($request);
+//        // Send the request and get the response.
+//        $result = $client->send($request);
+//        echo json_encode($result);
+//        return $result;
+      
     }
             
     public static function constructUrl($urlPieces, $urlArgs = null)

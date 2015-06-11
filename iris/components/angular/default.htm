@@ -385,12 +385,6 @@
                                     <input type="file" onchange="angular.element(this).scope().fileNameChanged(this)">
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label for="course-files" class="col-sm-3 control-label">Course Files</label>
-                                <div class="col-sm-9">
-                                    <select  class="form-control"></select>
-                                </div>
-                            </div>
                         </div>
                         <div id="partialNewPage" class="form-horizontal" ng-show="newPage">
                             <div class="form-group">
@@ -505,7 +499,7 @@
                             <div class="form-group">
                                 <label for="points" class="col-sm-3 control-label">Name:</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" ng-model="newAssignmentName">
+                                    <input type="text" class="form-control" ng-change="enableOptions()" ng-model="newAssignmentName">
                                 </div>
                             </div>
                             <div class="form-group">
@@ -515,7 +509,7 @@
                                     <input type="text" class="form-control"
                                            datepicker-popup="{{format}}"
                                            show-weeks="false"
-                                           ng-model="newAssignmentDueDate"
+                                           ng-model="assignmentDate.newAssignmentDueDate"
                                            is-open="opened" min-date="minDate"
                                            max-date="'3015-06-22'"
                                            datepicker-options="dateOptions"
@@ -535,14 +529,14 @@
                                     <input type="text" class="form-control" ng-model="newAssignmentPoints">
                                 </div>
                             </div>
-                            <a href="" class="cancel btn btn-primary pull-right" ng-click="moreOptions()">More Options</a>
+                            <a href="" class="cancel btn btn-primary pull-right" ng-disabled="!moreOptions.value" ng-click="moreOptions()">More Options</a>
                             <div class="small pull-right">Redirects to Canvas</div>
                         </div>
                         <div id="partialNewQuiz" class="form-horizontal" ng-show="newQuiz">
                             <div class="form-group">
                                 <label for="quiz-name" class="col-sm-3 control-label">Quiz Name:</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" ng-model="newQuizTitle" value="">
+                                    <input type="text" class="form-control" ng-change="enableOptions()" ng-model="newQuizTitle" value="">
                                 </div>
                             </div>
                             <div class="form-group">
@@ -551,7 +545,7 @@
                                     <input type="text" 
                                             class="form-control" 
                                             datepicker-popup="{{format}}" 
-                                            ng-model="parent.newQuizDueDate" 
+                                            ng-model="quizDate.newQuizDueDate" 
                                             is-open="opened" 
                                             min-date="minDate" 
                                             datepicker-options="dateOptions" 
@@ -561,25 +555,10 @@
                                     <span class="input-group-btn">
                                       <button type="button" class="btn btn-default" ng-click="open($event)"><i class="icon-calendar"></i></button>
                                     </span>
-                                    <!--<input type="text" class="form-control"
-                                           datepicker-popup="{{format}}"
-                                           show-weeks="false"
-                                           ng-model="newQuizDueDate"
-                                           is-open="opened" min-date="minDate"
-                                           max-date="'3015-06-22'"
-                                           datepicker-options="dateOptions"
-                                           date-disabled="disabled(date, mode)"
-                                           ng-required="true" close-text="Close">
-
-                                    <div class="input-group-btn">
-                                        <button type="button" class="btn btn-default" ng-click="open($event)">
-                                            <i class="icon-calendar"></i>
-                                        </button>
-                                    </div>-->
                                 </div>
                             </div>
                             Date is <span ng-model="newQuizDueDate"></span>
-                            <a href="" class="btn btn-primary pull-right" ng-click="moreOptions()">More Options</a>
+                            <a href="" class="btn btn-primary pull-right" ng-disabled="!moreOptions.value" ng-click="moreOptions()">More Options</a>
                         </div>
                         <div id="partialNewSubHeader" class="form-horizontal" ng-show="newSubHeader">
                             Type the text you\'d like to add as a module sub-header
