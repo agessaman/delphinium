@@ -5,6 +5,7 @@ use Delphinium\Core\Roots;
 use Delphinium\Core\RequestObjects\ModulesRequest;
 use Delphinium\Core\Enums\CommonEnums\ActionType;
 use Delphinium\Iris\Classes\Iris as IrisClass;
+use Delphinium\Core\Enums\CommonEnums\Lms;
 /**
  * @author Damaris Zarco
  */
@@ -49,7 +50,7 @@ class Angular  extends ComponentBase
     	}
         
         $this->page['courseId'] = $_SESSION['courseID'];
-        
+        $this->page['lmsUrl'] =  json_encode($this->getLmsUrl());
         $this->prepareData(false);
     }
     
@@ -144,5 +145,31 @@ class Angular  extends ComponentBase
             unset($array[$key]);
         }
         return $array;
+    }
+    
+    private function getLmsUrl()
+    {
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $lms = strtoupper($_SESSION['lms']);
+        if(Lms::isValidValue($lms))
+        {
+            switch ($lms)
+            {
+                case (Lms::CANVAS):
+                    $domain = $_SESSION['domain'];
+                    $courseId = $_SESSION['courseID'];
+                    $url= "https://{$domain}/courses/{$courseId}/";
+                    return $url;
+                default:
+                    $domain = $_SESSION['domain'];
+                    $courseId = $_SESSION['courseID'];
+                    $url= "https://{$domain}/courses/{$courseId}/";
+                    return $url;
+            }
+        }
+        
     }
 }

@@ -12,6 +12,7 @@ use Delphinium\Core\Models\AssignmentGroup;
 use Delphinium\Core\Models\Submission;
 use Delphinium\Core\Models\Page;
 use Delphinium\Core\Models\File;
+use Delphinium\Core\Models\Quiz;
 use Delphinium\Core\Models\Discussion;
 use Delphinium\Core\RequestObjects\SubmissionsRequest;
 use Delphinium\Core\RequestObjects\ModulesRequest;
@@ -345,20 +346,19 @@ class CanvasHelper
         $urlArgs[]="access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs); 
-        
-        
-        echo $url;//return;
+//        echo $url;
+        //return;
         $response = GuzzleHelper::makeRequest($request, $url);
         
         //update DB if request was successful
         if ($response->getStatusCode() ==="200")
         {
             $newlyCreated= \GuzzleHttp\json_decode($response->getBody());
-            
+            $newFromDb;
             if(isset($newlyCreated->module_id))
             {
                 //it's a module item
-                $this->processSingleModuleItem($courseId, $newlyCreated);
+                $newFromDb = $this->processSingleModuleItem($courseId, $newlyCreated);
                 
 //                echo json_encode($modItem);
                 if($request->getModuleItem()->getTags())
@@ -373,10 +373,10 @@ class CanvasHelper
             else 
             {
                 //it's a module
-                $this->processSingleModule($newlyCreated, $courseId);
+                $newFromDb = $this->processSingleModule($newlyCreated, $courseId);
             }
             
-            return 1;
+            return $newFromDb;
         }
         else
         {
@@ -428,6 +428,90 @@ class CanvasHelper
         return $response->getBody();
     }
     
+    public function addAssignment(AssignmentsRequest $request)
+    {
+        $urlPieces= $this->initUrl();
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $urlArgs = array();
+        $urlPieces[] = "assignments";
+        
+        foreach($request->getAssignment()->attributes as $key => $value) {
+            if ($value)
+            {
+                if(($key==="due_at"||$key==="unlock_at"||$key=="lock_at"))
+                {
+//                    $urlArgs[] = "assignment[{$key}]={$value->format('c')}";
+                    continue;
+                }
+                if($key==="points_possible")
+                {
+                    $urlArgs[] = "assignment[{$key}]=".floatval($value);
+                    continue;
+                }
+                $urlArgs[] = "assignment[{$key}]={$value}";
+            }
+        }
+        
+        //Attach token
+        $urlArgs[]="access_token={$token}";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+//        echo $url;
+//        return;
+        $response = GuzzleHelper::makeRequest($request, $url);
+        return json_decode($response->getBody());
+    }
+    
+    public function addQuiz(Quiz $quiz)
+    {///api/v1/courses/:course_id/discussion_topics
+        $urlPieces= $this->initUrl();
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $urlArgs = array();
+        $urlPieces[] = 'quizzes';
+        
+        foreach($quiz as $key => $value) 
+        {
+            if ($value)
+            {
+                if($key==='due_at')
+                {
+                    $urlArgs[] = "quiz[{$key}]={$value->format('c')}";
+                    continue;
+                }
+                $urlArgs[] = "quiz[{$key}]={$value}";
+            }
+        }
+        //Attach token
+        $urlArgs[]="access_token={$token}";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+//        echo $url;return;
+        $response = GuzzleHelper::postData($url);
+        return json_decode($response->getBody());
+    }
+    
+    public function addExternalTool($externalTool)
+    {
+        $urlPieces= $this->initUrl();
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $urlArgs = array();
+        $urlPieces[] = 'external_tools';
+        
+        foreach($externalTool as $key => $value) 
+        {
+            if ($value)
+            {
+                $urlArgs[] = "{$key}={$value}";
+            }
+        }
+        //Attach token
+        $urlArgs[]="access_token={$token}";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+        echo $url;
+        $response = GuzzleHelper::postData($url);
+        return json_decode($response->getBody());
+    }
     public function uploadFile(File $file)
     {
         $urlPieces= $this->initUrl();
@@ -447,11 +531,28 @@ class CanvasHelper
         $urlArgs[]="access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
-        echo $url;
+//        echo $url;
         $response = GuzzleHelper::postData($url);
         return $response->getBody();
     }
     
+    public function uploadFileStepTwo($params, $file, $upload_url)
+    {
+        return GuzzleHelper::postMultipartRequest($params, $file, $upload_url);
+    }
+    
+    public function uploadFileStepThree($location)
+    {
+        $urlPieces= $location;
+        $urlArgs = array();
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $urlArgs[]="access_token={$token}";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+        echo $url;
+        $response = GuzzleHelper::postData($url);
+        return json_decode($response->getBody());
+    }
     /*
      * SUBMISSIONS
      */
@@ -599,6 +700,45 @@ class CanvasHelper
         
         return $this->processCanvasAssignmentGroupsData(json_decode($response->getBody()), $courseId, $singleRow);
         
+    }
+    
+    public function getAnalyticsStudentAssignmentData()
+    {//GET /api/v1/courses/:course_id/analytics/users/:student_id/assignments
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $userId = $_SESSION['userID'];
+        $urlPieces= $this->initUrl();
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $urlArgs = array();
+        $urlPieces[] = 'analytics/users';
+        $urlPieces[] = $userId;
+        $urlPieces[] = "assignments";
+        //Attach token
+        $urlArgs[]="access_token={$token}";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+        $response = GuzzleHelper::getAsset($url);
+        return $response->getBody();
+    }
+    
+    public function getCourse()
+    {///api/v1/courses/:id
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $userId = $_SESSION['userID'];
+        $urlPieces= $this->initUrl();
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $urlArgs = array();
+        //Attach token
+        $urlArgs[]="access_token={$token}";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+        $response = GuzzleHelper::getAsset($url);
+        return $response->getBody();
     }
     /*
      * private functions

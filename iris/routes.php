@@ -19,7 +19,11 @@ Route::get('getAssignmentGroups', 'Delphinium\Iris\Controllers\RestApi@getAssign
 Route::post('addNewPage', 'Delphinium\Iris\Controllers\RestApi@addNewPage');
 Route::post('addNewDiscussionTopic', 'Delphinium\Iris\Controllers\RestApi@addNewDiscussionTopic');
 Route::post('addNewAssignment', 'Delphinium\Iris\Controllers\RestApi@addNewAssignment');
+Route::post('addNewQuiz', 'Delphinium\Iris\Controllers\RestApi@addNewQuiz');
 Route::post('uploadFile', 'Delphinium\Iris\Controllers\RestApi@uploadFile');
+Route::post('uploadFileStepTwo', 'Delphinium\Iris\Controllers\RestApi@uploadFileStepTwo');
+Route::post('uploadFileStepThree', 'Delphinium\Iris\Controllers\RestApi@uploadFileStepThree');
+Route::post('addNewExternalTool', 'Delphinium\Iris\Controllers\RestApi@addNewExternalTool');
 
 Route::post('deleteModule', 'Delphinium\Iris\Controllers\RestApi@deleteModule');
 Route::post('deleteModuleItem', 'Delphinium\Iris\Controllers\RestApi@deleteModuleItem');

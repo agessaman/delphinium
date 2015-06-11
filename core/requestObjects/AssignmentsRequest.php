@@ -3,11 +3,13 @@
 use Delphinium\Core\Enums\CommonEnums\ActionType;
 use Delphinium\Core\Enums\CommonEnums\Lms;
 use Delphinium\Core\Exceptions\InvalidParameterInRequestObjectException;
+use Delphinium\Core\Models\Assignment;
 
 class AssignmentsRequest extends RootsRequest
 {
     private $assignment_id;
     private $fresh_data;
+    public $assignment;
     
     function getAssignment_id() {
         return $this->assignment_id;
@@ -16,8 +18,10 @@ class AssignmentsRequest extends RootsRequest
     function getFresh_data() {
         return $this->fresh_data;
     }
-
-        function __construct($actionType, $assignment_id = null, $fresh_data = false) 
+    function getAssignment() {
+        return $this->assignment;
+    }    
+    function __construct($actionType, $assignment_id = null, $fresh_data = false, Assignment $assignment = null) 
     {
         //this takes care of setting the lms and the ActionType in the parent class (RootsRequest)
         parent::__construct($actionType);
@@ -39,5 +43,6 @@ class AssignmentsRequest extends RootsRequest
         
         $this->assignment_id = $assignment_id;
         $this->fresh_data = $fresh_data;
+        $this->assignment = $assignment;
     }
 }

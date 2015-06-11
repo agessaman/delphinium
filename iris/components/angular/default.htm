@@ -3,11 +3,12 @@
 	var moduleData = {{ moduleData|raw}};
 	var avTags = {{ avTags|raw}};
         var courseId = {{courseId}};
+        var lmsUrl = {{lmsUrl|raw}};
 </script>
 <div id="flashMsg" class="hidden"><span >This item can't be dragged to the top because it is unpublished</span></div>
 
 <div ng-app="treeApp" ng-controller="treeCtrl">
-
+    <span ng-model="test"></span>
     {% verbatim %}
     <a href="" class="btn btn btn-primary" ng-click="reloadApp()">Refresh Data from Canvas</a>
     <i class="icon-spinner icon-spin icon-large" ng-show="loading"></i>
@@ -49,12 +50,12 @@
                               {{item.external_url}}
                         </a>
                         </div>
-                        <BR>
+                        <br>
                         Points
                         <a href="#" editable-textarea="item.content[0].points_possible">
                         {{item.content[0].points_possible}}
                         </a>
-                        <BR>
+                        <br>
                         <div class="oneLine">
                         Assignment Group &nbsp;
                         <form id="assignmentGroup">
@@ -69,7 +70,7 @@
                             </select>
                         </form>
                         </div>
-                        <BR>
+                        <br>
                         <div class="oneLine">
                         Display Grade As &nbsp;&nbsp;&nbsp;&nbsp;
                         <form id="assignmentGroup1">
@@ -84,7 +85,7 @@
                             </select>
                         </form>
                         </div>
-                        <BR>
+                        <br>
                         <div class="oneLine">
                             Submission Type &nbsp;&nbsp;&nbsp;&nbsp;
                             <form id="assignmentGroup2">
@@ -95,7 +96,7 @@
                                     <option>On Paper</option>
                                 </select>
                             </form>
-                        </div><BR>
+                        </div><br>
                         <div class="oneLine">
                            For &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                             <form id="assignmentGroup3">
@@ -104,7 +105,7 @@
                                 </select>
                             </form>
                         </div>
-                        <BR>
+                        <br>
                         <div class="oneLine">
                             Due Date &nbsp;&nbsp;&nbsp;<div class="prereqMenu" ng-controller="DatepickerCtrl">
                             <p class="input-group">
@@ -125,7 +126,7 @@
                             </div>
                         </div>
                         </div>
-                        <BR>
+                        <br>
                         <div class="oneLine">
                             Available &nbsp;&nbsp;&nbsp;&nbsp;
                             <div class="prereqMenu" ng-controller="DatepickerCtrl">
@@ -147,7 +148,7 @@
                                 </div>
                             </div>
                         </div>
-                        <BR>
+                        <br>
                         <div class="oneLine">
                             From Until&nbsp; <div class="prereqMenu" ng-controller="DatepickerCtrl">
                             <p class="input-group">
@@ -219,7 +220,7 @@
                             No prerequisites defined
                         </div>
 
-                        <BR>
+                        <br>
                         <div class="prereqMenu" ng-show="collapsed">They must complete:
                             <form id="myForm">
                                 <select class="form-control" id="selectNumber">
@@ -231,7 +232,7 @@
 
                         <br>
                         <!--<b>This module is complete when:</b>-->
-                        <!--<BR>-->
+                        <!--<br>-->
                         <!--For user must score out of-->
                         <div class="addPrereqOrRequirement">
                             <span class=" icon-plus-sign" ng-model="collapsed" ng-click="collapsed=!collapsed"></span>
@@ -364,17 +365,17 @@
 
                         <div class="row">
                             <pre>Add <select ng-model="selectedModuleItemType" ng-options="item.value for item in moduleItemTypes"
-                                                        ng-change="changedItemType(selectedModuleItemType)">
-                                                <option value="" disabled selected>Select Item Type</option>
-                                                </select> to "{{item.name}}"</pre>
+                                            ng-change="changedItemType(selectedModuleItemType)">
+                                            <option value="" disabled selected>Select Item Type</option>
+                                    </select> to "{{item.name}}"</pre>
                         </div>
                         <h6>
                             <span class=" icon-file-text-o" ng-model="hidden"> </span>Select the item you want to
                             associate with this module, or add a new item by selecting "New"
                         </h6>
                         <select ng-model="selectedItemToAdd" class="dropdown-multiple" multiple ng-multiple="true"
-                                    ng-options="item.name for item in itemOptions"
-                                    ng-change="changedItem(selectedItemToAdd)">
+                                ng-options="item.name for item in itemOptions"
+                                ng-change="changedItem(selectedItemToAdd)">
                         </select>
                         <p></p>
                         <div id="partialNewFile" class="form-horizontal" ng-show="newFile">
@@ -382,12 +383,6 @@
                                 <label for="file" class="col-sm-3 control-label">File:</label>
                                 <div class="col-sm-9">
                                     <input type="file" onchange="angular.element(this).scope().fileNameChanged(this)">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="course-files" class="col-sm-3 control-label">Course Files</label>
-                                <div class="col-sm-9">
-                                    <select  class="form-control" class=""></select>
                                 </div>
                             </div>
                         </div>
@@ -402,15 +397,15 @@
                                 <label for="course-files" class="col-sm-3 control-label">Options:</label>
                                 <div class="col-sm-9">
                                     <select  class="form-control" ng-model="selectedPageEditingRole" 
-                                        ng-options="item.value for item in pageEditingRoles">
-                                                <option value="" disabled selected>[Select who]</option>
-                                        </select> can edit this page
+                                             ng-options="item.value for item in pageEditingRoles">
+                                        <option value="" disabled selected>[Select who]</option>
+                                    </select> can edit this page
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="topic-name" class="col-sm-3 control-label"></label>
                                 <div class="col-sm-9 checkbox">
-                                    <label><input type="checkbox" ng-model="newPageNotify" ng-init="newPageNotify=false">Notify users that this content has changed</label>
+                                    <label><input type="checkbox" ng-model="newPageNotify" ng-init="newPageNotify = false">Notify users that this content has changed</label>
                                 </div>
                             </div>
                         </div>
@@ -424,37 +419,37 @@
                             <div class="form-group">
                                 <label for="topic-name" class="col-sm-3 control-label">Options:</label>
                                 <div class="col-sm-9 checkbox">
-                                    <label><input type="checkbox" ng-model="newDiscussionThreaded" ng-init="newDiscussionThreaded=false">Allow threaded replies</label>
+                                    <label><input type="checkbox" ng-model="newDiscussionThreaded" ng-init="newDiscussionThreaded = false">Allow threaded replies</label>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="topic-name" class="col-sm-3 control-label"></label>
                                 <div class="col-sm-9 checkbox">
-                                    <label><input type="checkbox" ng-model="newDiscussionMustPost" ng-init="newDiscussionMustPost=false">Users must post before seeing replies</label>
+                                    <label><input type="checkbox" ng-model="newDiscussionMustPost" ng-init="newDiscussionMustPost = false">Users must post before seeing replies</label>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="topic-name" class="col-sm-3 control-label"></label>
                                 <div class="col-sm-9 checkbox">
-                                    <label><input type="checkbox" ng-model="newDiscussionPodcast" ng-init="newDiscussionPodcast=false">Enable podcast feed</label>
+                                    <label><input type="checkbox" ng-model="newDiscussionPodcast" ng-init="newDiscussionPodcast = false">Enable podcast feed</label>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="topic-name" class="col-sm-3 control-label"></label>
                                 <div class="col-sm-9 checkbox">
-                                    <label><input type="checkbox" ng-model="newDiscussionLiking" ng-init="newDiscussionLiking=false">Allow liking</label>
+                                    <label><input type="checkbox" ng-model="newDiscussionLiking" ng-init="newDiscussionLiking = false">Allow liking</label>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="topic-name" class="col-sm-3 control-label"></label>
                                 <div class="col-sm-9 checkbox">
-                                    <label><input type="checkbox" ng-model="newDiscussionAnnouncement" ng-init="newDiscussionAnnouncement=false">This is an announcement</label>
+                                    <label><input type="checkbox" ng-model="newDiscussionAnnouncement" ng-init="newDiscussionAnnouncement = false">This is an announcement</label>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="topic-name" class="col-sm-3 control-label">Group Discussion:</label>
                                 <div class="col-sm-9 checkbox">
-                                    <label><input type="checkbox" ng-model="newDiscussionGroup" ng-init="newDiscussionGroup=false">This is a group discussion</label>
+                                    <label><input type="checkbox" ng-model="newDiscussionGroup" ng-init="newDiscussionGroup = false">This is a group discussion</label>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -472,9 +467,9 @@
                                            ng-required="true" close-text="Close">
 
                                     <div class="input-group-btn">
-                                          <button type="button" class="btn btn-default" ng-click="open($event)">
+                                        <button type="button" class="btn btn-default" ng-click="open($event)">
                                             <i class="icon-calendar"></i>
-                                          </button>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -493,97 +488,87 @@
                                            ng-required="true" close-text="Close">
 
                                     <div class="input-group-btn">
-                                          <button type="button" class="btn btn-default" ng-click="open($event)">
+                                        <button type="button" class="btn btn-default" ng-click="open($event)">
                                             <i class="icon-calendar"></i>
-                                          </button>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div id="partialNewAssignment" class="form-horizontal" ng-show="newAssignment">
+                            <div class="form-group">
+                                <label for="points" class="col-sm-3 control-label">Name:</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" ng-change="enableOptions()" ng-model="newAssignmentName">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="topic-name" class="col-sm-3 control-label">Due Date:</label>
+                                <div class="prereqMenu col-sm-8" ng-controller="DatepickerCtrl">
+                                    <p class="input-group"></p>
+                                    <input type="text" class="form-control"
+                                           datepicker-popup="{{format}}"
+                                           show-weeks="false"
+                                           ng-model="assignmentDate.newAssignmentDueDate"
+                                           is-open="opened" min-date="minDate"
+                                           max-date="'3015-06-22'"
+                                           datepicker-options="dateOptions"
+                                           date-disabled="disabled(date, mode)"
+                                           ng-required="true" close-text="Close">
 
-                            <div class="form-group">
-                                <label for="points" class="col-sm-3 control-label">Points</label>
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="points" name="points" placeholder="0" value="">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="group" class="col-sm-3 control-label">Assignment Group</label>
-                                <div class="col-sm-9">
-                                    <select class="form-control" ng-model="selectedAssignmentGroup" 
-                                        ng-options="item.name for item in assignmentGroups">
-                                                <option value="" disabled selected>[Select group]</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="grade" class="col-sm-3 control-label">Display Grade as</label>
-                                <div class="col-sm-9">
-                                    <select class="form-control" class="form-control" ng-model="selectedAssignmentDisplayGradeAs">
-                                        <option value="" disabled selected>[Select option]</option>
-                                        <option value="Percentage" >Percentage</option>
-                                        <option value="Complete" >Complete/Incomplete</option>
-                                        <option value="Points" selected>Points</option>
-                                        <option value="Letter">Letter Grade</option>
-                                        <option value="Gpa">GPA scale</option>
-                                        <option value="Ungrade">Not graded</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="grade" class="col-sm-3 control-label">Submission Type</label>
-                                <div>
-                                    <div class="col-sm-9">
-                                        <select class="form-control" ng-model="selectedAssignmentSubmissionType">
-                                            <option value="" disabled selected>[Select option]</option>
-                                            <option value="None" >No submission</option>
-                                            <option value="Online" >Online</option>
-                                            <option value="Paper" selected>On paper</option>
-                                            <option value="External">External Tool</option>
-                                        </select>
+                                    <div class="input-group-btn">
+                                        <button type="button" class="btn btn-default" ng-click="open($event)">
+                                            <i class="icon-calendar"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="grade" class="col-sm-3 control-label">Group Assignment</label>
-                                <div class="col-sm-9 checkbox">
-                                    <label><input type="checkbox" ng-model="newAssignmentIsGroup" ng-init="newAssignmentIsGroup=false">This is a group assignment</label>
+                                <label for="points" class="col-sm-3 control-label">Points:</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" ng-model="newAssignmentPoints">
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label for="grade" class="col-sm-3 control-label">Peer Reviews</label>
-                                <div class="col-sm-9 checkbox">
-                                    <label><input type="checkbox" ng-model="newAssignmentPeerReview" ng-init="newAssignmentPeerReview=false">Require peer reviews</label>
-                                </div>
-                            </div>
-
+                            <a href="" class="cancel btn btn-primary pull-right" ng-disabled="!moreOptions.value" ng-click="moreOptions()">More Options</a>
+                            <div class="small pull-right">Redirects to Canvas</div>
                         </div>
                         <div id="partialNewQuiz" class="form-horizontal" ng-show="newQuiz">
                             <div class="form-group">
                                 <label for="quiz-name" class="col-sm-3 control-label">Quiz Name:</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="quiz-name" name="quiz-name" value="">
+                                    <input type="text" class="form-control" ng-change="enableOptions()" ng-model="newQuizTitle" value="">
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="quiz-group" class="col-sm-3 control-label">Group:</label>
-                                <div>
-                                    <div class="col-sm-9">
-                                        <select class="form-control"></select>
-                                    </div>
+                                <label for="topic-name" class="col-sm-3 control-label">Due:</label>
+                                <div class="prereqMenu col-sm-8" ng-controller="DatepickerCtrl">
+                                    <input type="text" 
+                                            class="form-control" 
+                                            datepicker-popup="{{format}}" 
+                                            ng-model="quizDate.newQuizDueDate" 
+                                            is-open="opened" 
+                                            min-date="minDate" 
+                                            datepicker-options="dateOptions" 
+                                            date-disabled="disabled(date, mode)" 
+                                            ng-required="true" 
+                                            close-text="Close" />
+                                    <span class="input-group-btn">
+                                      <button type="button" class="btn btn-default" ng-click="open($event)"><i class="icon-calendar"></i></button>
+                                    </span>
                                 </div>
                             </div>
+                            Date is <span ng-model="newQuizDueDate"></span>
+                            <a href="" class="btn btn-primary pull-right" ng-disabled="!moreOptions.value" ng-click="moreOptions()">More Options</a>
                         </div>
                         <div id="partialNewSubHeader" class="form-horizontal" ng-show="newSubHeader">
                             Type the text you\'d like to add as a module sub-header
                             <div class="form-group">
-                                    <label for="subheader" class="col-sm-3 control-label">Header</label>
-                                    <div class="col-sm-9">
-                                        <input type="text" class="form-control" id="subheader" name="subheader" value="">
-                                    </div>
+                                <label for="subheader" class="col-sm-3 control-label">Header</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" id="subheader" name="subheader" value="">
                                 </div>
                             </div>
+                        </div>
                         <div id="partialNewExternalUrl" class="form-horizontal" ng-show="newExternalUrl">
                             <i class="icon-link"></i> Enter a URL and page name to add a link to any website URL to this module.
                             <div class="form-group">
@@ -608,24 +593,17 @@
                         <div id="partialNewExternalTool" class="form-horizontal" ng-show="newExternalTool">
                             <i class="icon-link"></i> Enter a URL for an external tool you already know is configured with Basic LTI to add a link to it to this module.
                             <div class="form-group">
+                                <label for="external-tool-url" class="col-sm-3 control-label">Name:</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" ng-model="newExternalToolName" value="">
+                                </div>
+                            </div>
+                            <div class="form-group">
                                 <label for="external-tool-url" class="col-sm-3 control-label">URL:</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="external-tool-url" name="external-tool-url" value="">
+                                    <input type="text" class="form-control" ng-model="newExternalToolUrl" value="">
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label for="external-tool-page-name" class="col-sm-3 control-label">Page Name:</label>
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="external-tool-page-name" name="external-tool-page-name" value="">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="grade" class="col-sm-3 control-label"></label>
-                                <div class="col-sm-9 checkbox">
-                                    <label><input type="checkbox">Load in a new tab</label>
-                                </div>
-                            </div>
-                        </div>
                         </div>
                     </div>
                 </div>
@@ -644,14 +622,14 @@
                        ng-disabled="buttonDisabled">
                         <span ng-class="{'icon-chevron-down': collapsed, 'icon-chevron-right ': !collapsed}"></span></a>
                     <a href={{item.items[0].html_url}} target="_blank"> </a>
-                    <ng-switch on="item.published">
+                    <span ng-switch on="item.published">
                         <a href="#" editable-text=" item.name" ng-switch-when="1">
                            {{item.type}}
                         </a>
                         <a href="#" editable-text=" item.name" class="unpublishedText" ng-switch-when="0">
                             {{item.name}}
                         </a>
-                    </ng-switch>
+                    </span>
                 </div>
 
             </script>
@@ -666,7 +644,7 @@
                        <span ng-class="{'icon-chevron-down': collapsed, 'icon-chevron-right ': !collapsed}"></span></a>
                    <a href={{item.items[0].html_url}} target="_blank"> </a>
 
-                   <ng-switch on="item.published">
+                   <span ng-switch on="item.published">
                        <a href="#" editable-text=" item.name" ng-switch-when="1">
                            {{item.name}}
                        </a>
@@ -674,7 +652,7 @@
                            {{item.name}}
                        </a>
                    </a>
-                   </ng-switch>
+                   </span>
                </div>
 
                 <div ng-switch on="item.published">
@@ -713,7 +691,7 @@
                     <div class="divContent" ng-repeat="item in item.module_items">
                         <a href="" class="contentLink" ng-class="{'unpublishedItem': (item.published==='0')}">
                             <!--{{item.type}}-->
-                            <ng-switch on="item.type">
+                            <span ng-switch on="item.type">
                                 <i class="icon-download-alt" ng-switch-when="File"></i>
                                 <i class="icon-list-ol" ng-switch-when="Quiz"></i>
                                 <i class="icon-file" ng-switch-when="Page"></i>

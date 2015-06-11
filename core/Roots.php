@@ -6,7 +6,9 @@ use Delphinium\Core\RequestObjects\AssignmentsRequest;
 use Delphinium\Core\RequestObjects\AssignmentGroupsRequest;
 use Delphinium\Core\Models\Page;
 use Delphinium\Core\Models\File;
+use Delphinium\Core\Models\Quiz;
 use Delphinium\Core\Models\Discussion;
+use Delphinium\Core\Models\Assignment;
 use Delphinium\Core\UpdatableObjects\Module;
 use Delphinium\Core\Enums\CommonEnums\Lms;
 use Delphinium\Core\Enums\CommonEnums\DataType;
@@ -137,6 +139,16 @@ class Roots
                     return $this->getAssignmentDataFromLms($request);
                 }
                 break;
+            case(ActionType::POST):
+                switch ($request->getLms())
+                {
+                    case (Lms::CANVAS):
+                        $canvas = new CanvasHelper(DataType::ASSIGNMENTS);
+                        return $canvas->addAssignment($request);
+                    default:
+                        $canvas = new CanvasHelper(DataType::ASSIGNMENTS);
+                        return $canvas->addAssignment($request);
+                }
                 //If another action was given throw exception
             default :
                 throw new InvalidActionException($request->getActionType(), get_class($request));
@@ -242,6 +254,42 @@ class Roots
         }
     }
     
+    public function addQuiz(Quiz $quiz)
+    {
+        
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $lms = strtoupper($_SESSION['lms']);
+        switch ($lms)
+        {
+            case (Lms::CANVAS):
+                $canvas = new CanvasHelper();
+                return $canvas->addQuiz($quiz);
+            default:
+                $canvas = new CanvasHelper();
+                return $canvas->addQuiz($quiz);
+        }
+    }
+    
+    public function addExternalTool($externalTool)
+    {
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $lms = strtoupper($_SESSION['lms']);
+        switch ($lms)
+        {
+            case (Lms::CANVAS):
+                $canvas = new CanvasHelper();
+                return $canvas->addExternalTool($externalTool);
+            default:
+                $canvas = new CanvasHelper();
+                return $canvas->addExternalTool($externalTool);
+        }
+    }
     public function uploadFile(File $file)
     {
         if(!isset($_SESSION)) 
@@ -258,6 +306,44 @@ class Roots
                 $canvas = new CanvasHelper();
                 return $canvas->uploadFile($file);
         }
+    }
+    
+    public function uploadFileStepTwo($params, $file, $upload_url)
+    {
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $lms = strtoupper($_SESSION['lms']);
+        switch ($lms)
+        {
+            case (Lms::CANVAS):
+                $canvas = new CanvasHelper();
+                return $canvas->uploadFileStepTwo($params, $file, $upload_url);
+            default:
+                $canvas = new CanvasHelper();
+                return $canvas->uploadFileStepTwo($params, $file, $upload_url);
+        }
+        
+    }
+    
+    public function uploadFileStepThree($location)
+    {
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $lms = strtoupper($_SESSION['lms']);
+        switch ($lms)
+        {
+            case (Lms::CANVAS):
+                $canvas = new CanvasHelper();
+                return $canvas->uploadFileStepThree($location);
+            default:
+                $canvas = new CanvasHelper();
+                return $canvas->uploadFileStepThree($location);
+        }
+        
     }
     public function getAvailableTags()
     {
@@ -457,6 +543,55 @@ class Roots
         }
     }
             
+    public function getAnalyticsStudentAssignmentData()
+    {
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $lms = strtoupper($_SESSION['lms']);
+        if(Lms::isValidValue($lms))
+        {
+            switch ($lms)
+            {
+                case (Lms::CANVAS):
+                    $canvasHelper = new CanvasHelper();
+                    return json_decode($canvasHelper->getAnalyticsStudentAssignmentData());
+                default:
+                    $canvasHelper = new CanvasHelper();
+                    return json_decode($canvasHelper->getAnalyticsStudentAssignmentData());
+            }
+        }
+        else
+        {
+           throw new \Exception("Invalid LMS");  
+        }
+    }
+          
+    public function getCourse()
+    {
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $lms = strtoupper($_SESSION['lms']);
+        if(Lms::isValidValue($lms))
+        {
+            switch ($lms)
+            {
+                case (Lms::CANVAS):
+                    $canvasHelper = new CanvasHelper();
+                    return json_decode($canvasHelper->getCourse());
+                default:
+                    $canvasHelper = new CanvasHelper();
+                    return json_decode($canvasHelper->getCourse());
+            }
+        }
+        else
+        {
+           throw new \Exception("Invalid LMS");  
+        }
+    }
     
     /*
      * PRIVATE METHODS
