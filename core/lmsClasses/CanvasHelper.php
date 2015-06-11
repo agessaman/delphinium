@@ -701,6 +701,45 @@ class CanvasHelper
         return $this->processCanvasAssignmentGroupsData(json_decode($response->getBody()), $courseId, $singleRow);
         
     }
+    
+    public function getAnalyticsStudentAssignmentData()
+    {//GET /api/v1/courses/:course_id/analytics/users/:student_id/assignments
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $userId = $_SESSION['userID'];
+        $urlPieces= $this->initUrl();
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $urlArgs = array();
+        $urlPieces[] = 'analytics/users';
+        $urlPieces[] = $userId;
+        $urlPieces[] = "assignments";
+        //Attach token
+        $urlArgs[]="access_token={$token}";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+        $response = GuzzleHelper::getAsset($url);
+        return $response->getBody();
+    }
+    
+    public function getCourse()
+    {///api/v1/courses/:id
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $userId = $_SESSION['userID'];
+        $urlPieces= $this->initUrl();
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $urlArgs = array();
+        //Attach token
+        $urlArgs[]="access_token={$token}";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+        $response = GuzzleHelper::getAsset($url);
+        return $response->getBody();
+    }
     /*
      * private functions
      */
