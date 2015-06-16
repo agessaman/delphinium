@@ -7,8 +7,9 @@ use System\Classes\PluginBase;
 class Plugin extends PluginBase
 {
 	public $require = [
-    	'Delphinium.Greenhouse',
-    	'Delphinium.Blackberry'
+            'Delphinium.Greenhouse',
+            'Delphinium.Dev',
+            'Delphinium.Core'
 	];
 
     public function pluginDetails()

@@ -1,4 +1,4 @@
-<?php namespace Delphinium\Iris\Components;
+<?php namespace Delphinium\Stem\Components;
 
 use Cms\Classes\ComponentBase;
 use Delphinium\Core\Roots;
@@ -6,11 +6,10 @@ use Delphinium\Core\RequestObjects\ModulesRequest;
 use Delphinium\Core\Enums\CommonEnums\ActionType;
 use Delphinium\Iris\Classes\Iris as IrisClass;
 use Delphinium\Core\Enums\CommonEnums\Lms;
-/**
- * @author Damaris Zarco
- */
-class Angular  extends ComponentBase
+
+class Manager extends ComponentBase
 {
+
     public function componentDetails()
     {
         return [
@@ -21,21 +20,21 @@ class Angular  extends ComponentBase
     
     public function onRun()
     {   
-        $this->addJs("/plugins/delphinium/iris/assets/javascript/angular.min.js");
-        $this->addJs("/plugins/delphinium/iris/assets/javascript/angular-ui-tree.js");
-        $this->addJs("/plugins/delphinium/iris/assets/javascript/tree.js");
-        $this->addJs('/plugins/delphinium/iris/assets/javascript/xeditable.min.js');
-        $this->addJs('/plugins/delphinium/iris/assets/javascript/ui-bootstrap-tpls-0.12.1.min.js');
-        $this->addJs("/plugins/delphinium/iris/assets/javascript/jobid.modal.controller.js");
-        $this->addJs("/plugins/delphinium/iris/assets/javascript/itemModal.controller.js");
-        $this->addJs("/plugins/delphinium/iris/assets/javascript/addItemController.js");
-        $this->addJs("/plugins/delphinium/iris/assets/javascript/moduleModal.js");
+        $this->addJs("/plugins/delphinium/stem/assets/javascript/angular.min.js");
+        $this->addJs("/plugins/delphinium/stem/assets/javascript/angular-ui-tree.js");
+        $this->addJs("/plugins/delphinium/stem/assets/javascript/tree.js");
+        $this->addJs('/plugins/delphinium/stem/assets/javascript/xeditable.min.js');
+        $this->addJs('/plugins/delphinium/stem/assets/javascript/ui-bootstrap-tpls-0.12.1.min.js');
+        $this->addJs("/plugins/delphinium/stem/assets/javascript/jobid.modal.controller.js");
+        $this->addJs("/plugins/delphinium/stem/assets/javascript/itemModal.controller.js");
+        $this->addJs("/plugins/delphinium/stem/assets/javascript/addItemController.js");
+        $this->addJs("/plugins/delphinium/stem/assets/javascript/moduleModal.js");
 
-        $this->addCss('/plugins/delphinium/iris/assets/css/module-tree.css');
-        $this->addCss('/plugins/delphinium/iris/assets/css/bootstrap.min.css');
-        $this->addCss('/plugins/delphinium/iris/assets/css/xeditable.css');
-        $this->addCss('/plugins/delphinium/iris/assets/css/angular-ui-tree.min.css');
-        $this->addCss('/plugins/delphinium/iris/assets/css/font-awesome.css');
+        $this->addCss('/plugins/delphinium/stem/assets/css/module-tree.css');
+        $this->addCss('/plugins/delphinium/stem/assets/css/bootstrap.min.css');
+        $this->addCss('/plugins/delphinium/stem/assets/css/xeditable.css');
+        $this->addCss('/plugins/delphinium/stem/assets/css/angular-ui-tree.min.css');
+        $this->addCss('/plugins/delphinium/stem/assets/css/font-awesome.css');
 
 
 
@@ -168,4 +167,5 @@ class Angular  extends ComponentBase
         }
         
     }
+
 }
