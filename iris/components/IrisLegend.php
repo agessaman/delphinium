@@ -8,7 +8,7 @@ use Cms\Classes\ComponentBase;
 /**
  * Description of IrisLegend
  *
- * @author damariszarco
+ * @author Delphinium
  */
 class IrisLegend extends ComponentBase
 {

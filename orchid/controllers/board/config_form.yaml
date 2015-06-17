@@ -1,8 +1,0 @@
-# ===================================
-#  Form Behavior Config
-# ===================================
-
-name: Orchid
-form: @/plugins/delphinium/orchid/models/board/fields.yaml
-modelClass: Delphinium\Orchid\Models\Board
-defaultRedirect: delphinium/orchid/board

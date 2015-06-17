@@ -9,7 +9,11 @@ Use Event;
  */
 class Plugin extends PluginBase
 {
-
+    public $require = [
+        'Delphinium.Greenhouse',
+        'Delphinium.Dev',
+        'Delphinium.Roots'
+    ];
     /**
      * Returns information about this plugin.
      *

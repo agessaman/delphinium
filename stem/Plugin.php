@@ -10,7 +10,7 @@ class Plugin extends PluginBase
     public $require = [
         'Delphinium.Greenhouse',
         'Delphinium.Dev',
-        'Delphinium.Core'
+        'Delphinium.Roots'
     ];
     /**
      * Returns information about this plugin.

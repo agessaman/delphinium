@@ -1,11 +1,11 @@
 <?php namespace Delphinium\Stem\Components;
 
 use Cms\Classes\ComponentBase;
-use Delphinium\Core\Roots;
-use Delphinium\Core\RequestObjects\ModulesRequest;
-use Delphinium\Core\Enums\CommonEnums\ActionType;
+use Delphinium\Roots\Roots;
+use Delphinium\Roots\RequestObjects\ModulesRequest;
+use Delphinium\Roots\Enums\CommonEnums\ActionType;
 use Delphinium\Iris\Classes\Iris as IrisClass;
-use Delphinium\Core\Enums\CommonEnums\Lms;
+use Delphinium\Roots\Enums\CommonEnums\Lms;
 
 class Manager extends ComponentBase
 {
