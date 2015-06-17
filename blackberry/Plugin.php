@@ -3,12 +3,11 @@
 use Backend;
 Use Event;
 use System\Classes\PluginBase;
-use BackendMenu;
 
 class Plugin extends PluginBase
 {
 	public $require = [
-    	'Delphinium.Greenhouse'
+            'Delphinium.Greenhouse'
 	];
 
     public function pluginDetails()
@@ -28,9 +27,6 @@ class Plugin extends PluginBase
             '\Delphinium\Blackberry\Components\LTIConfiguration' => 'LTIConfiguration'
         ];
     }
-    
-    
-    
     
     public function boot()
     {

@@ -1,22 +1,22 @@
 <?php namespace Delphinium\Dev\Components;
 
-use Delphinium\Core\UpdatableObjects\Module;
-use Delphinium\Core\UpdatableObjects\ModuleItem;
-use Delphinium\Core\Models\Assignment;
-use Delphinium\Core\Roots;
-use Delphinium\Core\RequestObjects\SubmissionsRequest;
-use Delphinium\Core\RequestObjects\ModulesRequest;
-use Delphinium\Core\RequestObjects\AssignmentsRequest;
-use Delphinium\Core\RequestObjects\AssignmentGroupsRequest;
-use Delphinium\Core\Enums\CommonEnums\ActionType;
-use Delphinium\Core\Enums\ModuleItemEnums\ModuleItemType;
-use Delphinium\Core\Enums\ModuleItemEnums\CompletionRequirementType;
+use Delphinium\Roots\UpdatableObjects\Module;
+use Delphinium\Roots\UpdatableObjects\ModuleItem;
+use Delphinium\Roots\Models\Assignment;
+use Delphinium\Roots\Roots;
+use Delphinium\Roots\RequestObjects\SubmissionsRequest;
+use Delphinium\Roots\RequestObjects\ModulesRequest;
+use Delphinium\Roots\RequestObjects\AssignmentsRequest;
+use Delphinium\Roots\RequestObjects\AssignmentGroupsRequest;
+use Delphinium\Roots\Enums\CommonEnums\ActionType;
+use Delphinium\Roots\Enums\ModuleItemEnums\ModuleItemType;
+use Delphinium\Roots\Enums\ModuleItemEnums\CompletionRequirementType;
 use Cms\Classes\ComponentBase;
 use \DateTime;
 use GuzzleHttp\Client;
 use GuzzleHttp\Post\PostFile;
 
-use Delphinium\Core\Guzzle\GuzzleHelper;
+use Delphinium\Roots\Guzzle\GuzzleHelper;
 
 
 class TestRoots extends ComponentBase
@@ -434,7 +434,6 @@ class TestRoots extends ComponentBase
         {
             $postBody->setField($key, $value);
         }
-        $fileName = "/Users/damaris/Desktop/".$file;
         $postBody->addFile(new PostFile('file', fopen($fileName, 'r', 1)));
 
         echo json_encode($request);
@@ -449,7 +448,7 @@ class TestRoots extends ComponentBase
         $result = $client->post($upload_url, [
             'body' => [
                 $arrParams,
-                'file'   => fopen('/Users/damaris/Desktop/'.$file, 'r')
+                'file'   => fopen('/Users//Desktop/'.$file, 'r')
             ]
         ]);
         

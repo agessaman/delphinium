@@ -1,19 +1,19 @@
 <?php namespace Delphinium\Iris\Controllers;
 
 use Illuminate\Routing\Controller;
-use Delphinium\Core\Models\Page;
-use Delphinium\Core\Models\Discussion;
-use Delphinium\Core\Models\File;
-use Delphinium\Core\Models\Quiz;
-use Delphinium\Core\Models\Assignment;
-use Delphinium\Core\UpdatableObjects\Module;
-use Delphinium\Core\UpdatableObjects\ModuleItem;
-use Delphinium\Core\RequestObjects\SubmissionsRequest;
-use Delphinium\Core\RequestObjects\AssignmentGroupsRequest;
-use Delphinium\Core\RequestObjects\AssignmentsRequest;
-use Delphinium\Core\RequestObjects\ModulesRequest;
-use Delphinium\Core\Roots;
-use Delphinium\Core\Enums\CommonEnums\ActionType;
+use Delphinium\Roots\Models\Page;
+use Delphinium\Roots\Models\Discussion;
+use Delphinium\Roots\Models\File;
+use Delphinium\Roots\Models\Quiz;
+use Delphinium\Roots\Models\Assignment;
+use Delphinium\Roots\UpdatableObjects\Module;
+use Delphinium\Roots\UpdatableObjects\ModuleItem;
+use Delphinium\Roots\RequestObjects\SubmissionsRequest;
+use Delphinium\Roots\RequestObjects\AssignmentGroupsRequest;
+use Delphinium\Roots\RequestObjects\AssignmentsRequest;
+use Delphinium\Roots\RequestObjects\ModulesRequest;
+use Delphinium\Roots\Roots;
+use Delphinium\Roots\Enums\CommonEnums\ActionType;
 use Delphinium\Iris\Classes\Iris as IrisClass;
 use Delphinium\Iris\Components\Angular;
 use \DateTime;
@@ -140,7 +140,7 @@ class RestApi extends Controller
         
         $flat = $this->flatten($decoded, $courseId);
 
-        $roots = new \Delphinium\Core\Roots();
+        $roots = new Roots();
         $mods = $roots->updateModuleOrder($flat, $updateLms);
       
         

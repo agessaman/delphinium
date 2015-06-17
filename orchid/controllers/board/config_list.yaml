@@ -1,7 +1,0 @@
-# ===================================
-#  List Behavior Config
-# ===================================
-
-title: Orchid
-list: @/plugins/delphinium/orchid/models/board/columns.yaml
-modelClass: Delphinium\Orchid\Models\Board

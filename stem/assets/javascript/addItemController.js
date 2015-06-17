@@ -37,7 +37,7 @@ var ModalInstanceCtrl = function ($scope, $window, $modalInstance, $location, $h
     {
         $scope.resetPartials();
         $scope.selectedModuleItemType = selectedModuleItemType;
-        $http.get("core/getContentByType", {
+        $http.get("roots/getContentByType", {
             params: {
                 type: selectedModuleItemType.value
             }
@@ -285,7 +285,7 @@ var ModalInstanceCtrl = function ($scope, $window, $modalInstance, $location, $h
             type = type ||$scope.selectedModuleItemType.value;
             url = url ||$scope.selectedItem.url;
             
-            $http.post('core/addModuleItem', {
+            $http.post('roots/addModuleItem', {
                 name:name,
                 id:itemId,
                 module_id: moduleId,
