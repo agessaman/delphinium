@@ -1,4 +1,5 @@
-1.0.1: First version of Roots
+1.0.1: 
+    - First version of Roots
     - create_roots_modules_table.php
     - create_roots_ordered_modules_table.php
     - create_roots_module_items_table.php
