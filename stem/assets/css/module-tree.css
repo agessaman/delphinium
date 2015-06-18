@@ -44,6 +44,10 @@ body{margin:10px;}
     color:red;
 }
 
+.smallPrint{
+  position: absolute;
+  bottom: 0;
+}
 .unpublishedModule {
     color:darkslategray !important;
 }

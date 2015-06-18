@@ -1,7 +1,6 @@
 <?php namespace Delphinium\Iris\Components;
 
-use Delphinium\Iris\Models\Home as IrisCharts;
-use Delphinium\Iris\Classes\Iris as IrisClass;
+use Delphinium\Stem\Models\Home as IrisCharts;
 use Delphinium\Roots\Roots;
 use Delphinium\Roots\RequestObjects\ModulesRequest;
 use Delphinium\Roots\Enums\CommonEnums\ActionType;
