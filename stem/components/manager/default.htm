@@ -529,8 +529,8 @@
                                     <input type="text" class="form-control" ng-model="newAssignmentPoints">
                                 </div>
                             </div>
-                            <a href="" class="cancel btn btn-primary pull-right" ng-disabled="!moreOptions.value" ng-click="moreOptions()">More Options</a>
-                            <div class="small pull-right">Redirects to Canvas</div>
+                            <a href="" class="cancel btn btn-primary pull-right" ng-disabled="!moreOptions.value" ng-click="moreOptions()">More Options*</a>
+                            <div class="small smallPrint pull-right">*This button redirects to Canvas. After making changes in Canvas you must return to this page and click the “Refresh Data from Canvas“ button</div>
                         </div>
                         <div id="partialNewQuiz" class="form-horizontal" ng-show="newQuiz">
                             <div class="form-group">
@@ -558,7 +558,8 @@
                                 </div>
                             </div>
                             Date is <span ng-model="newQuizDueDate"></span>
-                            <a href="" class="btn btn-primary pull-right" ng-disabled="!moreOptions.value" ng-click="moreOptions()">More Options</a>
+                            <a href="" class="btn btn-primary pull-right" ng-disabled="!moreOptions.value" ng-click="moreOptions()">More Options*</a>
+                            <div class="small smallPrint pull-right">*This button redirects to Canvas. After making changes in Canvas you must return to this page and click the “Refresh Data from Canvas“ button</div>
                         </div>
                         <div id="partialNewSubHeader" class="form-horizontal" ng-show="newSubHeader">
                             Type the text you\'d like to add as a module sub-header

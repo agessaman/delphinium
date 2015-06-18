@@ -1,8 +1,8 @@
-<?php namespace Delphinium\Iris\Classes;
+<?php namespace Delphinium\Stem\Classes;
 
-use Delphinium\Core\Models\OrderedModule;
+use Delphinium\Roots\Models\OrderedModule;
 
-class Iris 
+class ManagerHelper 
 {
     public function recursive($courseId, array $array, &$flatArray, $parentId = 1, $counter=false, $order = 0)
     {//the main-level elements will have no parent, so we will assign them a parentId of 1.
