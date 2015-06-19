@@ -2,8 +2,7 @@
 
 use Cms\Classes\ComponentBase;
 
-class Bonus extends ComponentBase
-{
+class Bonus extends ComponentBase{
 
     public function componentDetails()
     {
@@ -59,7 +58,13 @@ class Bonus extends ComponentBase
 				'type'         => 'dropdown',
 				'default'      => 'Medium',
 				'options'      => ['Small'=>'Small', 'Medium'=>'Medium', 'Large'=>'Large']
-			]
+			],
+
+			 'Instance' => [
+                'title' => 'Instance',
+                'description' => 'Select the Bonus instance',
+                'type' => 'dropdown',
+            ]
 		];
     }
 	
@@ -79,4 +84,15 @@ class Bonus extends ComponentBase
 		$this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
 		$this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
 	}
+
+	public function getBonusInstanceOptions() {
+        $instances = Bonus::all();
+        $array_dropdown = ['0' => '- select a Bonus Instance - '];
+
+        foreach ($instances as $instance) {
+            $array_dropdown[$instance->id] = $instance->Name;
+        }
+
+        return $array_dropdown;
+    }
 }
