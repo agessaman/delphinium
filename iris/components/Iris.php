@@ -1,10 +1,9 @@
 <?php namespace Delphinium\Iris\Components;
 
-use Delphinium\Iris\Models\Home as IrisCharts;
-use Delphinium\Iris\Classes\Iris as IrisClass;
-use Delphinium\Core\Roots;
-use Delphinium\Core\RequestObjects\ModulesRequest;
-use Delphinium\Core\Enums\CommonEnums\ActionType;
+use Delphinium\Stem\Models\Home as IrisCharts;
+use Delphinium\Roots\Roots;
+use Delphinium\Roots\RequestObjects\ModulesRequest;
+use Delphinium\Roots\Enums\CommonEnums\ActionType;
 use Cms\Classes\ComponentBase;
 
 class Iris extends ComponentBase

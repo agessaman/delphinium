@@ -1,0 +1,9 @@
+1.0.1: 
+    - First version of Roots
+    - create_roots_modules_table.php
+    - create_roots_ordered_modules_table.php
+    - create_roots_module_items_table.php
+    - create_roots_tags_table.php
+    - create_roots_content_table.php
+    - create_roots_assignments_table.php
+    - create_roots_assignment_groups_table.php
