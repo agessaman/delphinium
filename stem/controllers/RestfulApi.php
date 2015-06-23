@@ -303,18 +303,9 @@ class RestfulApi extends Controller
     public function addNewDiscussionTopic()
     {
         $title = \Input::get('title');
-        $message = \Input::get('message');
-        $threaded = \Input::get('threaded');
-        $delayed_post_at = \Input::get('delayed_post_at');
-        $lock_at = \Input::get('lock_at');
-        $podcast_enabled = \Input::get('podcast_enabled');
-        $require_initial_post = \Input::get('require_initial_post');
-        $podcast_has_student_posts = \Input::get('podcast_has_student_posts');
-        $is_announcement= \Input::get('is_announcement');
         $published = true;
         
-        $discussion = new Discussion($title, $message, $threaded,  $delayed_post_at, $lock_at, $podcast_enabled,
-                $podcast_has_student_posts, $require_initial_post,$is_announcement, $published, null);
+        $discussion = new Discussion($title, $published);
         $roots = new Roots();
         return $roots->addDiscussion($discussion);
     }

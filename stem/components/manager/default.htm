@@ -416,84 +416,6 @@
                                     <input type="text" class="form-control" ng-model="newDiscussionTopic" value="">
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label for="topic-name" class="col-sm-3 control-label">Options:</label>
-                                <div class="col-sm-9 checkbox">
-                                    <label><input type="checkbox" ng-model="newDiscussionThreaded" ng-init="newDiscussionThreaded = false">Allow threaded replies</label>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="topic-name" class="col-sm-3 control-label"></label>
-                                <div class="col-sm-9 checkbox">
-                                    <label><input type="checkbox" ng-model="newDiscussionMustPost" ng-init="newDiscussionMustPost = false">Users must post before seeing replies</label>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="topic-name" class="col-sm-3 control-label"></label>
-                                <div class="col-sm-9 checkbox">
-                                    <label><input type="checkbox" ng-model="newDiscussionPodcast" ng-init="newDiscussionPodcast = false">Enable podcast feed</label>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="topic-name" class="col-sm-3 control-label"></label>
-                                <div class="col-sm-9 checkbox">
-                                    <label><input type="checkbox" ng-model="newDiscussionLiking" ng-init="newDiscussionLiking = false">Allow liking</label>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="topic-name" class="col-sm-3 control-label"></label>
-                                <div class="col-sm-9 checkbox">
-                                    <label><input type="checkbox" ng-model="newDiscussionAnnouncement" ng-init="newDiscussionAnnouncement = false">This is an announcement</label>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="topic-name" class="col-sm-3 control-label">Group Discussion:</label>
-                                <div class="col-sm-9 checkbox">
-                                    <label><input type="checkbox" ng-model="newDiscussionGroup" ng-init="newDiscussionGroup = false">This is a group discussion</label>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="topic-name" class="col-sm-3 control-label">Available From:</label>
-                                <div class="prereqMenu" ng-controller="DatepickerCtrl">
-                                    <p class="input-group"></p>
-                                    <input type="text" class="form-control"
-                                           datepicker-popup="{{format}}"
-                                           show-weeks="false"
-                                           ng-model="newDiscussionStartDate"
-                                           is-open="opened" min-date="minDate"
-                                           max-date="'3015-06-22'"
-                                           datepicker-options="dateOptions"
-                                           date-disabled="disabled(date, mode)"
-                                           ng-required="true" close-text="Close">
-
-                                    <div class="input-group-btn">
-                                        <button type="button" class="btn btn-default" ng-click="open($event)">
-                                            <i class="icon-calendar"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="topic-name" class="col-sm-3 control-label">Until:</label>
-                                <div class="prereqMenu" ng-controller="DatepickerCtrl">
-                                    <p class="input-group"></p>
-                                    <input type="text" class="form-control"
-                                           datepicker-popup="{{format}}"
-                                           show-weeks="false"
-                                           ng-model="newDiscussionEndDate"
-                                           is-open="opened" min-date="minDate"
-                                           max-date="'3015-06-22'"
-                                           datepicker-options="dateOptions"
-                                           date-disabled="disabled(date, mode)"
-                                           ng-required="true" close-text="Close">
-
-                                    <div class="input-group-btn">
-                                        <button type="button" class="btn btn-default" ng-click="open($event)">
-                                            <i class="icon-calendar"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                         <div id="partialNewAssignment" class="form-horizontal" ng-show="newAssignment">
                             <div class="form-group">
@@ -557,37 +479,30 @@
                                     </span>
                                 </div>
                             </div>
-                            Date is <span ng-model="newQuizDueDate"></span>
                             <a href="" class="btn btn-primary pull-right" ng-disabled="!moreOptions.value" ng-click="moreOptions()">More Options*</a>
                             <div class="small smallPrint pull-right">*This button redirects to Canvas. After making changes in Canvas you must return to this page and click the “Refresh Data from Canvas“ button</div>
                         </div>
                         <div id="partialNewSubHeader" class="form-horizontal" ng-show="newSubHeader">
-                            Type the text you\'d like to add as a module sub-header
+                            Type the text you&#39;d like to add as a module sub-header
                             <div class="form-group">
                                 <label for="subheader" class="col-sm-3 control-label">Header</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="subheader" name="subheader" value="">
+                                    <input type="text" class="form-control" ng-model="newSubheader" value="">
                                 </div>
                             </div>
                         </div>
                         <div id="partialNewExternalUrl" class="form-horizontal" ng-show="newExternalUrl">
                             <i class="icon-link"></i> Enter a URL and page name to add a link to any website URL to this module.
                             <div class="form-group">
-                                <label for="external-url-url" class="col-sm-3 control-label">URL:</label>
+                                <label for="external-tool-url" class="col-sm-3 control-label">URL:</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="external-url-url" name="external-url-url" value="">
+                                    <input type="text" class="form-control" ng-model="newExternalUrlUrl" value="">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="external-url-page-name" class="col-sm-3 control-label">Page Name:</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="external-url-page-name" name="external-url-page-name" value="">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="grade" class="col-sm-3 control-label"></label>
-                                <div class="col-sm-9 checkbox">
-                                    <label><input type="checkbox">Load in a new tab</label>
+                                    <input type="text" class="form-control" ng-model="newExternalUrlName" value="">
                                 </div>
                             </div>
                         </div>

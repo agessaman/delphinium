@@ -87,13 +87,13 @@ class RestfulApi extends Controller
         switch($type)
         {
             case "Page":
-                $page_url = json_encode($url);
+                $page_url = ($url);
                 break;
             case "ExternalUrl":
-                $external_url = json_encode($url);
+                $external_url = ($url);
                 break;
             case "ExternalTool":
-                $external_url = json_encode($url);
+                $external_url = ($url);
                 break;
         }
         
