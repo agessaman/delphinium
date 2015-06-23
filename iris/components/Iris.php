@@ -52,34 +52,24 @@ class Iris extends ComponentBase
         $finalData = $this->prepareData($courseId, $moduleData);
     	$this->page['graphData'] = json_encode($finalData);
     }
-   public function defineProperties()
+    
+    public function defineProperties()
     {
-        return [
-            'cacheTime' => [
-                'title'              => 'Cache Time',
-                'description'        => 'For how long should we cache Iris\' data (mins)?',
-                'type'              => 'dropdown',
-                'placeholder'       => 'Select how long we should cache data for',
-                'default'            => 20,
-                'options'           => ['5'=>'5 mins', '10'=>'10 mins', '15'=>'15 mins',
-                    '20'=>'20 mins','30'=>'30 mins','1440'=>'1 day',
-                    '10080'=>'1 week','10081'=>'Forever',]
-            ]
-            
-        ];
+    	return [
+            'getFilter' => [
+            	'title'             => 'Filter Params',
+             	'description'       => 'Choose the filter parameter for this chart',
+             	'type'              => 'dropdown',
+                'placeholder'       => 'Choose a tag',
+        	]
+    	];
     }
     
-    public function getChartNameOptions()
+    public function getFilterOptions()
     {
-        $slides = IrisCharts::all();
-        $array_dropdown = ['0'=>'- select a chart - '];
-
-        foreach ($slides as $slide)
-        {
-            $array_dropdown[$slide->id] = $slide->Name;
-        }
-
-        return $array_dropdown;
+    	$roots = new Roots();
+        $arr = explode(',',$roots->getAvailableTags());
+        return $arr;
     }
     
     private function buildTree(array &$elements, $parentId = 1) {
