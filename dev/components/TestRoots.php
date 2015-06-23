@@ -3,6 +3,7 @@
 use Delphinium\Roots\UpdatableObjects\Module;
 use Delphinium\Roots\UpdatableObjects\ModuleItem;
 use Delphinium\Roots\Models\Assignment;
+use Delphinium\Roots\Models\ModuleItem as DbModuleItem;
 use Delphinium\Roots\Roots;
 use Delphinium\Roots\RequestObjects\SubmissionsRequest;
 use Delphinium\Roots\RequestObjects\ModulesRequest;
@@ -32,7 +33,7 @@ class TestRoots extends ComponentBase
     public function onRun()
     {  
 //        $this->refreshCache();
-//        $this->test();
+        $this->test();
         
 //        Cache::flush();
 //        $this->testBasicModulesRequest();
@@ -62,7 +63,7 @@ class TestRoots extends ComponentBase
 //        $this->testFileUpload();
 //        $this->testAddingAssignment();
 //        $this->testStudentAnalyticsAssignmentDate();
-        $this->testGetCourse();
+//        $this->testGetCourse();
     }
     
     private function testBasicModulesRequest()
@@ -402,14 +403,26 @@ class TestRoots extends ComponentBase
     
     public function test()
     {
-        $file = "file.txt";
-        $url = "https://uvu.instructure.com/api/v1/courses/343331/files?name=file.txt&size=19&content_type=text/plain&on_duplicate=rename&access_token=14~VsT5x3fmVUN5fmVzHhDvfTLxurX2RYlIBcVxzgSs4SKBUTMcObOGgGW8iROy93M1";
-        $client = new Client();
-        $response = $client->post($url);
+        $roots = new Roots();
+        $arr = explode(',',$roots->getAvailableTags());
+        return $arr;
         
         
-        echo json_encode($response->getBody());
-        return $response;
+        
+//        $file = "file.txt";
+//        $url = "https://uvu.instructure.com/api/v1/courses/343331/files?name=file.txt&size=19&content_type=text/plain&on_duplicate=rename&access_token=14~VsT5x3fmVUN5fmVzHhDvfTLxurX2RYlIBcVxzgSs4SKBUTMcObOGgGW8iROy93M1";
+//        $client = new Client();
+//        $response = $client->post($url);
+//        
+//        
+//        echo json_encode($response->getBody());
+//        return $response;
+        
+        
+        
+        
+        
+        
         
 //        $upload_url ="https://instructure-uploads-2.s3.amazonaws.com/";
 //        $arrParams=["AWSAccessKeyId"=>"AKIAJFNFXH2V2O7RPCAA",

@@ -246,11 +246,9 @@ class Roots
             case (Lms::CANVAS):
                 $canvas = new CanvasHelper();
                 return $canvas->addDiscussion($discussion);
-                break;
             default:
                 $canvas = new CanvasHelper();
                 return $canvas->addDiscussion($discussion);
-                break;
         }
     }
     

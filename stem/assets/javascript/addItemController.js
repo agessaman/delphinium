@@ -1,6 +1,6 @@
 var addItemCtrl = function ($scope, $modal, $log, $http) {
-        
-    $scope.open = function (item) { 
+
+    $scope.open = function (item) {
         var modalInstance = $modal.open({
             templateUrl: "addItem.html",
             controller: "ModalInstanceCtrl",
@@ -8,32 +8,33 @@ var addItemCtrl = function ($scope, $modal, $log, $http) {
                 itemIn: function () {
                     return item;
                 },
-                moduleItemTypes: function()
+                moduleItemTypes: function ()
                 {
                     return $scope.moduleItemTypes;
                 }
             }
         });
-        
+
         modalInstance.result.then(function (itemOut) {
-            console.log(itemOut);
             item.module_items.push(itemOut);
+            console.log("Item was pushed");
         }, function () {
         });
-          
+
     };
 };
 
 
 
 
-var ModalInstanceCtrl = function ($scope, $window, $modalInstance, $location, $http,$q, itemIn, moduleItemTypes) {
+var ModalInstanceCtrl = function ($scope, $window, $modalInstance, $location, $http, $q, itemIn, moduleItemTypes) {
     $scope.item = itemIn;
     $scope.moduleItemTypes = moduleItemTypes;
     $scope.moreOptions = {
-                    value: false
-                };;
-    $scope.changedItemType = function(selectedModuleItemType)
+        value: false
+    };
+    
+    $scope.changedItemType = function (selectedModuleItemType)
     {
         $scope.resetPartials();
         $scope.selectedModuleItemType = selectedModuleItemType;
@@ -42,29 +43,29 @@ var ModalInstanceCtrl = function ($scope, $window, $modalInstance, $location, $h
                 type: selectedModuleItemType.value
             }
         })
-        .success(function (data, status) {
-            var newItem = { 'id': 'new', 'name': '[new item]' };
-            data[0] = newItem;
-            $scope.itemOptions = data;
-        });
+                .success(function (data, status) {
+                    var newItem = {'id': 'new', 'name': '[new item]'};
+                    data[0] = newItem;
+                    $scope.itemOptions = data;
+                });
     };
-    
-    $scope.changedItem = function(selectedItemToAdd)
+
+    $scope.changedItem = function (selectedItemToAdd)
     {
         $scope.resetPartials();
         var itemToAdd = selectedItemToAdd[0];
-        if(itemToAdd.id === "new")
+        if (itemToAdd.id === "new")
         {
             $scope.newItem = true;
             var type = $scope.selectedModuleItemType.value;
-            switch(type) {
+            switch (type) {
                 case "Assignment":
                     $scope.newAssignment = true;
-                    $scope.assignmentDate = {newAssignmentDueDate : new Date()}
+                    $scope.assignmentDate = {newAssignmentDueDate: new Date()}
                     break;
                 case "Quiz":
                     $scope.newQuiz = true;
-                    $scope.quizDate= {newQuizDueDate : new Date()};
+                    $scope.quizDate = {newQuizDueDate: new Date()};
                     break;
                 case "SubHeader":
                     $scope.newSubHeader = true;
@@ -78,8 +79,6 @@ var ModalInstanceCtrl = function ($scope, $window, $modalInstance, $location, $h
                     break;
                 case "Discussion":
                     $scope.newDiscussion = true;
-                    $scope.newDiscussionStartDate = new Date();
-                    $scope.newDiscussionEndDate = new Date();
                     break;
                 case "ExternalUrl":
                     $scope.newExternalUrl = true;
@@ -90,257 +89,309 @@ var ModalInstanceCtrl = function ($scope, $window, $modalInstance, $location, $h
 //                default:
 //                    default code block
             }
-            
+
         }
         else
         {
             $scope.selectedItem = selectedItemToAdd[0];
         }
     };
-    
-    $scope.addNewItem = function()
+
+    $scope.addNewItem = function ()
     {
-        if($scope.newPage)
+        var resolve;
+        if ($scope.newPage)
         {
-            $scope.addNewPage();
+            resolve = $scope.addNewPage();
         }
         else if ($scope.newAssignment)
         {
-            $scope.addNewAssignment();
+            resolve = $scope.addNewAssignment();
         }
         else if ($scope.newQuiz)
         {
-            $scope.addNewQuiz();
+            resolve = $scope.addNewQuiz();
         }
         else if ($scope.newSubHeader)
         {
-            
+            resolve = $scope.addSubheader();
         }
-        else if($scope.newFile)
+        else if ($scope.newFile)
         {
-            $scope.addNewFile();
+            resolve = $scope.addNewFile();
         }
-        else if($scope.newDiscussion)
+        else if ($scope.newDiscussion)
         {
-            $scope.addNewDiscussionTopic();
+            resolve = $scope.addNewDiscussionTopic();
         }
-        else if($scope.newExternalUrl)
+        else if ($scope.newExternalUrl)
         {
-            $scope.addNewExternalUrl();
+            resolve = $scope.addNewExternalUrl();
         }
         else if ($scope.newExternalTool)
         {
-            $scope.addNewExternalTool();
+            resolve = $scope.addNewExternalTool();
         }
-        
-        $modalInstance.dismiss('cancel');
+        return resolve;
     };
-    
-    $scope.addNewFile = function()
+
+    $scope.addNewFile = function ()
     {
         var fileName = $scope.newFileUp.name;
         $http.post('uploadFile', {
-            name:fileName,
-            size:$scope.newFileUp.size,
-            content_type:$scope.newFileUp.content_type
+            name: fileName,
+            size: $scope.newFileUp.size,
+            content_type: $scope.newFileUp.content_type
         })
-        .success(function (data) {
-            console.log(data);
-//            now we have to upload the file to the upload_url given by Canvas
-            $http.post('uploadFileStepTwo',{
-                params: data.upload_params,
-                upload_url:data.upload_url,
-                file:fileName
-            }).success(function(data)
-            {
-                $http.post('uploadFileStepThree',{
-                    location: data.location
-                }).success(function(data)
-                {
+                .success(function (data) {
                     console.log(data);
+//            now we have to upload the file to the upload_url given by Canvas
+                    $http.post('uploadFileStepTwo', {
+                        params: data.upload_params,
+                        upload_url: data.upload_url,
+                        file: fileName
+                    }).success(function (data)
+                    {
+                        $http.post('uploadFileStepThree', {
+                            location: data.location
+                        }).success(function (data)
+                        {
+                            console.log(data);
+                        });
+                    });
+
                 });
-            });
-             
-        });
     };
-    
-    $scope.addNewPage = function()
+
+    $scope.addNewPage = function ()
     {
         $http.post('addNewPage', {
-            title:$scope.newPageTitle,
+            title: $scope.newPageTitle,
             pageEditingRole: $scope.selectedPageEditingRole.value,
-            body:"hello, testing",
+            body: "hello, testing",
             notifyOfUpdate: $scope.newPageNotify
         })
-        .success(function (data) {
-            //add the newly created item as a module item to the module
-            $scope.newItem = false;
-            $scope.addItem(data.title, data.page_id, itemIn.module_id, $scope.selectedModuleItemType.value, data.url);
-        });
+                .success(function (data) {
+                    //add the newly created item as a module item to the module
+                    $scope.newItem = false;
+                    $scope.addModuleItem(data.title, data.page_id, itemIn.module_id, $scope.selectedModuleItemType.value, data.url);
+                });
     };
-    
-    $scope.addNewDiscussionTopic = function()
+
+    $scope.addNewDiscussionTopic = function ()
     {
-        
+        var deferred = $q.defer();
         $http.post('addNewDiscussionTopic', {
-            title:$scope.newDiscussionTopic,
-            message:"hello, testing",
-            threaded:$scope.newDiscussionThreaded,
-            delayed_post_at:new Date($scope.newDiscussionStartDate),
-            lock_at:new Date($scope.newDiscussionEndDate),
-            podcast_enabled: $scope.newDiscussionPodcast,
-            require_initial_post: $scope.newDiscussionMustPost,
-            podcast_has_student_posts: true,
-            is_announcement:$scope.newDiscussionAnnouncement
+            title: $scope.newDiscussionTopic,
+            is_announcement: $scope.newDiscussionAnnouncement
         })
-        .success(function (data) {
-            if(data.subscription_hold!=="topic_is_announcement")
-            {
-        //add the newly created item as a module item to the module
-                $scope.newItem = false;
-                $scope.addItem(data.title, data.id, itemIn.module_id, $scope.selectedModuleItemType.value, data.url);
-            }
-            
-        });
+                .success(function (data) {
+                    //add the newly created item as a module item to the module
+                    $scope.newItem = false;
+                    var itemPromise =$scope.addModuleItem(data.title, data.id, itemIn.module_id, $scope.selectedModuleItemType.value, data.url);
+                    itemPromise.then(function(resolve){
+                        $scope.newItem = {
+                            item: resolve
+                        };
+                        deferred.resolve(resolve);
+                    }, function(reject){
+                        console.log(reject);      
+                    });
+                });
+        return deferred.promise;
     };
-    
-    $scope.addNewAssignment = function(addModuleItem)
+
+    $scope.addNewAssignment = function (addNewModuleItem)
     {
         var deferred = $q.defer();
         var date = new Date($scope.assignmentDate.newAssignmentDueDate).toISOString();
         $http.post('addNewAssignment', {
-            name:$scope.newAssignmentName,
-            points:$scope.newAssignmentPoints,
-            due_at:date
+            name: $scope.newAssignmentName,
+            points: $scope.newAssignmentPoints,
+            due_at: date
         })
         .success(function (data) {
-            
             $scope.newItem = false;
-            var itemPromise = $scope.addItem(data.name, data.id, itemIn.module_id, $scope.selectedModuleItemType.value, data.html_url);
-
-             //add the newly created item as a module item to the module
-            if(!addModuleItem)
-            {//when the module item is added return the promise of the new assignment
-                itemPromise.then(function(resolve){
-                    deferred.resolve(data);
-                }, function(reject){
-                    console.log(reject);      
-                });
-            }
+            var itemPromise = $scope.addModuleItem(data.name, data.id, itemIn.module_id, $scope.selectedModuleItemType.value, data.html_url);
+            
+            itemPromise.then(function (resolve) {
+                $scope.newItem = {
+                item: resolve
+            };
+            deferred.resolve(resolve);
+            }, function (reject) {
+                console.log(reject);
+            });
+            
         });
-        
+
         return deferred.promise;
     };
-    
-    $scope.addNewQuiz = function(addModuleItem)
+
+    $scope.addNewQuiz = function (addNewModuleItem)
     {
         var deferred = $q.defer();
         var date = new Date($scope.quizDate.newQuizDueDate).toISOString();
         $http.post('addNewQuiz', {
-            title:$scope.newQuizTitle,
-            due_at:date
+            title: $scope.newQuizTitle,
+            due_at: date
         })
         .success(function (data) {//add the newly created item as a module item to the module
             $scope.newItem = false;
-            var itemPromise = $scope.addItem(data.title, data.id, itemIn.module_id, $scope.selectedModuleItemType.value, data.html_url);
+            var itemPromise = $scope.addModuleItem(data.title, data.id, itemIn.module_id, $scope.selectedModuleItemType.value, data.html_url);
             
-            if(!addModuleItem)
-            {
-                itemPromise.then(function(resolve){
-                    deferred.resolve(data);
-                }, function(reject){
-                    console.log(reject);      
-                });
-            }
+            itemPromise.then(function(resolve){
+                $scope.newItem = {
+                    item: resolve
+                };
+                deferred.resolve(resolve);
+            }, function(reject){
+                console.log(reject);      
+            });
+        });
+        return deferred.promise;
+    };
+
+    $scope.addSubheader = function()
+    { 
+        var deferred = $q.defer();
+        $scope.newItem = false;
+        var promise = $scope.addModuleItem($scope.newSubheader, null, itemIn.module_id, $scope.selectedModuleItemType.value, null);
+        promise.then(function(resolve){
+            $scope.newItem = {
+                item: resolve
+            };
+            deferred.resolve(resolve);
+        }, function(reject){
+            console.log(reject);      
         });
         return deferred.promise;
     };
     
-    $scope.fileNameChanged = function(ele)
+    $scope.fileNameChanged = function (ele)
     {
         var files = ele.files;
         var fileUp;
-        for (var i=0;i<=ele.files.length-1;i++)
+        for (var i = 0; i <= ele.files.length - 1; i++)
         {
-            fileUp = { 'name': files[i].name ,'size':files[i].size,'content_type':files[i].type};
-        };
-        
-        $scope.newFileUp = (fileUp)?fileUp:null;
+            fileUp = {'name': files[i].name, 'size': files[i].size, 'content_type': files[i].type};
+        }
+
+        $scope.newFileUp = (fileUp) ? fileUp : null;
         $scope.$apply();
     };
-    
-    $scope.addItem = function(name, itemId, moduleId, type, url)
+
+    $scope.addModuleItem = function(name, itemId, moduleId, type, url)
     {
-        if($scope.newItem)
+        var deferred = $q.defer();//return a promise of when the item is added
+        $http.post('roots/addModuleItem', {
+            name: name,
+            id: itemId,
+            module_id: moduleId,
+            type: type,
+            url: url
+        }).
+        success(function (data) {
+            $scope.newItemOut = {
+                item: data
+            };
+            deferred.resolve($scope.newItemOut.item);
+        });
+            
+        return deferred.promise;
+    };
+    
+    $scope.addItem = function (name, itemId, moduleId, type, url)
+    {
+        if ($scope.newItem)
         {
-            $scope.addNewItem();
+            var resolve = $scope.addNewItem();
+            $modalInstance.close(resolve);
         }
         else
         {
-            var deferred = $q.defer();//return a promise of when the item is added
-            //optional params; if not provided, we will select them from scope
-            name=name||$scope.selectedItem.name;
-            itemId = itemId ||parseInt($scope.selectedItem.id);
-            moduleId = moduleId||itemIn.module_id;
-            type = type ||$scope.selectedModuleItemType.value;
-            url = url ||$scope.selectedItem.url;
+            name = name || $scope.selectedItem.name;
+            itemId = itemId || parseInt($scope.selectedItem.id);
+            moduleId = moduleId || itemIn.module_id;
+            type = type || $scope.selectedModuleItemType.value;
+            url = url || $scope.selectedItem.url;
             
-            $http.post('roots/addModuleItem', {
-                name:name,
-                id:itemId,
-                module_id: moduleId,
-                type:type,
-                url:url
-            }).
-            success(function (data) {
-                $scope.newItemOut = {
-                    item: data
-                };
-                deferred.resolve(data);
-                $modalInstance.close($scope.newItemOut.item);
+            var itemPromise = $scope.addModuleItem(name, itemId, moduleId, type, url);
+            itemPromise.then(function (resolve) {
+                $modalInstance.close(resolve);
+            }, function (reject) {
+                console.log(reject);
             });
         }
-        
-        return deferred.promise;
     };
 
-    $scope.addNewPage = function()
+    $scope.addNewPage = function ()
     {   
-       $http.post('addNewPage', {
-            title:$scope.newPageTitle,
-            body:"test body",//parseInt($scope.selectedItem.id),
+        var deferred = $q.defer();
+        $http.post('addNewPage', {
+            title: $scope.newPageTitle,
+            body: "test body", //parseInt($scope.selectedItem.id),
             pageEditingRole: $scope.selectedPageEditingRole.value,
             notifyOfUpdate: $scope.newPageNotify.value
         }).
         success(function (data) {
             $scope.newItem = false;
-            $scope.addItem(data.title, data.page_id, itemIn.module_id, $scope.selectedModuleItemType.value, data.html_url);
-        }); 
+            var itemPromise = $scope.addModuleItem(data.title, data.page_id, itemIn.module_id, $scope.selectedModuleItemType.value, data.url);
+            itemPromise.then(function(resolve){
+                $scope.newItem = {
+                    item: resolve
+                };
+                deferred.resolve(resolve);
+            }, function(reject){
+                console.log(reject);      
+            });
+        });
+        return deferred.promise;
+    };
+
+    $scope.addNewExternalUrl = function()
+    {
+        var deferred = $q.defer();
+        var url = $scope.newExternalUrlUrl;
+        var name = $scope.newExternalUrlName;
+        $scope.newItem = false;
+//        function(name, itemId, moduleId, type, url)
+        var promise = $scope.addModuleItem(name, null, itemIn.module_id, $scope.selectedModuleItemType.value, url);
+        promise.then(function(resolve){
+            $scope.newItem = {
+                item: resolve
+            };
+            deferred.resolve(resolve);
+        }, function(reject){
+            console.log(reject);      
+        });
+        return deferred.promise;
     };
     
-    $scope.addNewExternalTool = function()
+    $scope.addNewExternalTool = function ()
     {
         $http.post('addNewExternalTool', {
-            name:$scope.newExternalToolName,
-            url:$scope.newExternalToolUrl
+            name: $scope.newExternalToolName,
+            url: $scope.newExternalToolUrl
         })
-        .success(function (data) {
-             //add the newly created item as a module item to the module
-            $scope.newItem = false;
-            $scope.addItem(data.title, data.id, itemIn.module_id, $scope.selectedModuleItemType.value, data.html_url);
-        });
+                .success(function (data) {
+                    //add the newly created item as a module item to the module
+                    $scope.newItem = false;
+                    $scope.addModuleItem(data.title, data.id, itemIn.module_id, $scope.selectedModuleItemType.value, data.html_url);
+                });
     };
-    
-    $scope.newContent = function()
+
+    $scope.newContent = function ()
     {
-        
+
     };
-   
-    $scope.cancel = function () {
+
+    $scope.cancel = function () 
+    {
         $modalInstance.dismiss('cancel');
     };
-    
-    $scope.resetPartials = function()
+
+    $scope.resetPartials = function ()
     {
         $scope.newAssignment = false;
         $scope.newQuiz = false;
@@ -351,47 +402,45 @@ var ModalInstanceCtrl = function ($scope, $window, $modalInstance, $location, $h
         $scope.newExternalUrl = false;
         $scope.newExternalTool = false;
     };
-    
-    $scope.getPageEditingRoles = function()
+
+    $scope.getPageEditingRoles = function ()
     {
         $http.get("getPageEditingRoles")
-        .success(function (data) {
-            $scope.pageEditingRoles = data;
-        });
+                .success(function (data) {
+                    $scope.pageEditingRoles = data;
+                });
     };
-    
-    $scope.enableOptions = function()
+
+    $scope.enableOptions = function ()
     {
-        $scope.moreOptions.value = true;  
+        $scope.moreOptions.value = true;
     };
-    
-    $scope.moreOptions = function()
+
+    $scope.moreOptions = function ()
     {
         if ($scope.newAssignment)
         {
-            var newAssignPromise =  $scope.addNewAssignment(false);
+            var newAssignPromise = $scope.addNewAssignment();
 
-            newAssignPromise.then(function(resolve){
-                var url = "assignments/"+resolve.id+"/edit";
-                $modalInstance.dismiss('cancel');
-                $window.open(lmsUrl+url);
-            }, function(reject){
-                console.log(reject);      
+            newAssignPromise.then(function (resolve) {
+                var url = "assignments/" + resolve.content_id + "/edit";
+                $modalInstance.close(resolve);
+                $window.open(lmsUrl + url);
+            }, function (reject) {
+                console.log(reject);
             });
-    
-    
         }
         else if ($scope.newQuiz)
         {
-            var newQuizPromise =  $scope.addNewQuiz(false);
-            newQuizPromise.then(function(resolve){
-                var url = "quizzes/"+resolve.id+"/edit";
-                $modalInstance.dismiss('cancel');
-                $window.open(lmsUrl+url);
-            }, function(reject){
-                console.log(reject);      
+            var newQuizPromise = $scope.addNewQuiz();
+            newQuizPromise.then(function (resolve) {
+                var url = "quizzes/" + resolve.content_id + "/edit";
+                $modalInstance.close(resolve);
+                $window.open(lmsUrl + url);
+            }, function (reject) {
+                console.log(reject);
             });
-            
+
         }
     };
 };

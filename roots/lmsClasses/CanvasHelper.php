@@ -346,7 +346,7 @@ class CanvasHelper
         $urlArgs[]="access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs); 
-//        echo $url;
+//        echo "The URL is".$url."--";
         //return;
         $response = GuzzleHelper::makeRequest($request, $url);
         
@@ -358,8 +358,12 @@ class CanvasHelper
             if(isset($newlyCreated->module_id))
             {
                 //it's a module item
-                $newFromDb = $this->processSingleModuleItem($courseId, $newlyCreated);
-                
+                        
+                $this->processSingleModuleItem($courseId, $newlyCreated);
+                $newFromDb = ModuleItem::with('content')->where(array(
+                    'module_id' => $newlyCreated->module_id,
+                    'module_item_id'=> $newlyCreated->id
+                ))->first();
 //                echo json_encode($modItem);
                 if($request->getModuleItem()->getTags())
                 {//add the tags!
@@ -373,7 +377,8 @@ class CanvasHelper
             else 
             {
                 //it's a module
-                $newFromDb = $this->processSingleModule($newlyCreated, $courseId);
+                $this->processSingleModule($newlyCreated, $courseId);
+                $newFromDb = Module::firstOrNew(array('module_id' => $newlyCreated->id));
             }
             
             return $newFromDb;
@@ -440,7 +445,7 @@ class CanvasHelper
             {
                 if(($key==="due_at"||$key==="unlock_at"||$key=="lock_at"))
                 {
-//                    $urlArgs[] = "assignment[{$key}]={$value->format('c')}";
+                    $urlArgs[] = "assignment[{$key}]={$value->format('c')}";
                     continue;
                 }
                 if($key==="points_possible")
@@ -456,7 +461,7 @@ class CanvasHelper
         $urlArgs[]="access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
-//        echo $url;
+        echo $url;
 //        return;
         $response = GuzzleHelper::makeRequest($request, $url);
         return json_decode($response->getBody());
@@ -485,7 +490,8 @@ class CanvasHelper
         $urlArgs[]="access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
-//        echo $url;return;
+//        echo $url;
+//        return;
         $response = GuzzleHelper::postData($url);
         return json_decode($response->getBody());
     }
@@ -990,6 +996,7 @@ class CanvasHelper
         $moduleItem->type = $mItem->type;
 
         if(isset($mItem->published)){$moduleItem->published = $mItem->published;}
+
 
         //if we don't have contentId we'll use the module_item_id. This is for tagging purposes
         $contentId = 0;
