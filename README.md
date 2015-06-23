@@ -87,6 +87,11 @@ You'll need to create a `cache` table. Open phpMyAdmin and go to the `octobercms
 
 Run `php artisan october:up`. This will create the table you are missing in your local OctoberCMS app
 
+##### When I try to use Roots I get the following error:
+`Class 'GuzzleHttp\Client' not found`
+
+You need to go to the octoberCms backend and install the plugin October.Drivers
+
 ## Enabling development mode
 
 1. Go to The Canvas website (uvu.instructure.com). Go to the DEV_MGMT course and select “Dev Delphinium” from the left menu. Click “Accept” (or log in, or whatever) when you get the message.
