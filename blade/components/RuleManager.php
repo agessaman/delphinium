@@ -8,8 +8,8 @@ class RuleManager extends ComponentBase
     public function componentDetails()
     {
         return [
-            'name'        => 'RuleManager Component',
-            'description' => 'No description provided yet...'
+            'name'        => 'Rule Manager',
+            'description' => 'Set rules that widgets use'
         ];
     }
 

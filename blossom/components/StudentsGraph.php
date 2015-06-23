@@ -8,8 +8,8 @@ class StudentsGraph extends ComponentBase
     public function componentDetails()
     {
         return [
-            'name'        => 'StudentsGraph Component',
-            'description' => 'No description provided yet...'
+            'name'        => 'StudentsGraph',
+            'description' => 'Shows graph of students progress'
         ];
     }
 
@@ -23,6 +23,7 @@ class StudentsGraph extends ComponentBase
         $this->addJs("/plugins/delphinium/blossom/assets/javascript/studentsgraph.js");
         $this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
         $this->addCss("/plugins/delphinium/blossom/assets/css/studentsgraph.css");
+        $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
     }
 
 }
