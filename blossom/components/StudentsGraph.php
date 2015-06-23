@@ -8,8 +8,8 @@ class StudentsGraph extends ComponentBase
     public function componentDetails()
     {
         return [
-            'name'        => 'StudentsGraph Component',
-            'description' => 'No description provided yet...'
+            'name'        => 'StudentsGraph',
+            'description' => 'Shows graph of students progress'
         ];
     }
 
