@@ -702,24 +702,23 @@ $(document).ready(function () {
         return true;
     }
 
-
-
-
     //CHECK THE STATE OF THE MODULES FOR THE GIVEN USER
     if (studentId === undefined)
     {
-        return;
+        enableClickEvent();
     }
     else
     {
-        moduleStates = getModuleStates();
-
-        getSubmissionData(studentId, courseId);
-
-        //check completion of each module
-        checkModuleCompletion();
+        var promise = $.get("getModuleStates");
+        promise.then(function(data1,textStatus, jqXHR){
+            console.log("trying to get module states");
+                 getModuleStates(data1, textStatus, jqXHR, stateColors);
+        })
+        .fail(function(data2){
+//            console.log("failed getModuleStates"+JSON.stringify(data2));
+        });
     }
-
+    
 });
 
 //catch escape event for when modal window is showing
@@ -732,7 +731,15 @@ $(document).keyup(function (e) {   // enter
     }
 });
 
-
+function enableClickEvent()
+{
+    console.log("enabling click event");
+    var path = d3.select("#wrapper g").selectAll("path")
+    .on("click", function (d) {
+        console.log("attached click event");
+        modalBoxShow(d);
+    });
+}
 function checkModuleCompletion()
 {
     accessibleSubmissData;
@@ -742,57 +749,31 @@ function checkModuleCompletion()
     }
 }
 
-function recursive()
+function getModuleStates(data1, textStatus, jqXHR, stateColors)
 {
-
-}
-function getModuleStates()
-{
-    var tempStates;
-    var colors = stateColors;
-    jQuery.ajax({
-        url: "getModuleStates",
-        type: "GET",
-        success: function (data) {
-
-            if (data !== "Unauthorized user")
-            {
-                tempStates = data;
-
-                tempModData = graphData.children;//.moduleId
-                for (var i = 0; i <= data.length - 1; i++)
-                {
-                    d = data[i];
-                    var mod = d3.select("#path" + d.module_id);
-                    if (mod[0][0] !== null)
-                    {
-                        var originalColor = mod.style("fill");
-                        var newColor = colors[d.state];
-
-                        mod.style("fill", newColor);
-                    }
-                }
-                moduleStates = tempStates;
-            }
-            return tempStates;
+    tempStates = data1;
+    tempModData = graphData.children;
+    for (var i = 0; i <= data1.length - 1; i++)
+    {
+        d = data1[i];
+        var mod = d3.select("#path" + d.module_id);
+        if (mod[0][0] !== null)
+        {
+            var newColor = stateColors[d.state];
+            mod.style("fill", newColor);
         }
+    }
+    moduleStates = tempStates;
+
+    var newPromise = $.get('getStudentSubmissions', { studentId: studentId, courseId : courseId});
+    newPromise.then(function(data1){
+        console.log("got submission");
+        showScores(data1);
+        enableClickEvent();
+    }).fail(function(data2){
+        console.log("failed getStudentSubmissions");
     });
 }
-
-
-function getSubmissionData(studentId, courseId)
-{
-    var content_id = "";
-    jQuery.ajax({
-        url: "getStudentSubmissions",
-        type: "GET",
-        data: {studentId: studentId, courseId: courseId},
-        success: function (data) {
-            showScores(data);
-        }
-    });
-}
-
 function showScores(data)
 {
     //accessibleSubmissionData will be submission_type, content_id, grade
@@ -830,13 +811,6 @@ function showScores(data)
         accessibleSubmissData.push(item);
 
     }
-
-    //can enable clicking on the chart
-    console.log("enable click for modal tooltip");
-    var path = d3.select("#wrapper g").selectAll("path")//svg.datum(graphData).selectAll("path")
-            .on("click", function (d) {
-                modalBoxShow(d);
-            });
 }
 /*******************************Close Modal Popup*************************/
 function hideModalPopup(content)
