@@ -24,7 +24,6 @@ class RestApi extends Controller
         
         $roots = new Roots();
         $res = $roots->getModuleStates($req);
-        
         return $res;
     }
 
