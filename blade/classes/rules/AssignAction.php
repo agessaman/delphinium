@@ -10,7 +10,7 @@ use \Delphinium\Blade\Models\Action as ActionModel;
  *
  * @author Daniel Clark
  */
-class AssignAction {
+class AssignAction implements ISavable {
 
     protected $variable;
     protected $value;
@@ -29,14 +29,14 @@ class AssignAction {
                 $this->value->matches($model->variable);
     }
 
-    public function save(Model $parent, $order) {
+    public function save(Model $parent, Model $parent_rule, $order) {
         $model = new ActionModel([
             'variable_name' => $this->variable->getName(),
             'order' => $order]);
         $model->rule()->associate($parent);
         $model->save();
 
-        $this->value->save($model, 0);
+        $this->value->save($model, $parent_rule, 0);
     }
 
 }

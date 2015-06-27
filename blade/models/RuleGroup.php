@@ -27,5 +27,4 @@ class RuleGroup extends Model
             'table' => 'delphinium_blade_rule_groups_rules'
         ]
     ];
-
 }

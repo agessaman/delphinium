@@ -17,9 +17,9 @@ namespace Delphinium\Blade\Classes\Rules;
 interface VariableOperand
 {
     /**
-     * @param Context $context
+     * @param IContext $context
      *
      * @return Value
      */
-    public function prepareValue(Context $context);
+    public function prepareValue(IContext $context);
 }

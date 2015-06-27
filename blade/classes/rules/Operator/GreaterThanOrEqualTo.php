@@ -11,7 +11,7 @@
 
 namespace Delphinium\Blade\Classes\Rules\Operator;
 
-use Delphinium\Blade\Classes\Rules\Context;
+use Delphinium\Blade\Classes\Rules\IContext;
 use Delphinium\Blade\Classes\Rules\Proposition;
 use Delphinium\Blade\Classes\Rules\VariableOperand;
 
@@ -23,11 +23,11 @@ use Delphinium\Blade\Classes\Rules\VariableOperand;
 class GreaterThanOrEqualTo extends VariableOperator implements Proposition
 {
     /**
-     * @param Context $context Context with which to evaluate this Proposition
+     * @param IContext $context IContext with which to evaluate this Proposition
      *
      * @return boolean
      */
-    public function evaluate(Context $context)
+    public function evaluate(IContext $context)
     {
         /** @var VariableOperand $left */
         /** @var VariableOperand $right */

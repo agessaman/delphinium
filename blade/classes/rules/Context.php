@@ -38,13 +38,12 @@ namespace Delphinium\Blade\Classes\Rules;
  * @author Fabien Potencier
  * @author Justin Hileman <justin@justinhileman.info>
  */
-class Context implements \ArrayAccess
-{
-    private $keys   = array();
+class Context implements IContext {
+
+    private $keys = array();
     private $values = array();
     private $frozen = array();
-    private $raw    = array();
-
+    private $raw = array();
     private $shared;
     private $protected;
 
@@ -56,9 +55,8 @@ class Context implements \ArrayAccess
      *
      * @param array $values (default: array())
      */
-    public function __construct(array $values = array())
-    {
-        $this->shared    = new \SplObjectStorage;
+    public function __construct(array $values = array()) {
+        $this->shared = new \SplObjectStorage;
         $this->protected = new \SplObjectStorage;
 
         foreach ($values as $key => $value) {
@@ -73,8 +71,7 @@ class Context implements \ArrayAccess
      *
      * @return boolean
      */
-    public function offsetExists($name)
-    {
+    public function offsetExists($name) {
         return isset($this->keys[$name]);
     }
 
@@ -87,8 +84,7 @@ class Context implements \ArrayAccess
      *
      * @throws InvalidArgumentException if the name is not defined
      */
-    public function offsetGet($name)
-    {
+    public function offsetGet($name) {
         if (!$this->offsetExists($name)) {
             throw new \InvalidArgumentException(sprintf('Fact "%s" is not defined.', $name));
         }
@@ -103,7 +99,7 @@ class Context implements \ArrayAccess
         // If this is a shared value, resolve, freeze, and return the result
         if ($this->shared->contains($value)) {
             $this->frozen[$name] = true;
-            $this->raw[$name]    = $value;
+            $this->raw[$name] = $value;
 
             return $this->values[$name] = $value($this);
         }
@@ -123,13 +119,12 @@ class Context implements \ArrayAccess
      *
      * @throws RuntimeException if a frozen fact overridden
      */
-    public function offsetSet($name, $value)
-    {
+    public function offsetSet($name, $value) {
         if (isset($this->frozen[$name])) {
             throw new \RuntimeException(sprintf('Cannot override frozen fact "%s".', $name));
         }
 
-        $this->keys[$name]   = true;
+        $this->keys[$name] = true;
         $this->values[$name] = $value;
     }
 
@@ -138,8 +133,7 @@ class Context implements \ArrayAccess
      *
      * @param string $name The unique name for the fact
      */
-    public function offsetUnset($name)
-    {
+    public function offsetUnset($name) {
         if ($this->offsetExists($name)) {
             $value = $this->values[$name];
 
@@ -162,8 +156,7 @@ class Context implements \ArrayAccess
      *
      * @throws InvalidArgumentException if the callable is not a Closure or invokable object
      */
-    public function share($callable)
-    {
+    public function share($callable) {
         if (!$this->isCallable($callable)) {
             throw new \InvalidArgumentException('Value is not a Closure or invokable object.');
         }
@@ -185,8 +178,7 @@ class Context implements \ArrayAccess
      *
      * @throws InvalidArgumentException if the callable is not a Closure or invokable object
      */
-    public function protect($callable)
-    {
+    public function protect($callable) {
         if (!$this->isCallable($callable)) {
             throw new \InvalidArgumentException('Callable is not a Closure or invokable object.');
         }
@@ -205,8 +197,7 @@ class Context implements \ArrayAccess
      *
      * @throws InvalidArgumentException if the name is not defined
      */
-    public function raw($name)
-    {
+    public function raw($name) {
         if (!$this->offsetExists($name)) {
             throw new \InvalidArgumentException(sprintf('Fact "%s" is not defined.', $name));
         }
@@ -223,8 +214,7 @@ class Context implements \ArrayAccess
      *
      * @return array An array of fact names
      */
-    public function keys()
-    {
+    public function keys() {
         return array_keys($this->keys);
     }
 
@@ -235,8 +225,18 @@ class Context implements \ArrayAccess
      *
      * @return boolean
      */
-    protected function isCallable($callable)
-    {
+    protected function isCallable($callable) {
         return is_object($callable) && is_callable($callable);
     }
+
+    public function getData() {
+        $data = [];
+        
+        foreach ($this->keys() as $key) {
+            $data[$key] = $this[$key];
+        }
+        
+        return $data;
+    }
+
 }

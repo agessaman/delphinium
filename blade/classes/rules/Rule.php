@@ -55,7 +55,7 @@ class Rule implements IPersistent {
      *
      * @return boolean
      */
-    public function evaluate(Context $context) {
+    public function evaluate(IContext $context) {
         return $this->condition->evaluate($context);
     }
 
@@ -68,7 +68,7 @@ class Rule implements IPersistent {
      * @param  Context         $context Context with which to execute this Rule
      * @throws \LogicException
      */
-    public function execute(Context $context) {
+    public function execute(IContext $context) {
         if ($this->evaluate($context) && isset($this->actions)) {
             foreach ($this->actions as $act) {
                 $act->execute($context);
@@ -79,9 +79,13 @@ class Rule implements IPersistent {
     public function getId() {
         return $this->dbid;
     }
-    
+
     public function getName() {
         return $this->name;
+    }
+
+    public function getDatatype() {
+        return $this->datatype;
     }
 
     private function save() {
@@ -91,10 +95,10 @@ class Rule implements IPersistent {
         $model->save();
         $this->dbid = $model->id;
         $this->model = $model;
-        $this->condition->save($model, 0);
+        $this->condition->save($model, $model, 0);
 
         for ($i = 0; $i < count($this->actions); $i++) {
-            $this->actions[$i]->save($model, $i);
+            $this->actions[$i]->save($model, $model, $i);
         }
     }
 
@@ -108,10 +112,11 @@ class Rule implements IPersistent {
         if (isset($this->dbid)) {
             return true;
         }
-        
+
         $m = RuleModel::where('name', $this->name)->first();
 
-        if (!isset($m)) return false;
+        if (!isset($m))
+            return false;
         if (!$this->actionsMatch($m)) {
             return false;
         }
@@ -162,4 +167,17 @@ class Rule implements IPersistent {
         }
     }
 
+    public function getVariableDefaultValue($name) {
+        if ($this->exists()) {
+            return $this->model->getVariableDefaultValue($name);
+        }
+        return null;
+    }
+
+    public function getKeys() {
+        if ($this->exists()) {
+            return $this->model->getKeys();
+        }
+        return [];
+    }
 }

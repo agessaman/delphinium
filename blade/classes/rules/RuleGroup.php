@@ -2,7 +2,8 @@
 
 namespace Delphinium\Blade\Classes\Rules;
 
-use \Delphinium\Blade\Models\RuleGroup as RuleGroupModel;
+use Delphinium\Blade\Models\RuleGroup as RuleGroupModel;
+use Delphinium\Blade\Classes\Rules\Context;
 /**
  *
  * @author Daniel Clark
@@ -94,4 +95,12 @@ class RuleGroup implements IPersistent {
         
         $this->model->rules()->sync($ids);
     }
+//    
+//    public function execute(Context $context) {
+//        foreach($this->getRules() as $rule) {
+//            $rule->execute($context);
+//        }
+//        
+//        return $context;
+//    }
 }

@@ -19,11 +19,11 @@ use \Model;
  *
  * Variables are placeholders in Propositions and Comparison Operators. During
  * evaluation, they are replaced with terminal Values, either from the Variable
- * default or from the current Context.
+ * default or from the current IContext.
  *
  * @author Justin Hileman <justin@justinhileman.info>
  */
-class Variable implements VariableOperand {
+class Variable implements VariableOperand, ISavable {
 
     private $name;
     private $value;
@@ -68,13 +68,13 @@ class Variable implements VariableOperand {
     }
 
     /**
-     * Prepare a Value for this Variable given the current Context.
+     * Prepare a Value for this Variable given the current IContext.
      *
-     * @param Context $context The current Context
+     * @param IContext $context The current IContext
      *
      * @return Value
      */
-    public function prepareValue(Context $context) {
+    public function prepareValue(IContext $context) {
         if (isset($this->name) && isset($context[$this->name])) {
             $value = $context[$this->name];
         } elseif ($this->value instanceof VariableOperand) {
@@ -87,7 +87,7 @@ class Variable implements VariableOperand {
     }
 
     //author Daniel Clark
-    public function save(Model $parent, $order) {
+    public function save(Model $parent, Model $parent_rule, $order) {
         $var = null;
         if (!isset($this->value)) {
             $var = new VariableModel([
@@ -116,10 +116,11 @@ class Variable implements VariableOperand {
 
             $var->save();
 
-            $this->value->save($var, 0);
+            $this->value->save($var, $parent_rule, 0);
         }
         
         $parent->variable()->save($var);
+        $parent_rule->variables()->save($var);
     }
 
     public function matches(VariableModel $model) {
