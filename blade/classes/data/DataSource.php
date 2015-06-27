@@ -90,8 +90,7 @@ class DataSource implements IDataSource {
 
     private function runRules($datatype, $rulegroups, $data) {
         if (empty($rulegroups)) {
-            var_dump($data);
-            return;
+            return $data;
         }
 
         $groups = array_map(function ($rg) {
@@ -113,7 +112,7 @@ class DataSource implements IDataSource {
 
             $results[] = $ctx->getData();
         }
-        var_dump($results);
+        return $results;
     }
     
     private static function createRuleContext($rule, $ctx) {
