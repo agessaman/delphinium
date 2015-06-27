@@ -31,7 +31,7 @@ class Variable extends Model implements IRuleComponent {
         'operator' => ['\Delphinium\Blade\Models\Operator', 'name' => 'parent_model']
     ];
     public $belongsTo = [
-        'parent_rule' => ['\Delphinium\Blade\Models\Rule']
+        'rule' => ['\Delphinium\Blade\Models\Rule']
     ];
 
     public function getChild() {
