@@ -22,7 +22,7 @@ function drawProgress(){
 		pointerHeadLengthPercent	: 0.9,
 		
 		minValue					: 0,
-		maxValue					: 10,
+		maxValue					: 1,
 		
 		minAngle					: -90,
 		maxAngle					: 90,
@@ -30,7 +30,7 @@ function drawProgress(){
 		transitionMs				: 750,
 		
 		majorTicks					: 10,
-		labelFormat					: d3.format(',g'),
+		labelFormat					: d3.format(',%'),
 		labelInset					: 10,
 		
 		arcColorFn					: d3.interpolateHsl(d3.rgb('#FF4747'), d3.rgb('#66FF33'))
@@ -176,21 +176,16 @@ function onDocumentReady() {
 		clipWidth: 300,
 		clipHeight: 300,
 		ringWidth: 60,
-		maxValue: 10,
+		maxValue: 1,
 		transitionMs: 4000,
 	});
 	powerGauge.render();
 	
-	function updateReadings() {
-		// just pump in random data here...
-		powerGauge.update(Math.random() * 10);
-	}
-	
-	// every few seconds update reading values
-	updateReadings();
-	setInterval(function() {
-		updateReadings();
-	}, 5 * 1000);
+
+	powerGauge.update(.34);
+
+
+
 }
 
 if ( !window.isLoaded ) {
