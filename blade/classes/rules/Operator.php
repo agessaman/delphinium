@@ -17,7 +17,7 @@ use \Model;
 /**
  * @author Jordan Raub <jordan@raub.me>
  */
-abstract class Operator {
+abstract class Operator implements ISavable {
 
     const UNARY = 'UNARY';
     const BINARY = 'BINARY';
@@ -61,14 +61,14 @@ abstract class Operator {
     abstract protected function getOperandCardinality();
 
     //author Daniel Clark
-    public function save(Model $parent, $order) {
+    public function save(Model $parent, Model $parent_rule, $order) {
         $op = new OperatorModel(['type' => get_class($this), 'order' => $order]);
         $op->save();
 
         $operands = $this->getOperands();
 
         for ($i = 0; $i < count($operands); $i++) {
-            $child = $operands[$i]->save($op, $i);
+            $child = $operands[$i]->save($op, $parent_rule, $i);
         }
         
         $parent->operator()->save($op);

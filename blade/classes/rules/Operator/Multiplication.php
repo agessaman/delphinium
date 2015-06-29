@@ -11,7 +11,7 @@
 
 namespace Delphinium\Blade\Classes\Rules\Operator;
 
-use Delphinium\Blade\Classes\Rules\Context;
+use Delphinium\Blade\Classes\Rules\IContext;
 use Delphinium\Blade\Classes\Rules\VariableOperand;
 use Delphinium\Blade\Classes\Rules\Value;
 
@@ -22,7 +22,7 @@ use Delphinium\Blade\Classes\Rules\Value;
  */
 class Multiplication extends VariableOperator implements VariableOperand
 {
-    public function prepareValue(Context $context)
+    public function prepareValue(IContext $context)
     {
         /** @var VariableOperand $left */
         /** @var VariableOperand $right */

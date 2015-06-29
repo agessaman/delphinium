@@ -38,7 +38,8 @@ class Rule extends Model implements IRuleComponent {
     ];
     
     public $hasMany = [
-        'actions' => ['\Delphinium\Blade\Models\Action']
+        'actions' => ['\Delphinium\Blade\Models\Action'],
+        'variables' => ['\Delphinium\Blade\Models\Variable']
     ];
 
     public function getTree() {
@@ -80,6 +81,28 @@ class Rule extends Model implements IRuleComponent {
         $this->operator->delete();
         
         parent::delete();
+    }
+    
+    /**
+     * Returns an array of variable names
+     */
+    public function getKeys() {
+        $vars = $this->variables;
+        return array_map(function ($var) {return $var->name;}, $vars);
+    }
+    
+    /**
+     * 
+     * @param type $name the name of the variable to get the value for
+     */
+    public function getVariableDefaultValue($name) {
+        $var = $this->variables()->where('name', '=', $name)->first();
+        $value = $var->default_value;
+        
+        if(!isset($value)) return null;
+        
+        settype($value, $var->datatype);
+        return $value;
     }
     
     public static function getOrderCmp() {
