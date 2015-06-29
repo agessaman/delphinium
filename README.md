@@ -94,8 +94,8 @@ You need to go to the octoberCms backend and install the plugin October.Drivers
 
 ## Enabling development mode
 
-1. Go to The Canvas website (uvu.instructure.com). Go to the DEV_MGMT course and select “Dev Delphinium” from the left menu. Click “Accept” (or log in, or whatever) when you get the message.
-2. Copy your userId and Token somewhere safe.
+1. Go to The Canvas website (uvu.instructure.com). Go to the DEV_MGMT course. From the left navigation menu select "Settings". In the new page select "Student View" from the right hand menu. Now select “Guzzle” from the left menu. Click “Accept” (or log in, or whatever) when you get the message.
+2. Copy your userId, Token, and everything else you see on the page somewhere safe.
 3. Update your app with the latest code from GitHub.
 4. Run the following command from your cmd line: 
 * php artisan october:up
