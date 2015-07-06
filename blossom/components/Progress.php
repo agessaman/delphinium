@@ -45,7 +45,10 @@ class Progress extends ComponentBase
         
         $roots = new Roots();
         $res = $roots->assignments($req);
-        $this->page['assignments'] = json_encode($res);
+        $res = json_encode($res);
+        //var_dump($res);
+        echo '<script>var assignments = ', $res, ';</script>';
+
     }
 
 }
