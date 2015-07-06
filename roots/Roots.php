@@ -288,6 +288,7 @@ class Roots
                 return $canvas->addExternalTool($externalTool);
         }
     }
+    
     public function uploadFile(File $file)
     {
         if(!isset($_SESSION)) 
@@ -343,6 +344,7 @@ class Roots
         }
         
     }
+    
     public function getAvailableTags()
     {
         $dbHelper = new DbHelper();

@@ -16,12 +16,6 @@ var moduleCtrl = function ($scope, $modalInstance, $location, itemIn) {
     $scope.cancel = function () {
         $modalInstance.dismiss('cancel');
     };
-
-    //$scope.addModule = function(){
-    //    $modalInstance.dismiss('addModule');
-    //    alert('Are you sure you want to permanently add this module?');
-    //    $scope.remove();
-    //}
 };
 
 var addModuleCtrl = function ($scope, $modal, $log ) {
@@ -47,6 +41,11 @@ var addModuleCtrl = function ($scope, $modal, $log ) {
             }
             $log.info('Modal dismissed at: ' + new Date());
         });
+    };
+    
+    $scope.addModule = function()
+    {
+        alert("add module");
     };
 };
 
