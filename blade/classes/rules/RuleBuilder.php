@@ -20,7 +20,6 @@ use Delphinium\Blade\Classes\Rules\Operator\LogicalXor;
  *
  * The RuleBuilder provides an easy interface for creating rules
  * 
- * @author Daniel Clark
  */
 class RuleBuilder implements \ArrayAccess
 {

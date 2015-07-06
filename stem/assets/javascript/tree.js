@@ -3,7 +3,7 @@
     angular.module('treeApp', ['ui.tree', 'xeditable', 'ui.bootstrap']).run(function (editableOptions) {
         editableOptions.theme = 'bs2';
     })
-            .controller('treeCtrl', function ($scope, $http, $interval) {
+            .controller('treeCtrl', function ($scope, $http, $interval, $timeout, $q) {
 
                 $scope.data = moduleData;
 //                $scope.canvasUrl = canvasUrl;
@@ -290,25 +290,32 @@
 
                 $scope.postOrderToLms = function ()
                 {
-
+                    var deferred = $q.defer();
                     $http.post('saveModules', {courseId: courseId,
                         modulesArray: JSON.stringify($scope.data), updateLms: true})
                             .success(function (data, status) {
+                                $timeout(function(){
+                                    $scope.postOrderToLms();
+                                },60000);
                             })
                             .error(function (data) {
                             });
+                    return deferred.promise;
                 };
 
                 $scope.initManager = function()
                 {
-
                     $scope.saveOrder();//save the new order right away
-//                    $interval($scope.postOrderToLms, 60000);//post order to Canvas every  minute
+                    
                     $http.get("getModuleItemTypes")
                     .success(function (data, status) {
 
                             $scope.moduleItemTypes = data;
                     });
+                    
+                    $timeout(function(){
+                        $scope.postOrderToLms();
+                    },30000);
                 };
                 
                 $scope.initManager();

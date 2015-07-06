@@ -84,8 +84,6 @@ $(function () {
 
 
 var DatepickerCtrl = function ($scope) {
-
-
     $scope.open = function($event) {
         console.log($event);
         $event.preventDefault();

@@ -94,10 +94,11 @@ You need to go to the octoberCms backend and install the plugin October.Drivers
 
 ## Enabling development mode
 
-1. Go to The Canvas website (uvu.instructure.com). Go to the DEV_MGMT course and select “Dev Delphinium” from the left menu. Click “Accept” (or log in, or whatever) when you get the message.
-2. Copy your userId and Token somewhere safe.
+1. Go to The Canvas website (uvu.instructure.com). Go to the DEV_MGMT course. From the left navigation menu select "Settings". In the new page select "Student View" from the right hand menu. Now select “Guzzle” from the left menu. Click “Accept” (or log in, or whatever) when you get the message.
+2. Copy your userId, Token, and everything else you see on the page somewhere safe.
 3. Update your app with the latest code from GitHub.
 4. Run the following command from your cmd line: 
 * php artisan october:up
 5. In your backend app go to Greenhouse/Dev. Add a new Dev Configuration (enter your UserId, Token, CourseId, Domain, and  select “Enable for dev mode”). Save your changes
-6. Now in your development environment whenever you are going to request data from Raspberry you’ll need to drop the “dev/Dev” component in your page first.  To configure it just select the “Dev Configuration” you just created from the drop down. Then drop any other component you are going to be working on (this only applies for components that make data calls to Raspberry)
+6. Now in your development environment whenever you are going to request data from Roots you’ll need to drop the “dev/Dev” component in your page first.  To configure it just select the “Dev Configuration” you just created from the drop down. Then drop any other component you are going to be working on (this only applies for components that make data calls to Roots).
+7. OctoberCMS moved its guzzle vendor folder (as well as all other vendor files) to a new plugin. You will need to add the October.Drivers plugin in order for Roots to work.

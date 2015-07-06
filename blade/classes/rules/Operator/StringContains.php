@@ -11,7 +11,7 @@
 
 namespace Delphinium\Blade\Classes\Rules\Operator;
 
-use Delphinium\Blade\Classes\Rules\Context;
+use Delphinium\Blade\Classes\Rules\IContext;
 use Delphinium\Blade\Classes\Rules\Proposition;
 use Delphinium\Blade\Classes\Rules\VariableOperand;
 
@@ -27,7 +27,7 @@ class StringContains extends VariableOperator implements Proposition
      *
      * @return boolean
      */
-    public function evaluate(Context $context)
+    public function evaluate(IContext $context)
     {
         /** @var VariableOperand $left */
         /** @var VariableOperand $right */

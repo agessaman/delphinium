@@ -2,25 +2,58 @@
 var rawSubmissionData;
 var accessibleSubmissData = new Array();
 var moduleStates;
+var submissionData;
+var irisObj;
+var totalCharts=0;
 
 //TODO: make colors configurable
 var stateColors = {locked: "#8F8F8F", unlocked: "#588238", started: "#3087B4", completed: "#143D55"};
 var backColors = {locked: "#DDDDDD", unlocked: "#588238", started: "#3087B4", completed: "#133D55"};
+var breadCrumb = [['width'], ['points'], ['name'], ['path']];
+var b = {
+    w: 94, h: 15, s: 2, t: 10
+};
 
+//will detect all the component instances and call createChart for each of them
+$(document).ready(function(){
+    for (element in window) {
+        if (element.indexOf('delphinium_iris')===0) {
+            totalCharts++;
+            createChart(window[element]);
+        }
+    }
+    
+    if(moduleStates===undefined)
+    {
+        var promise = $.get("getModuleStates");
+        promise.then(function (data1, textStatus, jqXHR) {
+            console.log("trying to get module states");
+            processModuleStates(data1, textStatus, jqXHR, stateColors);
+        })
+        .fail(function (data2) {
+        });
+    }
+    else
+    {
+        processModuleStates(moduleStates,null, null, stateColors);
+    }
 
-$(document).ready(function () {
-    graphData = graphData[0];
-    console.log(graphData);
+    getStudentSubmissions();
+        
+});
 
-    //set up environment
-    var width = 960,
-            height = 700,
+function createChart(iris)
+{
+    irisObj = iris;
+    graphData = iris.graphData[0];
+
+//todo: calculate how big each svg needs to be
+    var width = 480,
+            height = 350,
             radius = Math.min(width, height) / 2;
 
-    /*********************************Make sunburst chart****************************************/
-
-    var svg = d3.select("#wrapper").append("svg")
-            .attr("id", "svg")
+    var svg = d3.select("#wrapper" + iris.filter).append("svg")
+            .attr("id", "svg" + iris.filter)
             .attr("width", width)
             .attr("height", height)
             .append("g")
@@ -53,6 +86,9 @@ $(document).ready(function () {
             .attr("id", function (d) {
                 return "path" + d.module_id;
             })
+            .attr("class", function (d) {
+                return "path" + d.module_id;
+            })
             .attr("d", arc)
             .on("mouseenter", function (d) {
                 showTooltip(d);
@@ -68,9 +104,10 @@ $(document).ready(function () {
                     d3.select("#tooltip").attr("class", "hidden");
                 }
             })
-//                .on("click", function(d){
-//                    modalBoxShow(d);
-//                })
+            .on('click', function(d){
+                console.log("attached click event");
+                modalBoxShow(d);
+            })
             .style("stroke", "#fff")
             .style("fill", function (d) {
                 return "#8F8F8F";
@@ -87,9 +124,6 @@ $(document).ready(function () {
             });
 
 
-
-    /*********************************Show Tooltip********************************/
-    /****5/27/2014****/
     function showTooltip(d)
     {
         resetTooltipContent();
@@ -335,6 +369,7 @@ $(document).ready(function () {
         return true;
     }
 
+    
     function highlightPrerequisite(liSelect, prereqId)
     {
         var originalColor = "";
@@ -344,11 +379,14 @@ $(document).ready(function () {
                 .on("mouseenter", function (d)
                 {
                     var mod = d3.select("#path" + prereqId);
-                    originalColor = mod.style("fill");
-                    mod.style("fill", "#FF6600");
+                    if (mod !== undefined)
+                    {
+                        originalColor = mod.style("fill");
+                        mod.style("fill", "#FF6600");
 
-                    d3.select("#tooltip")
-                            .attr("class", "seeThroughOnly");
+                        d3.select("#tooltip")
+                                .attr("class", "seeThroughOnly");
+                    }
                 })
                 .on("mouseleave", function (d)
                 {
@@ -356,8 +394,11 @@ $(document).ready(function () {
                     d3.select("#tooltip")
                             .attr("class", "solid");
 
-                    var mod = d3.select("#" + prereqId)
-                            .style("fill", originalColor);
+                    var mod = d3.select("#" + prereqId);
+                    if (mod !== undefined)
+                    {
+                        mod.style("fill", originalColor);
+                    }
                 });
     }
 
@@ -509,26 +550,22 @@ $(document).ready(function () {
     }
     /***************************************** tooltip to follow mouse on each movement ****************************************/
 
-    function followCursor() {
+    function followCursor() 
+    {
         var tooltip = d3.select("#tooltip");
         //find width and height of tooltip and of the document.
         //if the natural x or y positions make it so the box goes outside of "margins" then choose a different x/y positions
         var tipWidth = parseInt(tooltip.style("width"), 10);
         var tipHeight = parseInt(tooltip.style("height"), 10);
-
-//    var docWidth = parseInt(window.innerWidth);
-//    var docHeight = parseInt(window.innerHeight);
         var docWidth = parseInt(window.innerWidth) - 30; ///-30 to account for the right scrolling bar
         var docHeight = parseInt(window.innerHeight);
 
-        //Get x/y values for the tooltip
-        var wrap = d3.select("#wrapper").node();
-        var x = parseInt((d3.mouse(wrap)[0]) + 20);
-        var y = parseInt((d3.mouse(wrap)[1]) + 60);
-
+        var dom = document.getElementById("wrapper"+iris.filter);
+        var x = parseInt((d3.mouse(dom)[0]) + 20); 
+        var y = parseInt((d3.mouse(dom)[1]) + 60);
+         
         //when running into the right frame
         //only do this if the entire document width isn't smaller than the tooltip width
-
         if ((x + tipWidth) > docWidth)
         {
             //need to scroll left;
@@ -601,14 +638,10 @@ $(document).ready(function () {
         }
         return path;
     }
-    /***************************************** Make breadcrumb ****************************************/
-    var breadCrumb = [['width'], ['points'], ['name'], ['path']];
 
-    var b = {
-        w: 94, h: 15, s: 2, t: 10
-    };
-
-    function breadcrumbPoints(d, i) {
+    
+    function breadcrumbPoints(d, i) 
+    {
         //b.w = (d.name.length*10);
         var points = [];
         points.push("0,0");
@@ -621,7 +654,9 @@ $(document).ready(function () {
         }
         return points.join(" ");
     }
-    function breadCrumbFill(node) {
+    
+    function breadCrumbFill(node) 
+    {
         var path = [];
         var current = node;
         while (current.parent) {
@@ -683,10 +718,6 @@ $(document).ready(function () {
                     }
                     return name;
                 });
-
-        //var lastText = d3.select(d3.selectAll("text")[0].pop());
-        //lastText.style("fill","#2C2F34");
-
         // Set position for entering and updating nodes.
         g.attr("transform", function (d, i) {
             return "translate(" + i * (b.w + b.s) + ", 0)";
@@ -702,81 +733,59 @@ $(document).ready(function () {
         return true;
     }
 
-    //CHECK THE STATE OF THE MODULES FOR THE GIVEN USER
-    if (studentId === undefined)
+}
+
+/*******************************Reset Tooltip Content*************************/
+function resetTooltipContent()
+{
+    var assignments = d3.select("#ulAssignments");
+    assignments.selectAll("*").remove();
+    var optional = d3.select("#ulOptionalAssignments");
+    optional.selectAll("*").remove();
+
+    var prereqs = d3.select("#ulPrerequisites");
+    prereqs.selectAll("*").remove();
+    $("#tooltipDesc").html("");
+    
+    return true;
+}
+
+function processModuleStates(states,textStatus, jqXHR, stateColors)
+{
+    tempStates = states;
+    tempModData = graphData.children;
+    for (var i = 0; i <= states.length - 1; i++)
     {
-        enableClickEvent();
+        d = states[i];
+        d3.selectAll(".path" + d.module_id)
+            .style("fill", function (e) {
+                console.log(e);
+            return stateColors[d.state];
+        });
+    }
+}
+
+function getStudentSubmissions()
+{
+    if(submissionData==undefined)
+    {
+        var newPromise = $.get('getStudentSubmissions', {studentId: studentId, courseId: courseId});
+        newPromise.then(function (data1) {
+            showScores(data1);
+        }).fail(function (data2) {
+            console.log("failed getStudentSubmissions");
+        });
     }
     else
     {
-        var promise = $.get("getModuleStates");
-        promise.then(function(data1,textStatus, jqXHR){
-            console.log("trying to get module states");
-                 getModuleStates(data1, textStatus, jqXHR, stateColors);
-        })
-        .fail(function(data2){
-//            console.log("failed getModuleStates"+JSON.stringify(data2));
-        });
-    }
-    
-});
-
-//catch escape event for when modal window is showing
-$(document).keyup(function (e) {   // enter   
-    if (e.keyCode == 27) {
-        if ($("#blocker").hasClass("show"))
-        {
-            hideModalPopup();
-        }
-    }
-});
-
-function enableClickEvent()
-{
-    console.log("enabling click event");
-    var path = d3.select("#wrapper g").selectAll("path")
-    .on("click", function (d) {
-        console.log("attached click event");
-        modalBoxShow(d);
-    });
-}
-function checkModuleCompletion()
-{
-    accessibleSubmissData;
-    for (var i = 0; i <= graphData.length - 1; i++)
-    {
-
+        showScores(submissionData);
     }
 }
 
-function getModuleStates(data1, textStatus, jqXHR, stateColors)
-{
-    tempStates = data1;
-    tempModData = graphData.children;
-    for (var i = 0; i <= data1.length - 1; i++)
-    {
-        d = data1[i];
-        var mod = d3.select("#path" + d.module_id);
-        if (mod[0][0] !== null)
-        {
-            var newColor = stateColors[d.state];
-            mod.style("fill", newColor);
-        }
-    }
-    moduleStates = tempStates;
 
-    var newPromise = $.get('getStudentSubmissions', { studentId: studentId, courseId : courseId});
-    newPromise.then(function(data1){
-        console.log("got submission");
-        showScores(data1);
-        enableClickEvent();
-    }).fail(function(data2){
-        console.log("failed getStudentSubmissions");
-    });
-}
 function showScores(data)
-{
-    //accessibleSubmissionData will be submission_type, content_id, grade
+{//accessibleSubmissionData will be submission_type, content_id, grade
+    console.log("added scores");
     var rawSubmissionData = data;
     var content_id;
     for (var i = 0; i <= data.length - 1; i++)
@@ -807,12 +816,10 @@ function showScores(data)
                 }
             }
         }
-
         accessibleSubmissData.push(item);
-
     }
 }
-/*******************************Close Modal Popup*************************/
+
 function hideModalPopup(content)
 {
     d3.select("#tooltip").attr("class", "hidden");
@@ -822,26 +829,6 @@ function hideModalPopup(content)
     resetTooltipContent();
     return true;
 }
-
-
-/*******************************Reset Tooltip Content*************************/
-function resetTooltipContent()
-{
-    var assignments = d3.select("#ulAssignments");
-    assignments.selectAll("*").remove();
-    var optional = d3.select("#ulOptionalAssignments");
-    optional.selectAll("*").remove();
-
-    var prereqs = d3.select("#ulPrerequisites");
-    prereqs.selectAll("*").remove();
-    $("#tooltipDesc").html("");
-    return true;
-}
-
-/*****************Show Modal Window********************************/
-/****5/14/2014****/
-
-//display modal Window
 function modalBoxShow(content) {
     //IF THE BOX WAS SORT OF HIDDEN BEFORE, HERE WE NEED TO SLIDE IT UP SO ALL THE CONTENT IS VISIBLE.
     var slideTooltip = false;

@@ -30,6 +30,9 @@ class Variable extends Model implements IRuleComponent {
         'variable' => ['\Delphinium\Blade\Models\Variable', 'name' => 'parent_model'],
         'operator' => ['\Delphinium\Blade\Models\Operator', 'name' => 'parent_model']
     ];
+    public $belongsTo = [
+        'rule' => ['\Delphinium\Blade\Models\Rule']
+    ];
 
     public function getChild() {
         if (isset($this->variable)) return $this->variable;

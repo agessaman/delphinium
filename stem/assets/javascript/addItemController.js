@@ -44,8 +44,11 @@ var ModalInstanceCtrl = function ($scope, $window, $modalInstance, $location, $h
             }
         })
                 .success(function (data, status) {
-                    var newItem = {'id': 'new', 'name': '[new item]'};
-                    data[0] = newItem;
+                    if(!selectedModuleItemType.value==='ExternalTool')
+                    {
+                        var newItem = {'id': 'new', 'name': '[new item]'};
+                        data[0] = newItem;
+                    }
                     $scope.itemOptions = data;
                 });
     };

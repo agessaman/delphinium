@@ -22,11 +22,11 @@ interface Proposition
 {
 
     /**
-     * Evaluate the Proposition with the given Context.
+     * Evaluate the Proposition with the given IContext.
      *
-     * @param Context $context Context with which to evaluate this Proposition
+     * @param IContext $context IContext with which to evaluate this Proposition
      *
      * @return boolean
      */
-    public function evaluate(Context $context);
+    public function evaluate(IContext $context);
 }
