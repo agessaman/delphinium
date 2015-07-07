@@ -5,9 +5,7 @@ $(document).ready(function(){
 });
 
 function calculateProgress(){
-	for (var i = 0; i < assignments.length; i++) {
-		console.log(assignments[i].status);
-	};
+
 }
 function scaleProgress(){
 
