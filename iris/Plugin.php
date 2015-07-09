@@ -7,8 +7,9 @@ use System\Classes\PluginBase;
 class Plugin extends PluginBase
 {
 	public $require = [
-    	'Delphinium.Greenhouse',
-    	'Delphinium.Blackberry'
+            'Delphinium.Greenhouse',
+            'Delphinium.Dev',
+            'Delphinium.Roots'
 	];
 
     public function pluginDetails()
@@ -16,7 +17,7 @@ class Plugin extends PluginBase
         return [
             'name' => 'Iris Plugin',
             'description' => 'Sunburst chart for course content',
-            'author' => 'Damaris Zarco',
+            'author' => 'Delphinium',
             'icon' => 'icon-bullseye'
         ];
     }
@@ -26,7 +27,6 @@ class Plugin extends PluginBase
     {
         return [
             '\Delphinium\Iris\Components\Iris' => 'iris',
-            '\Delphinium\Iris\Components\Angular' => 'angular',
             '\Delphinium\Iris\Components\IrisLegend' => 'irislegend'
         ];
     }
@@ -39,11 +39,12 @@ class Plugin extends PluginBase
     	 
             $manager->addSideMenuItems('Delphinium.Greenhouse', 'greenhouse', [
                 'Iris' => [
-					'label' => 'Iris',
-					'icon' => 'icon-bullseye',
-					'owner' => 'Delphinium.Greenhouse',
-					'url' => Backend::url('delphinium/iris/home'),
-				]
+                    'label' => 'Iris',
+                    'icon' => 'icon-bullseye',
+                    'owner' => 'Delphinium.Greenhouse',
+                    'url' => Backend::url('delphinium/iris/home'),
+                    'group'       => 'Iris',
+                ]
             ]);
             
         });

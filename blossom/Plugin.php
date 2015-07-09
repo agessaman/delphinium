@@ -9,7 +9,11 @@ Use Event;
  */
 class Plugin extends PluginBase
 {
-
+    public $require = [
+        'Delphinium.Greenhouse',
+        'Delphinium.Dev',
+        'Delphinium.Roots'
+    ];
     /**
      * Returns information about this plugin.
      *
@@ -33,6 +37,9 @@ class Plugin extends PluginBase
             '\Delphinium\Blossom\Components\Experience' => 'experience',
             '\Delphinium\Blossom\Components\Leaderboard' => 'leaderboard',
             '\Delphinium\Blossom\Components\Competencies' => 'competencies',
+            '\Delphinium\Blossom\Components\StudentsGraph' => 'studentsgraph',
+            '\Delphinium\Blossom\Components\Timer' => 'timer',
+            '\Delphinium\Blossom\Components\Progress' => 'progress',
         ];
     }
 	
@@ -80,6 +87,30 @@ class Plugin extends PluginBase
                     'icon' => 'icon-sitemap',
                     'owner' => 'Delphinium.Greenhouse',
                     'url' => Backend::url('delphinium/blossom/leaderboard'),
+                    'group'       => 'Blossom',
+                ],
+
+                'StudentsGraph' => [
+                    'label' => 'StudentsGraph',
+                    'icon' => 'icon-bar-chart',
+                    'owner' => 'Delphinium.Greenhouse',
+                    'url' => Backend::url('delphinium/blossom/studentsgraph'),
+                    'group'       => 'Blossom',
+                ],
+
+                'Timer' => [
+                    'label' => 'Timer',
+                    'icon' => 'icon-bar-chart',
+                    'owner' => 'Delphinium.Greenhouse',
+                    'url' => Backend::url('delphinium/blossom/timer'),
+                    'group'       => 'Blossom',
+                ],
+
+                'Progress' => [
+                    'label' => 'Progress',
+                    'icon' => 'icon-bar-chart',
+                    'owner' => 'Delphinium.Greenhouse',
+                    'url' => Backend::url('delphinium/blossom/progress'),
                     'group'       => 'Blossom',
                 ]
             ]);

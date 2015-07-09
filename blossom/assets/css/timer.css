@@ -1,0 +1,46 @@
+#clock {
+  background-color: #089fd7;
+  width: 700px;
+  height: 200px;
+}
+
+#clockText {
+    text-align: center;
+    width: 700px;
+    color: #ffffff;
+    background-color: #089fd7;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 24px;
+}
+text {
+    fill: #ffffff;
+}
+.count {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 56px;
+  font-weight: bold;
+}
+
+.label {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 16px;
+}
+
+.details {
+  font-family: "Times new roman";
+}
+.progress-meter .shadow {
+  fill: #0178b0;
+}
+
+.progress-meter .foregroundMinute {
+  fill: #e1d1fd;
+}
+
+.progress-meter .foregroundHour {
+  fill: #c5efff;
+}
+ 
+.progress-meter .foregroundDay {
+  fill: #fcfe60;
+}

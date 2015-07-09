@@ -1,11 +1,5 @@
 <div class="iris-widget">
-    <script type="text/javascript">
-            var graphData = {{ graphData|raw}};
-            var rawData = {{ rawData|raw}};
-            var studentId = {{userId}};
-            var courseId = {{courseId}};
-    </script>
-    <div id="wrapper">
+    <div id="wrapper{{filter}}">
         <div id="tooltip" class="hidden">
             <span class="imgClose">
                 <span id="stackImgClose" class="fa-stack fa-lg">
@@ -27,11 +21,6 @@
                     <ul id="ulPrerequisites"></ul>
                 </div>
                 <div class="bottomDiv">
-                    <!--<div class="subtitleBar">
-                        <div>
-                            <h3 id="module">Module 4:</h3>
-                        </div>
-                    </div>-->
                     <div id="content" class="content">
                         <h5 id="tooltipDesc"></h5>
                         <div id="divAssignments">
@@ -50,3 +39,23 @@
     </div>
     <div id="blocker" class="hidden"></div>	
 </div>
+
+<script type="text/javascript">
+    function Iris (graphData, rawData, filter) {
+        this.filter = filter;
+        this.graphData = graphData;
+        this.name = "iris"+filter;
+        this.chartNumber = 0;
+    }
+    var studentId = {{userId}};
+    var courseId = {{courseId}}
+    var graphData = {{ graphData|raw}};
+    var rawData = {{ rawData|raw}};
+    var filter = {{filter}};
+    var chartName = 'graphData'+filter;
+    window['chartName'] = chartName;
+    var irisChartName = 'iris'+filter;
+    var iris = new Iris(graphData, rawData, filter);
+    window['delphinium_iris'+filter] = iris;
+
+</script>

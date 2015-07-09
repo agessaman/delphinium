@@ -1,14 +1,11 @@
 <?php  namespace Delphinium\Iris\Components;
 
-use Delphinium\Iris\Models\Home as IrisCharts;
-use Delphinium\Iris\Classes\Iris as IrisClass;
-use Delphinium\Blackberry\Models\Developers as LtiConfigurations;
 use Cms\Classes\ComponentBase;
 
 /**
  * Description of IrisLegend
  *
- * @author damariszarco
+ * @author Delphinium
  */
 class IrisLegend extends ComponentBase
 {

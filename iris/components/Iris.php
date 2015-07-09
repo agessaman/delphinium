@@ -1,32 +1,32 @@
 <?php namespace Delphinium\Iris\Components;
 
-use Delphinium\Iris\Models\Home as IrisCharts;
-use Delphinium\Iris\Classes\Iris as IrisClass;
-use Delphinium\Core\Roots;
-use Delphinium\Core\RequestObjects\ModulesRequest;
-use Delphinium\Core\Enums\CommonEnums\ActionType;
+use Delphinium\Stem\Models\Home as IrisCharts;
+use Delphinium\Roots\Roots;
+use Delphinium\Roots\RequestObjects\ModulesRequest;
+use Delphinium\Roots\Enums\CommonEnums\ActionType;
 use Cms\Classes\ComponentBase;
 
 class Iris extends ComponentBase
 {
-	
     public function componentDetails()
     {
         return [
             'name'        => 'Iris Chart',
-            'description' => 'This chart displays all the modules of a course and the student\'s progress in it'
+            'description' => 'This chart displays a course\'s modules and the student\'s progress in them'
         ];
     }
     
     public function onRun()
-    {	
-        $this->addJs("/plugins/delphinium/iris/assets/javascript/d3.v3.min.js");
+    {
         $this->addJs("/plugins/delphinium/iris/assets/javascript/jquery.min.js");
-        $this->addJs("/plugins/delphinium/iris/assets/javascript/newSunburst.js");
+        $this->addJs("/plugins/delphinium/iris/assets/javascript/d3.v3.min.js");
+        $this->addJs("/plugins/delphinium/iris/assets/javascript/iris.js");
         $this->addCss("/themes/demo/assets/vendor/font-awesome/css/font-awesome.css");
-        $this->addCss("/themes/demo/assets/vendor/font-autumn/css/font-autumn.css");
         $this->addCss("/plugins/delphinium/iris/assets/css/main.css");
         
+    }
+    public function onRender()
+    {
         if(!isset($_SESSION)) 
         { 
             session_start(); 
@@ -36,62 +36,102 @@ class Iris extends ComponentBase
         $this->page['courseId'] = $courseId;
         $this->page['userId'] = $_SESSION['userID'];
         
-        $freshData = false;
-        $moduleId = null;
-        $moduleItemId = null;
-        $includeContentDetails = true;
-        $includeContentItems = true;
-        $module = null;
-        $moduleItem = null;
-                
-        $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems, 
-                $includeContentDetails, $module, $moduleItem , $freshData);
+        //Filter by parent node if it has been configured
+        $defaultNode = 1;
+        $filter = $this->property('filter',$defaultNode);
+        $this->page['filter'] = $filter;
+        $finalData;
         
+        $freshData = false;
+        $req = new ModulesRequest(ActionType::GET, null, null, true, true, null, null , $freshData);
+
         $roots = new Roots();
         $moduleData = $roots->modules($req);
         $this->page['rawData'] = json_encode($moduleData);
-        $finalData = $this->prepareData($courseId, $moduleData);
+        $modArr = $moduleData->toArray();
+        
+        if($filter===$defaultNode)
+        {///get all items     
+            $finalData = $this->buildTree($modArr,1);
+        }
+        else
+        {//filter by node
+            $filterObj = array_filter(
+                $modArr,
+                function ($e) use ($filter) {
+                    return $e['module_id'] === $filter;
+                }
+            );
+            $obj = array_shift($filterObj);
+            $finalData = $this->buildTree($modArr,$obj['parent_id'], $filter);
+        }
     	$this->page['graphData'] = json_encode($finalData);
     }
-   public function defineProperties()
+    
+    public function defineProperties()
     {
         return [
-            'cacheTime' => [
-                'title'              => 'Cache Time',
-                'description'        => 'For how long should we cache Iris\' data (mins)?',
-                'type'              => 'dropdown',
-                'placeholder'       => 'Select how long we should cache data for',
-                'default'            => 20,
-                'options'           => ['5'=>'5 mins', '10'=>'10 mins', '15'=>'15 mins',
-                    '20'=>'20 mins','30'=>'30 mins','1440'=>'1 day',
-                    '10080'=>'1 week','10081'=>'Forever',]
+            'filter' => [
+                'title'   => 'Filter',
+                'description' => 'Display only this module and its children in Iris',
+                'placeholder' => 'Select a parent node',
+                'type'    => 'dropdown'
             ]
-            
         ];
     }
-    
-    public function getChartNameOptions()
+
+    public function getFilterOptions()
     {
-        $slides = IrisCharts::all();
-        $array_dropdown = ['0'=>'- select a chart - '];
-
-        foreach ($slides as $slide)
+        $req = new ModulesRequest(ActionType::GET, null, null, true, 
+                true, null, null , false);
+        $roots = new Roots();
+        $moduleData = $roots->modules($req);
+        $arr = $moduleData->toArray();
+        
+        $tree = $this->buildTree($arr, 1);
+        $dash = "-";
+        $result = array();
+        $result[$tree[0]['module_id']] = $tree[0]['name'];
+        
+        foreach($tree as $item)
         {
-            $array_dropdown[$slide->id] = $slide->Name;
+            $this->recursion($item['children'], $dash, $result);
         }
-
-        return $array_dropdown;
+        return $result;
+    }   
+   
+    
+    private function recursion($children, &$dash, &$res)
+    {
+        foreach($children as $item)
+        {
+            $res[$item['module_id']] = $dash.$item['name'];
+            if(sizeof($item['children'])>=1)
+            {
+                $newDash = $dash." -";
+                $this->recursion($item['children'], $newDash, $res);
+            }
+        }
     }
     
-    private function buildTree(array &$elements, $parentId = 1) {
+    private function buildTree(array &$elements, $parentId = 1, $moduleFilter=null) {
         $branch = array();
         foreach ($elements as $key=>$module) {
             if($module['published'] == "1")//if not published don't include it
             {   
+                if(!is_null($moduleFilter)&&($module['module_id']!=$moduleFilter))
+                {//if we have a filter and this module doesn't match the filter, skip the item
+                    unset($elements[$module['module_id']]);
+                    continue;
+                }
                 if ($module['parent_id'] == $parentId) {
                     $children = $this->buildTree($elements, $module['module_id']);
                     if ($children) {
                         $module['children'] = $children;
+                    } 
+                    else
+                    {
+                        $module['children'] = array();
                     }
                     $branch[] = $module;
                     unset($elements[$module['module_id']]);
@@ -102,13 +142,6 @@ class Iris extends ComponentBase
         return $branch;
     }
     
-    private function prepareData($courseId, $moduleData)
-    {
-        $modArr = $moduleData->toArray();
-        $result = $this->buildTree($modArr,1);
-        
-        return $result;
-    }
     
     
 }

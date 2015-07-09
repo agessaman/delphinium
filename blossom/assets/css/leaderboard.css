@@ -27,9 +27,13 @@
  
 .accordionTabTitle.active, .accordionTabTitle:hover{
     background:#4c4c4c;
-    text-decoration:none;
 }
- 
+
+.accordionTabTitle:hover, .accordionTabTitle:focus, .accordionTabTitle:visited, .accordionTabTitle:active, .accordionTabTitle:link{
+    text-decoration: none;
+    color: white;
+}
+
 .accordionTab:last-child .accordionTabTitle {
     border-bottom:none;
 }
@@ -40,10 +44,7 @@
     display:none;
     width:300px;
 }
-a:hover, a:visited, a:active, a:link{
-    text-decoration: none;
-    color: white;
-}
+
 
 .accordionTabContentStudent{
     border: 2px solid black;
