@@ -16,6 +16,10 @@ class AssignmentsRequest extends RootsRequest
     function getFresh_data() {
         return $this->fresh_data;
     }
+    
+    function setFresh_data($fresh_data) {
+        $this->fresh_data = $fresh_data;
+    }
 
         function __construct($actionType, $assignment_id = null, $fresh_data = false) 
     {

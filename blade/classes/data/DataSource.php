@@ -112,6 +112,7 @@ class DataSource implements IDataSource {
 
             $results[] = $ctx->getData();
         }
+        
         return $results;
     }
     
