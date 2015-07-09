@@ -9,6 +9,7 @@ use Delphinium\Roots\Roots;
 use Delphinium\Roots\Enums\ModuleItemEnums\CompletionRequirementType;
 use Delphinium\Roots\Enums\CommonEnums\ActionType;
 use Delphinium\Roots\Models\Page;
+use \DateTime;
 
 class RestfulApi extends Controller 
 {
@@ -60,9 +61,9 @@ class RestfulApi extends Controller
     public function addModule()
     {
         $name = \Input::get('name');
-        $unlock_at =\Input::get('unlock_at');
-        
-        $prerequisite_module_ids =null;//\Input::get('prerequisites');
+        $date =\Input::get('unlock_at');
+        $unlock_at= new DateTime($date);
+        $prerequisite_module_ids =\Input::get('prerequisites');
         $published = \Input::get('published');
         
         $module = new Module($name, $unlock_at, $prerequisite_module_ids, $published, null);
@@ -111,4 +112,34 @@ class RestfulApi extends Controller
         return json_encode($res);
     }
     
+    
+    public function updateModule()
+    {
+        $name = \Input::get('name');
+        
+        $format = DateTime::ISO8601;
+        $date = new DateTime("now");
+        $date->add(new DateInterval('P1D'));
+        $unlock_at = $date;
+        $prerequisite_module_ids =array("380199","380201");
+        $published = true;
+        $position = 4;
+        
+        $module = new Module($name, $unlock_at, $prerequisite_module_ids, $published, $position);
+        
+        
+        $moduleId = 457494;
+        $moduleItemId = null;
+        $includeContentItems = false;
+        $includeContentDetails = false;
+        $moduleItem = null;
+        $freshData = false;
+        
+        //update a module (changing title and published to false)
+        $req = new ModulesRequest(ActionType::PUT, $moduleId, $moduleItemId,  
+            $includeContentItems, $includeContentDetails, $module, $moduleItem , $freshData);
+        
+        $roots = new Roots();
+        $res = $roots->modules($req);
+    }
 }

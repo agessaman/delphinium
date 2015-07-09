@@ -1,4 +1,7 @@
-body{margin:10px;}
+body{
+    margin:10px;
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif !important;
+}
 .btn {
     margin-right: 8px;
 }
@@ -29,10 +32,6 @@ body{margin:10px;}
     width:375px;
     height:350px;
     background: #fff;
-}
-
-.modal-body {
-    height:520px !important;
 }
 
 .dropdown-multiple{
@@ -85,6 +84,17 @@ body{margin:10px;}
     color:darkslategray;
 }
 
+.addPrereqOrRequirement
+{
+    color:#0088cc;
+    cursor: pointer;
+}
+.currentPrerequisites .icon-times-circle{
+    color:gray;
+}
+.currentPrerequisites .icon-times-circle:hover {
+    color: black;
+}
 .angular-ui-tree-handle:hover {
     color: #438eb9;
     background: rgba(54, 113, 150, 0.27);
@@ -162,18 +172,15 @@ top: -35px;
     color: #7c9eb2;
     cursor:pointer;
 }
-
+.pointer{
+    cursor:pointer;
+}
 .prereqMenu{
     display: inline-flex;
     font-family: "lato", sans-serif !important;
 }
 
 .itemModal{
-    font-family: "lato", sans-serif !important;
-}
-
-.addPrereqOrRequirement{
-    color: #337ab7;
     font-family: "lato", sans-serif !important;
 }
 

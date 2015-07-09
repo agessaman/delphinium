@@ -84,6 +84,17 @@ class Manager extends ComponentBase
         $moduleData = $roots->modules($req);
         $modArr = $moduleData->toArray();
         
+        $simpleModules = array();
+        foreach($modArr as $item)
+        {
+            $mod = new \stdClass();
+            
+            $mod->id = $item['module_id'];
+            $mod->value=$item['name'];
+            $simpleModules[] = $mod;
+        }
+        $this->page['rawData'] = json_encode($simpleModules);
+        
         $iris = new IrisClass();
         $result = $iris->buildTree($modArr);
         

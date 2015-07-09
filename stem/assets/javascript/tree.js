@@ -313,9 +313,9 @@
                             $scope.moduleItemTypes = data;
                     });
                     
-                    $timeout(function(){
-                        $scope.postOrderToLms();
-                    },30000);
+//                    $timeout(function(){
+//                        $scope.postOrderToLms();
+//                    },30000);
                 };
                 
                 $scope.initManager();

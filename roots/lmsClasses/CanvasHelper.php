@@ -840,6 +840,7 @@ class CanvasHelper
                 $urlArgs[] = "module[{$key}]={$value}";
             }
         }
+        return $urlArgs;
     }
     
     private function buildAddModuleItemArgs(ModulesRequest $request)
@@ -1036,10 +1037,7 @@ class CanvasHelper
     }
     
     private function saveContentDetails($courseId, $moduleId, $itemId, $contentId, $type, $contentDetails)
-    {
-//        $key="content-".$courseId.'-'.$moduleId.'-'.$itemId.'-'.$contentId;
-        $key = "{$courseId}-module-{$moduleId}-moduleItem-{$itemId}-content-{$contentId}";
-        
+    {   
         $content = Content::firstOrNew(array('content_id'=>$contentId));
         $content->content_id= $contentId;
         $content->content_type= $type;

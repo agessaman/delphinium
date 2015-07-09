@@ -232,29 +232,28 @@ function createChart(iris)
                             }
                         });
 
-                //Highlight prerequisite
-                var originalColor = "";
 
+//              Highlight prerequisite
+                var originalColor = "";
+                var prereqDoms = [];
 
                 ulPrereqs
-                        .on("mouseenter", function (prereqs)
-                        {
-                            var mod = d3.select("#path" + prereqs);
-                            originalColor = mod.style("fill");
-                            mod.style("fill", "#FF6600");
+                .on("mouseenter", function (prereqs)
+                {
+                    prereqDoms = d3.selectAll(".path" + prereqs);
+                    originalColor = prereqDoms.style("fill");
+                    prereqDoms.style("fill", "#FF6600");
+                    d3.select("#tooltip")
+                            .attr("class", "seeThroughOnly");
+                })
+                .on("mouseleave", function (prereqs)
+                {
+                    d3.select(this).style("color", "black");
+                    d3.select("#tooltip")
+                            .attr("class", "solid");
 
-                            d3.select("#tooltip")
-                                    .attr("class", "seeThroughOnly");
-                        })
-                        .on("mouseleave", function (prereqs)
-                        {
-                            d3.select(this).style("color", "black");
-                            d3.select("#tooltip")
-                                    .attr("class", "solid");
-
-                            var mod = d3.select("#path" + prereqs)
-                                    .style("fill", originalColor);
-                        });
+                    prereqDoms.style("fill", originalColor);
+                });
             }
 
 
@@ -372,34 +371,61 @@ function createChart(iris)
     
     function highlightPrerequisite(liSelect, prereqId)
     {
-        var originalColor = "";
-
+        var originalColors = [];
+        var prereqDoms;
 
         liSelect
-                .on("mouseenter", function (d)
-                {
-                    var mod = d3.select("#path" + prereqId);
-                    if (mod !== undefined)
-                    {
-                        originalColor = mod.style("fill");
-                        mod.style("fill", "#FF6600");
-
-                        d3.select("#tooltip")
-                                .attr("class", "seeThroughOnly");
-                    }
-                })
-                .on("mouseleave", function (d)
-                {
-                    d3.select(this).style("color", "black");
-                    d3.select("#tooltip")
-                            .attr("class", "solid");
-
-                    var mod = d3.select("#" + prereqId);
-                    if (mod !== undefined)
-                    {
-                        mod.style("fill", originalColor);
-                    }
-                });
+        .on("mouseenter", function (d)
+        {
+            prereqDoms = d3.select(".path" + prereqId)
+            .each(function(d){
+                originalColors[prereqId] = d.style("fill");
+                d.style("fill", "#FF6600");
+            });
+            
+            d3.select("#tooltip")
+            .attr("class", "seeThroughOnly");
+        })
+        .on("mouseleave", function (d)
+        {
+            d3.select(this).style("color", "black");
+            d3.select("#tooltip")
+                    .attr("class", "solid");
+            for(var i=0;i<=prereqDoms.length-1;i++)
+            {
+                console.log(prereqDoms[i]);
+//                originalColors[prereqDoms[i].]
+            }
+//            var mod = d3.select("#" + prereqId);
+//            if (mod !== undefined)
+//            {
+//                mod.style("fill", originalColor);
+//            }
+        });
+//                .on("mouseenter", function (d)
+//                {
+//                    var mod = d3.select("#path" + prereqId);
+//                    if (mod !== undefined)
+//                    {
+//                        originalColor = mod.style("fill");
+//                        mod.style("fill", "#FF6600");
+//
+//                        d3.select("#tooltip")
+//                                .attr("class", "seeThroughOnly");
+//                    }
+//                })
+//                .on("mouseleave", function (d)
+//                {
+//                    d3.select(this).style("color", "black");
+//                    d3.select("#tooltip")
+//                            .attr("class", "solid");
+//
+//                    var mod = d3.select("#" + prereqId);
+//                    if (mod !== undefined)
+//                    {
+//                        mod.style("fill", originalColor);
+//                    }
+//                });
     }
 
 
@@ -759,7 +785,6 @@ function processModuleStates(states,textStatus, jqXHR, stateColors)
         d = states[i];
         d3.selectAll(".path" + d.module_id)
             .style("fill", function (e) {
-                console.log(e);
             return stateColors[d.state];
         });
     }

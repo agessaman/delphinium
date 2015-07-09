@@ -36,10 +36,10 @@ class TestRoots extends ComponentBase
     {  
         $this->roots = new Roots();
 //        $this->refreshCache();
-        $this->test();
+//        $this->test();
         
 //        Cache::flush();
-//        $this->testBasicModulesRequest();
+        $this->testBasicModulesRequest();
 //        $this->testDeleteTag();
 //        $this->testAddingUpdatingTags();
 //        $this->testUpdatingModuleItem();
