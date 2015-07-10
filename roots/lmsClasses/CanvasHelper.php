@@ -220,13 +220,13 @@ class CanvasHelper
                 if(isset($newlyUpdated->module_id))
                 {
                     //it's a module item
-                    $this->processSingleModuleItem($courseId, $newlyUpdated);
+                    return $this->processSingleModuleItem($courseId, $newlyUpdated);
 
                 }
                 else 
                 {
                     //it's a module
-                    $this->processSingleModule($newlyUpdated, $courseId);
+                    return $this->processSingleModule($newlyUpdated, $courseId);
                 }
             }
         }

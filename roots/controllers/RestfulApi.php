@@ -62,7 +62,14 @@ class RestfulApi extends Controller
     {
         $name = \Input::get('name');
         $date =\Input::get('unlock_at');
-        $unlock_at= new DateTime($date);
+        if(!is_null($date))
+        {
+           $unlock_at= new DateTime($date);
+        }
+        else
+        {
+            $unlock_at = null;
+        }
         $prerequisite_module_ids =\Input::get('prerequisites');
         $published = \Input::get('published');
         
@@ -73,6 +80,11 @@ class RestfulApi extends Controller
         
         $roots = new Roots();
         $res = $roots->modules($req);
+        
+//        //add the parent_id;
+        $parent_id = \Input::get('parent_id');
+        $res->parent_id = $parent_id;
+        $roots->updateModuleParent($res);
         return json_encode($res);
     }
     
@@ -116,30 +128,19 @@ class RestfulApi extends Controller
     public function updateModule()
     {
         $name = \Input::get('name');
+        $date = \Input::get('unlock_at');
+        $unlock_at = new DateTime($date);
+        $prerequisite_module_ids =\Input::get('prerequisites');
+        $published = \Input::get('published');
+        $module_id = \Input::get('module_id');
         
-        $format = DateTime::ISO8601;
-        $date = new DateTime("now");
-        $date->add(new DateInterval('P1D'));
-        $unlock_at = $date;
-        $prerequisite_module_ids =array("380199","380201");
-        $published = true;
-        $position = 4;
-        
-        $module = new Module($name, $unlock_at, $prerequisite_module_ids, $published, $position);
-        
-        
-        $moduleId = 457494;
-        $moduleItemId = null;
-        $includeContentItems = false;
-        $includeContentDetails = false;
-        $moduleItem = null;
-        $freshData = false;
+        $module = new Module($name, $unlock_at, $prerequisite_module_ids, $published, null);
         
         //update a module (changing title and published to false)
-        $req = new ModulesRequest(ActionType::PUT, $moduleId, $moduleItemId,  
-            $includeContentItems, $includeContentDetails, $module, $moduleItem , $freshData);
+        $req = new ModulesRequest(ActionType::PUT, $module_id, null,  
+            false, false, $module, null , false);
         
         $roots = new Roots();
-        $res = $roots->modules($req);
+        return $roots->modules($req);
     }
 }

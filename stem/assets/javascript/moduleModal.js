@@ -11,6 +11,10 @@ var addModuleCtrl = function ($scope, $modal, $log ) {
                 modules: function()
                 {
                     return rawData;
+                },
+                parent_id: function()
+                {
+                    return $scope.data[0]['module_id'];
                 }
             }
         });
@@ -21,7 +25,7 @@ var addModuleCtrl = function ($scope, $modal, $log ) {
     
 };
 
-var moduleCtrl = function ($scope, $modalInstance,$http, $location, itemIn, modules) {
+var moduleCtrl = function ($scope, $modalInstance,$http, $location, itemIn, modules, parent_id) {
     $scope.newModuleDate = {date: new Date()};
     $scope.modules = modules;
     $scope.item = itemIn;
@@ -33,12 +37,21 @@ var moduleCtrl = function ($scope, $modalInstance,$http, $location, itemIn, modu
         {
             prereqs.push($scope.selectedModulePrereqs[x]['id']);
         }
-        var date = new Date($scope.newModuleDate.date).toISOString();
+        var date;
+        if($scope.newModuleLock === true)
+        {
+            date = new Date($scope.newModuleDate.date).toISOString();
+        }
+        else
+        {
+            date = null;
+        }
         $http.post('roots/addModule', {
             name: $scope.newModuleName,
             unlock_at: date,
             prerequisites: prereqs,
-            published:true
+            published:true,
+            parent_id:parent_id
         })
         .success(function (data) {
             $scope.newItem = {

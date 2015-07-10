@@ -187,7 +187,9 @@
                         <h3 class="modal-title">Edit Module Settings</h3>
                     </div>
                     <div class="modal-body form-horizontal">
-                        <h4>{{item.name}}</h4>
+                        <h4>
+                            <a href="#" id="editModuleName" editable-text="moduleName" class="unpublishedText" >{{moduleName|| "empty"}}</a>
+                        </h4>
                         <div class="form-group">
                             <div class="col-sm-12">
                                 <input type="checkbox" ng-model="editModuleLock" ng-init="editModuleLock = false"> Lock module until a given date<br>
@@ -218,11 +220,12 @@
                         <br>
                         <b>Before students can view this module:</b>
                         <br>
-                        <div class="form-group currentPrerequisites" ng-show="!collapsed">
+                        <div class="form-group currentPrerequisites">
                             <div ng-repeat="item in modulePrereqs" class="pointer">
                                 <span class="icon-times-circle" ng-model="item.id" ng-click="removePrerequisite(item.id)"></span>
                                 <span class="col-md-8">{{item.value}}</span>
                             </div>
+                            <div class="col-sm-12" ng-if="modulePrereqs.length===0">No prerequisites</div>
                         </div>
                         <div class="form-group">
                             <div class="col-sm-12">
@@ -280,7 +283,7 @@
                         <div class="modal-footer">
                             <a href="" class="btn btn-primary pull-right" ng-click="updateModule()">Update</a>
                             <a href="" class="cancel btn btn-default pull-right" ng-click="cancel()">Close</a>
-                            <a href="" class="btn btn-danger pull-left" ng-click="delete(this)">Delete</a>
+                            <a href="" class="btn btn-danger pull-left" ng-click="delete()">Delete</a>
                         </div>
                     </div>
                 </div>

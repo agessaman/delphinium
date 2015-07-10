@@ -14,19 +14,29 @@ var ModalJobCtrl = function ($scope, $modal, $log) {
                 }
             }
         });
-        modalInstance.result.then(function () {
-        }, function (input) {
-            if (input === 'delete') {
-                $scope.remove(item);
+        modalInstance.result.then(function (itemOut){
+            if(itemOut.itemId)
+            {//deleted module
+                for(x in $scope.data[0].children)
+                {
+                    if($scope.data[0].children[x]['module_id']===itemOut.itemId)
+                    {
+                        $scope.data[0].children.splice(x, 1);
+                    }
+                }
+            }else{
+            $scope.data[0].children.push(itemOut.item);
             }
-            $log.info('Modal dismissed at: ' + new Date());
-        });
+        }); 
+        
+        
     };
 };
 
 
 var JobModalInstanceCtrl =function ($scope, $modalInstance,$http, $location, itemIn, modules) {
     $scope.item = itemIn;
+    $scope.moduleName = itemIn['name'];
     $scope.modules = modules;
     $scope.editModuleDate = {date: new Date()};
     $scope.modulePrereqs =  new Array();
@@ -36,24 +46,28 @@ var JobModalInstanceCtrl =function ($scope, $modalInstance,$http, $location, ite
     
     $scope.modulePrereqs = getModules(prereqs, modules);//ids and names
     
-    
-    $scope.ok = function () {
-        $scope.jobData.executeNow = false;
-        $modalInstance.close($scope.item);
-    };
-
     $scope.cancel = function () {
 
         $modalInstance.dismiss('cancel');
 
     };
 
-    $scope.delete = function (scope) {
-        //alert($scope.item[4].name);
-
-        alert('Are you sure you want to permanently delete this module?');
-
-        $modalInstance.dismiss('delete');
+    $scope.delete = function () {
+        var x = window.confirm('Are you sure you want to permanently delete this module?');
+        if (x){
+            $http.post('deleteModule', {
+                module_id: itemIn['module_id']
+            })
+            .success(function (data) {
+                $scope.newItem = {
+                       itemId: itemIn['module_id']
+                };
+            $modalInstance.close($scope.newItem);
+            });
+        }else{
+            $modalInstance.dismiss('cancel');
+        }
+    
     };
     
     $scope.removePrerequisite = function(item)
@@ -77,6 +91,12 @@ var JobModalInstanceCtrl =function ($scope, $modalInstance,$http, $location, ite
     
     $scope.updateModule = function()
     {
+        var date;
+        if($scope.editModuleLock === true){
+            date = new Date($scope.editModuleDate.date).toISOString();
+        }else{
+            date = null;
+        }
         var newPrereqs = new Array();
         for(x in $scope.selectedModulePrereqs)
         {
@@ -84,21 +104,21 @@ var JobModalInstanceCtrl =function ($scope, $modalInstance,$http, $location, ite
         }
         var totalPrereqs = $scope.modulePrereqsIds.concat(newPrereqs);
         
-        $http.post('core/updateModule', {
-            name: $scope.newModuleName,
+        $http.post('roots/updateModule', {
+            module_id:$scope.item['module_id'],
+            name: $scope.moduleName,
             unlock_at: date,
-            prerequisites: prereqs,
+            prerequisites: totalPrereqs,
             published:true
         })
         .success(function (data) {
             $scope.newItem = {
-                   item: data
+                   item: $scope.item
             };
             $modalInstance.close($scope.newItem);
         });
     };
-    
-    
+   
     $scope.unpublish = function (scope) {
         $modalInstance.dismiss('unpublish');
     };
