@@ -1,8 +1,12 @@
 $(document).ready(function(){
+	calculateProgress();
 	scaleProgress();
 	drawProgress();
 });
 
+function calculateProgress(){
+
+}
 function scaleProgress(){
 
 }

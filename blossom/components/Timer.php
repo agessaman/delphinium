@@ -1,6 +1,7 @@
 <?php namespace Delphinium\Blossom\Components;
 
 use Cms\Classes\ComponentBase;
+use Delphinium\Roots\Roots;
 
 class Timer extends ComponentBase
 {
@@ -24,6 +25,18 @@ class Timer extends ComponentBase
         $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
         $this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
         $this->addCss("/plugins/delphinium/blossom/assets/css/timer.css");
+
+        $this->roots = new Roots();
+        $res = $this->roots->getCourse();
+        
+        $start = $res->start_at;
+        $end = $res->end_at;
+        $this->page['start'] = $start;
+        $this->page['end'] = $end;
+    
     }
+
+    
+        
 
 }
