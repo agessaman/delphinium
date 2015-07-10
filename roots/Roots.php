@@ -9,6 +9,7 @@ use Delphinium\Roots\Models\File;
 use Delphinium\Roots\Models\Quiz;
 use Delphinium\Roots\Models\Discussion;
 use Delphinium\Roots\Models\Assignment;
+use Delphinium\Roots\Models\Module as DbModule;
 use Delphinium\Roots\UpdatableObjects\Module;
 use Delphinium\Roots\Enums\CommonEnums\Lms;
 use Delphinium\Roots\Enums\CommonEnums\DataType;
@@ -214,6 +215,11 @@ class Roots
         return $ordered;
     }
     
+    public function updateModuleParent(DbModule $module)
+    {
+        $dbHelper = new DbHelper();
+        $dbHelper->updateOrderedModule($module);
+    }
     public function addPage(Page $page)
     {
         if(!isset($_SESSION)) 

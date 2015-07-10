@@ -194,34 +194,20 @@ class RestfulApi extends Controller
     
     }
     
-    public function updateModule()
+    
+    public function updateModulePrereqs()
     {
-        $name = "Updated from backend";
+        $module_id = \Input::get('module_id');
+        $currentPrereqs = \Input::get('current_prerequisites');
         
-        $format = DateTime::ISO8601;
-        $date = new DateTime("now");
-        $date->add(new DateInterval('P1D'));
-        $unlock_at = $date;
-        $prerequisite_module_ids =array("380199","380201");
-        $published = true;
-        $position = 4;
-        
-        $module = new Module($name, $unlock_at, $prerequisite_module_ids, $published, $position);
-        
-        
-        $moduleId = 457494;
-        $moduleItemId = null;
-        $includeContentItems = false;
-        $includeContentDetails = false;
-        $moduleItem = null;
-        $freshData = false;
+        $module = new Module(null, null, $currentPrereqs, null, null);
         
         //update a module (changing title and published to false)
-        $req = new ModulesRequest(ActionType::PUT, $moduleId, $moduleItemId,  
-            $includeContentItems, $includeContentDetails, $module, $moduleItem , $freshData);
+        $req = new ModulesRequest(ActionType::PUT, $module_id, null,  
+            false, false, $module, null , false);
         
         $roots = new Roots();
-        $res = $roots->modules($req);
+        return $roots->modules($req);
     }
     
     public function updateModuleItem()
