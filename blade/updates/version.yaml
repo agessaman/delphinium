@@ -9,4 +9,7 @@
     - create_rule_groups_table.php
 1.0.4:
     - Added table for Actions
-    - create_actions_table.php
+    - create_assign_actions_table.php
+1.0.5:
+    - Added table for FilterActions
+    - create_filter_actions_table.php

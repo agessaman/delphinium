@@ -17,11 +17,14 @@ use Delphinium\Blade\Classes\Rules\RuleGroup;
  */
 class DataSource implements IDataSource {
 
+    private $prettyprint;
+
     public function test() {
         return $this->getModules(null);
     }
 
-    public function __construct() {
+    public function __construct($prettyprint = false) {
+        $this->prettyprint = $prettyprint;
         $this->roots = new Roots();
     }
 
@@ -31,14 +34,16 @@ class DataSource implements IDataSource {
     }
 
     public function getAssignments($params) {
-        $request = new AssignmentsRequest(ActionType::GET);
+        $request = DataSource::createGetAssignmentsRequest();
+        DataSource::setAssignmentParams($request, $params);
         return $this->runRules('assignment', $this->rg($params), $this->roots->assignments($request)->toArray());
     }
 
-    public function getAssignment($id, $params) {
-        $request = DataSource::createGetAssignmentsRequest($id);
-        return $this->runRules('assignment', $this->rg($params), $this->roots->assignments($request)->toArray());
-    }
+//    public function getAssignment($id, $params) {
+//        $request = DataSource::createGetAssignmentsRequest($id);
+//        DataSource::setAssignmentParams($request, $params);
+//        return $this->runRules('assignment', $this->rg($params), $this->roots->assignments($request)->toArray());
+//    }
 
     public function getModules($params) {
         $request = DataSource::createGetModulesRequest();
@@ -47,39 +52,38 @@ class DataSource implements IDataSource {
     }
 
     //TODO: fix so this gets one module only
-    public function getModule($id, $params) {
-        $request = DataSource::createGetModulesRequest($id);
-        DataSource::setModuleParams($request, $params);
-        return $this->runRules('module', $this->rg($params), $this->roots->modules($request)->toArray());
-    }
+//    public function getModule($id, $params) {
+//        $request = DataSource::createGetModulesRequest($id);
+//        DataSource::setModuleParams($request, $params);
+//        return $this->runRules('module', $this->rg($params), $this->roots->modules($request)->toArray());
+//    }
 
     public function getAssignmentGroups($params) {
         $request = DataSource::createGetAssignmentGroupsRequest();
         return $this->requestAssignmentGroups($this->rg($params), $request, $params);
     }
 
-    public function getAssignmentGroup($id, $params) {
-        $request = DataSource::createGetAssignmentGroupsRequest($id);
-        return $this->requestAssignmentGroups($this->rg($params), $request, $params);
-    }
+//    public function getAssignmentGroup($id, $params) {
+//        $request = DataSource::createGetAssignmentGroupsRequest($id);
+//        return $this->requestAssignmentGroups($this->rg($params), $request, $params);
+//    }
 
     private function requestAssignmentGroups($request, $params) {
         DataSource::setAssignmentGroupParams($request, $params);
         return $this->runRules('assignment_group', $this->rg($params), $this->roots->assignmentGroups($request)->toArray());
     }
 
-    public function getAssignmentSubmissions($assignment_id, $params) {
-        $request = DataSource::createGetSubmissionsRequest();
-        return $this->requestSubmissions($this->rg($params), $request, $params);
-    }
+//    public function getAssignmentSubmissions($assignment_id, $params) {
+//        $request = DataSource::createGetSubmissionsRequest();
+//        return $this->requestSubmissions($this->rg($params), $request, $params);
+//    }
+//    public function getAssignmentSubmission($assignment_id, $id, $params) {
+//        $request = DataSource::createGetSubmissionsRequest();
+//        return $this->requestSubmissions($this->rg($params), $request, $params);
+//    }
 
-    public function getAssignmentSubmission($assignment_id, $id, $params) {
-        $request = DataSource::createGetSubmissionsRequest();
-        return $this->requestSubmissions($this->rg($params), $request, $params);
-    }
-
-    public function getSubmissions($id, $params) {
-        $request = DataSource::createGetSubmissionsRequest();
+    public function getSubmissions($assignment_id, $params) {
+        $request = DataSource::createGetSubmissionsRequest($assignment_id);
         return $this->requestSubmissions($this->rg($params), $request, $params);
     }
 
@@ -90,6 +94,11 @@ class DataSource implements IDataSource {
 
     private function runRules($datatype, $rulegroups, $data) {
         if (empty($rulegroups)) {
+            if ($this->prettyprint) {
+                var_dump($data);
+                return null;
+            }
+
             return $data;
         }
 
@@ -110,12 +119,20 @@ class DataSource implements IDataSource {
                 }
             }
 
-            $results[] = $ctx->getData();
+            $data = $ctx->getData();
+            if ($data != null) {
+                $results[] = $data;
+            }
         }
-        
+
+        if ($this->prettyprint) {
+            var_dump($results);
+            return null;
+        }
+
         return $results;
     }
-    
+
     private static function createRuleContext($rule, $ctx) {
         return new \Delphinium\Blade\Classes\Data\RuleContext($rule, $ctx);
     }
@@ -136,6 +153,10 @@ class DataSource implements IDataSource {
         return $request;
     }
 
+    private static function setAssignmentParams($request, $params) {
+        $request->setFresh_data(isset($params['fresh_data']) ? (boolean) $params['fresh_data'] : true);
+    }
+
     private static function createGetAssignmentGroupsRequest($id = null) {
         $request = new AssignmentGroupsRequest(ActionType::GET, false, $id);
         return $request;
@@ -146,8 +167,9 @@ class DataSource implements IDataSource {
         $request->setInclude_assignments(isset($params['include_assignments']) ? $params['include_assignments'] : false);
     }
 
-    private static function createGetSubmissionsRequest($assignment_id = null, $id = null) {
-        $request = new SubmissionsRequest(ActionType::GET);
+    private static function createGetSubmissionsRequest($assignment_id) {
+        $request = new SubmissionsRequest(ActionType::GET, null, null, [$assignment_id]);
+        return $request;
     }
 
     private static function setSubmissionParams($request, $params) {

@@ -1,16 +1,16 @@
 <?php
 
-namespace Delphinium\Blade\Classes\Rules;
+namespace Delphinium\Blade\Classes\Rules\Action;
 
 use \Model;
-use \Delphinium\Blade\Models\Action as ActionModel;
-
+use \Delphinium\Blade\Models\AssignAction as ActionModel;
+use Delphinium\Blade\Classes\Rules\Variable;
 /**
  * 
  *
  * @author Daniel Clark
  */
-class AssignAction implements ISavable {
+class AssignAction {
 
     protected $variable;
     protected $value;

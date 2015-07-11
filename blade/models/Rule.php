@@ -38,7 +38,8 @@ class Rule extends Model implements IRuleComponent {
     ];
     
     public $hasMany = [
-        'actions' => ['\Delphinium\Blade\Models\Action'],
+        'assign_actions' => ['\Delphinium\Blade\Models\AssignAction'],
+        'filters' => ['\Delphinium\Blade\Models\FilterAction'],
         'variables' => ['\Delphinium\Blade\Models\Variable']
     ];
 
@@ -50,9 +51,10 @@ class Rule extends Model implements IRuleComponent {
     public function toExecutable() {
         $rb = new RuleBuilder;
         $op = $this->operator;
+        
         $actions = [];
         
-        foreach($this->actions as $action) {
+        foreach ($this->getActions() as $action) {
             $actions[] = $action->toExecutable();
         }
         
@@ -66,15 +68,21 @@ class Rule extends Model implements IRuleComponent {
 
     public function getActions() {
         $arr = [];
-        foreach($this->actions as $action) {
+        
+        foreach($this->assign_actions as $action) {
             $arr[] = $action;
         }
+        
+        foreach($this->filters as $filter) {
+            $arr[] = $filter;
+        }
+        
         usort($arr, Rule::getOrderCmp());
         return $arr;
     }
     
     public function delete() {
-        foreach($this->actions as $a) {
+        foreach($this->getActions() as $a) {
             $a->delete();
         }
         

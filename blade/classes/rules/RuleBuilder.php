@@ -184,4 +184,12 @@ class RuleBuilder implements \ArrayAccess
 
         throw new \LogicException(sprintf('Unknown operator: "%s"', $name));
     }
+    
+    public function excludeResult() {
+        return new FilterAction(true);
+    }
+    
+    public function includeResult() {
+        return new FilterAction(false);
+    }
 }

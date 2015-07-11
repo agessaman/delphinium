@@ -143,6 +143,7 @@ class Rule implements IPersistent {
 
     private function actionsMatch(Model $m) {
         $a = $this->actions;
+        
         $b = $m->getActions();
 
         if (count($a) != count($b)) {

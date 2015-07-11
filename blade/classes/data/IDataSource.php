@@ -23,4 +23,5 @@ interface IDataSource {
 //    function getModuleItem($rulegroups, $modId, $id);
     function getAssignmentGroups($params);
     //function getAssignmentGroup($id, $params);
+    function getSubmissions($assignment_id, $params);
 }

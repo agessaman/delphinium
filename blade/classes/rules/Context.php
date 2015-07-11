@@ -46,6 +46,7 @@ class Context implements IContext {
     private $raw = array();
     private $shared;
     private $protected;
+    private $excluded = false;
 
     /**
      * Context constructor.
@@ -86,7 +87,7 @@ class Context implements IContext {
      */
     public function offsetGet($name) {
         if (!$this->offsetExists($name)) {
-            throw new \InvalidArgumentException(sprintf('Fact "%s" is not defined.', $name));
+            return null;
         }
 
         $value = $this->values[$name];
@@ -230,13 +231,24 @@ class Context implements IContext {
     }
 
     public function getData() {
+        if ($this->excluded)
+            return null;
+
         $data = [];
-        
+
         foreach ($this->keys() as $key) {
             $data[$key] = $this[$key];
         }
-        
+
         return $data;
+    }
+
+    public function isExcluded() {
+        return $this->excluded;
+    }
+
+    public function setExcluded($excluded) {
+        $this->excluded = $excluded;
     }
 
 }

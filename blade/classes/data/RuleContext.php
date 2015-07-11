@@ -67,4 +67,13 @@ class RuleContext implements IContext {
     public function getData() {
         return $this->context->getData();
     }
+
+    public function isExcluded() {
+        return $this->context->isExcluded();
+    }
+
+    public function setExcluded($excluded) {
+        $this->context->setExculded($excluded);
+    }
+
 }

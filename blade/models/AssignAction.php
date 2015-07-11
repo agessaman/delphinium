@@ -2,18 +2,18 @@
 
 use Model;
 use \Delphinium\Blade\Classes\Rules\Variable as RulerVariable;
-use \Delphinium\Blade\Classes\Rules\AssignAction;
+use \Delphinium\Blade\Classes\Rules\Action\AssignAction as AAction;
 
 /**
  * Action Model
  */
-class Action extends Model implements IRuleComponent
+class AssignAction extends Model implements IRuleComponent
 {
 
     /**
      * @var string The database table used by the model.
      */
-    public $table = 'delphinium_blade_actions';
+    public $table = 'delphinium_blade_assign_actions';
 
     /**
      * @var array Fillable fields
@@ -30,8 +30,7 @@ class Action extends Model implements IRuleComponent
     public $belongsTo = [
         'rule' => 
         [
-            'Delphinium\Blade\Models\Rule',
-            'delete' => true
+            'Delphinium\Blade\Models\Rule'
         ]
     ];
     
@@ -44,7 +43,7 @@ class Action extends Model implements IRuleComponent
     }
 
     public function toExecutable() {
-        return new AssignAction(new RulerVariable($this->variable_name), $this->variable->toExecutable());
+        return new AAction(new RulerVariable($this->variable_name), $this->variable->toExecutable());
     }
 
 }
