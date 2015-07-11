@@ -9,7 +9,7 @@ function calculateDates(){
     start = startDate.getFullYear()+"-"+(startDate.getMonth()+1)+"-"+startDate.getDate()+" "+
         startDate.getHours()+":"+startDate.getMinutes()+":"+startDate.getSeconds();
 
-    endDate = new Date(end);
+    endDate = new Date();
     end = endDate.getFullYear()+"-"+(endDate.getMonth()+1)+"-"+endDate.getDate()+" "+
         endDate.getHours()+":"+endDate.getMinutes()+":"+endDate.getSeconds();
 }
@@ -110,6 +110,7 @@ function drawTimer(){
            .attr("text-anchor", "middle")
            .attr("class","details");
         
+        var flash = true;
         function updateClock()
         {
             var timeNow = new Date();
@@ -130,7 +131,25 @@ function drawTimer(){
             updateArc(minute, rMinutes, 60, "MIN", "MIN");
             
             document.getElementById("clockText").innerHTML = rDays + " Day" + (rDays != 1?"s ":" ") + rHours + " Hour" + (rHours != 1?"s ":" ") + rMinutes + " minute" + (rMinutes != 1?"s ":" ") + "till course ends";
-            
+            if(flash){
+                if(rDays<=10){
+                    var intervals = [];
+                    intervals.push(setInterval(function(){
+                        document.getElementById("clock").style.backgroundColor = "red";
+                    },5));
+                    intervals.push(setInterval(function(){
+                        document.getElementById("clock").style.backgroundColor = "#089fd7";
+                    },7));
+
+                    setTimeout(function(){
+                        intervals.forEach(function(id){ clearInterval(id); });
+                        document.getElementById("clock").style.backgroundColor = "#089fd7";
+                    },1000);
+                    
+                    
+                }
+                flash=false;
+            }
         }
                             
         setInterval(updateClock, 1000);
