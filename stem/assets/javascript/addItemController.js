@@ -17,7 +17,6 @@ var addItemCtrl = function ($scope, $modal, $log, $http) {
 
         modalInstance.result.then(function (itemOut) {
             item.module_items.push(itemOut);
-            console.log("Item was pushed");
         }, function () {
         });
 
@@ -44,7 +43,7 @@ var ModalInstanceCtrl = function ($scope, $window, $modalInstance, $location, $h
             }
         })
                 .success(function (data, status) {
-                    if(!selectedModuleItemType.value==='ExternalTool')
+                    if(selectedModuleItemType.value!=='ExternalTool')
                     {
                         var newItem = {'id': 'new', 'name': '[new item]'};
                         data[0] = newItem;

@@ -1,7 +1,18 @@
 $(document).ready(function(){
+    calculateDates();
     scaleTimer();
     drawTimer();
 });
+
+function calculateDates(){
+    startDate = new Date(start);
+    start = startDate.getFullYear()+"-"+(startDate.getMonth()+1)+"-"+startDate.getDate()+" "+
+        startDate.getHours()+":"+startDate.getMinutes()+":"+startDate.getSeconds();
+
+    endDate = new Date(end);
+    end = endDate.getFullYear()+"-"+(endDate.getMonth()+1)+"-"+endDate.getDate()+" "+
+        endDate.getHours()+":"+endDate.getMinutes()+":"+endDate.getSeconds();
+}
 
 function scaleTimer(){
 
@@ -126,7 +137,7 @@ function drawTimer(){
         
     }
 
-    var startDate = createDate("2015-05-11 1:00:00"); //define start date for clock
-    var endDate = createDate("2015-08-14 23:59:59"); //define end date for 
+    var startDate = createDate(start); //define start date for clock
+    var endDate = createDate(end); //define end date for 
     createClock(startDate, endDate, width, height, radiusIn, radiusOut);
 }

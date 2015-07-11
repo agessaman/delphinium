@@ -1,23 +1,7 @@
 <?php namespace Delphinium\Blossom\Components;
 
-use Delphinium\Roots\UpdatableObjects\Module;
-use Delphinium\Roots\UpdatableObjects\ModuleItem;
-use Delphinium\Roots\Models\Assignment;
-use Delphinium\Roots\Models\ModuleItem as DbModuleItem;
-use Delphinium\Roots\Roots;
-use Delphinium\Roots\RequestObjects\SubmissionsRequest;
-use Delphinium\Roots\RequestObjects\ModulesRequest;
-use Delphinium\Roots\RequestObjects\AssignmentsRequest;
-use Delphinium\Roots\RequestObjects\AssignmentGroupsRequest;
-use Delphinium\Roots\Enums\CommonEnums\ActionType;
-use Delphinium\Roots\Enums\ModuleItemEnums\ModuleItemType;
-use Delphinium\Roots\Enums\ModuleItemEnums\CompletionRequirementType;
+use Delphinium\Blade\Classes\Data\DataSource;
 use Cms\Classes\ComponentBase;
-use \DateTime;
-use GuzzleHttp\Client;
-use GuzzleHttp\Post\PostFile;
-
-use Delphinium\Roots\Guzzle\GuzzleHelper;
 
 class Progress extends ComponentBase
 {
@@ -40,12 +24,16 @@ class Progress extends ComponentBase
         $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
         $this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
         $this->addCss("/plugins/delphinium/blossom/assets/css/progress.css");
+
+        $source = new DataSource();
+        $res = $source->getAssignments(\Input::all());
+
+        //var_dump($res);
         
-        $req = new AssignmentsRequest(ActionType::GET);
-        
-        $roots = new Roots();
-        $res = $roots->assignments($req);
-        $this->page['assignments'] = json_encode($res);
+        /*foreach ($res as &$value) {
+            var_dump($value['assignment_id']);
+        }*/
+
     }
 
 }

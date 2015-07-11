@@ -33,7 +33,7 @@ class Module {
         $current_date = new \DateTime("now");
         if (($utc_unlock_at)&&($current_date >  $utc_unlock_at))
         {
-            throw new InvalidParameterInRequestObjectException(get_class($this),"unloack_at", "Unlock at date must be in the future");
+            throw new InvalidParameterInRequestObjectException(get_class($this),"unlock_at", "Unlock at date must be in the future");
         }
         
         if(($prerequisite_module_ids)&&!is_array($prerequisite_module_ids))

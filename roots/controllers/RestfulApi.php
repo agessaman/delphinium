@@ -9,6 +9,7 @@ use Delphinium\Roots\Roots;
 use Delphinium\Roots\Enums\ModuleItemEnums\CompletionRequirementType;
 use Delphinium\Roots\Enums\CommonEnums\ActionType;
 use Delphinium\Roots\Models\Page;
+use \DateTime;
 
 class RestfulApi extends Controller 
 {
@@ -60,9 +61,16 @@ class RestfulApi extends Controller
     public function addModule()
     {
         $name = \Input::get('name');
-        $unlock_at =\Input::get('unlock_at');
-        
-        $prerequisite_module_ids =null;//\Input::get('prerequisites');
+        $date =\Input::get('unlock_at');
+        if(!is_null($date))
+        {
+           $unlock_at= new DateTime($date);
+        }
+        else
+        {
+            $unlock_at = null;
+        }
+        $prerequisite_module_ids =\Input::get('prerequisites');
         $published = \Input::get('published');
         
         $module = new Module($name, $unlock_at, $prerequisite_module_ids, $published, null);
@@ -72,6 +80,11 @@ class RestfulApi extends Controller
         
         $roots = new Roots();
         $res = $roots->modules($req);
+        
+//        //add the parent_id;
+        $parent_id = \Input::get('parent_id');
+        $res->parent_id = $parent_id;
+        $roots->updateModuleParent($res);
         return json_encode($res);
     }
     
@@ -111,4 +124,23 @@ class RestfulApi extends Controller
         return json_encode($res);
     }
     
+    
+    public function updateModule()
+    {
+        $name = \Input::get('name');
+        $date = \Input::get('unlock_at');
+        $unlock_at = new DateTime($date);
+        $prerequisite_module_ids =\Input::get('prerequisites');
+        $published = \Input::get('published');
+        $module_id = \Input::get('module_id');
+        
+        $module = new Module($name, $unlock_at, $prerequisite_module_ids, $published, null);
+        
+        //update a module (changing title and published to false)
+        $req = new ModulesRequest(ActionType::PUT, $module_id, null,  
+            false, false, $module, null , false);
+        
+        $roots = new Roots();
+        return $roots->modules($req);
+    }
 }
