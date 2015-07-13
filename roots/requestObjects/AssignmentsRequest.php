@@ -17,9 +17,15 @@ class AssignmentsRequest extends RootsRequest
     function getFresh_data() {
         return $this->fresh_data;
     }
+    
+    function setFresh_data($fresh_data) {
+        $this->fresh_data = $fresh_data;
+    }
+ 
     function getAssignment() {
         return $this->assignment;
     }    
+    
     function __construct($actionType, $assignment_id = null, $fresh_data = false, Assignment $assignment = null) 
     {
         //this takes care of setting the lms and the ActionType in the parent class (RootsRequest)
