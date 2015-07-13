@@ -9,7 +9,7 @@ function calculateDates(){
     start = startDate.getFullYear()+"-"+(startDate.getMonth()+1)+"-"+startDate.getDate()+" "+
         startDate.getHours()+":"+startDate.getMinutes()+":"+startDate.getSeconds();
 
-    endDate = new Date();
+    endDate = new Date(end);
     end = endDate.getFullYear()+"-"+(endDate.getMonth()+1)+"-"+endDate.getDate()+" "+
         endDate.getHours()+":"+endDate.getMinutes()+":"+endDate.getSeconds();
 }
@@ -42,10 +42,20 @@ function drawTimer(){
             .endAngle(pi2)
             .innerRadius(inner)
             .outerRadius(outer);
+
+
+            
         
         var meter = svg.append("g")
            .attr("class","progress-meter")
-           .attr("transform", "translate(" + (position * 2.5 * outer) + ",0)");
+           .attr("transform", "translate(" + (position * 2.5 * outer) + ",0)")
+            .transition()
+                .duration(2000)
+                .attrTween("d", tweenArc);
+
+        function tweenArc(b) {
+          return  d3.interpolate({startAngle: 1.1*Math.PI, endAngle: 1.1*Math.PI}, b);
+        }
         
         var text = meter.append("text")
            .attr("text-anchor", "middle")
