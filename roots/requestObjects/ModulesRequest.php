@@ -25,9 +25,17 @@ class ModulesRequest extends RootsRequest
     function getIncludeContentItems() {
         return $this->includeContentItems;
     }
+    
+    function setIncludeContentItems($include) {
+        $this->includeContentItems = $include;
+    }
 
     function getIncludeContentDetails() {
         return $this->includeContentDetails;
+    }
+    
+    function setIncludeContentDetails($include) {
+        $this->includeContentDetails = $include;
     }
 
     function getModule() {
@@ -40,6 +48,10 @@ class ModulesRequest extends RootsRequest
 
     function getFreshData() {
         return $this->freshData;
+    }
+    
+    function setFreshData($fresh_data) {
+        $this->freshData = $fresh_data;
     }
 
     function setModule(Module $module) {
