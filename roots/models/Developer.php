@@ -15,7 +15,8 @@ class Developer extends Model
     	'Name'=>'required',
         'DeveloperId' => 'required',
         'DeveloperSecret' => 'required',
-        'ConsumerKey' => 'required'
+        'ConsumerKey' => 'required',
+        'Lms' => 'required'
     ];
 
 
