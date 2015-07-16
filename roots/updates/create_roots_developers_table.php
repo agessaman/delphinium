@@ -19,6 +19,7 @@ class CreateRootsDevelopersTable extends Migration
                 $table->string('DeveloperSecret');
                 $table->string('ConsumerKey');
                 $table->string('SharedSecret');
+                $table->string('Lms');
                 $table->timestamps();
        	 	});
        	 }

@@ -15,7 +15,9 @@ columns:
     DeveloperSecret:
         label: Developer Secret
         searchable: true
-        
+    Lms:
+        label: Lms
+        searchable: true    
     ConsumerKey:
         label: Consumer Key
         searchable: true

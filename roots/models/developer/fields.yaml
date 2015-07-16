@@ -14,6 +14,11 @@ fields:
         span: auto
         comment: Enter the Developer Secret
         
+    Lms:
+        label: Lms
+        span: auto
+        comment: Enter the Lms that will be used
+        
     ConsumerKey:
         label: Consumer Key
         span: auto
