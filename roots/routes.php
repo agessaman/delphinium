@@ -1,7 +1,9 @@
 <?php
 
-Route::get('roots/getContentByType', 'Delphinium\Roots\Controllers\RestfulApi@getContentByType');
+//LTISTUFF
+Route::get('saveUserInfo', 'Delphinium\Roots\Controllers\OAuthResponse@saveUserInfo');
 
+Route::get('roots/getContentByType', 'Delphinium\Roots\Controllers\RestfulApi@getContentByType');
 
 Route::post('roots/addModule', 'Delphinium\Roots\Controllers\RestfulApi@addModule');
 Route::post('roots/addModuleItem', 'Delphinium\Roots\Controllers\RestfulApi@addModuleItem');
