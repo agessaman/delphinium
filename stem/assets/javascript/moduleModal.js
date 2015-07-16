@@ -28,6 +28,8 @@ var addModuleCtrl = function ($scope, $modal, $log ) {
 var moduleCtrl = function ($scope, $modalInstance,$http, $location, itemIn, modules, parent_id) {
     $scope.newModuleDate = {date: new Date()};
     $scope.modules = modules;
+    var none = {id:"0", value:"[None]"};
+    $scope.modules.unshift(none);
     $scope.item = itemIn;
     
     $scope.addModule = function () {

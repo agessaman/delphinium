@@ -160,7 +160,7 @@ function createChart(iris)
         {
 
             d3.select("#divPrerequisites").attr("class", "visible");
-            var prereqs = d.prerequisite_module_ids.split(",");
+            var prereqs = d.prerequisite_module_ids.split(", ");
             var actualPrereqs;
             if (moduleStates === undefined)
             {
@@ -575,16 +575,24 @@ function createChart(iris)
         return optional;
     }
     /***************************************** tooltip to follow mouse on each movement ****************************************/
-
     function followCursor() 
     {
         var tooltip = d3.select("#tooltip");
         //find width and height of tooltip and of the document.
-        //if the natural x or y positions make it so the box goes outside of "margins" then choose a different x/y positions
+        //if the natural x or y positions make it so the box goes outside of "margins" then choose a different x/y position
         var tipWidth = parseInt(tooltip.style("width"), 10);
         var tipHeight = parseInt(tooltip.style("height"), 10);
-        var docWidth = parseInt(window.innerWidth) - 30; ///-30 to account for the right scrolling bar
-        var docHeight = parseInt(window.innerHeight);
+//        var docWidth = parseInt(window.innerWidth) - 30; ///-30 to account for the right scrolling bar
+//        var docHeight = parseInt(window.innerHeight);
+        var body = document.body,
+            html = document.documentElement;
+
+        var height = Math.max( body.scrollHeight, body.offsetHeight, 
+                               html.clientHeight, html.scrollHeight, html.offsetHeight );
+        var visibleHeight = html.clientHeight;
+        var yOffset = window.pageYOffset;
+        var docWidth = parseInt(window.innerWidth||document.documentElement.clientWidth||document.body.clientWidth||0) - 30; ///-30 to account for the right scrolling bar
+        var docHeight = parseInt(height);
 
         var dom = document.getElementById("wrapper"+iris.filter);
         var x = parseInt((d3.mouse(dom)[0]) + 20); 
@@ -598,16 +606,24 @@ function createChart(iris)
             x = x - ((x + tipWidth) - docWidth);
         }
 
-        //when running into the bottom frame
-        //only do this if the entire document height isn't smaller than the tooltip height
         if (docHeight > tipHeight)
         {
+        //when running into the bottom frame
+        //only do this if the entire document height isn't smaller than the tooltip height
             var avaHeight = docHeight - y;
             if ((avaHeight) < (tipHeight / 2))
             {
                 if (y - tipHeight > 0)
                 {
                     y = y - tipHeight - 50;
+                }
+            }
+            else
+            {
+                //when user has scrolled down too much the tooltip shouldn't show up at the top
+                if(docHeight>visibleHeight)
+                {//scroll down
+                    y = y+yOffset;
                 }
             }
         }

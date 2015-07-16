@@ -143,4 +143,44 @@ class RestfulApi extends Controller
         $roots = new Roots();
         return $roots->modules($req);
     }
+    
+    public function updateModuleItem()
+    {
+//        $name = \Input::get('name');
+//        $date = \Input::get('unlock_at');
+//        $unlock_at = new DateTime($date);
+//        $prerequisite_module_ids =\Input::get('prerequisites');
+//        $published = \Input::get('published');
+//        $module_id = \Input::get('module_id');
+//        
+//        
+//         $tags = null;//array('New Tag', 'Another New Tag');
+//        $title = "New Title from back end";
+//        $modItemType = null;// Module type CANNOT be updated
+//        $content_id = 2078183;
+//        $completion_requirement_min_score = null;//7;
+//        $completion_requirement_type = null;//CompletionRequirementType::MUST_SUBMIT;
+//        $page_url = null;//"http://www.gmail.com";
+//        $published = true;
+//        $position = 1;//2;
+//        
+//        $moduleItem = new ModuleItem($title, $modItemType, $content_id, $page_url, null, $completion_requirement_type, 
+//                $completion_requirement_min_score, $published, $position, $tags);
+//        //end added
+//        
+//        $moduleId = 457097;
+//        $moduleItemId = 2885671;
+//        $includeContentItems = false;
+//        $includeContentDetails = false;
+//        $module = null;
+//        $freshData = false;
+//        
+//        $req = new ModulesRequest(ActionType::PUT, $moduleId, $moduleItemId,  
+//            $includeContentItems, $includeContentDetails, $module, $moduleItem , $freshData);
+//        
+//        $roots = new Roots();
+//        $res = $roots->modules($req);
+    
+    }
+    
 }

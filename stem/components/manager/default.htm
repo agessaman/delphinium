@@ -5,12 +5,18 @@
 	var avTags = {{ avTags|raw}};
         var courseId = {{courseId}};
         var lmsUrl = {{lmsUrl|raw}};
+        var completionRequirementTypes = {{completionRequirementTypes|raw}};
 </script>
-<div id="flashMsg" class="hidden"><span >This item can't be dragged to the top because it is unpublished</span></div>
+
 
 <div ng-app="treeApp" ng-controller="treeCtrl">
-    <span ng-model="test"></span>
     {% verbatim %}
+    
+    <!--<div id="flashMsg" class="hidden"><span >This item can't be dragged to the top because it is unpublished</span></div>-->
+    <div>
+      <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+    </div>
+
     <a href="" class="btn btn btn-primary" ng-click="reloadApp()">Refresh Data from Canvas</a>
     <i class="icon-spinner icon-spin icon-large" ng-show="loading"></i>
     <span ng-show="loading">Loading data. Please wait...</span>
@@ -192,7 +198,7 @@
                         </h4>
                         <div class="form-group">
                             <div class="col-sm-12">
-                                <input type="checkbox" ng-model="editModuleLock" ng-init="editModuleLock = false"> Lock module until a given date<br>
+                                <input type="checkbox" ng-model="editModuleLock"> Lock module until a given date<br>
                             </div>
                         </div>
                         <span ng-show="editModuleLock">
@@ -221,7 +227,7 @@
                         <b>Before students can view this module:</b>
                         <br>
                         <div class="form-group currentPrerequisites">
-                            <div ng-repeat="item in modulePrereqs" class="pointer">
+                            <div ng-repeat="item in prerequisiteArr" class="pointer">
                                 <span class="icon-times-circle" ng-model="item.id" ng-click="removePrerequisite(item.id)"></span>
                                 <span class="col-md-8">{{item.value}}</span>
                             </div>
@@ -235,43 +241,46 @@
                         <div class="form-group">
                             <label for="topic-name" class="col-sm-3 control-label" ng-show="collapsed">They must complete:</label>
                             <div class="col-sm-9" ng-show="collapsed">
-                                <select multiple ng-multiple="true" ng-model="selectedModulePrereqs" ng-options="item.value for item in modules">
+                                <select multiple size="8" ng-multiple="true" ng-model="selectedModulePrereqs" ng-options="item.value for item in moduleOptions"
+                                    ng-change="prereqAdded(selectedModulePrereqs)">
                                 </select>
                             </div>
                         </div>
 
-
-                        <div class="row">
-
-                            <br><br>
-                        </div>
-                        This module is complete when:
-                        <br>
+                        <!--MODULE COMPLETENESS-->
+                        <b>This module is complete when:</b>
                         <div class="prereqMenu" ng-show="!collapsed1">
-                            No requirements defined
+                            <div class="col-sm-12" ng-if="item['module_items'].length===0">You'll need to add items before you can specify how a user will complete this module</div>
                         </div>
-                        <br>
-                        <div class="oneLine" ng-show="collapsed1">
-                            For <form id="selectFiles">
-                                <select class="form-control" id="selectOpt">
-                                    <option>Select from menu</option>
-                                    <option>Syllabus inside the quiz</option>
+                        <div>
+                            <div class="col-sm-12 form-group oneLine"  ng-repeat="item in requirements">
+                                For <form id="selectFiles">
+                                <select class="form-control" ng-init="moduleItem=item['module_items'][0]" ng-model="moduleItem" ng-options="item.title for item in module_items"
+                                    ng-change="moduleItemRequirementAdded(moduleItem, item.id)">
                                 </select>
                             </form>
                             users must
-                            <form id="selectFiles1">
-                                <select class="form-control" id="selectOpt1">
-                                    <option>score at least</option>
-                                    <option>submit the assignment</option>
-                                    <option>view the item</option>
+                            <form class="form-group" id="selectFiles1">
+                                <select class="form-control" ng-model="action" ng-options="item.text for item in completionRequirementTypes{{item.id}}"
+                                    ng-change="actionChanged(action, item.id)">>
                                 </select>
                             </form>
+                            <div > 
+                                <form class="form-group" id="selectFiles1" ng-show="showScore{{item.id}}">
+                                     <input type="text" class="form-control" maxlength="4" size="4" ng-model="minScore" value="">
+                                    out of {{moduleItem['content'][0]['points_possible']}} {{item.content.points_possible}}{{item.title}} 
+                                </form>
+                            </div>
+                            </div>
                         </div>
-                        <div class='addPrereqOrRequirement'>
-                            <span class=" icon-plus-sign" ng-model="collapsed1" ng-click="collapsed1 = !collapsed1"></span>
-                            Add requirement
+                        
+                        <div class="form-group">
+                            <div class='col-sm-12 addPrereqOrRequirement' ng-show="item['module_items'].length>0">
+                                <span class="icon-plus-sign" ng-model="showItems" ng-click="newRequirement()" ng-init="showItems = false">
+                                    Add requirement
+                                </span>
+                            </div>
                         </div>
-
                         <div class="form-group">
                             <div class="col-sm-12">
                                 <input type="checkbox" ng-model="editModelSequential" ng-init="editModelSequential = false"> 
@@ -288,7 +297,6 @@
                     </div>
                 </div>
             </script>
-
             <!--Modal Template-->
             <script type="text/ng-template" id="addModalTemplate.html">
                 <div class="modalText">
@@ -349,7 +357,7 @@
                         <div class="form-group">
                             <label for="topic-name" class="col-sm-3 control-label" ng-show="collapsed">They must complete:</label>
                             <div class="col-sm-9" ng-show="collapsed">
-                                <select multiple ng-multiple="true" ng-model="selectedModulePrereqs" ng-options="item.value for item in modules">
+                                <select multiple size="8" ng-multiple="true" ng-model="selectedModulePrereqs" ng-options="item.value for item in modules">
                                 </select>
                             </div>
                         </div>
@@ -718,6 +726,7 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 {% endverbatim %}
 

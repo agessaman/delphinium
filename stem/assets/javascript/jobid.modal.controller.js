@@ -5,12 +5,15 @@ var ModalJobCtrl = function ($scope, $modal, $log) {
             templateUrl: "modalTemplate.html",
             controller: "JobModalInstanceCtrl",
             resolve: {
+                rawModules: function()
+                {
+                    return rawData;
+                },
                 itemIn: function () {
                     return item;
                 },
-                modules: function()
-                {
-                    return rawData;
+                completionRequirementTypes:function(){
+                    return completionRequirementTypes;
                 }
             }
         });
@@ -29,30 +32,40 @@ var ModalJobCtrl = function ($scope, $modal, $log) {
             }
         }); 
         
-        
     };
 };
 
 
-var JobModalInstanceCtrl =function ($scope, $modalInstance,$http, $location, itemIn, modules) {
-    $scope.item = itemIn;
-    $scope.moduleName = itemIn['name'];
-    $scope.modules = modules;
-    $scope.editModuleDate = {date: new Date()};
-    $scope.modulePrereqs =  new Array();
+var JobModalInstanceCtrl =function ($scope, $modalInstance,$http, $location, itemIn, rawModules, completionRequirementTypes) {
     
-    var prereqs = itemIn['prerequisite_module_ids'].split(",");
-    $scope.modulePrereqsIds = prereqs;//ids only
-    
-    $scope.modulePrereqs = getModules(prereqs, modules);//ids and names
-    
-    $scope.cancel = function () {
+    $scope.filterModuleOptions = function(modules,currentPrereqs)
+    {
+        for(var i=0;i<=currentPrereqs.length-1;i++)
+        {
+            var current = currentPrereqs[i];
+            var ob = modules.filter(function (ob)
+                {
+                    if (ob['id'] ===current)
+                    {
+                        return ob;
+                    }
+                })[0];
 
-        $modalInstance.dismiss('cancel');
+                if (ob !== undefined) {
+                    modules.splice(modules.indexOf(ob), 1);
 
+                }
+        }
+        return modules;
     };
-
-    $scope.delete = function () {
+    
+    $scope.cancel = function () 
+    {
+        $modalInstance.dismiss('cancel');
+    };
+    
+    $scope.delete = function () 
+    {
         var x = window.confirm('Are you sure you want to permanently delete this module?');
         if (x){
             $http.post('deleteModule', {
@@ -72,20 +85,25 @@ var JobModalInstanceCtrl =function ($scope, $modalInstance,$http, $location, ite
     
     $scope.removePrerequisite = function(item)
     {
-        var newPrereqs = $scope.modulePrereqsIds;
+        var newPrereqs = $scope.prerequisiteIds;
         for(var i=0;i<= newPrereqs.length - 1; i++) {
             if(newPrereqs[i] === item) {
                newPrereqs.splice(i, 1);
             }
         }
+        $scope.rawModules = clone(rawModules);
+        $scope.prerequisiteIds = newPrereqs;
+        $scope.prerequisiteArr = getModules(newPrereqs, $scope.rawModules);
+        $scope.moduleOptions = $scope.filterModuleOptions($scope.rawModules, newPrereqs);
+        
         $http.post('updateModulePrerequisites', {
             module_id: itemIn['module_id'],
-            current_prerequisites: newPrereqs
+            current_prerequisites_ids: newPrereqs
         })
         .success(function (data) {
-            $scope.modulePrereqsIds = newPrereqs;
-            $scope.modulePrereqs = getModules($scope.modulePrereqsIds, modules);
-            
+            var i =0;
+        }).error(function (data, status) {
+            alert("An error occurred when removing the prerequisite");
         });
     };
     
@@ -118,20 +136,143 @@ var JobModalInstanceCtrl =function ($scope, $modalInstance,$http, $location, ite
             $modalInstance.close($scope.newItem);
         });
     };
-   
-    $scope.unpublish = function (scope) {
-        $modalInstance.dismiss('unpublish');
-    };
-    $scope.publish = function (scope) {
-        $modalInstance.dismiss('publish');
-    };
 
+    $scope.prereqAdded = function(selectedModulePrereqs)
+    {
+        $scope.prerequisiteIds.push(selectedModulePrereqs[0]['id']);
+        $scope.prerequisiteArr = $scope.prerequisiteArr.concat(selectedModulePrereqs);
+        $scope.moduleOptions = $scope.filterModuleOptions($scope.moduleOptions,[selectedModulePrereqs[0]['id']]);
+        
+        var current_prereq_ids=[];
+        for(var x in $scope.prerequisiteArr)
+        {
+            current_prereq_ids.push($scope.prerequisiteArr[x]['id']);
+        }
+        $http.post('updateModulePrerequisites', {
+            module_id: itemIn['module_id'],
+            current_prerequisites_ids: current_prereq_ids
+        })
+        .success(function (data) {
+        }).error(function (data, status) {
+            //TODO: change the type of alert to an angular one
+            alert("An error occurred when adding the prerequisite "+selectedModulePrereqs[0]['value']);
+        });
+    };
+    $scope.newRequirement = function()
+    {
+        $scope.requirements.push({id:$scope.counter++});
+    };
+    $scope.moduleItemRequirementAdded = function(moduleItem, itemId)
+    {//0=must_view; 1=must_contribute;2=must_submit
+        var types = clone(completionRequirementTypes);
+        var result=[];
+        switch(moduleItem.type)
+        {
+            case 'Assignment':
+                result.push(types[0]);
+                result.push(types[1]);
+                result.push(types[2]);
+                break;
+            case 'File':
+                result.push(types[0]);
+                break;
+            case 'Page':
+                result.push(types[0]);
+                result.push(types[1]);
+                break;
+            case 'Discussion':
+                result.push(types[0]);
+                result.push(types[1]);
+                break;
+            case 'Quiz':
+                result.push(types[0]);
+                result.push(types[2]);
+            case 'SubHeader':
+                result.push(types[0]);
+                break;
+            case 'ExternalUrl':
+                result.push(types[0]);
+                break;
+            case 'ExternalTool':
+                result.push(types[0]);
+                break;
+        }
+        var str = "completionRequirementTypes"+itemId;
+        $scope[str] = result;
+    };
+    
+    $scope.updateModuleItem = function()
+    {
+        
+    };
+    $scope.actionChanged = function(action, itemId)
+    {
+        //roots/updateModuleItem
+        switch(action.value)
+        {
+            case "must_view":
+                break;
+            case "must_contribute":
+                break;
+            case "must_submit":
+                var str = "showScore"+itemId;
+                $scope[str] = !$scope[str];
+                break;
+        }
+    };
+    
+    $scope.init = function()
+    {
+        $scope.counter = 0;
+        $scope.rawModules = clone(rawModules);
+        $scope.item = itemIn;
+        $scope.module_items = itemIn['module_items'];
+        $scope.requirements = [];
+//        $scope.showItems = false;
+        $scope.moduleName = itemIn['name'];
+        if(itemIn['unlock_at']!==undefined)
+        {
+            $scope.editModuleLock = true;
+            $scope.editModuleDate = {date: new Date(itemIn['unlock_at'])};
+        }
+        else
+        {
+            $scope.editModuleLock = false;
+            $scope.editModuleDate = {date: new Date()};
+        }
+
+
+        var currentPrereqIds = itemIn['prerequisite_module_ids'].split(", ");
+        $scope.prerequisiteIds = currentPrereqIds;
+        $scope.prerequisiteArr = getModules(currentPrereqIds, $scope.rawModules);//ids and names
+        var temp = $scope.rawModules;
+        $scope.moduleOptions = $scope.filterModuleOptions(temp, currentPrereqIds);
+    };
+    
+    //init modal window
+    $scope.init();
+    
+    
+    /*Utility functions*/
+    function deletePrerequisiteFromArray(prerequisiteId, moduleArr)
+    {
+        var arr = moduleArr.filter(function (ob)
+                {
+                    if (ob['id']!=prerequisiteId)
+                    {
+                        return ob;
+                    }
+                })
+        return arr;
+    }
+    
     function getModules(prereqsIds, modules)
     {
+        var temp = modules;
         var result = new Array();
         for(x in prereqsIds)
         {
-            var ob = modules.filter(function (ob)
+            var ob = temp.filter(function (ob)
                 {
                     if (ob.id === prereqsIds[x])
                     {
@@ -180,3 +321,13 @@ var DatepickerCtrl = function ($scope) {
 };
 
 
+function clone(obj){
+    if(obj == null || typeof(obj) != 'object')
+        return obj;
+
+    var temp = new obj.constructor(); 
+    for(var key in obj)
+        temp[key] = clone(obj[key]);
+
+    return temp;
+}
