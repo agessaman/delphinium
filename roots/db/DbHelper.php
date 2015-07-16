@@ -5,7 +5,6 @@ use Delphinium\Roots\Models\Module;
 use Delphinium\Roots\Models\Content;
 use Delphinium\Roots\Models\Tag;
 use Delphinium\Roots\Models\OrderedModule;
-use Delphinium\Roots\Models\CacheSetting;
 use Delphinium\Roots\Models\Assignment;
 use Delphinium\Roots\Models\AssignmentGroup;
 use Delphinium\Roots\RequestObjects\AssignmentsRequest;

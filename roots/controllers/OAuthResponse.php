@@ -1,9 +1,8 @@
-<?php namespace Delphinium\Blackberry\Controllers;
+<?php namespace Delphinium\Roots\Controllers;
 
 use Illuminate\Routing\Controller;
-use Delphinium\Blackberry\Classes\OAuth2Response;
-use Delphinium\Blackberry\Models\Developer as LtiConfigurations;
-use Delphinium\Blackberry\Models\User;
+use Delphinium\Roots\Models\Developer as LtiConfigurations;
+use Delphinium\Roots\Models\User;
 
 class OAuthResponse extends Controller
 {
