@@ -7,7 +7,7 @@ use Delphinium\Roots\Models\User;
 use Cms\Classes\ComponentBase;
 use Delphinium\Roots\Classes\Blti;
 
-class LTIConfiguration extends ComponentBase {
+class LtiConfiguration extends ComponentBase {
 
     public function componentDetails() {
         return [

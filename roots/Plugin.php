@@ -25,7 +25,7 @@ class Plugin extends PluginBase
     public function registerComponents()
     {
         return [
-            '\Delphinium\Roots\Components\LTIConfiguration' => 'LTIConfiguration'
+            '\Delphinium\Roots\Components\LtiConfiguration' => 'LtiConfiguration'
         ];
     }
     
@@ -35,7 +35,7 @@ class Plugin extends PluginBase
     	Event::listen('backend.menu.extendItems', function($manager){	
     	
             $manager->addSideMenuItems('Delphinium.Greenhouse', 'greenhouse', [
-                'LTIconfig' => [
+                'Lticonfig' => [
 					'label' => 'LTI Configuration',
 					'icon' => 'icon-cogs',
 					'owner' => 'Delphinium.Greenhouse',
