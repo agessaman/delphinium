@@ -19,5 +19,12 @@ class Plugin extends PluginBase
             'icon' => 'icon-cubes'
         ];
     }
+    
+    public function registerComponents()
+    {
+        return [
+            '\Delphinium\Roots\Components\LTIConfiguration' => 'LTIConfiguration'
+        ];
+    }
 
 }
