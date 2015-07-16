@@ -29,24 +29,4 @@ class Plugin extends PluginBase
         ];
     }
     
-    public function boot()
-    {
-    
-    	Event::listen('backend.menu.extendItems', function($manager){	
-    	
-            $manager->addSideMenuItems('Delphinium.Greenhouse', 'greenhouse', [
-                'Blackberry' => [
-					'label' => 'Blackberry',
-					'icon' => 'icon-cogs',
-					'owner' => 'Delphinium.Greenhouse',
-					'url' => Backend::url('delphinium/blackberry/configuration'),
-				]
-            ]);
-            
-        });
-        
-        
-    }
-   
-   
 }
