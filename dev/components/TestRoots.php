@@ -51,7 +51,7 @@ class TestRoots extends ComponentBase
 //        $this->testAddingModule();
 //        $this->testAddingModuleItem();
 //        
-        $this->testingGettingAssignments();
+//        $this->testingGettingAssignments();
 //        $this->testGettingSingleAssignment();
         
 //        $this->testAssignmentGroups();
@@ -61,18 +61,19 @@ class TestRoots extends ComponentBase
 //        $this->testGettingAllSubmissionForSingleAssignment();
 //        $this->testGettingMultipleSubmissionsForSingleStudent();
 //        $this->testGettingMultipleSubmissionsAllStudents();
+//        $this->testGettingAllSubmissionsAllStudents();
 //        $this->testGettingMultipleSubmissionsMultipleStudents();
 //        $this->testGettingSubmissions();
 //        $this->testFileUpload();
 //        $this->testAddingAssignment();
 //        $this->testStudentAnalyticsAssignmentData();
-//        $this->testGetCourse();
+        $this->testGetCourse();
     }
     
     private function testBasicModulesRequest()
     { 
         $moduleId = 380200;
-        $moduleItemId = 2368085;
+        $moduleItemId = null;//2368085;
         $includeContentDetails = true;
         $includeContentItems = true;
         $module = null;
@@ -358,7 +359,24 @@ class TestRoots extends ComponentBase
         $res = $this->roots->submissions($req);
         echo json_encode($res);
     }
+       
+    private function testGettingAllSubmissionsAllStudents()
+    {
+        $studentIds = null;
+        $assignmentIds = array();
+        $multipleStudents = true;
+        $multipleAssignments = true;
+        $allStudents = true;
+        $allAssignments = true;
         
+        //can have the student Id param null if multipleUsers is set to false (we'll only get the current user's submissions)
+        
+        $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, 
+                $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
+        
+        $res = $this->roots->submissions($req);
+        echo json_encode($res);
+    }
     private function testGettingMultipleSubmissionsMultipleStudents()
     {//This throws an error because I'm not authorized to retrieve submissions in behalf of other students
         $studentIds = array(10733259,10733259);

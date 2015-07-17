@@ -918,13 +918,13 @@ class CanvasHelper
         //check if module exists
         $module = Module::firstOrNew(array('module_id' => $moduleRow->id));//('moduleId','=',$module->id);
         $module->module_id = $moduleRow->id;
-        $module->course_id = $courseId;//do we need this?
+        $module->course_id = $courseId;
         $module->name = $moduleRow->name;
 //        $module->position = $moduleRow->position;
         $module->unlock_at = $moduleRow->unlock_at;
         $module->require_sequential_progress = $moduleRow->require_sequential_progress;
         $module->publish_final_grade = $moduleRow->publish_final_grade;
-        $module->prerequisite_module_ids = implode(",",$moduleRow->prerequisite_module_ids);
+        $module->prerequisite_module_ids = implode(", ",$moduleRow->prerequisite_module_ids);
         $module->items_count = $moduleRow->items_count;
         if(isset($moduleRow->published)){$module->published = $moduleRow->published;}
         if(isset($moduleRow->state)){$module->state = $moduleRow->state;}

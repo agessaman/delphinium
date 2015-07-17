@@ -27,3 +27,4 @@ Route::post('deleteModuleItem', 'Delphinium\Stem\Controllers\RestfulApi@deleteMo
 
 Route::post('updateModulePrerequisites', 'Delphinium\Stem\Controllers\RestfulApi@updateModulePrereqs');
 Route::post('updateModuleName', 'Delphinium\Stem\Controllers\RestfulApi@updateModuleName');
+Route::post('updateModuleItemCompletionRequirement', 'Delphinium\Stem\Controllers\RestfulApi@updateModuleItemCompletionRequirement');

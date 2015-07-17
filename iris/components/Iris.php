@@ -89,9 +89,9 @@ class Iris extends ComponentBase
         $arr = $moduleData->toArray();
         
         $tree = $this->buildTree($arr, 1);
-        $dash = "-";
+        $dash = "";
         $result = array();
-        $result[$tree[0]['module_id']] = $tree[0]['name'];
+        $result[$tree[0]['module_id']] = "({$tree[0]['name']})";
         
         foreach($tree as $item)
         {
@@ -105,10 +105,10 @@ class Iris extends ComponentBase
     {
         foreach($children as $item)
         {
-            $res[$item['module_id']] = $dash.$item['name'];
+            $res[$item['module_id']] = $dash." ".$item['name'];
             if(sizeof($item['children'])>=1)
             {
-                $newDash = $dash." -";
+                $newDash = $dash."-";
                 $this->recursion($item['children'], $newDash, $res);
             }
         }

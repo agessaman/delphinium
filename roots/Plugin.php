@@ -1,6 +1,8 @@
 <?php namespace Delphinium\Roots;
 
 use System\Classes\PluginBase;
+Use Event;
+use Backend;
 
 class Plugin extends PluginBase
 {
@@ -18,6 +20,32 @@ class Plugin extends PluginBase
             'author' => 'Delphinium',
             'icon' => 'icon-cubes'
         ];
+    }
+    
+    public function registerComponents()
+    {
+        return [
+            '\Delphinium\Roots\Components\LtiConfiguration' => 'LtiConfiguration'
+        ];
+    }
+    
+    public function boot()
+    {
+    
+    	Event::listen('backend.menu.extendItems', function($manager){	
+    	
+            $manager->addSideMenuItems('Delphinium.Greenhouse', 'greenhouse', [
+                'Lticonfig' => [
+					'label' => 'LTI Configuration',
+					'icon' => 'icon-cogs',
+					'owner' => 'Delphinium.Greenhouse',
+					'url' => Backend::url('delphinium/roots/lticonfiguration'),
+				]
+            ]);
+            
+        });
+        
+        
     }
 
 }

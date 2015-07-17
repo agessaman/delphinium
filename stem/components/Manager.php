@@ -22,6 +22,8 @@ class Manager extends ComponentBase
     {   
         $this->addJs("/plugins/delphinium/stem/assets/javascript/angular.min.js");
         $this->addJs("/plugins/delphinium/stem/assets/javascript/angular-ui-tree.js");
+//        $this->addJs("/plugins/delphinium/stem/assets/javascript/bodyCtrl.js");
+//        $this->addJs("/plugins/delphinium/stem/assets/javascript/alertService.js");
         $this->addJs("/plugins/delphinium/stem/assets/javascript/tree.js");
         $this->addJs('/plugins/delphinium/stem/assets/javascript/xeditable.min.js');
         $this->addJs('/plugins/delphinium/stem/assets/javascript/ui-bootstrap-tpls-0.12.1.min.js');
@@ -67,6 +69,21 @@ class Manager extends ComponentBase
         }
         $this->page['avTags'] = json_encode($tags);
         
+        $completionReqs = $roots->getCompletionRequirementTypes();
+        $result = array();
+        $i=0;
+        foreach($completionReqs as $type)
+        {   
+            $item = new \stdClass();
+            
+            $item->id = $i;
+            $item->value=$type;
+            $item->text = $this->getText($type);
+            $result[] = $item;
+            
+            $i++;
+        }
+        $this->page['completionRequirementTypes']= json_encode($result);
     }
     public function getModules($freshData)
     {
@@ -179,4 +196,16 @@ class Manager extends ComponentBase
         
     }
 
+    private function getText($type)
+    {
+        switch($type)
+        {
+            case 'must_view':
+                return "view the item";
+            case 'must_contribute':
+                return 'contribute';
+            case 'must_submit':
+                return "score at least";
+        }
+    }
 }

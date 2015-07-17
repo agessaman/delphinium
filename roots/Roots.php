@@ -16,6 +16,7 @@ use Delphinium\Roots\Enums\CommonEnums\DataType;
 use Delphinium\Roots\Enums\CommonEnums\ActionType;
 use Delphinium\Roots\Enums\ModuleItemEnums\ModuleItemType;
 use Delphinium\Roots\Enums\ModuleItemEnums\PageEditingRoles;
+use Delphinium\Roots\Enums\ModuleItemEnums\CompletionRequirementType;
 use Delphinium\Roots\lmsClasses\CanvasHelper;
 use Delphinium\Roots\Cache\CacheHelper;
 use Delphinium\Roots\Exceptions\InvalidActionException;
@@ -110,7 +111,6 @@ class Roots
                 }
 
                 return $result;
-                break; 
             default :
                 throw new InvalidActionException($request->getActionType(), get_class($request));
         
@@ -375,6 +375,10 @@ class Roots
         return ModuleItemType::getConstants();
     }
     
+    public function getCompletionRequirementTypes()
+    {
+        return CompletionRequirementType::getConstants();
+    }
     public function getPageEditingRoles()
     {
          return PageEditingRoles::getConstants();

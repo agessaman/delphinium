@@ -7,7 +7,8 @@ use System\Classes\PluginBase;
 class Plugin extends PluginBase
 {
 	public $require = [
-            'Delphinium.Greenhouse'
+            'Delphinium.Greenhouse',
+            'Delphinium.Roots'
 	];
 
     public function pluginDetails()
@@ -28,24 +29,4 @@ class Plugin extends PluginBase
         ];
     }
     
-    public function boot()
-    {
-    
-    	Event::listen('backend.menu.extendItems', function($manager){	
-    	
-            $manager->addSideMenuItems('Delphinium.Greenhouse', 'greenhouse', [
-                'Blackberry' => [
-					'label' => 'Blackberry',
-					'icon' => 'icon-cogs',
-					'owner' => 'Delphinium.Greenhouse',
-					'url' => Backend::url('delphinium/blackberry/configuration'),
-				]
-            ]);
-            
-        });
-        
-        
-    }
-   
-   
 }
