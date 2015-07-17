@@ -282,5 +282,4 @@ class Blti {
         $ret .= "getConsumerKey() = ".$this->getConsumerKey()."\n";
         return $ret;
     }
-
 }
