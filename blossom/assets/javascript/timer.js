@@ -41,31 +41,21 @@ function drawTimer(){
             .startAngle(0)
             .endAngle(pi2)
             .innerRadius(inner)
-            .outerRadius(outer);
-
-
-            
+            .outerRadius(outer);        
         
         var meter = svg.append("g")
            .attr("class","progress-meter")
-           .attr("transform", "translate(" + (position * 2.5 * outer) + ",0)")
-            .transition()
-                .duration(2000)
-                .attrTween("d", tweenArc);
-
-        function tweenArc(b) {
-          return  d3.interpolate({startAngle: 1.1*Math.PI, endAngle: 1.1*Math.PI}, b);
-        }
+           .attr("transform", "translate(" + (position * 2.5 * outer) + ",0)");
         
         var text = meter.append("text")
            .attr("text-anchor", "middle")
            .attr("dy", "0.25em")
-           .attr("class","count");
+           .attr("class","count text");
         
         var label = meter.append("text")
            .attr("text-anchor", "middle")
            .attr("dy", "2.5em")
-           .attr("class","label")
+           .attr("class","label text")
            .text(label);
         
         var shadow = meter.append("path")
@@ -118,7 +108,7 @@ function drawTimer(){
         
         var text = textg.append("text")
            .attr("text-anchor", "middle")
-           .attr("class","details");
+           .attr("class","details text");
         
         var flash = true;
         function updateClock()
