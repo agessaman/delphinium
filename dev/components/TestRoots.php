@@ -66,8 +66,8 @@ class TestRoots extends ComponentBase
 //        $this->testGettingSubmissions();
 //        $this->testFileUpload();
 //        $this->testAddingAssignment();
-//        $this->testStudentAnalyticsAssignmentData();
-        $this->testGetCourse();
+        $this->testStudentAnalyticsAssignmentData();
+//        $this->testGetCourse();
     }
     
     private function testBasicModulesRequest()
