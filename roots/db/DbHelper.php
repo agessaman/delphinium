@@ -187,9 +187,19 @@ class DbHelper
         }
     }
     
-    public function addTagsToAssignment($assignmentId, $newTagsStr, $courseId)
+    public function addTagsToAssignment($assignment, $newTagsStr, $courseId)
     {
-        $assignment = Assignment::where('assignment_id', '=', $assignmentId)->where('course_id','=',$courseId)->first();
+        if(!is_null($assignment->assignment_id))
+        {
+            $assignment = Assignment::firstOrNew(array('assignment_id' => $assignment->assignment_id,'course_id'=>$courseId));
+            $assignment->assignment_id = $assignment->assignment_id;
+        }
+        else if(!is_null($assignment->quiz_id))
+        {
+            $assignment = Assignment::firstOrNew(array('quiz_id' => $assignment->$assignment->quiz_id,'course_id'=>$courseId));
+            $assignment->quiz_id = $assignment->quiz_id;
+        }
+        $assignment->course_id = $courseId;
         if(!is_null($assignment))//this could be due to the moduleItem not having an Id
         {
             $newTags = explode(', ', $newTagsStr);

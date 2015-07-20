@@ -127,17 +127,23 @@ class RestfulApi extends Controller
         $tags = \Input::get('tags');
         $type = \Input::get('type');
         
-        if($type === "Assignment")
+        if($type === "Assignment"||$type === "Quiz")
         {//add the tags to the assignment as well
             $assignment = new Assignment();
-            $assignment->assignment_id = $content_id;
+            if($type === "Assignment")
+            {
+                $assignment->assignment_id = $content_id;
+            }
+            else
+            {
+                $assignment->quiz_id = $content_id;
+            }
             $assignment->tags = $tags;
 
             $req = new AssignmentsRequest(ActionType::PUT, null, null, $assignment);
 
             $roots = new Roots();
             $res = $roots->assignments($req);
-            return json_encode($res);
         }
         
 //        $moduleItem = new ModuleItem($title, $modItemType, $content_id, $page_url, $external_url, $completion_requirement_type, 

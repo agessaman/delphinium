@@ -36,7 +36,7 @@ class TestRoots extends ComponentBase
     {  
         $this->roots = new Roots();
 //        $this->refreshCache();
-//        $this->test();
+        $this->test();
         
 //        Cache::flush();
 //        $this->testBasicModulesRequest();
@@ -66,7 +66,7 @@ class TestRoots extends ComponentBase
 //        $this->testGettingSubmissions();
 //        $this->testFileUpload();
 //        $this->testAddingAssignment();
-        $this->testStudentAnalyticsAssignmentData();
+//        $this->testStudentAnalyticsAssignmentData();
 //        $this->testGetCourse();
     }
     
@@ -413,24 +413,17 @@ class TestRoots extends ComponentBase
     
     public function test()
     {
-        $req = new ModulesRequest(ActionType::GET, null, null, true, 
-                true, null, null , false);
-        $roots = new Roots();
-        $moduleData = $roots->modules($req);
+        $assignment = new Assignment();
+//        $assignment->assignment_id = 1660427;
+        $assignment->quiz_id = 
+        $assignment->tags = "Tagged assignment";
 
-        $iris = new Iris();
-        $arr = $moduleData->toArray();
-        $tree = $iris->buildTree($arr,1);
-        echo json_encode($tree);
-//        echo sizeof($tree);
-//        $dash = "-";
-//        $result = array();
-//        foreach($tree as $item)
-//        {
-//            $this->recursion($item['children'], $dash, $result);
-//        }
-//
-//        echo json_encode($result);
+        $req = new AssignmentsRequest(ActionType::PUT, null, null, $assignment);
+
+        $roots = new Roots();
+        $res = $roots->assignments($req);
+        
+        return $res;
     }
     
    

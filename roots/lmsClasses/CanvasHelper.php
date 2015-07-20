@@ -469,45 +469,49 @@ class CanvasHelper
     public function updateAssignment(AssignmentsRequest $request)
     {
         $urlPieces= $this->initUrl();
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
         $token = \Crypt::decrypt($_SESSION['userToken']);
+        $courseId = $_SESSION['courseID'];
         $urlArgs = array();
         $urlPieces[] = "assignments";
         
-        foreach($request->getAssignment()->attributes as $key => $value) {
-            if ($value)
-            {
-                if(($key==="due_at"||$key==="unlock_at"||$key=="lock_at"))
-                {
-                    $urlArgs[] = "assignment[{$key}]={$value->format('c')}";
-                    continue;
-                }
-                if($key==="points_possible")
-                {
-                    $urlArgs[] = "assignment[{$key}]=".floatval($value);
-                    continue;
-                }
-                if($key==="tags")
-                {
-                    continue;
-                }
-                $urlArgs[] = "assignment[{$key}]={$value}";
-            }
-        }
-        
-        //Attach token
-        $urlArgs[]="access_token={$token}";
-
-        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
-//        echo $url;
-//        return;
-        $response = GuzzleHelper::makeRequest($request, $url);
-        $body = json_decode($response->getBody());
-        
+//        foreach($request->getAssignment()->attributes as $key => $value) {
+//            if ($value)
+//            {
+//                if(($key==="due_at"||$key==="unlock_at"||$key=="lock_at"))
+//                {
+//                    $urlArgs[] = "assignment[{$key}]={$value->format('c')}";
+//                    continue;
+//                }
+//                if($key==="points_possible")
+//                {
+//                    $urlArgs[] = "assignment[{$key}]=".floatval($value);
+//                    continue;
+//                }
+//                if($key==="tags")
+//                {
+//                    continue;
+//                }
+//                $urlArgs[] = "assignment[{$key}]={$value}";
+//            }
+//        }
+//        
+//        //Attach token
+//        $urlArgs[]="access_token={$token}";
+//
+//        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+////        echo $url;
+////        return;
+//        $response = GuzzleHelper::makeRequest($request, $url);
+//        $body = json_decode($response->getBody());
+//        
         
         $tags = $request->getAssignment()->tags;
-           
         $dbHelper = new DbHelper();
-        $dbHelper->addTagsToAssignment($modItem['content_id'], $tags, $courseId);
+        $dbHelper->addTagsToAssignment($request->getAssignment(), $tags, $courseId);
                     
     }
     
