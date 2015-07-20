@@ -20,7 +20,7 @@ class RuleContext implements IContext {
     private $values = [];
     private $unset = [];
 
-    public function __construct(Rule $rule, $context) {
+    public function __construct(Rule $rule, IContext $context) {
         $this->rule = $rule;
         $this->context = $context;
     }
@@ -73,7 +73,7 @@ class RuleContext implements IContext {
     }
 
     public function setExcluded($excluded) {
-        $this->context->setExculded($excluded);
+        $this->context->setExcluded($excluded);
     }
 
 }

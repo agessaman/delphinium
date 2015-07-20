@@ -186,10 +186,10 @@ class RuleBuilder implements \ArrayAccess
     }
     
     public function excludeResult() {
-        return new FilterAction(true);
+        return new \Delphinium\Blade\Classes\Rules\Action\FilterAction(true);
     }
     
     public function includeResult() {
-        return new FilterAction(false);
+        return new \Delphinium\Blade\Classes\Rules\Action\FilterAction(false);
     }
 }

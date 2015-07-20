@@ -14,28 +14,36 @@ use \Model;
  */
 class FilterAction implements Action {
 
-    private $filter;
+    private $excluded;
     private $saved = false;
 
     public function __construct($excluded) {
-        $this->filter = $excluded;
+        $this->excluded = $excluded;
     }
 
     public function execute(IContext $ctx) {
-        $ctx->whitelist($filter);
+        $ctx->setExcluded($this->excluded);
     }
     
     public function matches(Model $model) {
-        return $this->filter === $model->excluded;
+        return $this->excluded === (boolean) $model->excluded;
     }
 
     public function save(Model $parent, Model $parent_rule, $order) {
         if (!$this->saved) {
             $model = new FilterActionModel(
-                    ['filter' => $this->filter, 'order' => $order]);
+                    ['excluded' => $this->excluded, 'order' => $order]);
             $model->rule()->associate($parent);
             $model->save();
         }
+    }
+
+    public function isWhitelistAction() {
+        return $this->excluded == false;
+    }
+    
+    public function isBlacklistAction() {
+        return $this->excluded;
     }
 
 }

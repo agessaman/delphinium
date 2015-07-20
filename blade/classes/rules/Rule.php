@@ -30,6 +30,7 @@ class Rule implements IPersistent {
     private $datatype;
     protected $dbid; // database id
     protected $model;
+    private $whitelist; // whether this rule is a whitelisting rule
 
     /**
      * Rule constructor.
@@ -46,6 +47,10 @@ class Rule implements IPersistent {
         if ($actions == null) {
             $this->actions = [];
         }
+        
+        $this->disallowMultipleFilterActions();
+        
+        $this->whitelist = $this->isWhitelistRule();
     }
 
     /**
@@ -180,5 +185,29 @@ class Rule implements IPersistent {
             return $this->model->getKeys();
         }
         return [];
+    }
+    
+    public function isWhitelistRule() {
+        if ($this->whitelist == true) return true;
+        
+        foreach ($this->actions as $action) {
+            if ($action->isWhitelistAction()) {
+                $this->whitelist = true;
+                return true;
+            }
+        }
+    }
+    
+    private function disallowMultipleFilterActions() {
+        $count = 0;
+        foreach($this->actions as $action) {
+            if ($action->isWhitelistAction() || $action->isBlacklistAction()) {
+                $count++;
+            }
+        }
+        
+        if ($count > 1) {
+            throw new \InvalidArgumentException('A rule may not have more than one filtering action');
+        }
     }
 }

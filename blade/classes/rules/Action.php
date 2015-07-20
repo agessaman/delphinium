@@ -8,5 +8,6 @@ namespace Delphinium\Blade\Classes\Rules;
  * @author Daniel
  */
 interface Action extends ISavable {
-    public function execute(Context $ctx);
+    public function execute(IContext $ctx);
+    public function isWhitelistAction();
 }

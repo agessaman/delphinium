@@ -10,6 +10,7 @@ use Delphinium\Roots\RequestObjects\SubmissionsRequest;
 use Delphinium\Roots\Enums\CommonEnums\ActionType;
 use Delphinium\Blade\Classes\Rules\Context;
 use Delphinium\Blade\Classes\Rules\RuleGroup;
+use Delphinium\Blade\Classes\Rules\Rule;
 
 /**
  *
@@ -92,30 +93,49 @@ class DataSource implements IDataSource {
         return $this->runRules('submission', $this->rg($params), $this->roots->submissions($request)->toArray());
     }
 
+    private function processResults($data) {
+        if ($this->prettyprint) {
+            var_dump($data);
+            return null;
+        }
+        
+        return $data;
+    }
+    
+    private function getRules($rulegroups) {
+        $groups = array_map(function ($name) {
+            return new RuleGroup($name);
+        }, $rulegroups);
+        
+        $rules = [];
+        foreach ($groups as $rg) {
+            foreach ($rg->getRules() as $rule) {
+                $rules[$rule->getId()] = $rule; // assigning to dictionary to avoid running a rule more than once
+            }
+        }
+        
+        return array_values($rules);
+    }
+    
     private function runRules($datatype, $rulegroups, $data) {
         if (empty($rulegroups)) {
-            if ($this->prettyprint) {
-                var_dump($data);
-                return null;
-            }
-
-            return $data;
+            return $this->processResults($data);
         }
 
-        $groups = array_map(function ($rg) {
-            return (new RuleGroup($rg))->getRules();
-        }, $rulegroups);
+        $rules = $this->getRules($rulegroups);
+        $this->sortRules($rules);
 
         $results = [];
 
         foreach ($data as $d) {
             $ctx = new Context($d);
+            if (isset($rules[0]) && $rules[0]->isWhitelistRule()) {
+                $ctx->setExcluded(true);
+            }
 
-            foreach ($groups as $group) {
-                foreach ($group as $rule) {
-                    if ($rule->getDatatype() == $datatype) {
-                        $rule->execute(DataSource::createRuleContext($rule, $ctx));
-                    }
+            foreach ($rules as $rule) {
+                if ($rule->getDatatype() == $datatype) {
+                    $rule->execute(DataSource::createRuleContext($rule, $ctx));
                 }
             }
 
@@ -125,14 +145,28 @@ class DataSource implements IDataSource {
             }
         }
 
-        if ($this->prettyprint) {
-            var_dump($results);
-            return null;
-        }
-
-        return $results;
+        return $this->processResults($results);
     }
-
+    
+    
+    // TODO: fix rule sorting
+    private function sortRules(&$rules) {
+        usort($rules, function(Rule $rule1, Rule $rule2){
+            if ($rule1->isWhitelistRule() && !$rule2->isWhitelistRule()) {
+                return -1;
+            }
+            
+            if (!$rule1->isWhitelistRule() && $rule2->isWhitelistRule()) {
+                return 1;
+            }
+            
+            return 0;
+        });
+        
+        //var_dump($rules);
+        return $rules;
+    }
+    
     private static function createRuleContext($rule, $ctx) {
         return new \Delphinium\Blade\Classes\Data\RuleContext($rule, $ctx);
     }

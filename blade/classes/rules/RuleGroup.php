@@ -8,7 +8,7 @@ use Delphinium\Blade\Classes\Rules\Context;
  *
  * @author Daniel Clark
  */
-class RuleGroup implements IPersistent {
+class RuleGroup implements IPersistent, IRuleGroup {
     private $name;
     private $rules = [];
     private $dbid;
@@ -95,12 +95,4 @@ class RuleGroup implements IPersistent {
         
         $this->model->rules()->sync($ids);
     }
-//    
-//    public function execute(Context $context) {
-//        foreach($this->getRules() as $rule) {
-//            $rule->execute($context);
-//        }
-//        
-//        return $context;
-//    }
 }

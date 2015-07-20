@@ -38,7 +38,7 @@ class FilterAction extends Model implements IRuleComponent {
     public $attachMany = [];
     
     public function toExecutable() {
-        return new Delphinium\Blade\Classes\Rules\Action\FilterAction($this->excluded);
+        return new \Delphinium\Blade\Classes\Rules\Action\FilterAction((boolean) $this->excluded);
     }
 
 }

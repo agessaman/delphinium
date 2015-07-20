@@ -74,7 +74,8 @@ abstract class Operator implements ISavable {
         $parent->operator()->save($op);
     }
 
-    public function matches(OperatorModel $model) {
+    public function matches(Model $model) {
+        if (!($model instanceof OperatorModel)) return false;
         if ($model->type != get_class($this)) {
             return false;
         }

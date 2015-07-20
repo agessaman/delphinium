@@ -5,12 +5,15 @@ namespace Delphinium\Blade\Classes\Rules\Action;
 use \Model;
 use \Delphinium\Blade\Models\AssignAction as ActionModel;
 use Delphinium\Blade\Classes\Rules\Variable;
+use Delphinium\Blade\Classes\Rules\Action;
+use Delphinium\Blade\Classes\Rules\IContext;
+
 /**
  * 
  *
  * @author Daniel Clark
  */
-class AssignAction {
+class AssignAction implements Action {
 
     protected $variable;
     protected $value;
@@ -20,7 +23,7 @@ class AssignAction {
         $this->value = $value;
     }
 
-    public function execute($context) {
+    public function execute(IContext $context) {
         $context[$this->variable->getName()] = $this->value->prepareValue($context)->getValue();
     }
 
@@ -37,6 +40,14 @@ class AssignAction {
         $model->save();
 
         $this->value->save($model, $parent_rule, 0);
+    }
+    
+    public function isWhitelistAction() {
+        return false;
+    }
+    
+    public function isBlacklistAction() {
+        return false;
     }
 
 }
