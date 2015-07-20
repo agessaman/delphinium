@@ -178,7 +178,8 @@
                     }
                     $http.post('addTags', {
                         contentId: content_id,
-                        tags: JSON.stringify(tagArr)
+                        tags: JSON.stringify(tagArr),
+                        type: scope.item.type
                     }).
                             success(function (data) {
                                 $scope.tags = data.split(", ");
@@ -203,7 +204,8 @@
 
                     $http.post('addTags', {
                         contentId: content_id,
-                        tags: JSON.stringify(tagArr)
+                        tags: JSON.stringify(tagArr),
+                        type: scope.$parent.item.type
                     }).
                             success(function (data) {
                                 $scope.tags = data.split(", ");

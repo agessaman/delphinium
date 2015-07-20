@@ -187,7 +187,7 @@ class CanvasHelper
             if($tags)
             {
                 $dbHelper = new DbHelper();
-                return $dbHelper->updateTags($request->getModuleItem()->content_id, $tags, $courseId);
+                return $dbHelper->updateContentTags($request->getModuleItem()->content_id, $tags, $courseId);
             }
         }
         if($request->getModuleItemId())
@@ -369,7 +369,7 @@ class CanvasHelper
                     $tags = $request->getModuleItem()->getTags();
                     
                     $dbHelper = new DbHelper();
-                    $dbHelper->addTags($modItem['content_id'], $tags, $courseId);
+                    $dbHelper->addTagsToContent($modItem['content_id'], $tags, $courseId);
                     
                 }
             }
@@ -465,6 +465,52 @@ class CanvasHelper
         $response = GuzzleHelper::makeRequest($request, $url);
         return json_decode($response->getBody());
     }
+    
+    public function updateAssignment(AssignmentsRequest $request)
+    {
+        $urlPieces= $this->initUrl();
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $urlArgs = array();
+        $urlPieces[] = "assignments";
+        
+        foreach($request->getAssignment()->attributes as $key => $value) {
+            if ($value)
+            {
+                if(($key==="due_at"||$key==="unlock_at"||$key=="lock_at"))
+                {
+                    $urlArgs[] = "assignment[{$key}]={$value->format('c')}";
+                    continue;
+                }
+                if($key==="points_possible")
+                {
+                    $urlArgs[] = "assignment[{$key}]=".floatval($value);
+                    continue;
+                }
+                if($key==="tags")
+                {
+                    continue;
+                }
+                $urlArgs[] = "assignment[{$key}]={$value}";
+            }
+        }
+        
+        //Attach token
+        $urlArgs[]="access_token={$token}";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+//        echo $url;
+//        return;
+        $response = GuzzleHelper::makeRequest($request, $url);
+        $body = json_decode($response->getBody());
+        
+        
+        $tags = $request->getAssignment()->tags;
+           
+        $dbHelper = new DbHelper();
+        $dbHelper->addTagsToAssignment($modItem['content_id'], $tags, $courseId);
+                    
+    }
+    
     
     public function addQuiz(Quiz $quiz)
     {///api/v1/courses/:course_id/discussion_topics

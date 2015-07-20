@@ -21,6 +21,7 @@ class CreateRootsAssignmentsTable extends Migration
                 $table->dateTime('lock_at')->nullable;
                 $table->dateTime('unlock_at')->nullable;
                 $table->string('all_dates')->nullable;
+                $table->string('tags');//csv
                 $table->integer('course_id');
                 $table->string('html_url');
                 $table->integer('points_possible');

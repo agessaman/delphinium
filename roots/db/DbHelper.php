@@ -167,40 +167,46 @@ class DbHelper
     /*
      * UPDATE
      */
-    public function addTags($contentId, $newTagsStr, $courseId)
+    public function addTagsToContent($contentId, $newTagsStr, $courseId)
     {
         $content = Content::where('content_id', '=', $contentId)->first();
             
-            if(!is_null($content))//this could be due to the moduleItem not having an Id
-            {
-                $newTags = explode(', ', $newTagsStr);
-                if(strlen($content->tags)>0){
-                    $current = explode(', ', $content->tags);
+        if(!is_null($content))//this could be due to the moduleItem not having an Id
+        {
+            $newTags = explode(', ', $newTagsStr);
+            $tagString = $this->mergeTagsUnique($newTagsStr, $content->tags);
+            $content->tags =$tagString;
+            $content->save();
 
-                    $c = array_merge($current,$newTags);
-                    $unique = array_unique($c);
-                    //convert array to string
-                    $tagString =implode(', ', $unique);
-                }
-                else 
-                {
-                    $tagString =$newTagsStr;
-                }
-
-
-                $content->tags =$tagString;
-                $content->save();
-
-                $this->updateAvailableTags($courseId, $newTags);
-                return $content->tags;
-            }
-            else
-            {
-                return null;
-            }
+            $this->updateAvailableTags($courseId, $newTags);
+            return $content->tags;
+        }
+        else
+        {
+            return null;
+        }
     }
     
-    public function updateTags($contentId, $newTagsStr, $courseId)
+    public function addTagsToAssignment($assignmentId, $newTagsStr, $courseId)
+    {
+        $assignment = Assignment::where('assignment_id', '=', $assignmentId)->where('course_id','=',$courseId)->first();
+        if(!is_null($assignment))//this could be due to the moduleItem not having an Id
+        {
+            $newTags = explode(', ', $newTagsStr);
+            $tagString = $this->mergeTagsUnique($newTagsStr, $assignment->tags);
+            $assignment->tags =$tagString;
+            $assignment->save();
+
+            $this->updateAvailableTags($courseId, $newTags);
+            return $assignment->tags;
+        }
+        else
+        {
+            return null;
+        }
+    }
+    
+    public function updateContentTags($contentId, $newTagsStr, $courseId)
     {
         $content = Content::where('content_id', '=', $contentId)->first();
             
@@ -212,6 +218,21 @@ class DbHelper
             $newTags = explode(', ', $newTagsStr);
             $this->updateAvailableTags($courseId, $newTags);
             return $content->tags;
+        }
+    }
+    
+    public function updateAssignmentTags($assignmentId, $newTagsStr, $courseId)
+    {
+        $assignment = Assignment::where('assignment_id', '=', $assignmentId)->where('course_id','=',$courseId)->first();
+            
+        if(!is_null($assignment))//
+        {
+            $assignment->tags =$newTagsStr;
+            $assignment->save();
+
+            $newTags = explode(', ', $newTagsStr);
+            $this->updateAvailableTags($courseId, $newTags);
+            return $assignment->tags;
         }
     }
     
@@ -359,5 +380,25 @@ class DbHelper
         {
             ModuleItem::where('course_id','=',$courseId)->where('module_item_id','=',  intval($module_item_id))->delete();
         }
+    }
+    
+    private function mergeTagsUnique($newTagsStr, $currentTagStr)
+    {
+        $newTags = explode(', ', $newTagsStr);
+        if(strlen($currentTagStr)>0)
+            {
+            $current = explode(', ', $currentTagStr);
+
+            $c = array_merge($current,$newTags);
+            $unique = array_unique($c);
+            //convert array to string
+            $tagString =implode(', ', $unique);
+        }
+        else 
+        {
+            $tagString =$newTagsStr;
+        }
+        return $tagString;
+
     }
 }

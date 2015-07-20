@@ -150,6 +150,16 @@ class Roots
                         $canvas = new CanvasHelper(DataType::ASSIGNMENTS);
                         return $canvas->addAssignment($request);
                 }
+            case(ActionType::PUT):
+                switch ($request->getLms())
+                {
+                    case (Lms::CANVAS):
+                        $canvas = new CanvasHelper(DataType::ASSIGNMENTS);
+                        return $canvas->updateAssignment($request);
+                    default:
+                        $canvas = new CanvasHelper(DataType::ASSIGNMENTS);
+                        return $canvas->updateAssignment($request);
+                }
                 //If another action was given throw exception
             default :
                 throw new InvalidActionException($request->getActionType(), get_class($request));
