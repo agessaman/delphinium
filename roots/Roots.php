@@ -127,13 +127,7 @@ class Roots
                 {
                     $dbHelper = new DbHelper();
                     $data = $dbHelper->getAssignmentData( $request);
-                    switch(get_class($data))
-                    {
-                        case "Illuminate\Database\Eloquent\Collection":
-                            return (!$data->isEmpty()) ?  $data :  $this->getAssignmentDataFromLms($request);
-                        default:
-                            return (!is_null($data)) ? $data : $this->getAssignmentDataFromLms($request);
-                    }
+                    return (count($data)>1) ? $data : $this->getAssignmentDataFromLms($request);
                 }
                 else
                 {

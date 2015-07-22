@@ -8,9 +8,10 @@ class AssignmentsRequest extends RootsRequest
 {
     private $assignment_id;
     private $fresh_data;
+    private $include_tags;
     public $assignment;
     
-    function getAssignment_id() {
+        function getAssignment_id() {
         return $this->assignment_id;
     }
     
@@ -22,11 +23,19 @@ class AssignmentsRequest extends RootsRequest
         $this->fresh_data = $fresh_data;
     }
  
+    function getIncludeTags() {
+        return $this->include_tags;
+    }
+
+    function setIncludeTags($include_tags) {
+        $this->include_tags = $include_tags;
+    }
+
     function getAssignment() {
         return $this->assignment;
     }    
     
-    function __construct($actionType, $assignment_id = null, $fresh_data = false, Assignment $assignment = null) 
+    function __construct($actionType, $assignment_id = null, $fresh_data = false, Assignment $assignment = null, $include_tags = false) 
     {
         //this takes care of setting the lms and the ActionType in the parent class (RootsRequest)
         parent::__construct($actionType);
@@ -48,6 +57,7 @@ class AssignmentsRequest extends RootsRequest
         
         $this->assignment_id = $assignment_id;
         $this->fresh_data = $fresh_data;
+        $this->include_tags = $include_tags;
         $this->assignment = $assignment;
     }
 }

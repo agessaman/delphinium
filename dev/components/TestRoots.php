@@ -12,6 +12,7 @@ use Delphinium\Roots\RequestObjects\AssignmentGroupsRequest;
 use Delphinium\Roots\Enums\CommonEnums\ActionType;
 use Delphinium\Roots\Enums\ModuleItemEnums\ModuleItemType;
 use Delphinium\Roots\Enums\ModuleItemEnums\CompletionRequirementType;
+use Delphinium\Roots\DB\DbHelper;
 use Cms\Classes\ComponentBase;
 use \DateTime;
 use GuzzleHttp\Client;
@@ -72,7 +73,7 @@ class TestRoots extends ComponentBase
     
     private function testBasicModulesRequest()
     { 
-        $moduleId = 380200;
+        $moduleId = null;//380200;
         $moduleItemId = null;//2368085;
         $includeContentDetails = true;
         $includeContentItems = true;
@@ -247,7 +248,8 @@ class TestRoots extends ComponentBase
     
     private function testingGettingAssignments()
     {
-        $req = new AssignmentsRequest(ActionType::GET);
+        $req = new AssignmentsRequest(ActionType::GET, null, false, null, true);
+//        $req = new AssignmentsRequest(ActionType::GET);
         
         $res = $this->roots->assignments($req);
         echo json_encode($res);
@@ -257,8 +259,8 @@ class TestRoots extends ComponentBase
     {
         $assignment_id = 1660430;
         $freshData = false;
-        $req = new AssignmentsRequest(ActionType::GET, $assignment_id, $freshData);
-        
+        $includeTags = true;
+        $req = new AssignmentsRequest(ActionType::GET, $assignment_id, $freshData, null, $includeTags);
         $res = $this->roots->assignments($req);
         echo json_encode($res);
     }
