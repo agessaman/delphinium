@@ -460,7 +460,7 @@ class CanvasHelper
         $urlArgs[]="access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
-        echo $url;
+//        echo $url;
 //        return;
         $response = GuzzleHelper::makeRequest($request, $url);
         return json_decode($response->getBody());
@@ -513,7 +513,7 @@ class CanvasHelper
         $urlArgs[]="access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
-        echo $url;
+//        echo $url;
         $response = GuzzleHelper::postData($url);
         return json_decode($response->getBody());
     }
@@ -554,7 +554,7 @@ class CanvasHelper
         $urlArgs[]="access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
-        echo $url;
+//        echo $url;
         $response = GuzzleHelper::postData($url);
         return json_decode($response->getBody());
     }
@@ -670,7 +670,7 @@ class CanvasHelper
         $urlArgs[]="per_page=5000";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs); 
-        echo $url;
+//        echo $url;
         $response = GuzzleHelper::makeRequest($request, $url);
 
         return $this->processCanvasAssignmentData(json_decode($response->getBody()), $courseId, $singleRow);

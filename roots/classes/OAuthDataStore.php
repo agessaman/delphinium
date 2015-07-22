@@ -1,4 +1,4 @@
-<?php namespace Delphinium\Blackberry\Classes;
+<?php namespace Delphinium\Roots\Classes;
 
 class OAuthDataStore {
   function lookup_consumer($consumer_key) {
