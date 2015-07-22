@@ -37,7 +37,7 @@ class TestRoots extends ComponentBase
     {  
         $this->roots = new Roots();
 //        $this->refreshCache();
-        $this->test();
+//        $this->test();
         
 //        Cache::flush();
 //        $this->testBasicModulesRequest();
@@ -67,7 +67,7 @@ class TestRoots extends ComponentBase
 //        $this->testGettingSubmissions();
 //        $this->testFileUpload();
 //        $this->testAddingAssignment();
-//        $this->testStudentAnalyticsAssignmentData();
+        $this->testStudentAnalyticsAssignmentData();
 //        $this->testGetCourse();
     }
     
@@ -370,11 +370,12 @@ class TestRoots extends ComponentBase
         $multipleAssignments = true;
         $allStudents = true;
         $allAssignments = true;
+        $includeTags = true;
         
         //can have the student Id param null if multipleUsers is set to false (we'll only get the current user's submissions)
         
         $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, 
-                $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
+                $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments, $includeTags);
         
         $res = $this->roots->submissions($req);
         echo json_encode($res);
@@ -416,34 +417,6 @@ class TestRoots extends ComponentBase
     public function test()
     {
         
-        $assignment_id = 1660429;
-        $freshData = false;
-        $req = new AssignmentsRequest(ActionType::GET, $assignment_id);
-        
-        $dbHelper = new DbHelper();
-        $data = $dbHelper->getAssignmentData( $req);
-        echo json_encode($data);
-        
-//        $req = new ModulesRequest(ActionType::GET, null, null, true, 
-//                true, null, null , false);
-//        $roots = new Roots();
-//        $moduleData = $roots->modules($req);
-//
-//        $iris = new Iris();
-//        $arr = $moduleData->toArray();
-//        $tree = $iris->buildTree($arr,1);
-//        echo json_encode($tree);
-//        
-//        
-//        echo sizeof($tree);
-//        $dash = "-";
-//        $result = array();
-//        foreach($tree as $item)
-//        {
-//            $this->recursion($item['children'], $dash, $result);
-//        }
-//
-//        echo json_encode($result);
     }
     
    
@@ -534,7 +507,7 @@ class TestRoots extends ComponentBase
     
     public function testStudentAnalyticsAssignmentData()
     {
-        $res = $this->roots->getAnalyticsStudentAssignmentData();
+        $res = $this->roots->getAnalyticsStudentAssignmentData(true);
         echo json_encode($res);
     }
     

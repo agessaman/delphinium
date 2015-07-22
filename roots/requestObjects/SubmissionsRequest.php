@@ -15,6 +15,8 @@ class SubmissionsRequest extends RootsRequest
     private $allAssignments;
     private $multipleAssignments;
     
+    private $includeTags;
+    
     function getAllAssignments() {
         return $this->allAssignments;
     }
@@ -39,11 +41,21 @@ class SubmissionsRequest extends RootsRequest
         return $this->multipleAssignments;
     }
 
+    
+    function getIncludeTags() {
+        return $this->includeTags;
+    }
+
+    function setIncludeTags($includeTags) {
+        $this->includeTags = $includeTags;
+    }
+
+    
     /*
      * Constructor 
      */
     function __construct($actionType, array $studentIds = null, $allStudents = false, array $assignmentIds = null, $allAssignments = false, 
-            $multipleStudents = false, $multipleAssignments = false) 
+            $multipleStudents = false, $multipleAssignments = false, $includeTags = false) 
     {
         //this takes care of setting the lms and the ActionType in the parent class (RootsRequest)
         parent::__construct($actionType);
@@ -99,6 +111,7 @@ class SubmissionsRequest extends RootsRequest
         $this->multipleStudents=$multipleStudents;
         $this->studentIds=$studentIds;
         $this->allAssignments = $allAssignments;
+        $this->includeTags = $includeTags;
     }
     
     
