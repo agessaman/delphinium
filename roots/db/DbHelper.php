@@ -69,18 +69,51 @@ class DbHelper
             session_start(); 
     	}
         $courseId = $_SESSION['courseID'];
+        
+        $assignments;
         if($request->getAssignment_id())
         {//they want a specific assignment
-            return Assignment::where(array(
+            $assignments = Assignment::where(array(
                     'assignment_id' => $request->getAssignment_id(),
                     'course_id' => $courseId
                 ))->first();
         }
         else
         {//return all assignments
-            return Assignment::where(array(
+            $assignments = Assignment::where(array(
                     'course_id' => $courseId
                 ))->get();
+        }
+        
+        if(!$request->getIncludeTags())
+        {
+            if(!is_null($assignments))
+            {
+                return $assignments->toArray();
+            }
+            else
+            {
+                return [];
+            }
+        }
+        else
+        {
+            $result = [];
+            if(!is_null($assignments))
+            {
+                if (get_class($assignments)==="Illuminate\Database\Eloquent\Collection")
+                {
+                    foreach($assignments as $assignment)
+                    {
+                        $result[] = $this->matchAssignmentWithTags($assignment);
+                    }
+                }
+                else
+                {
+                    $result[] = $this->matchAssignmentWithTags($assignments);
+                } 
+            }
+            return $result;
         }
     }
     
@@ -360,4 +393,36 @@ class DbHelper
             ModuleItem::where('course_id','=',$courseId)->where('module_item_id','=',  intval($module_item_id))->delete();
         }
     }
+    
+    /*
+     * PRIVATE FUNCTIONS
+     */
+    private function matchAssignmentWithTags(Assignment $assignment)
+    {
+        $content;
+        if(!is_null($assignment->quiz_id))
+        {//quiz_id will be equal to content_id from a module_item_id
+            $content = Content::where(array(
+                    'content_id' => $assignment->quiz_id
+                ))->first();
+        }
+        else
+        {
+            $content = Content::where(array(
+                    'content_id' => $assignment->assignment_id
+                ))->first();
+        }
+        
+        $arr = $assignment->toArray();
+        if(!is_null($content))
+        {
+            $arr['tags'] = $content->tags;
+        }
+        else
+        {
+            $arr['tags'] = "";
+        }
+        return $arr;
+    }
+    
 }
