@@ -41,7 +41,7 @@ function drawTimer(){
             .startAngle(0)
             .endAngle(pi2)
             .innerRadius(inner)
-            .outerRadius(outer);
+            .outerRadius(outer);        
         
         var meter = svg.append("g")
            .attr("class","progress-meter")
@@ -50,12 +50,12 @@ function drawTimer(){
         var text = meter.append("text")
            .attr("text-anchor", "middle")
            .attr("dy", "0.25em")
-           .attr("class","count");
+           .attr("class","count text");
         
         var label = meter.append("text")
            .attr("text-anchor", "middle")
            .attr("dy", "2.5em")
-           .attr("class","label")
+           .attr("class","label text")
            .text(label);
         
         var shadow = meter.append("path")
@@ -108,8 +108,9 @@ function drawTimer(){
         
         var text = textg.append("text")
            .attr("text-anchor", "middle")
-           .attr("class","details");
+           .attr("class","details text");
         
+        var flash = true;
         function updateClock()
         {
             var timeNow = new Date();
@@ -130,7 +131,25 @@ function drawTimer(){
             updateArc(minute, rMinutes, 60, "MIN", "MIN");
             
             document.getElementById("clockText").innerHTML = rDays + " Day" + (rDays != 1?"s ":" ") + rHours + " Hour" + (rHours != 1?"s ":" ") + rMinutes + " minute" + (rMinutes != 1?"s ":" ") + "till course ends";
-            
+            if(flash){
+                if(rDays<=10){
+                    var intervals = [];
+                    intervals.push(setInterval(function(){
+                        document.getElementById("clock").style.backgroundColor = "red";
+                    },5));
+                    intervals.push(setInterval(function(){
+                        document.getElementById("clock").style.backgroundColor = "#089fd7";
+                    },7));
+
+                    setTimeout(function(){
+                        intervals.forEach(function(id){ clearInterval(id); });
+                        document.getElementById("clock").style.backgroundColor = "#089fd7";
+                    },1000);
+                    
+                    
+                }
+                flash=false;
+            }
         }
                             
         setInterval(updateClock, 1000);

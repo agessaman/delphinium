@@ -1,7 +1,7 @@
 <?php namespace Delphinium\Blossom\Components;
 
-use Delphinium\Blade\Classes\Data\DataSource;
 use Cms\Classes\ComponentBase;
+use Delphinium\Roots\Roots;
 
 class Progress extends ComponentBase
 {
@@ -25,14 +25,21 @@ class Progress extends ComponentBase
         $this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
         $this->addCss("/plugins/delphinium/blossom/assets/css/progress.css");
 
-        $source = new DataSource();
-        $res = $source->getAssignments(\Input::all());
-
+        $this->roots = new Roots();
+        $res = $this->roots->getAnalyticsStudentAssignmentData();
         //var_dump($res);
-        
-        /*foreach ($res as &$value) {
-            var_dump($value['assignment_id']);
-        }*/
+        $possable = 0;
+        $completed = 0;
+        foreach ($res as $assignment) {
+            foreach ($assignment as $key => $submission) {
+                if($key=="submission"){
+                    $completed++; 
+                }
+            }
+            $possable++; 
+        }
+        $progress = $completed / $possable;
+        $this->page['progress'] = $progress;
 
     }
 

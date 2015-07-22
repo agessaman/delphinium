@@ -1,6 +1,7 @@
 <?php namespace Delphinium\Blossom\Components;
 
 use Cms\Classes\ComponentBase;
+use Delphinium\Blossom\Models\Bonus;
 
 class Bonus extends ComponentBase{
 
@@ -83,6 +84,7 @@ class Bonus extends ComponentBase{
 		$this->addJs("/plugins/delphinium/blossom/assets/javascript/bonus.js");
 		$this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
 		$this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
+		$config = Configuration::find($this->property('Instance'));
 	}
 
 	public function getBonusInstanceOptions() {
