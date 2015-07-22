@@ -27,7 +27,7 @@ class Progress extends ComponentBase
 
         $this->roots = new Roots();
         $res = $this->roots->getAnalyticsStudentAssignmentData();
-        
+        //var_dump($res);
         $possable = 0;
         $completed = 0;
         foreach ($res as $assignment) {
