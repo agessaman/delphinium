@@ -2,6 +2,7 @@
 
 use \DateTime;
 use Delphinium\Roots\DB\DbHelper;
+use Delphinium\Roots\Enums\CommonEnums\ActionType;
 use Delphinium\Roots\Exceptions\InvalidParameterInRequestObjectException;
 use Delphinium\Roots\Guzzle\GuzzleHelper;
 use Delphinium\Roots\Models\ModuleItem;
@@ -23,6 +24,12 @@ use Delphinium\Roots\UpdatableObjects\ModuleItem as UpdatableModuleItem;
 
 class CanvasHelper
 {
+    public $dbHelper;
+    
+    function __construct() 
+    {
+        $this->dbHelper = new DbHelper();
+    }
     /*
      * public functions
      */
@@ -689,7 +696,7 @@ class CanvasHelper
 //        return $url;
         $response = GuzzleHelper::makeRequest($request, $url);
         
-        return $this->processCanvasSubmissionData(json_decode($response->getBody()));
+        return $this->processCanvasSubmissionData(json_decode($response->getBody()), $request->getIncludeTags());
         
     }
     
@@ -1215,25 +1222,25 @@ class CanvasHelper
     /*
      * SUBMISSIONS
      */
-    private function processCanvasSubmissionData($data)
+    private function processCanvasSubmissionData($data, $includeTags = false)
     {
         $submissions = array();
         if(gettype($data)==="array")//we have a single submission
         { //we have multiple submissions
             foreach($data as $row)
             {
-                $subm = $this->processSingleSubmission($row);
+                $subm = $this->processSingleSubmission($row, $includeTags);
                 $submissions[] = $subm;
             }
         }
         else
         {  
-            $submissions[] = $this->processSingleSubmission($data);
+            $submissions[] = $this->processSingleSubmission($data, $includeTags);
         }
         return $submissions;
     }
     
-    private function processSingleSubmission($row)
+    private function processSingleSubmission($row, $includeTags = false)
     {
         $submission = new Submission();
         $submission->submission_id = $row->id;
@@ -1255,6 +1262,49 @@ class CanvasHelper
         if(isset($row->late)){$submission->late = $row->late;}
         if(isset($row->assignment_visible)){$submission->assignment_visible = $row->assignment_visible;}
         
-        return $submission;
+        
+        if($includeTags)
+        {
+            //returns tags
+            $tags = $this->matchAssignmentIdWithTags($submission->assignment_id);
+            $arr = $submission->toArray();
+            $arr['tags'] = $tags;
+            return $arr;
+        }
+        else
+        {
+            return $submission;
+        }
+    }
+    
+    public function matchAssignmentIdWithTags($assignment_id)
+    {
+        $assignment = $this->dbHelper->getAssignment($assignment_id);//try to get it from DB
+        
+        if(is_null($assignment))
+        {//get it from Canvas
+            $freshData = true;
+            $includeTags = true;
+            $req = new AssignmentsRequest(ActionType::GET, $assignment_id, $freshData, null, $includeTags);
+            $this->processAssignmentsRequest($req);
+            
+            //try to get the assignment again now that we got the data from Canvas. 
+            //If it fails, then return the submission with an empty array for tags
+            $assignment = $this->dbHelper->getAssignment($assignment_id);//try to get it from DB again
+            if(is_null($assignment))
+            {
+                return [];
+            }
+            else
+            {
+                $assignmentWithTags = $this->dbHelper->matchAssignmentWithTags($assignment);
+                return $assignmentWithTags['tags'];
+            }
+        }
+        else
+        {
+            $assignmentWithTags = $this->dbHelper->matchAssignmentWithTags($assignment);
+            return $assignmentWithTags['tags'];
+        }   
     }
 }

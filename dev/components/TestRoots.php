@@ -37,7 +37,7 @@ class TestRoots extends ComponentBase
     {  
         $this->roots = new Roots();
 //        $this->refreshCache();
-        $this->test();
+//        $this->test();
         
 //        Cache::flush();
 //        $this->testBasicModulesRequest();
@@ -67,7 +67,7 @@ class TestRoots extends ComponentBase
 //        $this->testGettingSubmissions();
 //        $this->testFileUpload();
 //        $this->testAddingAssignment();
-//        $this->testStudentAnalyticsAssignmentData();
+        $this->testStudentAnalyticsAssignmentData();
 //        $this->testGetCourse();
     }
     
@@ -370,11 +370,12 @@ class TestRoots extends ComponentBase
         $multipleAssignments = true;
         $allStudents = true;
         $allAssignments = true;
+        $includeTags = true;
         
         //can have the student Id param null if multipleUsers is set to false (we'll only get the current user's submissions)
         
         $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, 
-                $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
+                $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments, $includeTags);
         
         $res = $this->roots->submissions($req);
         echo json_encode($res);
@@ -415,17 +416,7 @@ class TestRoots extends ComponentBase
     
     public function test()
     {
-        $assignment = new Assignment();
-//        $assignment->assignment_id = 1660427;
-        $assignment->quiz_id = 
-        $assignment->tags = "Tagged assignment";
-
-        $req = new AssignmentsRequest(ActionType::PUT, null, null, $assignment);
-
-        $roots = new Roots();
-        $res = $roots->assignments($req);
         
-        return $res;
     }
     
    
@@ -516,7 +507,7 @@ class TestRoots extends ComponentBase
     
     public function testStudentAnalyticsAssignmentData()
     {
-        $res = $this->roots->getAnalyticsStudentAssignmentData();
+        $res = $this->roots->getAnalyticsStudentAssignmentData(true);
         echo json_encode($res);
     }
     

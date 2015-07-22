@@ -6,6 +6,7 @@ use Delphinium\Roots\Models\Content;
 use Delphinium\Roots\Models\Tag;
 use Delphinium\Roots\Models\OrderedModule;
 use Delphinium\Roots\Models\Assignment;
+use Delphinium\Roots\Models\Submission;
 use Delphinium\Roots\Models\AssignmentGroup;
 use Delphinium\Roots\RequestObjects\AssignmentsRequest;
 use Delphinium\Roots\RequestObjects\AssignmentGroupsRequest;
@@ -425,10 +426,37 @@ class DbHelper
         }
     }
     
-    /*
-     * PRIVATE FUNCTIONS
-     */
-    private function matchAssignmentWithTags(Assignment $assignment)
+    public function getAssignment($assignment_id)
+    {
+        return Assignment::where(array('assignment_id' => $assignment_id))->first();
+    }
+    
+    public function matchSubmissionWithTags(Submission $submission)
+    {
+        $assignment = Assignment::where(array('assignment_id' => $submission->assignment_id));
+        if(is_null($assignment))
+        {
+            return null;
+        }
+        else
+        {
+            $assignment->assignment_id = $submission->assignment_id;
+            $assignmentWithTags = $this->matchAssignmentWithTags($assignment);
+
+            $arr = $submission->toArray();
+            if(strlen($assignmentWithTags['tags'])>0)
+            {
+                $arr['tags'] = $assignmentWithTags['tags'];
+            }
+            else
+            {
+                $arr['tags'] = "";
+            }
+            return $arr;
+        }
+    }
+    
+    public function matchAssignmentWithTags(Assignment $assignment)
     {
         $content;
         if(!is_null($assignment->quiz_id))
@@ -454,5 +482,20 @@ class DbHelper
             $arr['tags'] = "";
         }
         return $arr;
+    }
+    
+    public function getAssignmentTags($assignment_id)
+    {
+        $content = Content::where(array(
+                    'content_id' => $assignment_id
+                ))->first();
+        if(!is_null($content))
+        {
+            return $content->tags;
+        }
+        else
+        {
+            return "";
+        }
     }
 }

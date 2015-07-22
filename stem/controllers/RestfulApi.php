@@ -122,37 +122,12 @@ class RestfulApi extends Controller
 
     public function addTags()
     {
-        //add tags to module item and if it's an assignment add it to the assignment too
         $content_id = \Input::get('contentId');
         $tags = \Input::get('tags');
-        $type = \Input::get('type');
         
-        if($type === "Assignment"||$type === "Quiz")
-        {//add the tags to the assignment as well
-            $assignment = new Assignment();
-            if($type === "Assignment")
-            {
-                $assignment->assignment_id = $content_id;
-            }
-            else
-            {
-                $assignment->quiz_id = $content_id;
-            }
-            $assignment->tags = $tags;
-
-            $req = new AssignmentsRequest(ActionType::PUT, null, null, $assignment);
-
-            $roots = new Roots();
-            $res = $roots->assignments($req);
-        }
-        
-//        $moduleItem = new ModuleItem($title, $modItemType, $content_id, $page_url, $external_url, $completion_requirement_type, 
-//                $completion_requirement_min_score, $published, $position, $tags);
         $moduleItem = new ModuleItem(null, null, intval($content_id), null, null, null, 
                 null, null, null, json_decode($tags, true));
         
-//        $req = new ModulesRequest(ActionType::PUT, $moduleId, $moduleItemId,  
-//            $includeContentItems, $includeContentDetails, $module, $moduleItem , $freshData);
         $req = new ModulesRequest(ActionType::PUT, null, null,  
             null, null, null, $moduleItem , null);
         
