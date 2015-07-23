@@ -18,6 +18,7 @@ use \DateTime;
 use GuzzleHttp\Client;
 use GuzzleHttp\Post\PostFile;
 use Delphinium\Iris\Components\Iris;
+use Config;
 
 use Delphinium\Roots\Guzzle\GuzzleHelper;
 
@@ -37,7 +38,7 @@ class TestRoots extends ComponentBase
     {  
         $this->roots = new Roots();
 //        $this->refreshCache();
-//        $this->test();
+        $this->test();
         
 //        Cache::flush();
 //        $this->testBasicModulesRequest();
@@ -67,7 +68,7 @@ class TestRoots extends ComponentBase
 //        $this->testGettingSubmissions();
 //        $this->testFileUpload();
 //        $this->testAddingAssignment();
-        $this->testStudentAnalyticsAssignmentData();
+//        $this->testStudentAnalyticsAssignmentData();
 //        $this->testGetCourse();
     }
     
@@ -416,7 +417,10 @@ class TestRoots extends ComponentBase
     
     public function test()
     {
+        $app= Config::get('app.url', 'backend');
+//        $app = $helper->url();
         
+        echo $app;
     }
     
    
