@@ -1,7 +1,7 @@
 <?php namespace Delphinium\Blossom\Components;
 
 use Cms\Classes\ComponentBase;
-use Delphinium\Blossom\Models\Bonus;
+use Delphinium\Blossom\Models\Bonus as BonusModel;
 
 class Bonus extends ComponentBase{
 
@@ -88,7 +88,7 @@ class Bonus extends ComponentBase{
 	}
 
 	public function getBonusInstanceOptions() {
-        $instances = Bonus::all();
+        $instances = BonusModel::all();
         $array_dropdown = ['0' => '- select a Bonus Instance - '];
 
         foreach ($instances as $instance) {

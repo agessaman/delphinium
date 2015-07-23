@@ -6,6 +6,7 @@ use Delphinium\Roots\Models\Developer as LtiConfigurations;
 use Delphinium\Roots\Models\User;
 use Cms\Classes\ComponentBase;
 use Delphinium\Roots\Classes\Blti;
+use Config;
 
 class LtiConfiguration extends ComponentBase {
 
@@ -49,6 +50,7 @@ class LtiConfiguration extends ComponentBase {
             session_start();
         }
 
+        $_SESSION['baseUrl'] = Config::get('app.url', 'backend');
         $_SESSION['courseID'] = \Input::get('custom_canvas_course_id');
         $_SESSION['userID'] = \Input::get('custom_canvas_user_id');
         $_SESSION['domain'] = \Input::get('custom_canvas_api_domain');
@@ -72,8 +74,9 @@ class LtiConfiguration extends ComponentBase {
                 //As per my discussion with Jared, we will use the instructor's token only. This is the token that will be stored in the DB
                 //and the one that will be used to make all requests. We will NOT store student's tokens.
                     //TODO: take this redirectUri out into some parameter somewhere...
-                    $redirectUri = "https://delphinium.uvu.edu/octobercms/saveUserInfo?lti={$this->property('ltiInstance')}";
+                    $redirectUri = "{$_SESSION['baseUrl']}saveUserInfo?lti={$this->property('ltiInstance')}";
                     $url = "https://{$_SESSION['domain']}/login/oauth2/auth?client_id={$clientId}&response_type=code&redirect_uri={$redirectUri}";
+                    
                     $this->redirect($url);
                 } else {
                     echo ("Your Instructor must authorize this course. Please contact your instructor.");
