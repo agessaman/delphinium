@@ -21,5 +21,8 @@ class Submission
     public $late;
     public $assignment_visible;
     
-    
+    public function toArray()
+    {
+        return (array)$this;
+    }
 }

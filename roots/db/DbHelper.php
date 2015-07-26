@@ -6,6 +6,7 @@ use Delphinium\Roots\Models\Content;
 use Delphinium\Roots\Models\Tag;
 use Delphinium\Roots\Models\OrderedModule;
 use Delphinium\Roots\Models\Assignment;
+use Delphinium\Roots\Models\Submission;
 use Delphinium\Roots\Models\AssignmentGroup;
 use Delphinium\Roots\RequestObjects\AssignmentsRequest;
 use Delphinium\Roots\RequestObjects\AssignmentGroupsRequest;
@@ -200,40 +201,56 @@ class DbHelper
     /*
      * UPDATE
      */
-    public function addTags($contentId, $newTagsStr, $courseId)
+    public function addTagsToContent($contentId, $newTagsStr, $courseId)
     {
         $content = Content::where('content_id', '=', $contentId)->first();
             
-            if(!is_null($content))//this could be due to the moduleItem not having an Id
-            {
-                $newTags = explode(', ', $newTagsStr);
-                if(strlen($content->tags)>0){
-                    $current = explode(', ', $content->tags);
+        if(!is_null($content))//this could be due to the moduleItem not having an Id
+        {
+            $newTags = explode(', ', $newTagsStr);
+            $tagString = $this->mergeTagsUnique($newTagsStr, $content->tags);
+            $content->tags =$tagString;
+            $content->save();
 
-                    $c = array_merge($current,$newTags);
-                    $unique = array_unique($c);
-                    //convert array to string
-                    $tagString =implode(', ', $unique);
-                }
-                else 
-                {
-                    $tagString =$newTagsStr;
-                }
-
-
-                $content->tags =$tagString;
-                $content->save();
-
-                $this->updateAvailableTags($courseId, $newTags);
-                return $content->tags;
-            }
-            else
-            {
-                return null;
-            }
+            $this->updateAvailableTags($courseId, $newTags);
+            return $content->tags;
+        }
+        else
+        {
+            return null;
+        }
     }
     
-    public function updateTags($contentId, $newTagsStr, $courseId)
+    public function addTagsToAssignment($assignment, $newTagsStr, $courseId)
+    {
+        if(!is_null($assignment->assignment_id))
+        {
+            $assignment = Assignment::firstOrNew(array('assignment_id' => $assignment->assignment_id,'course_id'=>$courseId));
+            $assignment->assignment_id = $assignment->assignment_id;
+        }
+        else if(!is_null($assignment->quiz_id))
+        {
+            $assignment = Assignment::firstOrNew(array('quiz_id' => $assignment->$assignment->quiz_id,'course_id'=>$courseId));
+            $assignment->quiz_id = $assignment->quiz_id;
+        }
+        $assignment->course_id = $courseId;
+        if(!is_null($assignment))//this could be due to the moduleItem not having an Id
+        {
+            $newTags = explode(', ', $newTagsStr);
+            $tagString = $this->mergeTagsUnique($newTagsStr, $assignment->tags);
+            $assignment->tags =$tagString;
+            $assignment->save();
+
+            $this->updateAvailableTags($courseId, $newTags);
+            return $assignment->tags;
+        }
+        else
+        {
+            return null;
+        }
+    }
+    
+    public function updateContentTags($contentId, $newTagsStr, $courseId)
     {
         $content = Content::where('content_id', '=', $contentId)->first();
             
@@ -245,6 +262,21 @@ class DbHelper
             $newTags = explode(', ', $newTagsStr);
             $this->updateAvailableTags($courseId, $newTags);
             return $content->tags;
+        }
+    }
+    
+    public function updateAssignmentTags($assignmentId, $newTagsStr, $courseId)
+    {
+        $assignment = Assignment::where('assignment_id', '=', $assignmentId)->where('course_id','=',$courseId)->first();
+            
+        if(!is_null($assignment))//
+        {
+            $assignment->tags =$newTagsStr;
+            $assignment->save();
+
+            $newTags = explode(', ', $newTagsStr);
+            $this->updateAvailableTags($courseId, $newTags);
+            return $assignment->tags;
         }
     }
     
@@ -394,10 +426,37 @@ class DbHelper
         }
     }
     
-    /*
-     * PRIVATE FUNCTIONS
-     */
-    private function matchAssignmentWithTags(Assignment $assignment)
+    public function getAssignment($assignment_id)
+    {
+        return Assignment::where(array('assignment_id' => $assignment_id))->first();
+    }
+    
+    public function matchSubmissionWithTags(Submission $submission)
+    {
+        $assignment = Assignment::where(array('assignment_id' => $submission->assignment_id));
+        if(is_null($assignment))
+        {
+            return null;
+        }
+        else
+        {
+            $assignment->assignment_id = $submission->assignment_id;
+            $assignmentWithTags = $this->matchAssignmentWithTags($assignment);
+
+            $arr = $submission->toArray();
+            if(strlen($assignmentWithTags['tags'])>0)
+            {
+                $arr['tags'] = $assignmentWithTags['tags'];
+            }
+            else
+            {
+                $arr['tags'] = "";
+            }
+            return $arr;
+        }
+    }
+    
+    public function matchAssignmentWithTags(Assignment $assignment)
     {
         $content;
         if(!is_null($assignment->quiz_id))
@@ -425,4 +484,18 @@ class DbHelper
         return $arr;
     }
     
+    public function getAssignmentTags($assignment_id)
+    {
+        $content = Content::where(array(
+                    'content_id' => $assignment_id
+                ))->first();
+        if(!is_null($content))
+        {
+            return $content->tags;
+        }
+        else
+        {
+            return "";
+        }
+    }
 }
