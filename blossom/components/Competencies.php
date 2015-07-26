@@ -64,16 +64,16 @@ class Competencies extends ComponentBase
         
         $res = $this->roots->assignments($req);
         
+        
+        
         $assignments = array();
-        foreach ($res as &$assignment) {
-            $assignment_array = array('assignment_id' => $assignment->attributes["assignment_id"], 
-                                      'quiz_id' => $assignment->attributes["quiz_id"],
+        foreach ($res as $assignment) {
+            $assignment_array = array('assignment_id' => $assignment["assignment_id"], 
+                                      'quiz_id' => $assignment["quiz_id"],
                                       'tags' => "");
             array_push($assignments, $assignment_array);
         }
 
-        //var_dump($assignments);
-        
 
         $moduleId = null;
         $moduleItemId = null;
@@ -102,20 +102,19 @@ class Competencies extends ComponentBase
                 }
             }
         }
-        //var_dump($tags);
+
 
         foreach ($assignments as $i => $assignment) {
             foreach ($tags as $tag) {
                 if($assignment["quiz_id"]==$tag["content_id"]){
                     $assignment["tags"] = $tag["tags"];
-                    //var_dump($assignment["tags"] = $tag["tags"]);
                     $assignments[$i]= $assignment;
                 }
             }
         }
-        //var_dump($assignments);
+
 
          
-       
+
     }
 }
