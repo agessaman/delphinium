@@ -15,7 +15,7 @@ var b = {
 };
 
 //will detect all the component instances and call createChart for each of them
-$(document).ready(function(){
+ $(window).load(function () {
     for (element in window) {
         if (element.indexOf('delphinium_iris')===0) {
             totalCharts++;
@@ -48,10 +48,18 @@ function createChart(iris)
     graphData = iris.graphData[0];
 
 //todo: calculate how big each svg needs to be
-    var width = 480,
-            height = 350,
+//get parent size
+    var parent = $("#wrapper" + iris.filter).parent();
+    
+    var width = parent.width(),
+            height = parent.height(),
             radius = Math.min(width, height) / 2;
-
+    
+    //if the parent did not specify a height and width, the chart will be 500x500
+    if(width<1||height<1)
+    {
+        width = 500, height = 500, radius = Math.min(width, height) / 2;
+    }
     var svg = d3.select("#wrapper" + iris.filter).append("svg")
             .attr("id", "svg" + iris.filter)
             .attr("width", width)
@@ -899,6 +907,7 @@ function modalBoxShow(content) {
     {
         slideTooltip = true;
         y = tipHeight - avaHeight;
+        console.log(y);
     }
 
     if (slideTooltip)

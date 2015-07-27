@@ -38,7 +38,7 @@ class TestRoots extends ComponentBase
     {  
         $this->roots = new Roots();
 //        $this->refreshCache();
-        $this->test();
+//        $this->test();
         
 //        Cache::flush();
 //        $this->testBasicModulesRequest();
@@ -68,7 +68,7 @@ class TestRoots extends ComponentBase
 //        $this->testGettingSubmissions();
 //        $this->testFileUpload();
 //        $this->testAddingAssignment();
-//        $this->testStudentAnalyticsAssignmentData();
+        $this->testStudentAnalyticsAssignmentData();
 //        $this->testGetCourse();
     }
     
@@ -511,7 +511,7 @@ class TestRoots extends ComponentBase
     
     public function testStudentAnalyticsAssignmentData()
     {
-        $res = $this->roots->getAnalyticsStudentAssignmentData(true);
+        $res = $this->roots->getAnalyticsStudentAssignmentData(false);
         echo json_encode($res);
     }
     
