@@ -1,4 +1,4 @@
-<?php namespace Delphinium\Roots\Enums\CommonEnums;
+<?php namespace Delphinium\Roots\Enums;
 
 abstract class BasicEnum {
     private static $constCacheArray = NULL;

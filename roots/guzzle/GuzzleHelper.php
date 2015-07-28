@@ -1,6 +1,6 @@
 <?php namespace Delphinium\Roots\Guzzle;
 
-use Delphinium\Roots\Enums\CommonEnums\ActionType;
+use Delphinium\Roots\Enums\ActionType;
 use GuzzleHttp\Client;
 use GuzzleHttp\Post\PostFile;
 

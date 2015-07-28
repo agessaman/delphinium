@@ -2,7 +2,7 @@
 
 use \DateTime;
 use Delphinium\Roots\DB\DbHelper;
-use Delphinium\Roots\Enums\CommonEnums\ActionType;
+use Delphinium\Roots\Enums\ActionType;
 use Delphinium\Roots\Exceptions\InvalidParameterInRequestObjectException;
 use Delphinium\Roots\Guzzle\GuzzleHelper;
 use Delphinium\Roots\Models\ModuleItem;

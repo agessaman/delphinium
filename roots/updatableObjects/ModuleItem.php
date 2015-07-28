@@ -2,8 +2,8 @@
 
 use \DateTime;
 use Delphinium\Roots\Exceptions\InvalidParameterInRequestObjectException;
-use Delphinium\Roots\Enums\ModuleItemEnums\ModuleItemType;
-use Delphinium\Roots\Enums\ModuleItemEnums\CompletionRequirementType;
+use Delphinium\Roots\Enums\ModuleItemType;
+use Delphinium\Roots\Enums\CompletionRequirementType;
 
 
 class ModuleItem {

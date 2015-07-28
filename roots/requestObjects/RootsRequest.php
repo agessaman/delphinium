@@ -1,8 +1,8 @@
 <?php namespace Delphinium\Roots\RequestObjects;
 
 
-use Delphinium\Roots\Enums\CommonEnums\ActionType;
-use Delphinium\Roots\Enums\CommonEnums\Lms;
+use Delphinium\Roots\Enums\ActionType;
+use Delphinium\Roots\Enums\Lms;
 
 abstract class RootsRequest
 {

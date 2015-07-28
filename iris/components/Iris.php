@@ -3,7 +3,7 @@
 use Delphinium\Stem\Models\Home as IrisCharts;
 use Delphinium\Roots\Roots;
 use Delphinium\Roots\RequestObjects\ModulesRequest;
-use Delphinium\Roots\Enums\CommonEnums\ActionType;
+use Delphinium\Roots\Enums\ActionType;
 use Cms\Classes\ComponentBase;
 
 class Iris extends ComponentBase

@@ -1,4 +1,4 @@
-<?php namespace Delphinium\Roots\Enums\CommonEnums;
+<?php namespace Delphinium\Roots\Enums;
 
 abstract class ActionType extends BasicEnum {
     const GET = "GET";
