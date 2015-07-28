@@ -1,9 +1,10 @@
 <?php namespace Delphinium\Iris\Models;
 
 use Model;
+use Delphinium\Roots\Classes\CustomModel;
 use October\Rain\Support\ValidationException;
 
-class Home extends Model
+class Home extends CustomModel
 {
     use \October\Rain\Database\Traits\Validation;
 
