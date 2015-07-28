@@ -12,7 +12,7 @@ use Delphinium\Roots\RequestObjects\AssignmentGroupsRequest;
 use Delphinium\Roots\RequestObjects\AssignmentsRequest;
 use Delphinium\Roots\RequestObjects\ModulesRequest;
 use Delphinium\Roots\Roots;
-use Delphinium\Roots\Enums\CommonEnums\ActionType;
+use Delphinium\Roots\Enums\ActionType;
 use Delphinium\Stem\Classes\ManagerHelper as IrisClass;
 use Delphinium\Stem\Components\Manager;
 use \DateTime;

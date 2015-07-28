@@ -3,7 +3,7 @@
 use Cms\Classes\ComponentBase;
 use Delphinium\Roots\Roots;
 use Delphinium\Roots\RequestObjects\AssignmentsRequest;
-use Delphinium\Roots\Enums\CommonEnums\ActionType;
+use Delphinium\Roots\Enums\ActionType;
 use Delphinium\Roots\RequestObjects\ModulesRequest;
 
 class Competencies extends ComponentBase

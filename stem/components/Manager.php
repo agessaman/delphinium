@@ -3,9 +3,9 @@
 use Cms\Classes\ComponentBase;
 use Delphinium\Roots\Roots;
 use Delphinium\Roots\RequestObjects\ModulesRequest;
-use Delphinium\Roots\Enums\CommonEnums\ActionType;
+use Delphinium\Roots\Enums\ActionType;
 use Delphinium\Stem\Classes\ManagerHelper as IrisClass;
-use Delphinium\Roots\Enums\CommonEnums\Lms;
+use Delphinium\Roots\Enums\Lms;
 
 class Manager extends ComponentBase
 {

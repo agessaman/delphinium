@@ -6,8 +6,8 @@ use Delphinium\Roots\UpdatableObjects\ModuleItem;
 use Delphinium\Roots\RequestObjects\AssignmentsRequest;
 use Delphinium\Roots\RequestObjects\ModulesRequest;
 use Delphinium\Roots\Roots;
-use Delphinium\Roots\Enums\ModuleItemEnums\CompletionRequirementType;
-use Delphinium\Roots\Enums\CommonEnums\ActionType;
+use Delphinium\Roots\Enums\CompletionRequirementType;
+use Delphinium\Roots\Enums\ActionType;
 use Delphinium\Roots\Models\Page;
 use \DateTime;
 

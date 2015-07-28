@@ -1,6 +1,6 @@
-<?php namespace Delphinium\Roots\Enums\ModuleItemEnums;
+<?php namespace Delphinium\Roots\Enums;
 
-use Delphinium\Roots\Enums\CommonEnums\BasicEnum;
+use Delphinium\Roots\Enums\BasicEnum;
 
 abstract class CompletionRequirementType extends BasicEnum {
     const MUST_VIEW = "must_view";

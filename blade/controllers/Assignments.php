@@ -4,7 +4,7 @@ namespace Delphinium\Blade\Controllers;
 use Backend\Classes\Controller;
 use Delphinium\Core\Roots;
 use Delphinium\Core\RequestObjects\AssignmentsRequest;
-use Delphinium\Core\Enums\CommonEnums\ActionType;
+use Delphinium\Core\Enums\ActionType;
 
 /**
  *

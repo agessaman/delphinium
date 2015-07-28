@@ -7,7 +7,7 @@ use Delphinium\Roots\RequestObjects\AssignmentsRequest;
 use Delphinium\Roots\RequestObjects\ModulesRequest;
 use Delphinium\Roots\RequestObjects\AssignmentGroupsRequest;
 use Delphinium\Roots\RequestObjects\SubmissionsRequest;
-use Delphinium\Roots\Enums\CommonEnums\ActionType;
+use Delphinium\Roots\Enums\ActionType;
 use Delphinium\Blade\Classes\Rules\Context;
 use Delphinium\Blade\Classes\Rules\RuleGroup;
 

@@ -4,7 +4,7 @@ use Illuminate\Routing\Controller;
 use Delphinium\Roots\RequestObjects\SubmissionsRequest;
 use Delphinium\Roots\RequestObjects\ModulesRequest;
 use Delphinium\Roots\Roots;
-use Delphinium\Roots\Enums\CommonEnums\ActionType;
+use Delphinium\Roots\Enums\ActionType;
 
 
 class RestApi extends Controller 
