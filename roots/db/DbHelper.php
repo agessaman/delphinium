@@ -8,9 +8,9 @@ use Delphinium\Roots\Models\OrderedModule;
 use Delphinium\Roots\Models\Assignment;
 use Delphinium\Roots\Models\Submission;
 use Delphinium\Roots\Models\AssignmentGroup;
-use Delphinium\Roots\RequestObjects\AssignmentsRequest;
-use Delphinium\Roots\RequestObjects\AssignmentGroupsRequest;
-use Delphinium\Roots\RequestObjects\ModulesRequest;
+use Delphinium\Roots\Requestobjects\AssignmentsRequest;
+use Delphinium\Roots\Requestobjects\AssignmentGroupsRequest;
+use Delphinium\Roots\Requestobjects\ModulesRequest;
 
 class DbHelper
 {

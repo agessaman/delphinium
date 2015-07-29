@@ -1,9 +1,9 @@
 <?php namespace Delphinium\Roots;
 
-use Delphinium\Roots\RequestObjects\SubmissionsRequest;
-use Delphinium\Roots\RequestObjects\ModulesRequest;
-use Delphinium\Roots\RequestObjects\AssignmentsRequest;
-use Delphinium\Roots\RequestObjects\AssignmentGroupsRequest;
+use Delphinium\Roots\Requestobjects\SubmissionsRequest;
+use Delphinium\Roots\Requestobjects\ModulesRequest;
+use Delphinium\Roots\Requestobjects\AssignmentsRequest;
+use Delphinium\Roots\Requestobjects\AssignmentGroupsRequest;
 use Delphinium\Roots\Models\Page;
 use Delphinium\Roots\Models\File;
 use Delphinium\Roots\Models\Quiz;

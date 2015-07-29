@@ -1,4 +1,4 @@
-<?php namespace Delphinium\Roots\RequestObjects;
+<?php namespace Delphinium\Roots\Requestobjects;
 
 use Delphinium\Roots\Exceptions\InvalidParameterInRequestObjectException;
 

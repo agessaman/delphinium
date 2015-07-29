@@ -15,12 +15,12 @@ use Delphinium\Roots\Models\Page;
 use Delphinium\Roots\Models\File;
 use Delphinium\Roots\Models\Quiz;
 use Delphinium\Roots\Models\Discussion;
-use Delphinium\Roots\RequestObjects\SubmissionsRequest;
-use Delphinium\Roots\RequestObjects\ModulesRequest;
-use Delphinium\Roots\RequestObjects\AssignmentsRequest;
-use Delphinium\Roots\RequestObjects\AssignmentGroupsRequest;
-use Delphinium\Roots\UpdatableObjects\Module as UpdatableModule;
-use Delphinium\Roots\UpdatableObjects\ModuleItem as UpdatableModuleItem;
+use Delphinium\Roots\Requestobjects\SubmissionsRequest;
+use Delphinium\Roots\Requestobjects\ModulesRequest;
+use Delphinium\Roots\Requestobjects\AssignmentsRequest;
+use Delphinium\Roots\Requestobjects\AssignmentGroupsRequest;
+use Delphinium\Roots\Updatableobjects\Module as UpdatableModule;
+use Delphinium\Roots\Updatableobjects\ModuleItem as UpdatableModuleItem;
 
 class CanvasHelper
 {
