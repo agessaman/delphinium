@@ -29,7 +29,7 @@ class OAuthResponse extends Controller {
         $userToken = json_decode($userTokenJSON);
 
         $actualToken = $userToken->access_token;
-        $encryptedToken = $actualToken; //\Crypt::encrypt($actualToken);
+        $encryptedToken = \Crypt::encrypt($actualToken);
         $_SESSION['userToken'] = $encryptedToken;
 
         //store encrypted token in the database
