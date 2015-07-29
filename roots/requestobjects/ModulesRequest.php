@@ -1,6 +1,6 @@
-<?php  namespace Delphinium\Roots\RequestObjects;
+<?php  namespace Delphinium\Roots\Requestobjects;
 
-use Delphinium\Roots\Enums\CommonEnums\Lms;
+use Delphinium\Roots\Enums\Lms;
 use Delphinium\Roots\UpdatableObjects\Module;
 use Delphinium\Roots\UpdatableObjects\ModuleItem;
 

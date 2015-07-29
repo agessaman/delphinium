@@ -1,4 +1,4 @@
-<?php namespace Delphinium\Roots\UpdatableObjects;
+<?php namespace Delphinium\Roots\Updatableobjects;
 
 use \DateTime;
 use Delphinium\Roots\Exceptions\InvalidParameterInRequestObjectException;
