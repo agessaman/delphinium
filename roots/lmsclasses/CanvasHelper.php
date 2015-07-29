@@ -1,4 +1,4 @@
-<?php namespace Delphinium\Roots\lmsClasses;
+<?php namespace Delphinium\Roots\Lmsclasses;
 
 use \DateTime;
 use Delphinium\Roots\DB\DbHelper;
