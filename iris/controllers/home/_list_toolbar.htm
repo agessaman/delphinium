@@ -1,7 +1,8 @@
 <div data-control="toolbar">
     <div class="btn-group">
     	
-        <a href="<?= Backend::url('delphinium/iris/home/create') ?>" class="btn btn-primary oc-icon-plus">New Sunburst Chart</a>
+        <a href="<?= Backend::url('delphinium/iris/home/create') ?>" class="btn btn-primary oc-icon-plus">New Iris Chart</a>
+   
         <button
             class="btn btn-default oc-icon-trash-o"
             disabled="disabled"
@@ -13,8 +14,9 @@
             data-trigger-type="enable"
             data-trigger=".control-list input[type=checkbox]"
             data-trigger-condition="checked"
+            data-request-success="$(this).prop('disabled', false)"
             data-stripe-load-indicator>
-            Remove
+            Delete Selected
         </button>
     </div>
 </div>
