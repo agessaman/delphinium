@@ -17,7 +17,7 @@ use Delphinium\Roots\Enums\ActionType;
 use Delphinium\Roots\Enums\ModuleItemType;
 use Delphinium\Roots\Enums\PageEditingRoles;
 use Delphinium\Roots\Enums\CompletionRequirementType;
-use Delphinium\Roots\lmsClasses\CanvasHelper;
+use Delphinium\Roots\Lmsclasses\CanvasHelper;
 use Delphinium\Roots\Cache\CacheHelper;
 use Delphinium\Roots\Exceptions\InvalidActionException;
 use Delphinium\Roots\DB\DbHelper;
