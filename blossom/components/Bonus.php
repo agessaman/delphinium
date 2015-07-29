@@ -60,7 +60,7 @@ class Bonus extends ComponentBase{
     {
     	$instances = BonusModel::where("id","!=","0")->get();
 
-        $array_dropdown = ['0'=>'- select bonus Config - '];
+        $array_dropdown = ['0'=>'- select Bonus Instance - '];
 
         foreach ($instances as $instance)
         {

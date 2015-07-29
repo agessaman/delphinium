@@ -22,13 +22,13 @@ fields:
         span: auto
         comment: Enter the number of milestones
 
-    Start Date:
-        label: Start Date
+    StartDate:
+        label: StartDate
         span: auto
         comment: Enter the start date
 
-    End Date:
-        label: End Date
+    EndDate:
+        label: EndDate
         span: auto
         comment: Enter the end date
 

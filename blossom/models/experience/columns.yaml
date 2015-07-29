@@ -19,12 +19,12 @@ columns:
         label: Milestones
         searchable: true
 
-    Start Date:
-        label: Start Date
+    StartDate:
+        label: StartDate
         searchable: true
 
-    End Date:
-        label: End Date
+    EndDate:
+        label: EndDate
         searchable: true
 
     Animate:

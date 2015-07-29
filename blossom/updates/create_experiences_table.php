@@ -17,8 +17,8 @@ class CreateExperiencesTable extends Migration
                 $table->string('Name');
                 $table->string('Maximum');
                 $table->string('Milestones');
-                $table->string('Start Date');
-                $table->string('End Date');
+                $table->string('StartDate');
+                $table->string('EndDate');
                 $table->string('Animate');
                 $table->string('Size');
                 $table->timestamps();
