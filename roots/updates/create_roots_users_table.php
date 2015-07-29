@@ -15,7 +15,7 @@ class CreateRootsUsersTable extends Migration
             	$table->engine = 'InnoDB';
                 $table->increments('id');
                 $table->string('user_id');
-                $table->string('encrypted_token', 400);
+                $table->longText('encrypted_token');
                 $table->string('course_id');
                 $table->timestamps();
                 
