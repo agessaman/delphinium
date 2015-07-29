@@ -17,5 +17,5 @@ class Home extends CustomModel
         'Name' => 'required',
     ];
 
-
+    
 }
