@@ -10,6 +10,18 @@ var addModuleCtrl = function ($scope, $modal, $log ) {
                 },
                 modules: function()
                 {
+                    var ob = rawData.filter(function (ob)
+                    {
+                        if (ob.id === "0")
+                        {
+                            return ob;
+                        }
+                    })[0];
+
+                    if (ob === undefined) {
+                        var none = {id:"0", value:"[None]"};
+                        rawData.unshift(none);
+                    }
                     return rawData;
                 },
                 parent_id: function()
@@ -28,8 +40,6 @@ var addModuleCtrl = function ($scope, $modal, $log ) {
 var moduleCtrl = function ($scope, $modalInstance,$http, $location, itemIn, modules, parent_id) {
     $scope.newModuleDate = {date: new Date()};
     $scope.modules = modules;
-    var none = {id:"0", value:"[None]"};
-    $scope.modules.unshift(none);
     $scope.item = itemIn;
     
     $scope.addModule = function () {
