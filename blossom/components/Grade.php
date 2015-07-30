@@ -2,6 +2,8 @@
 
 use Cms\Classes\ComponentBase;
 
+use Delphinium\Blossom\Models\Grade as GradeModel;
+
 class Grade extends ComponentBase
 {
 
@@ -31,33 +33,14 @@ class Grade extends ComponentBase
 				'type'         => 'string',
 				'default'      => '168'
 			],
-			
-			
-			'Animate' => [
-				'title'        => 'Animate',
-				'type'         => 'dropdown',
-				'default'      => 'true',
-				'options'      => ['true'=>'True', 'false'=>'False']
-			],
 
-			'Size' => [
-				'title'        => 'Size',
-				'type'         => 'dropdown',
-				'default'      => 'Medium',
-				'options'      => ['Small'=>'Small', 'Medium'=>'Medium', 'Large'=>'Large']
-			]
+			'Instance' => [
+                'title' => 'Instance',
+                'description' => 'Select the Grade instance',
+                'type' => 'dropdown',
+            ]
 			
 		];
-    }
-	
-	public function onRender()
-    {
-        $this->page['XP'] = $this->property('XP');
-		$this->page['gradeBonus'] = $this->property('Bonus');
-		$this->page['gradeAnimate'] = $this->property('Animate');
-		$this->page['gradeSize'] = $this->property('Size');
-
-		$this->getGradeData();
     }
 	
 	public function onRun()
@@ -66,7 +49,29 @@ class Grade extends ComponentBase
 		$this->addCss("/plugins/delphinium/blossom/assets/css/animate.css");
 		$this->addCss("/plugins/delphinium/blossom/assets/css/grade.css");
 		$this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
+		$instance = GradeModel::find($this->property('Instance'));
+
+		$this->page['XP'] = $this->property('XP');
+		$this->page['gradeBonus'] = $this->property('Bonus');
+		$this->page['gradeAnimate'] = $instance->Animate;
+		$this->page['gradeSize'] = $instance->Size;
+
+		$this->getGradeData();
 	}
+
+	public function getInstanceOptions()
+    {
+    	$instances = GradeModel::where("id","!=","0")->get();
+
+        $array_dropdown = ['0'=>'- select Grade Instance - '];
+
+        foreach ($instances as $instance)
+        {
+            $array_dropdown[$instance->id] = $instance->Name;
+        }
+
+        return $array_dropdown;
+    }
 
 	private function getGradeData(){
 		$jsonData = '{
