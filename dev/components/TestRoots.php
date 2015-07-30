@@ -15,6 +15,7 @@ use Delphinium\Roots\Enums\CompletionRequirementType;
 use Delphinium\Roots\DB\DbHelper;
 use Cms\Classes\ComponentBase;
 use \DateTime;
+use \DateTimeZone;
 use GuzzleHttp\Client;
 use GuzzleHttp\Post\PostFile;
 use Delphinium\Iris\Components\Iris;
@@ -38,7 +39,7 @@ class TestRoots extends ComponentBase
     {  
         $this->roots = new Roots();
 //        $this->refreshCache();
-//        $this->test();
+        $this->test();
         
 //        Cache::flush();
 //        $this->testBasicModulesRequest();
@@ -68,8 +69,9 @@ class TestRoots extends ComponentBase
 //        $this->testGettingSubmissions();
 //        $this->testFileUpload();
 //        $this->testAddingAssignment();
-        $this->testStudentAnalyticsAssignmentData();
+//        $this->testStudentAnalyticsAssignmentData();
 //        $this->testGetCourse();
+//        $this->testGetAccount();
     }
     
     private function testBasicModulesRequest()
@@ -417,10 +419,7 @@ class TestRoots extends ComponentBase
     
     public function test()
     {
-        $app= Config::get('app.url', 'backend');
-//        $app = $helper->url();
         
-        echo $app;
     }
     
    
@@ -520,5 +519,23 @@ class TestRoots extends ComponentBase
         $res = $this->roots->getCourse();
         echo json_encode($res);
     }
+    
+    public function testGetAccount()
+    {
+        $accountId = 16;
+        $res = $this->roots->getAccount($accountId);
+        echo json_encode($res);
+    }
+
+    private function convertToUTC()
+    {
+        $date = new DateTime("now", new \DateTimeZone('America/Denver'));
+        echo json_encode($date);
+        
+        $UTC = new DateTimeZone("UTC");
+        $utc_date = $date->setTimezone( $UTC );
+        echo json_encode($utc_date);
+    }
 }
+
 

@@ -23,7 +23,15 @@ class Module {
         return $this->prerequisite_module_ids;
     }
 
-        
+    /**
+     * 
+     * @param type $name string - Name of this module
+     * @param DateTime $utc_unlock_at Date - date in which this module will be unlocked. Must be in UTC time
+     * @param array $prerequisite_module_ids Array - the ids of prerequisite modules
+     * @param type $published boolean - whether the module should be published
+     * @param type $position int - The position this module will take
+     * @throws InvalidParameterInRequestObjectException If the parameters are incorrect
+         */
     function __construct($name = null,  DateTime $utc_unlock_at = null, array $prerequisite_module_ids = null, $published = null, $position =1)
     {
         if (($name)&&(!is_string($name))) {

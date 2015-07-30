@@ -631,6 +631,30 @@ class Roots
         }
     }
     
+    public function getAccount($accountId)
+    {
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $lms = strtoupper($_SESSION['lms']);
+        if(Lms::isValidValue($lms))
+        {
+            switch ($lms)
+            {
+                case (Lms::CANVAS):
+                    $canvasHelper = new CanvasHelper();
+                    return json_decode($canvasHelper->getAccount($accountId));
+                default:
+                    $canvasHelper = new CanvasHelper();
+                    return json_decode($canvasHelper->getAccount($accountId));
+            }
+        }
+        else
+        {
+           throw new \Exception("Invalid LMS");  
+        }
+    }
     /*
      * PRIVATE METHODS
      */

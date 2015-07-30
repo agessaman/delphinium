@@ -10,6 +10,7 @@ use Delphinium\Roots\Enums\CompletionRequirementType;
 use Delphinium\Roots\Enums\ActionType;
 use Delphinium\Roots\Models\Page;
 use \DateTime;
+use \DateTimeZone;
 
 class RestfulApi extends Controller 
 {
@@ -63,8 +64,8 @@ class RestfulApi extends Controller
         $name = \Input::get('name');
         $date =\Input::get('unlock_at');
         if(!is_null($date))
-        {
-           $unlock_at= new DateTime($date);
+        {//convert to UTC from current timezone
+            $unlock_at = $this->getUTCdate($date);
         }
         else
         {
@@ -181,6 +182,23 @@ class RestfulApi extends Controller
 //        $roots = new Roots();
 //        $res = $roots->modules($req);
     
+    }
+    
+    /**
+     * 
+     * @param type $localTimezoneStringDate String representation of the date in local timezone.
+     * @return type The DateTime in UTC timezone
+     */
+    private function getUTCdate($localTimezoneStringDate)
+    {//we are comingin with MST and need to convert to UTC
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+        $timezoneStr = $_SESSION['timezone']->timezone;
+        $date = new DateTime($localTimezoneStringDate, new DateTimeZone($timezoneStr));
+        $UTC = new DateTimeZone("UTC");
+        $unlock_at = $date->setTimezone($UTC);
+        return $unlock_at;
     }
     
 }

@@ -3,6 +3,7 @@
 
 use Delphinium\Dev\Models\Configuration;
 use Cms\Classes\ComponentBase;
+use Delphinium\Roots\Roots;
 
 class Dev extends ComponentBase
 {
@@ -20,12 +21,23 @@ class Dev extends ComponentBase
     {	
     	$config = Configuration::find($this->property('devConfig'));
 		
-	session_start();
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+
         $_SESSION['userID'] = $config->User_id;
         $_SESSION['userToken'] = \Crypt::encrypt($config->Token);
         $_SESSION['courseID'] = $config->Course_id;
         $_SESSION['domain'] = $config->Domain;
         $_SESSION['lms'] = $config->Lms;
+        
+        //get the timezone
+        $roots = new Roots();
+        $course = $roots->getCourse();
+        $account_id = $course->account_id;
+        $account = $roots->getAccount($account_id);
+        
+        $_SESSION['timezone'] = new \DateTimeZone($account->default_time_zone);
     }
     
    public function defineProperties()

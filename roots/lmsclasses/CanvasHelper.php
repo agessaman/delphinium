@@ -802,6 +802,27 @@ class CanvasHelper
         $response = GuzzleHelper::getAsset($url);
         return $response->getBody();
     }
+    
+    public function getAccount($accountId)
+    {///api/v1/accounts/:id
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $domain = $_SESSION['domain'];
+
+        $urlPieces= array();
+        //        GET /api/v1/courses/:course_id/files
+        $urlPieces[]= "https://{$domain}/api/v1/accounts/{$accountId}";
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $urlArgs = array();
+        //Attach token
+        $urlArgs[]="access_token={$token}";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+        $response = GuzzleHelper::getAsset($url);
+        return $response->getBody();
+    }
     /*
      * private functions
      */

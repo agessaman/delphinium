@@ -37,15 +37,11 @@ class Manager extends ComponentBase
         $this->addCss('/plugins/delphinium/stem/assets/css/xeditable.css');
         $this->addCss('/plugins/delphinium/stem/assets/css/angular-ui-tree.min.css');
         $this->addCss('/plugins/delphinium/stem/assets/css/font-awesome.css');
-
-
-
         
         if(!isset($_SESSION)) 
         { 
             session_start(); 
     	}
-        
         $this->page['courseId'] = $_SESSION['courseID'];
         $this->page['lmsUrl'] =  json_encode($this->getLmsUrl());
         $this->prepareData(false);
