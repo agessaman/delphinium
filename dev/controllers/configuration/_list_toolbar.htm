@@ -19,12 +19,3 @@
         </button>
     </div>
 </div>
-
-<script>
-    $("#delete").click(function(){
-        $(this).data('request-data', {
-            id: $('.list-checkbox input[type=\'checkbox\']').listWidget('getChecked')
-        })
-        alert($(this).data());
-    });
-</script>

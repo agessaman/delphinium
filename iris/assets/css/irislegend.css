@@ -12,9 +12,7 @@
     height: auto;
     width: auto;
     border-radius: 10px;
-    position: absolute;
-    top:480px;
-    left:30px;
+    display:inline-block;
     padding:0px 10px 10px 0px;
     -webkit-box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.4);
     -moz-box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.4);

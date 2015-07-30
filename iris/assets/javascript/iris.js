@@ -27,7 +27,6 @@ var b = {
     {
         var promise = $.get("getModuleStates");
         promise.then(function (data1, textStatus, jqXHR) {
-            console.log("trying to get module states");
             processModuleStates(data1, textStatus, jqXHR, stateColors);
         })
         .fail(function (data2) {
@@ -113,7 +112,6 @@ function createChart(iris)
                 }
             })
             .on('click', function(d){
-                console.log("attached click event");
                 modalBoxShow(d);
             })
             .style("stroke", "#fff")
@@ -822,7 +820,6 @@ function getStudentSubmissions()
         newPromise.then(function (data1) {
             showScores(data1);
         }).fail(function (data2) {
-            console.log("failed getStudentSubmissions");
         });
     }
     else
@@ -834,7 +831,6 @@ function getStudentSubmissions()
 
 function showScores(data)
 {//accessibleSubmissionData will be submission_type, content_id, grade
-    console.log("added scores");
     var rawSubmissionData = data;
     var content_id;
     for (var i = 0; i <= data.length - 1; i++)
@@ -906,8 +902,7 @@ function modalBoxShow(content) {
     if (avaHeight < tipHeight)
     {
         slideTooltip = true;
-        y = tipHeight - avaHeight;
-        console.log(y);
+        y = y-(tipHeight-(docHeight-y));
     }
 
     if (slideTooltip)
