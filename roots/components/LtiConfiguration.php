@@ -6,6 +6,7 @@ use Delphinium\Roots\Models\Developer as LtiConfigurations;
 use Delphinium\Roots\Models\User;
 use Cms\Classes\ComponentBase;
 use Delphinium\Roots\Classes\Blti;
+use Delphinium\Roots\Roots;
 use Config;
 
 class LtiConfiguration extends ComponentBase {
@@ -71,19 +72,27 @@ class LtiConfiguration extends ComponentBase {
 
             if (!$userCheck) { //if no user is found, redirect to canvas permission page
                 if (strstr('Instructor', $rolesStr)) { //but only if it's an instructor. 
-                //As per my discussion with Jared, we will use the instructor's token only. This is the token that will be stored in the DB
-                //and the one that will be used to make all requests. We will NOT store student's tokens.
+                    //As per my discussion with Jared, we will use the instructor's token only. This is the token that will be stored in the DB
+                    //and the one that will be used to make all requests. We will NOT store student's tokens.
                     //TODO: take this redirectUri out into some parameter somewhere...
                     $redirectUri = "{$_SESSION['baseUrl']}saveUserInfo?lti={$this->property('ltiInstance')}";
                     $url = "https://{$_SESSION['domain']}/login/oauth2/auth?client_id={$clientId}&response_type=code&redirect_uri={$redirectUri}";
-                    
+
                     $this->redirect($url);
                 } else {
                     echo ("Your Instructor must authorize this course. Please contact your instructor.");
                     return;
                 }
             } else {
+                //set the professor's token 
                 $_SESSION['userToken'] = $userCheck->encrypted_token;
+                //get the timezone
+                $roots = new Roots();
+                $course = $roots->getCourse();
+                $account_id = $course->account_id;
+                $account = $roots->getAccount($account_id);
+
+                $_SESSION['timezone'] = new \DateTimeZone($account->default_time_zone);
             }
         } else {
             echo('There is a problem. Please notify your instructor');

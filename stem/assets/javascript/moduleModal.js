@@ -47,7 +47,10 @@ var moduleCtrl = function ($scope, $modalInstance,$http, $location, itemIn, modu
         
         for(x in $scope.selectedModulePrereqs)
         {
-            prereqs.push($scope.selectedModulePrereqs[x]['id']);
+            if($scope.selectedModulePrereqs[x]['id']!=="0")
+            {
+                prereqs.push($scope.selectedModulePrereqs[x]['id']);
+            }
         }
         var date;
         if($scope.newModuleLock === true)
