@@ -6,13 +6,13 @@ use Delphinium\Roots\Models\Discussion;
 use Delphinium\Roots\Models\File;
 use Delphinium\Roots\Models\Quiz;
 use Delphinium\Roots\Models\Assignment;
-use Delphinium\Roots\UpdatableObjects\Module;
-use Delphinium\Roots\UpdatableObjects\ModuleItem;
-use Delphinium\Roots\RequestObjects\AssignmentGroupsRequest;
-use Delphinium\Roots\RequestObjects\AssignmentsRequest;
-use Delphinium\Roots\RequestObjects\ModulesRequest;
+use Delphinium\Roots\Updatableobjects\Module;
+use Delphinium\Roots\Updatableobjects\ModuleItem;
+use Delphinium\Roots\Requestobjects\AssignmentGroupsRequest;
+use Delphinium\Roots\Requestobjects\AssignmentsRequest;
+use Delphinium\Roots\Requestobjects\ModulesRequest;
 use Delphinium\Roots\Roots;
-use Delphinium\Roots\Enums\CommonEnums\ActionType;
+use Delphinium\Roots\Enums\ActionType;
 use Delphinium\Stem\Classes\ManagerHelper as IrisClass;
 use Delphinium\Stem\Components\Manager;
 use \DateTime;
@@ -125,14 +125,9 @@ class RestfulApi extends Controller
         $content_id = \Input::get('contentId');
         $tags = \Input::get('tags');
         
-//        $moduleItem = new ModuleItem($title, $modItemType, $content_id, $page_url, $external_url, $completion_requirement_type, 
-//                $completion_requirement_min_score, $published, $position, $tags);
         $moduleItem = new ModuleItem(null, null, intval($content_id), null, null, null, 
                 null, null, null, json_decode($tags, true));
-        //end added
         
-//        $req = new ModulesRequest(ActionType::PUT, $moduleId, $moduleItemId,  
-//            $includeContentItems, $includeContentDetails, $module, $moduleItem , $freshData);
         $req = new ModulesRequest(ActionType::PUT, null, null,  
             null, null, null, $moduleItem , null);
         
@@ -198,7 +193,7 @@ class RestfulApi extends Controller
     public function updateModulePrereqs()
     {
         $module_id = \Input::get('module_id');
-        $currentPrereqs = \Input::get('current_prerequisites');
+        $currentPrereqs = \Input::get('current_prerequisites_ids');
         
         $module = new Module(null, null, $currentPrereqs, null, null);
         
@@ -210,35 +205,40 @@ class RestfulApi extends Controller
         return $roots->modules($req);
     }
     
-    public function updateModuleItem()
+    public function updateModuleItemCompletionRequirement()
     {
-         $tags = null;//array('New Tag', 'Another New Tag');
-        $title = "New Title from back end";
-        $modItemType = null;// Module type CANNOT be updated
-        $content_id = 2078183;
-        $completion_requirement_min_score = null;//7;
-        $completion_requirement_type = null;//CompletionRequirementType::MUST_SUBMIT;
-        $page_url = null;//"http://www.gmail.com";
-        $published = true;
-        $position = 1;//2;
+        $name = \Input::get('name');
+        $contentId = \Input::get('id');
+        $moduleId = \Input::get('module_id');
+        $type = \Input::get('type');
+        $url = \Input::get('url');
+        $page_url = null;
+        $external_url = null;
+        switch($type)
+        {
+            case "Page":
+                $page_url = ($url);
+                break;
+            case "ExternalUrl":
+                $external_url = ($url);
+                break;
+            case "ExternalTool":
+                $external_url = ($url);
+                break;
+        }
         
-        $moduleItem = new ModuleItem($title, $modItemType, $content_id, $page_url, null, $completion_requirement_type, 
-                $completion_requirement_min_score, $published, $position, $tags);
-        //end added
-        
-        $moduleId = 457097;
-        $moduleItemId = 2885671;
-        $includeContentItems = false;
-        $includeContentDetails = false;
-        $module = null;
-        $freshData = false;
-        
-        $req = new ModulesRequest(ActionType::PUT, $moduleId, $moduleItemId,  
-            $includeContentItems, $includeContentDetails, $module, $moduleItem , $freshData);
+        //$title = null, $module_item_type=null, $content_id = null, $page_url = null, $external_url = null, 
+//        $completion_requirement_type = null, $completion_requirement_min_score = null, $published = false, $position = 1,array $tags = null)
+        //TODO: look into completion requirement type
+        $moduleItem = new ModuleItem(null, $type, $contentId, $page_url,$external_url, null, 
+                null, true, null, null);
+                
+        $req = new ModulesRequest(ActionType::POST, $moduleId, null,  
+            false, false,  null, $moduleItem , false);
         
         $roots = new Roots();
         $res = $roots->modules($req);
-    
+        return json_encode($res);
     }
     
     public function deleteModule()

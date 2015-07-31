@@ -1,9 +1,9 @@
 <?php namespace Delphinium\Roots;
 
-use Delphinium\Roots\RequestObjects\SubmissionsRequest;
-use Delphinium\Roots\RequestObjects\ModulesRequest;
-use Delphinium\Roots\RequestObjects\AssignmentsRequest;
-use Delphinium\Roots\RequestObjects\AssignmentGroupsRequest;
+use Delphinium\Roots\Requestobjects\SubmissionsRequest;
+use Delphinium\Roots\Requestobjects\ModulesRequest;
+use Delphinium\Roots\Requestobjects\AssignmentsRequest;
+use Delphinium\Roots\Requestobjects\AssignmentGroupsRequest;
 use Delphinium\Roots\Models\Page;
 use Delphinium\Roots\Models\File;
 use Delphinium\Roots\Models\Quiz;
@@ -11,18 +11,25 @@ use Delphinium\Roots\Models\Discussion;
 use Delphinium\Roots\Models\Assignment;
 use Delphinium\Roots\Models\Module as DbModule;
 use Delphinium\Roots\UpdatableObjects\Module;
-use Delphinium\Roots\Enums\CommonEnums\Lms;
-use Delphinium\Roots\Enums\CommonEnums\DataType;
-use Delphinium\Roots\Enums\CommonEnums\ActionType;
-use Delphinium\Roots\Enums\ModuleItemEnums\ModuleItemType;
-use Delphinium\Roots\Enums\ModuleItemEnums\PageEditingRoles;
-use Delphinium\Roots\lmsClasses\CanvasHelper;
+use Delphinium\Roots\Enums\Lms;
+use Delphinium\Roots\Enums\DataType;
+use Delphinium\Roots\Enums\ActionType;
+use Delphinium\Roots\Enums\ModuleItemType;
+use Delphinium\Roots\Enums\PageEditingRoles;
+use Delphinium\Roots\Enums\CompletionRequirementType;
+use Delphinium\Roots\Lmsclasses\CanvasHelper;
 use Delphinium\Roots\Cache\CacheHelper;
 use Delphinium\Roots\Exceptions\InvalidActionException;
 use Delphinium\Roots\DB\DbHelper;
 
 class Roots
 {
+    public $dbHelper;
+    
+    function __construct() 
+    {
+        $this->dbHelper = new DbHelper();
+    }
     /*
      * Public Functions
      */
@@ -35,8 +42,7 @@ class Roots
                 
                 if(!$request->getFreshData())
                 {
-                    $dbHelper = new DbHelper();
-                    $data = $dbHelper->getModuleData($request);
+                    $data = $this->dbHelper->getModuleData($request);
                     
                     //depending on the request we can get an eloquent collection or one of our models. Need to validate them differently
                     switch(get_class($data))
@@ -110,7 +116,6 @@ class Roots
                 }
 
                 return $result;
-                break; 
             default :
                 throw new InvalidActionException($request->getActionType(), get_class($request));
         
@@ -125,15 +130,8 @@ class Roots
                 
                 if(!$request->getFresh_data())
                 {
-                    $dbHelper = new DbHelper();
-                    $data = $dbHelper->getAssignmentData( $request);
-                    switch(get_class($data))
-                    {
-                        case "Illuminate\Database\Eloquent\Collection":
-                            return (!$data->isEmpty()) ?  $data :  $this->getAssignmentDataFromLms($request);
-                        default:
-                            return (!is_null($data)) ? $data : $this->getAssignmentDataFromLms($request);
-                    }
+                    $data = $this->dbHelper->getAssignmentData( $request);
+                    return (count($data)>1) ? $data : $this->getAssignmentDataFromLms($request);
                 }
                 else
                 {
@@ -150,6 +148,16 @@ class Roots
                         $canvas = new CanvasHelper(DataType::ASSIGNMENTS);
                         return $canvas->addAssignment($request);
                 }
+            case(ActionType::PUT):
+                switch ($request->getLms())
+                {
+                    case (Lms::CANVAS):
+                        $canvas = new CanvasHelper(DataType::ASSIGNMENTS);
+                        return $canvas->updateAssignment($request);
+                    default:
+                        $canvas = new CanvasHelper(DataType::ASSIGNMENTS);
+                        return $canvas->updateAssignment($request);
+                }
                 //If another action was given throw exception
             default :
                 throw new InvalidActionException($request->getActionType(), get_class($request));
@@ -163,8 +171,7 @@ class Roots
             case(ActionType::GET):
                 if(!$request->getFresh_data())
                 {
-                    $dbHelper = new DbHelper();
-                    $data = $dbHelper->getAssignmentGroupData($request);
+                    $data = $this->dbHelper->getAssignmentGroupData($request);
                     switch(get_class($data))
                     {
                         case "Illuminate\Database\Eloquent\Collection":
@@ -192,7 +199,6 @@ class Roots
     public function updateModuleOrder($modules, $updateLms)
     {
         $ordered = array();
-        $dbHelper = new DbHelper();
         $order = 1;//canvas uses 1-based position
         $new=array();
         foreach($modules as $item)
@@ -209,7 +215,7 @@ class Roots
 
             }
             //UPDATE positioning in DB
-            $orderedModule = $dbHelper->updateOrderedModule($item);
+            $orderedModule = $this->dbHelper->updateOrderedModule($item);
             array_push($ordered, $orderedModule->toArray());
         }
         return $ordered;
@@ -217,8 +223,7 @@ class Roots
     
     public function updateModuleParent(DbModule $module)
     {
-        $dbHelper = new DbHelper();
-        $dbHelper->updateOrderedModule($module);
+        $this->dbHelper->updateOrderedModule($module);
     }
     public function addPage(Page $page)
     {
@@ -353,8 +358,7 @@ class Roots
     
     public function getAvailableTags()
     {
-        $dbHelper = new DbHelper();
-        return $dbHelper->getAvailableTags();
+        return $this->dbHelper->getAvailableTags();
     }
     
     public function getModuleStates(ModulesRequest $request)
@@ -375,6 +379,10 @@ class Roots
         return ModuleItemType::getConstants();
     }
     
+    public function getCompletionRequirementTypes()
+    {
+        return CompletionRequirementType::getConstants();
+    }
     public function getPageEditingRoles()
     {
          return PageEditingRoles::getConstants();
@@ -549,7 +557,7 @@ class Roots
         }
     }
             
-    public function getAnalyticsStudentAssignmentData()
+    public function getAnalyticsStudentAssignmentData($includeTags = false)
     {
         if(!isset($_SESSION)) 
         { 
@@ -562,10 +570,34 @@ class Roots
             {
                 case (Lms::CANVAS):
                     $canvasHelper = new CanvasHelper();
-                    return json_decode($canvasHelper->getAnalyticsStudentAssignmentData());
+                    $data = json_decode($canvasHelper->getAnalyticsStudentAssignmentData());
+                    if($includeTags)
+                    {
+                        $result = [];
+                        foreach($data as $item)
+                        {   
+                            $item->tags = $canvasHelper->matchAssignmentIdWithTags($item->assignment_id);
+                            $result[] = $item;
+                        }
+                        
+                        return $result;
+                    }
+                    return $data;
                 default:
                     $canvasHelper = new CanvasHelper();
-                    return json_decode($canvasHelper->getAnalyticsStudentAssignmentData());
+                    $data = json_decode($canvasHelper->getAnalyticsStudentAssignmentData());
+                    if($includeTags)
+                    {
+                        $result = [];
+                        foreach($data as $item)
+                        {   
+                            $item->tags = $canvasHelper->matchAssignmentIdWithTags($item->assignment_id);
+                            $result[] = item;
+                        }
+                        
+                        return $result;
+                    }
+                    return $data;
             }
         }
         else
@@ -599,54 +631,75 @@ class Roots
         }
     }
     
+    public function getAccount($accountId)
+    {
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $lms = strtoupper($_SESSION['lms']);
+        if(Lms::isValidValue($lms))
+        {
+            switch ($lms)
+            {
+                case (Lms::CANVAS):
+                    $canvasHelper = new CanvasHelper();
+                    return json_decode($canvasHelper->getAccount($accountId));
+                default:
+                    $canvasHelper = new CanvasHelper();
+                    return json_decode($canvasHelper->getAccount($accountId));
+            }
+        }
+        else
+        {
+           throw new \Exception("Invalid LMS");  
+        }
+    }
     /*
      * PRIVATE METHODS
      */
     private function getModuleDataFromLms(ModulesRequest $request)
     {
-        $dbHelper = new DbHelper();
         switch ($request->getLms())
         {
             case (Lms::CANVAS):
                 $canvas = new CanvasHelper(DataType::MODULES);
                 $canvas->getModuleData($request);
-                return $dbHelper->getModuleData($request);
+                return $this->dbHelper->getModuleData($request);
             default:
                 $canvas = new CanvasHelper(DataType::MODULES);
                 $canvas->getModuleData($request);
-                return $dbHelper->getModuleData($request);
+                return $this->dbHelper->getModuleData($request);
         }
     }
     
     private function getAssignmentDataFromLms(AssignmentsRequest $request)
     {
-        $dbHelper = new DbHelper();
         switch ($request->getLms())
         {
             case (Lms::CANVAS):
                 $canvas = new CanvasHelper(DataType::ASSIGNMENTS);
                 $canvas->processAssignmentsRequest($request);
-                return $dbHelper->getAssignmentData( $request);
+                return $this->dbHelper->getAssignmentData( $request);
             default:
                 $canvas = new CanvasHelper(DataType::ASSIGNMENTS);
                 $canvas->processAssignmentsRequest($request);
-                return $dbHelper->getAssignmentData( $request);
+                return $this->dbHelper->getAssignmentData( $request);
         }
     }
     
     private function getAssignmentGroupDataFromLms(AssignmentGroupsRequest $request)
     {
-        $dbHelper = new DbHelper();
         switch ($request->getLms())
         {
             case (Lms::CANVAS):
                 $canvas = new CanvasHelper(DataType::ASSIGNMENTS);
                 $canvas->processAssignmentGroupsRequest($request);
-                return $dbHelper->getAssignmentGroupData($request);
+                return $this->dbHelper->getAssignmentGroupData($request);
             default:
                 $canvas = new CanvasHelper(DataType::ASSIGNMENTS);
                 $canvas->processAssignmentGroupsRequest($request);
-                return $dbHelper->getAssignmentGroupData($request);
+                return $this->dbHelper->getAssignmentGroupData($request);
         }
     }
     

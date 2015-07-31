@@ -91,6 +91,9 @@ function drawAxis(){
 
 function drawExperience(){
 
+	var datelong = new Date();
+	var date = (datelong.getMonth() + 1) + '/' + datelong.getDate() + '/' +  datelong.getFullYear();
+	
 	var courseDays = Math.round(dayDifference(parseDate(startDate),parseDate(endDate)));
 	var currentDays = Math.round(dayDifference(parseDate(startDate),parseDate(date)));
 	var redLineY = bottom - Math.round(currentDays / courseDays * bottom);

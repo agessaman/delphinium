@@ -2,6 +2,8 @@
 
 use Cms\Classes\ComponentBase;
 
+use Delphinium\Blossom\Models\Experience as ExperienceModel;
+
 class Experience extends ComponentBase
 {
 
@@ -47,74 +49,13 @@ class Experience extends ComponentBase
                 'default'      => '-32',
             ],
 
-            'milestones' => [
-                'title'        => 'Number of Milestones',
-                'description'  => 'Enter Number of Milestones',
-                'type'         => 'string',
-                'default'      => '10',
-                'validationPattern' => '^[0-9]+$',
-            ],
-
-            'maxXP' => [
-                'title'        => 'Maximum Experience points',
-                'description'  => 'Enter Maximum Experience points',
-                'type'         => 'string',
-                'default'      => '10500',
-                'validationPattern' => '^[0-9]+$',
-                'validationMessage' => 'The Maximum Experience points value is required and should be integer.'
-            ],
-
-            'startDate' => [
-                'title'        => 'Course start date',
-                'description'  => 'Enter course start date',
-                'type'         => 'string',
-                'default'      => '01/01/2015',
-            ],
-
-            'endDate' => [
-                'title'        => 'Course end date',
-                'description'  => 'Enter course end date',
-                'type'         => 'string',
-                'default'      => '12/31/2015',
-            ],
-
-            'date' => [
-                'title'        => 'Current date',
-                'description'  => 'Enter current date',
-                'type'         => 'string',
-                'default'      => '02/19/2015',
-            ],
-
-            'Animate' => [
-                'title'        => 'Animate',
-                'type'         => 'dropdown',
-                'default'      => 'true',
-                'options'      => ['true'=>'True', 'false'=>'False']
-            ],
-
-            'Size' => [
-                'title'        => 'Size',
-                'type'         => 'dropdown',
-                'default'      => 'Medium',
-                'options'      => ['Small'=>'Small', 'Medium'=>'Medium', 'Large'=>'Large']
+            'Instance' => [
+                'title' => 'Instance',
+                'description' => 'Select the Experience instance',
+                'type' => 'dropdown',
             ]
 
         ];
-    }
-
-     public function onRender()
-    {
-        $this->page['experienceAnimate'] = $this->property('Animate');
-        $this->page['experienceXP'] = $this->property('XP');
-        $this->page['experienceBonus'] = $this->property('experienceBonus');
-        $this->page['experiencePenalties'] = $this->property('experiencePenalties');
-        $this->page['maxXP'] = $this->property('maxXP');
-        $this->page['milestones'] = $this->property('milestones');
-        $this->page['startDate'] = $this->property('startDate');
-        $this->page['endDate'] = $this->property('endDate');
-        $this->page['date'] = $this->property('date');
-        $this->page['experienceGrade'] = $this->property('experienceGrade');
-        $this->page['experienceSize'] = $this->property('Size');
     }
     
     public function onRun()
@@ -124,6 +65,33 @@ class Experience extends ComponentBase
         $this->addCss("/plugins/delphinium/blossom/assets/css/experience.css");
         $this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
         $this->addCss("/plugins/delphinium/blossom/assets/css/font-awesome.min.css");
+
+        $instance = ExperienceModel::find($this->property('Instance'));
+
+        $this->page['experienceXP'] = $this->property('XP');
+        $this->page['experienceBonus'] = $this->property('experienceBonus');
+        $this->page['experiencePenalties'] = $this->property('experiencePenalties');
+        $this->page['maxXP'] = $instance->Maximum;
+        $this->page['milestones'] = $instance->Milestones;
+        $this->page['startDate'] = $instance->StartDate;
+        $this->page['endDate'] = $instance->EndDate;
+        $this->page['experienceGrade'] = $this->property('experienceGrade');
+        $this->page['experienceSize'] = $instance->Size;
+        $this->page['experienceAnimate'] = $instance->Animate;
+    }
+
+    public function getInstanceOptions()
+    {
+        $instances = ExperienceModel::where("id","!=","0")->get();
+
+        $array_dropdown = ['0'=>'- select Experience Instance - '];
+
+        foreach ($instances as $instance)
+        {
+            $array_dropdown[$instance->id] = $instance->Name;
+        }
+
+        return $array_dropdown;
     }
 
 }

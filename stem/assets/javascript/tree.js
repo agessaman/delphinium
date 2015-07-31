@@ -6,16 +6,24 @@
             .controller('treeCtrl', function ($scope, $http, $interval, $timeout, $q) {
 
                 $scope.data = moduleData;
-//                $scope.canvasUrl = canvasUrl;
                 $scope.contentClass = "hidden";
                 $scope.currentModuleItemId = 0;
                 $scope.contentId = 0;
                 $scope.isExpanded = false;
                 $scope.showTags = false;
                 $scope.loading = false;
+                
+                $scope.alerts = [];
                 /*
                  * ***********************  Functions  ***********************
                  */
+                $scope.addAlert = function(type, msg) {
+                    $scope.alerts.push({msg: msg, type: type});
+                };
+
+                  $scope.closeAlert = function(index) {
+                    $scope.alerts.splice(index, 1);
+                  };
                 $scope.showContent = function (item) {
                     $scope.isExpanded = !$scope.isExpanded;
 
@@ -73,8 +81,10 @@
                         //if the module is unpublished it can't be dropped to the top position
                         if ((!destNodesScope.$nodeScope) && (sourceNodeScope.$parentNodeScope) && (sourceNodeScope.$modelValue.published === "0")) {
                             //show flash message explainig what is going on
-                            var msg = document.getElementById("flashMsg");
-                            msg.className = "visible";
+                            $scope.addAlert("danger","This item cannot be dragged to the top because it is unpublished");
+                            $timeout(function(){
+                                $scope.alerts.splice($scope.alerts.indexOf(alert), 1);
+                            }, 4000);
 //                        $(selector for your message).slideDown(function() {
 //                            setTimeout(function() {
 //                                $(selector for your message).slideUp();

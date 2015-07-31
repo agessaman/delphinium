@@ -15,7 +15,7 @@ var b = {
 };
 
 //will detect all the component instances and call createChart for each of them
-$(document).ready(function(){
+ $(window).load(function () {
     for (element in window) {
         if (element.indexOf('delphinium_iris')===0) {
             totalCharts++;
@@ -27,7 +27,6 @@ $(document).ready(function(){
     {
         var promise = $.get("getModuleStates");
         promise.then(function (data1, textStatus, jqXHR) {
-            console.log("trying to get module states");
             processModuleStates(data1, textStatus, jqXHR, stateColors);
         })
         .fail(function (data2) {
@@ -48,10 +47,18 @@ function createChart(iris)
     graphData = iris.graphData[0];
 
 //todo: calculate how big each svg needs to be
-    var width = 480,
-            height = 350,
+//get parent size
+    var parent = $("#wrapper" + iris.filter).parent();
+    
+    var width = parent.width(),
+            height = parent.height(),
             radius = Math.min(width, height) / 2;
-
+    
+    //if the parent did not specify a height and width, the chart will be 500x500
+    if(width<1||height<1)
+    {
+        width = 500, height = 500, radius = Math.min(width, height) / 2;
+    }
     var svg = d3.select("#wrapper" + iris.filter).append("svg")
             .attr("id", "svg" + iris.filter)
             .attr("width", width)
@@ -105,7 +112,6 @@ function createChart(iris)
                 }
             })
             .on('click', function(d){
-                console.log("attached click event");
                 modalBoxShow(d);
             })
             .style("stroke", "#fff")
@@ -160,7 +166,7 @@ function createChart(iris)
         {
 
             d3.select("#divPrerequisites").attr("class", "visible");
-            var prereqs = d.prerequisite_module_ids.split(",");
+            var prereqs = d.prerequisite_module_ids.split(", ");
             var actualPrereqs;
             if (moduleStates === undefined)
             {
@@ -575,16 +581,24 @@ function createChart(iris)
         return optional;
     }
     /***************************************** tooltip to follow mouse on each movement ****************************************/
-
     function followCursor() 
     {
         var tooltip = d3.select("#tooltip");
         //find width and height of tooltip and of the document.
-        //if the natural x or y positions make it so the box goes outside of "margins" then choose a different x/y positions
+        //if the natural x or y positions make it so the box goes outside of "margins" then choose a different x/y position
         var tipWidth = parseInt(tooltip.style("width"), 10);
         var tipHeight = parseInt(tooltip.style("height"), 10);
-        var docWidth = parseInt(window.innerWidth) - 30; ///-30 to account for the right scrolling bar
-        var docHeight = parseInt(window.innerHeight);
+//        var docWidth = parseInt(window.innerWidth) - 30; ///-30 to account for the right scrolling bar
+//        var docHeight = parseInt(window.innerHeight);
+        var body = document.body,
+            html = document.documentElement;
+
+        var height = Math.max( body.scrollHeight, body.offsetHeight, 
+                               html.clientHeight, html.scrollHeight, html.offsetHeight );
+        var visibleHeight = html.clientHeight;
+        var yOffset = window.pageYOffset;
+        var docWidth = parseInt(window.innerWidth||document.documentElement.clientWidth||document.body.clientWidth||0) - 30; ///-30 to account for the right scrolling bar
+        var docHeight = parseInt(height);
 
         var dom = document.getElementById("wrapper"+iris.filter);
         var x = parseInt((d3.mouse(dom)[0]) + 20); 
@@ -598,16 +612,24 @@ function createChart(iris)
             x = x - ((x + tipWidth) - docWidth);
         }
 
-        //when running into the bottom frame
-        //only do this if the entire document height isn't smaller than the tooltip height
         if (docHeight > tipHeight)
         {
+        //when running into the bottom frame
+        //only do this if the entire document height isn't smaller than the tooltip height
             var avaHeight = docHeight - y;
             if ((avaHeight) < (tipHeight / 2))
             {
                 if (y - tipHeight > 0)
                 {
                     y = y - tipHeight - 50;
+                }
+            }
+            else
+            {
+                //when user has scrolled down too much the tooltip shouldn't show up at the top
+                if(docHeight>visibleHeight)
+                {//scroll down
+                    y = y+yOffset;
                 }
             }
         }
@@ -798,7 +820,6 @@ function getStudentSubmissions()
         newPromise.then(function (data1) {
             showScores(data1);
         }).fail(function (data2) {
-            console.log("failed getStudentSubmissions");
         });
     }
     else
@@ -810,7 +831,6 @@ function getStudentSubmissions()
 
 function showScores(data)
 {//accessibleSubmissionData will be submission_type, content_id, grade
-    console.log("added scores");
     var rawSubmissionData = data;
     var content_id;
     for (var i = 0; i <= data.length - 1; i++)
@@ -882,7 +902,7 @@ function modalBoxShow(content) {
     if (avaHeight < tipHeight)
     {
         slideTooltip = true;
-        y = tipHeight - avaHeight;
+        y = y-(tipHeight-(docHeight-y));
     }
 
     if (slideTooltip)

@@ -5,18 +5,21 @@ use Delphinium\Roots\UpdatableObjects\ModuleItem;
 use Delphinium\Roots\Models\Assignment;
 use Delphinium\Roots\Models\ModuleItem as DbModuleItem;
 use Delphinium\Roots\Roots;
-use Delphinium\Roots\RequestObjects\SubmissionsRequest;
-use Delphinium\Roots\RequestObjects\ModulesRequest;
-use Delphinium\Roots\RequestObjects\AssignmentsRequest;
-use Delphinium\Roots\RequestObjects\AssignmentGroupsRequest;
-use Delphinium\Roots\Enums\CommonEnums\ActionType;
-use Delphinium\Roots\Enums\ModuleItemEnums\ModuleItemType;
-use Delphinium\Roots\Enums\ModuleItemEnums\CompletionRequirementType;
+use Delphinium\Roots\Requestobjects\SubmissionsRequest;
+use Delphinium\Roots\Requestobjects\ModulesRequest;
+use Delphinium\Roots\Requestobjects\AssignmentsRequest;
+use Delphinium\Roots\Requestobjects\AssignmentGroupsRequest;
+use Delphinium\Roots\Enums\ActionType;
+use Delphinium\Roots\Enums\ModuleItemType;
+use Delphinium\Roots\Enums\CompletionRequirementType;
+use Delphinium\Roots\DB\DbHelper;
 use Cms\Classes\ComponentBase;
 use \DateTime;
+use \DateTimeZone;
 use GuzzleHttp\Client;
 use GuzzleHttp\Post\PostFile;
 use Delphinium\Iris\Components\Iris;
+use Config;
 
 use Delphinium\Roots\Guzzle\GuzzleHelper;
 
@@ -36,7 +39,7 @@ class TestRoots extends ComponentBase
     {  
         $this->roots = new Roots();
 //        $this->refreshCache();
-//        $this->test();
+        $this->test();
         
 //        Cache::flush();
 //        $this->testBasicModulesRequest();
@@ -51,7 +54,7 @@ class TestRoots extends ComponentBase
 //        $this->testAddingModule();
 //        $this->testAddingModuleItem();
 //        
-        $this->testingGettingAssignments();
+//        $this->testingGettingAssignments();
 //        $this->testGettingSingleAssignment();
         
 //        $this->testAssignmentGroups();
@@ -61,18 +64,20 @@ class TestRoots extends ComponentBase
 //        $this->testGettingAllSubmissionForSingleAssignment();
 //        $this->testGettingMultipleSubmissionsForSingleStudent();
 //        $this->testGettingMultipleSubmissionsAllStudents();
+//        $this->testGettingAllSubmissionsAllStudents();
 //        $this->testGettingMultipleSubmissionsMultipleStudents();
 //        $this->testGettingSubmissions();
 //        $this->testFileUpload();
 //        $this->testAddingAssignment();
 //        $this->testStudentAnalyticsAssignmentData();
 //        $this->testGetCourse();
+//        $this->testGetAccount();
     }
     
     private function testBasicModulesRequest()
     { 
-        $moduleId = 380200;
-        $moduleItemId = 2368085;
+        $moduleId = null;//380200;
+        $moduleItemId = null;//2368085;
         $includeContentDetails = true;
         $includeContentItems = true;
         $module = null;
@@ -246,7 +251,8 @@ class TestRoots extends ComponentBase
     
     private function testingGettingAssignments()
     {
-        $req = new AssignmentsRequest(ActionType::GET);
+        $req = new AssignmentsRequest(ActionType::GET, null, false, null, true);
+//        $req = new AssignmentsRequest(ActionType::GET);
         
         $res = $this->roots->assignments($req);
         echo json_encode($res);
@@ -256,8 +262,8 @@ class TestRoots extends ComponentBase
     {
         $assignment_id = 1660430;
         $freshData = false;
-        $req = new AssignmentsRequest(ActionType::GET, $assignment_id, $freshData);
-        
+        $includeTags = true;
+        $req = new AssignmentsRequest(ActionType::GET, $assignment_id, $freshData, null, $includeTags);
         $res = $this->roots->assignments($req);
         echo json_encode($res);
     }
@@ -358,7 +364,25 @@ class TestRoots extends ComponentBase
         $res = $this->roots->submissions($req);
         echo json_encode($res);
     }
+       
+    private function testGettingAllSubmissionsAllStudents()
+    {
+        $studentIds = null;
+        $assignmentIds = array();
+        $multipleStudents = true;
+        $multipleAssignments = true;
+        $allStudents = true;
+        $allAssignments = true;
+        $includeTags = true;
         
+        //can have the student Id param null if multipleUsers is set to false (we'll only get the current user's submissions)
+        
+        $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, 
+                $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments, $includeTags);
+        
+        $res = $this->roots->submissions($req);
+        echo json_encode($res);
+    }
     private function testGettingMultipleSubmissionsMultipleStudents()
     {//This throws an error because I'm not authorized to retrieve submissions in behalf of other students
         $studentIds = array(10733259,10733259);
@@ -395,24 +419,7 @@ class TestRoots extends ComponentBase
     
     public function test()
     {
-        $req = new ModulesRequest(ActionType::GET, null, null, true, 
-                true, null, null , false);
-        $roots = new Roots();
-        $moduleData = $roots->modules($req);
-
-        $iris = new Iris();
-        $arr = $moduleData->toArray();
-        $tree = $iris->buildTree($arr,1);
-        echo json_encode($tree);
-//        echo sizeof($tree);
-//        $dash = "-";
-//        $result = array();
-//        foreach($tree as $item)
-//        {
-//            $this->recursion($item['children'], $dash, $result);
-//        }
-//
-//        echo json_encode($result);
+        
     }
     
    
@@ -503,7 +510,7 @@ class TestRoots extends ComponentBase
     
     public function testStudentAnalyticsAssignmentData()
     {
-        $res = $this->roots->getAnalyticsStudentAssignmentData();
+        $res = $this->roots->getAnalyticsStudentAssignmentData(false);
         echo json_encode($res);
     }
     
@@ -512,5 +519,23 @@ class TestRoots extends ComponentBase
         $res = $this->roots->getCourse();
         echo json_encode($res);
     }
+    
+    public function testGetAccount()
+    {
+        $accountId = 16;
+        $res = $this->roots->getAccount($accountId);
+        echo json_encode($res);
+    }
+
+    private function convertToUTC()
+    {
+        $date = new DateTime("now", new \DateTimeZone('America/Denver'));
+        echo json_encode($date);
+        
+        $UTC = new DateTimeZone("UTC");
+        $utc_date = $date->setTimezone( $UTC );
+        echo json_encode($utc_date);
+    }
 }
+
 

@@ -1,12 +1,8 @@
 $(document).ready(function(){
-	calculateProgress();
 	scaleProgress();
 	drawProgress();
 });
 
-function calculateProgress(){
-
-}
 function scaleProgress(){
 
 }
@@ -149,7 +145,7 @@ function drawProgress(){
 				.attr('transform', centerTx);
 				
 		pointer = pg.append('path')
-			.attr('d', pointerLine/*function(d) { return pointerLine(d) +'Z';}*/ )
+			.attr('d', pointerLine )
 			.attr('transform', 'rotate(' +config.minAngle +')');
 			
 		update(newValue === undefined ? 0 : newValue);
@@ -164,7 +160,7 @@ function drawProgress(){
 		var newAngle = config.minAngle + (ratio * range);
 		pointer.transition()
 			.duration(config.transitionMs)
-			.ease('elastic')
+			//.ease('elastic')
 			.attr('transform', 'rotate(' +newAngle +')');
 	}
 	that.update = update;
@@ -181,12 +177,11 @@ function onDocumentReady() {
 		clipHeight: 300,
 		ringWidth: 60,
 		maxValue: 1,
-		transitionMs: 4000,
+		transitionMs: 2000,
 	});
-	powerGauge.render();
+	powerGauge.render(progress);
 	
-
-	powerGauge.update(.34);
+	//powerGauge.update();
 
 
 

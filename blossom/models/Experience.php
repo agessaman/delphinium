@@ -17,8 +17,8 @@ class Experience extends Model
         'Name'=>'required',
         'Maximum'=>'required',
         'Milestones' => 'required',
-        'Start Date' => 'required',
-        'End Date' => 'required',
+        'StartDate' => 'required',
+        'EndDate' => 'required',
         'Animate'=>'required',
         'Size' => 'required'
     ];

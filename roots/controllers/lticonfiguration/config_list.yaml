@@ -1,0 +1,21 @@
+# ===================================
+#  List Behavior Config
+# ===================================
+
+title: LTI Configurations
+list: @/plugins/delphinium/roots/models/developer/columns.yaml
+modelClass: Delphinium\Roots\Models\Developer
+recordUrl: delphinium/roots/lticonfiguration/update/:id
+noRecordsMessage: backend::lang.list.no_records
+recordsPerPage: 20
+showSorting: true
+showCheckboxes: true
+showSetup: true
+
+toolbar:
+    buttons: list_toolbar
+    search:
+        prompt: backend::lang.list.search_prompt
+
+
+

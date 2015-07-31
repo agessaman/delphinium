@@ -1,8 +1,9 @@
 <?php namespace Delphinium\Dev\Controllers;
 
+use Flash;
 use BackendMenu;
-use BackendAuth;
 use Backend\Classes\Controller;
+use Delphinium\Dev\Models\Configuration as ConfigModel;
 
 class Configuration extends Controller
 {
@@ -20,5 +21,24 @@ class Configuration extends Controller
         BackendMenu::setContext('Delphinium.Greenhouse', 'greenhouse', 'greenhouse');
     }
     
-    
+    /**
+     * Delete checked configuration instances.
+     */
+    public function index_onDelete()
+    {
+        if (($checkedIds = post('checked')) && is_array($checkedIds) && count($checkedIds)) {
+
+            foreach ($checkedIds as $configId) {
+                if (!$config = ConfigModel::find($configId)) continue;
+                $config->delete();
+            }
+
+            Flash::success("Successfully deleted");
+        }
+        else {
+            Flash::error("An error occurred when trying to delete this item");
+        }
+
+        return $this->listRefresh();
+    }
 }

@@ -7,3 +7,5 @@
     - create_roots_content_table.php
     - create_roots_assignments_table.php
     - create_roots_assignment_groups_table.php
+    - create_roots_developers_table.php
+    - create_roots_users_table.php

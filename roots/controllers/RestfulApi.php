@@ -6,10 +6,11 @@ use Delphinium\Roots\UpdatableObjects\ModuleItem;
 use Delphinium\Roots\RequestObjects\AssignmentsRequest;
 use Delphinium\Roots\RequestObjects\ModulesRequest;
 use Delphinium\Roots\Roots;
-use Delphinium\Roots\Enums\ModuleItemEnums\CompletionRequirementType;
-use Delphinium\Roots\Enums\CommonEnums\ActionType;
+use Delphinium\Roots\Enums\CompletionRequirementType;
+use Delphinium\Roots\Enums\ActionType;
 use Delphinium\Roots\Models\Page;
 use \DateTime;
+use \DateTimeZone;
 
 class RestfulApi extends Controller 
 {
@@ -63,8 +64,8 @@ class RestfulApi extends Controller
         $name = \Input::get('name');
         $date =\Input::get('unlock_at');
         if(!is_null($date))
-        {
-           $unlock_at= new DateTime($date);
+        {//convert to UTC from current timezone
+            $unlock_at = $this->getUTCdate($date);
         }
         else
         {
@@ -143,4 +144,61 @@ class RestfulApi extends Controller
         $roots = new Roots();
         return $roots->modules($req);
     }
+    
+    public function updateModuleItem()
+    {
+//        $name = \Input::get('name');
+//        $date = \Input::get('unlock_at');
+//        $unlock_at = new DateTime($date);
+//        $prerequisite_module_ids =\Input::get('prerequisites');
+//        $published = \Input::get('published');
+//        $module_id = \Input::get('module_id');
+//        
+//        
+//         $tags = null;//array('New Tag', 'Another New Tag');
+//        $title = "New Title from back end";
+//        $modItemType = null;// Module type CANNOT be updated
+//        $content_id = 2078183;
+//        $completion_requirement_min_score = null;//7;
+//        $completion_requirement_type = null;//CompletionRequirementType::MUST_SUBMIT;
+//        $page_url = null;//"http://www.gmail.com";
+//        $published = true;
+//        $position = 1;//2;
+//        
+//        $moduleItem = new ModuleItem($title, $modItemType, $content_id, $page_url, null, $completion_requirement_type, 
+//                $completion_requirement_min_score, $published, $position, $tags);
+//        //end added
+//        
+//        $moduleId = 457097;
+//        $moduleItemId = 2885671;
+//        $includeContentItems = false;
+//        $includeContentDetails = false;
+//        $module = null;
+//        $freshData = false;
+//        
+//        $req = new ModulesRequest(ActionType::PUT, $moduleId, $moduleItemId,  
+//            $includeContentItems, $includeContentDetails, $module, $moduleItem , $freshData);
+//        
+//        $roots = new Roots();
+//        $res = $roots->modules($req);
+    
+    }
+    
+    /**
+     * 
+     * @param type $localTimezoneStringDate String representation of the date in local timezone.
+     * @return type The DateTime in UTC timezone
+     */
+    private function getUTCdate($localTimezoneStringDate)
+    {//we are comingin with MST and need to convert to UTC
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+        $timezoneStr = $_SESSION['timezone']->timezone;
+        $date = new DateTime($localTimezoneStringDate, new DateTimeZone($timezoneStr));
+        $UTC = new DateTimeZone("UTC");
+        $unlock_at = $date->setTimezone($UTC);
+        return $unlock_at;
+    }
+    
 }

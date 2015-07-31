@@ -6,22 +6,22 @@
 name: Experience
 
 # Model Form Field configuration
-form: $/delphinium/blossom/models/Experience/fields.yaml
+form: $/delphinium/blossom/models/experience/fields.yaml
 
 # Model Class name
 modelClass: Delphinium\Blossom\Models\Experience
 
 # Default redirect location
-defaultRedirect: delphinium/blossom/Experience
+defaultRedirect: delphinium/blossom/experience
 
 # Create page
 create:
     title: Create Experience Instance
-    redirect: delphinium/blossom/Experience/update/:id
-    redirectClose: delphinium/blossom/Experience
+    redirect: delphinium/blossom/experience/update/:id
+    redirectClose: delphinium/blossom/experience
 
 # Update page
 update:
     title: Edit Experience Instance
-    redirect: delphinium/blossom/Experience
-    redirectClose: delphinium/blossom/Experience
+    redirect: delphinium/blossom/experience
+    redirectClose: delphinium/blossom/experience
