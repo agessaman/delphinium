@@ -117,6 +117,7 @@ class DataSource implements IDataSource {
         return array_values($rules);
     }
     
+    // TODO: don't run rules on excluded groups if all whitelist rules have finished
     private function runRules($datatype, $rulegroups, $data) {
         if (empty($rulegroups)) {
             return $this->processResults($data);

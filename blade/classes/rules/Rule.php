@@ -31,6 +31,7 @@ class Rule implements IPersistent {
     protected $dbid; // database id
     protected $model;
     private $whitelist; // whether this rule is a whitelisting rule
+    private $course_id;
 
     /**
      * Rule constructor.
@@ -209,5 +210,13 @@ class Rule implements IPersistent {
         if ($count > 1) {
             throw new \InvalidArgumentException('A rule may not have more than one filtering action');
         }
+    }
+    
+    public function setCourseId($id) {
+        $this->course_id = $id;
+    }
+    
+    public function getCourseId() {
+        return $this->course_id;
     }
 }

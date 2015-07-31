@@ -18,7 +18,7 @@ class Rule extends Model implements IRuleComponent {
     /**
      * @var array Fillable fields
      */
-    protected $fillable = ['name', 'datatype'];
+    protected $fillable = ['name', 'datatype', 'course_id'];
 
     /**
      * @var array Relations

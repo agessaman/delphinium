@@ -12,9 +12,11 @@ class CreateRulesTable extends Migration
         {
             $table->engine = 'InnoDB';
             $table->increments('id');
-            $table->string('name')->unique();
+            $table->integer('course_id')->unsigned()->nullable()->index();
+            $table->string('name');
             $table->string('datatype');
             $table->timestamps();
+            $table->unique(['name', 'course_id']);
         });
     }
 
