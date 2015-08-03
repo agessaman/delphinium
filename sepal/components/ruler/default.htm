@@ -1,0 +1,14 @@
+<!--<div ng-app="rulerApp" ng-controller="rulerCtrl">
+
+    <select ng-model="selectedItemToAdd" class="dropdown-multiple" multiple ng-multiple="true"
+            ng-options="item.name for item in itemOptions"
+            ng-change="changedItem(selectedItemToAdd)">
+    </select>
+</div>-->
+<div class="form-group">
+    <select multiple>
+        {% for item in componentInstances %}
+        <option>{{ item.Name }}</option>
+        {% endfor %}
+    </select>
+</div>

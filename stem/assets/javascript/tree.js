@@ -102,6 +102,8 @@
                         if ((!event.dest.nodesScope.$nodeScope) && (event.source.nodeScope.$parentNodeScope)) {
                             var parent = event.dest.nodesScope.$modelValue[0];
                             var allOtherItems = event.dest.nodesScope.$modelValue[1];
+                            console.log(parent);
+                            console.log(allOtherItems);
                             $http.post('moveItemToTop', {
                                 parent: JSON.stringify(parent),
                                 modulesArray: JSON.stringify(allOtherItems)
