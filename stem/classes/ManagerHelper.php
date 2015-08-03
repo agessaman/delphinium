@@ -59,6 +59,7 @@ class ManagerHelper
     
     public function makeItemParent($arrWithOldParent, $newParent)
     {
+        $newParent['children'] = array();
         $allItems = $arrWithOldParent["children"];
         $arrWithOldParent["children"] = [];
         

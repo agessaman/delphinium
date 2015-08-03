@@ -729,7 +729,7 @@ function createChart(iris)
                         var ob = moduleStates.filter(function (ob)
                         {
                             var id = parseInt(d.module_id);
-                            if (ob.moduleId === id)
+                            if (ob.module_id === id)
                             {
                                 return ob;
                             }
@@ -800,7 +800,7 @@ function resetTooltipContent()
 
 function processModuleStates(states,textStatus, jqXHR, stateColors)
 {
-    tempStates = states;
+    moduleStates = states;
     tempModData = graphData.children;
     for (var i = 0; i <= states.length - 1; i++)
     {
