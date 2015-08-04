@@ -29,20 +29,20 @@ Route::get($v1prefix . 'courses/{course_id}/assignments', function($course_id) {
     return $source->getAssignments(\Input::all());
 });
 
-Route::get($v1prefix . 'courses/{course_id}/assignments/{assignment_id}', function($course_id, $assignment_id) {
-    $source = init($course_id);
-    return $source->getAssignments($assignment_id, \Input::all());
-});
+//Route::get($v1prefix . 'courses/{course_id}/assignments/{assignment_id}', function($course_id, $assignment_id) {
+//    $source = init($course_id);
+//    return $source->getAssignments($assignment_id, \Input::all());
+//});
 
 Route::get($v1prefix . 'courses/{course_id}/modules', function($course_id) {
     $source = init($course_id);
     return $source->getModules(\Input::all());
 });
 
-Route::get($v1prefix . 'courses/{course_id}/modules/{module_id}', function($course_id, $module_id) {
-    $source = init($course_id);
-    return $source->getModule($module_id, \Input::all());
-});
+//Route::get($v1prefix . 'courses/{course_id}/modules/{module_id}', function($course_id, $module_id) {
+//    $source = init($course_id);
+//    return $source->getModule($module_id, \Input::all());
+//});
 
 Route::get($v1prefix . 'courses/{course_id}/assignment_groups', function($course_id) {
     $source = init($course_id);
@@ -52,4 +52,9 @@ Route::get($v1prefix . 'courses/{course_id}/assignment_groups', function($course
 Route::get($v1prefix . 'courses/{course_id}/assignments/{assignment_id}/submissions', function($course_id, $assignment_id){
     $source = init($course_id);
     return $source->getSubmissions($assignment_id, \Input::all());
+});
+
+Route::get($v1prefix . 'courses/{course_id}/analytics/users/assignments', function($course_id){
+    $source = init($course_id);
+    return $source->getUserAssignmentAnalytics(\Input::all());
 });

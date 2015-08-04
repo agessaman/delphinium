@@ -24,4 +24,5 @@ interface IDataSource {
     function getAssignmentGroups($params);
     //function getAssignmentGroup($id, $params);
     function getSubmissions($assignment_id, $params);
+    function getUserAssignmentAnalytics($params);
 }

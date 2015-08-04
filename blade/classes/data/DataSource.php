@@ -61,19 +61,14 @@ class DataSource implements IDataSource {
 
     public function getAssignmentGroups($params) {
         $request = DataSource::createGetAssignmentGroupsRequest();
-        return $this->requestAssignmentGroups($this->rg($params), $request, $params);
+        DataSource::setAssignmentGroupParams($request, $params);
+        return $this->runRules('assignment_group', $this->rg($params), $this->roots->assignmentGroups($request)->toArray());
     }
 
 //    public function getAssignmentGroup($id, $params) {
 //        $request = DataSource::createGetAssignmentGroupsRequest($id);
 //        return $this->requestAssignmentGroups($this->rg($params), $request, $params);
 //    }
-
-    private function requestAssignmentGroups($request, $params) {
-        DataSource::setAssignmentGroupParams($request, $params);
-        return $this->runRules('assignment_group', $this->rg($params), $this->roots->assignmentGroups($request)->toArray());
-    }
-
 //    public function getAssignmentSubmissions($assignment_id, $params) {
 //        $request = DataSource::createGetSubmissionsRequest();
 //        return $this->requestSubmissions($this->rg($params), $request, $params);
@@ -85,12 +80,13 @@ class DataSource implements IDataSource {
 
     public function getSubmissions($assignment_id, $params) {
         $request = DataSource::createGetSubmissionsRequest($assignment_id);
-        return $this->requestSubmissions($this->rg($params), $request, $params);
-    }
-
-    private function requestSubmissions($request, $params) {
         DataSource::setSubmissionParams($request, $params);
         return $this->runRules('submission', $this->rg($params), $this->roots->submissions($request)->toArray());
+    }
+
+    public function getUserAssignmentAnalytics($params) {
+        $include_tags = isset($params['include_tags']) ? (boolean) $params['include_tags'] : false;
+        return $this->runRules('assignment_analytics', $this->rg($params), $this->roots->getAnalyticsStudentAssignmentData($include_tags));
     }
 
     private function processResults($data) {
@@ -98,25 +94,25 @@ class DataSource implements IDataSource {
             var_dump($data);
             return null;
         }
-        
+
         return $data;
     }
-    
+
     private function getRules($rulegroups) {
         $groups = array_map(function ($name) {
             return new RuleGroup($name);
         }, $rulegroups);
-        
+
         $rules = [];
         foreach ($groups as $rg) {
             foreach ($rg->getRules() as $rule) {
                 $rules[$rule->getId()] = $rule; // assigning to dictionary to avoid running a rule more than once
             }
         }
-        
+
         return array_values($rules);
     }
-    
+
     // TODO: don't run rules on excluded groups if all whitelist rules have finished
     private function runRules($datatype, $rulegroups, $data) {
         if (empty($rulegroups)) {
@@ -148,26 +144,25 @@ class DataSource implements IDataSource {
 
         return $this->processResults($results);
     }
-    
-    
+
     // TODO: fix rule sorting
     private function sortRules(&$rules) {
-        usort($rules, function(Rule $rule1, Rule $rule2){
+        usort($rules, function(Rule $rule1, Rule $rule2) {
             if ($rule1->isWhitelistRule() && !$rule2->isWhitelistRule()) {
                 return -1;
             }
-            
+
             if (!$rule1->isWhitelistRule() && $rule2->isWhitelistRule()) {
                 return 1;
             }
-            
+
             return 0;
         });
-        
+
         //var_dump($rules);
         return $rules;
     }
-    
+
     private static function createRuleContext($rule, $ctx) {
         return new \Delphinium\Blade\Classes\Data\RuleContext($rule, $ctx);
     }
@@ -190,6 +185,7 @@ class DataSource implements IDataSource {
 
     private static function setAssignmentParams($request, $params) {
         $request->setFresh_data(isset($params['fresh_data']) ? (boolean) $params['fresh_data'] : true);
+        $request->setIncludeTags(isset($params['include_tags']) ? (boolean) $params['include_tags'] : false);
     }
 
     private static function createGetAssignmentGroupsRequest($id = null) {
@@ -208,7 +204,7 @@ class DataSource implements IDataSource {
     }
 
     private static function setSubmissionParams($request, $params) {
-        
+        $request->setIncludeTags(isset($params['include_tags']) ? (boolean) $params['include_tags'] : false);
     }
 
 }

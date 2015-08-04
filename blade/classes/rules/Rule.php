@@ -94,6 +94,7 @@ class Rule implements IPersistent {
         return $this->datatype;
     }
 
+    // TODO: add saving of course id
     private function save() {
         $model = new RuleModel(
                 ['name' => $this->name,
@@ -211,12 +212,12 @@ class Rule implements IPersistent {
             throw new \InvalidArgumentException('A rule may not have more than one filtering action');
         }
     }
-    
-    public function setCourseId($id) {
-        $this->course_id = $id;
-    }
-    
-    public function getCourseId() {
-        return $this->course_id;
-    }
+//    
+//    public function setCourseId($id) {
+//        $this->course_id = $id;
+//    }
+//    
+//    public function getCourseId() {
+//        return $this->course_id;
+//    }
 }
