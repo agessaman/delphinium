@@ -144,6 +144,14 @@ body{
     float:right;
 }
 
+.btn-group-lg>.btn, .btn-lg {
+    padding:0px !important;
+}
+
+.indentModule
+{
+	padding-left:13px;
+}
 .expand{
 position: relative;
 top: -35px;

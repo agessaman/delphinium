@@ -26,7 +26,12 @@ class Progress extends ComponentBase
         $this->addCss("/plugins/delphinium/blossom/assets/css/progress.css");
 
         $this->roots = new Roots();
-        $res = $this->roots->getAnalyticsStudentAssignmentData();
+        try {
+            $res = $this->roots->getAnalyticsStudentAssignmentData();
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            echo "In order for the 'Progress' app to run properly you must be a student or you must go in 'Student View'";
+            return;
+        }
         //var_dump($res);
         $possable = 0;
         $completed = 0;

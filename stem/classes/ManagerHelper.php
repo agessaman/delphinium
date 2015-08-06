@@ -9,8 +9,8 @@ class ManagerHelper
                 
         foreach($array as $level)
         {
+        
             $mod = new OrderedModule();
-            
             $mod->module_id = $level->module_id;
             $mod->parent_id = $parentId;
             $mod->course_id = $courseId;
@@ -20,14 +20,12 @@ class ManagerHelper
 
             if(isset($level->children)&&(sizeof($level->children)>0))
             {//order will be zero based
-                $innerOrder = 0;
-                $parentId = $level->module_id;
+            	$innerOrder = 0;
+                $altparentId = $level->module_id;
                 $counter = true;
-                $this->recursive($courseId, $level->children, $flatArray, $parentId, $counter, $innerOrder);
-                $parentId = $level->parent_id;
+                $this->recursive($courseId, $level->children, $flatArray, $altparentId, $counter, $innerOrder);
                 $counter = false;
             }
-
             //to manage the position of the children elements
             $order++;
         }

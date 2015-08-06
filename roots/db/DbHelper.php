@@ -55,7 +55,9 @@ class DbHelper
         }
         else
         {//if no moduleId was found they must want all the modules
-            $modules = Module::with('module_items.content')->where(array(
+            $modules = Module::orderBy('parent_id', 'ASC')
+                    ->orderBy('order', 'ASC')
+                    ->with('module_items.content')->where(array(
                 'course_id' => $courseId
             ))->get();
             

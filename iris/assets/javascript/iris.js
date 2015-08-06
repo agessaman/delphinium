@@ -599,7 +599,7 @@ function createChart(iris)
         var docHeight = parseInt(height);
 
         var x = parseInt((d3.mouse(body)[0]) + 20); 
-        var y = parseInt((d3.mouse(body)[1]) + 60);
+        var y = parseInt((d3.mouse(body)[1]));
          
         //when running into the right frame
         //only do this if the entire document width isn't smaller than the tooltip width
@@ -897,7 +897,7 @@ function modalBoxShow(content) {
         $("#tooltip").animate({
             left: x,
             top: y
-        }, 500);
+        }, 300);
     }
 
     d3.select("#divInnerTooltip")
