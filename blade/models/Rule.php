@@ -105,9 +105,10 @@ class Rule extends Model implements IRuleComponent {
      */
     public function getVariableDefaultValue($name) {
         $var = $this->variables()->where('name', '=', $name)->first();
+        if (!isset($var)) return null; //there's no variable with that name
         $value = $var->default_value;
         
-        if(!isset($value)) return null;
+        if(!isset($value)) return null; //there is a variable with name, but no default value set
         
         settype($value, $var->datatype);
         return $value;

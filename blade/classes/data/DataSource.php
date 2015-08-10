@@ -37,7 +37,8 @@ class DataSource implements IDataSource {
     public function getAssignments($params) {
         $request = DataSource::createGetAssignmentsRequest();
         DataSource::setAssignmentParams($request, $params);
-        return $this->runRules('assignment', $this->rg($params), $this->roots->assignments($request)->toArray());
+        return $this->runRules('assignment', $this->rg($params), $this->roots->assignments($request));
+        //var_dump($this->roots->assignments($request));
     }
 
 //    public function getAssignment($id, $params) {
@@ -123,6 +124,7 @@ class DataSource implements IDataSource {
         $this->sortRules($rules);
 
         $results = [];
+        $rgctx = new ExternalContext();
 
         foreach ($data as $d) {
             $ctx = new Context($d);
@@ -132,13 +134,13 @@ class DataSource implements IDataSource {
 
             foreach ($rules as $rule) {
                 if ($rule->getDatatype() == $datatype) {
-                    $rule->execute(DataSource::createRuleContext($rule, $ctx));
+                    $rule->execute($rgctx->wrap(new RuleContext($rule, $ctx)));
                 }
             }
 
             $data = $ctx->getData();
             if ($data != null) {
-                $results[] = $data;
+                $results[] = array_merge($rgctx->getGroupData(), $data);
             }
         }
 
@@ -161,10 +163,6 @@ class DataSource implements IDataSource {
 
         //var_dump($rules);
         return $rules;
-    }
-
-    private static function createRuleContext($rule, $ctx) {
-        return new \Delphinium\Blade\Classes\Data\RuleContext($rule, $ctx);
     }
 
     private static function createGetModulesRequest($id = null) {

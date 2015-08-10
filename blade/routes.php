@@ -54,7 +54,7 @@ Route::get($v1prefix . 'courses/{course_id}/assignments/{assignment_id}/submissi
     return $source->getSubmissions($assignment_id, \Input::all());
 });
 
-Route::get($v1prefix . 'courses/{course_id}/analytics/users/assignments', function($course_id){
+Route::get($v1prefix . 'courses/{course_id}/analytics/assignments', function($course_id){
     $source = init($course_id);
     return $source->getUserAssignmentAnalytics(\Input::all());
 });

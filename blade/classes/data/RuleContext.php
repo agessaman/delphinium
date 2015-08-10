@@ -29,9 +29,10 @@ class RuleContext implements IContext {
         if (isset($this->unset[$name])) {
             return null;
         }
-        
-        $value = $this->rule->getVariableDefaultValue($name);
-        return (isset($value)) ? $value : $this->context->offsetGet($name);
+
+        $value = $this->context->offsetGet($name);
+        return (isset($value)) ? $value :
+                $value = $this->rule->getVariableDefaultValue($name);
     }
 
     public function offsetExists($offset) {

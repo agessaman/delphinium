@@ -15,26 +15,26 @@ use Delphinium\Blade\Classes\Rules\IContext;
  */
 class AssignAction implements Action {
 
-    protected $variable;
+    protected $lvariable;
     protected $value;
 
     public function __construct(Variable $var, Variable $value) {
-        $this->variable = $var;
+        $this->lvariable = $var;
         $this->value = $value;
     }
 
     public function execute(IContext $context) {
-        $context[$this->variable->getName()] = $this->value->prepareValue($context)->getValue();
+        $context[$this->lvariable->getName()] = $this->value->prepareValue($context)->getValue();
     }
 
     public function matches(Model $model) {
-        return $this->variable->getName() === $model->variable_name &&
+        return $this->lvariable->getName() === $model->variable_name &&
                 $this->value->matches($model->variable);
     }
 
     public function save(Model $parent, Model $parent_rule, $order) {
         $model = new ActionModel([
-            'variable_name' => $this->variable->getName(),
+            'variable_name' => $this->lvariable->getName(),
             'order' => $order]);
         $model->rule()->associate($parent);
         $model->save();
