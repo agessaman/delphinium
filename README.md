@@ -94,7 +94,7 @@ You need to go to the octoberCms backend and install the plugin October.Drivers
 
 ## Enabling development mode
 
-1. Go to The Canvas website (uvu.instructure.com). Go to the DEV_MGMT course. From the left navigation menu select "Settings". In the new page select "Student View" from the right hand menu. Now select “Guzzle” from the left menu. Click “Accept” (or log in, or whatever) when you get the message.
+1. Go to The Canvas website (uvu.instructure.com). Go to the DEV_MGMT course and select “Guzzle” from the left menu. Click “Log in" when you get the message. Now from the left navigation menu select "Settings". In the new page select "Student View" from the right hand menu. Go back to the Guzzle page.
 2. Copy your userId, Token, and everything else you see on the page somewhere safe.
 3. Update your app with the latest code from GitHub.
 4. Run the following command from your cmd line: 
