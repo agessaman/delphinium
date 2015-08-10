@@ -588,8 +588,6 @@ function createChart(iris)
         //if the natural x or y positions make it so the box goes outside of "margins" then choose a different x/y position
         var tipWidth = parseInt(tooltip.style("width"), 10);
         var tipHeight = parseInt(tooltip.style("height"), 10);
-//        var docWidth = parseInt(window.innerWidth) - 30; ///-30 to account for the right scrolling bar
-//        var docHeight = parseInt(window.innerHeight);
         var body = document.body,
             html = document.documentElement;
 
@@ -600,21 +598,18 @@ function createChart(iris)
         var docWidth = parseInt(window.innerWidth||document.documentElement.clientWidth||document.body.clientWidth||0) - 30; ///-30 to account for the right scrolling bar
         var docHeight = parseInt(height);
 
-        var dom = document.getElementById("wrapper"+iris.filter);
-        var x = parseInt((d3.mouse(dom)[0]) + 20); 
-        var y = parseInt((d3.mouse(dom)[1]) + 60);
+        var x = parseInt((d3.mouse(body)[0]) + 20); 
+        var y = parseInt((d3.mouse(body)[1]));
          
         //when running into the right frame
         //only do this if the entire document width isn't smaller than the tooltip width
         if ((x + tipWidth) > docWidth)
-        {
-            //need to scroll left;
+        {//need to scroll left;
             x = x - ((x + tipWidth) - docWidth);
         }
 
         if (docHeight > tipHeight)
-        {
-        //when running into the bottom frame
+        {//when running into the bottom frame
         //only do this if the entire document height isn't smaller than the tooltip height
             var avaHeight = docHeight - y;
             if ((avaHeight) < (tipHeight / 2))
@@ -622,14 +617,6 @@ function createChart(iris)
                 if (y - tipHeight > 0)
                 {
                     y = y - tipHeight - 50;
-                }
-            }
-            else
-            {
-                //when user has scrolled down too much the tooltip shouldn't show up at the top
-                if(docHeight>visibleHeight)
-                {//scroll down
-                    y = y+yOffset;
                 }
             }
         }
@@ -729,7 +716,7 @@ function createChart(iris)
                         var ob = moduleStates.filter(function (ob)
                         {
                             var id = parseInt(d.module_id);
-                            if (ob.moduleId === id)
+                            if (ob.module_id === id)
                             {
                                 return ob;
                             }
@@ -800,7 +787,7 @@ function resetTooltipContent()
 
 function processModuleStates(states,textStatus, jqXHR, stateColors)
 {
-    tempStates = states;
+    moduleStates = states;
     tempModData = graphData.children;
     for (var i = 0; i <= states.length - 1; i++)
     {
@@ -910,7 +897,7 @@ function modalBoxShow(content) {
         $("#tooltip").animate({
             left: x,
             top: y
-        }, 500);
+        }, 300);
     }
 
     d3.select("#divInnerTooltip")
