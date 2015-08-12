@@ -559,6 +559,6 @@ class Variable extends BaseVariable implements \ArrayAccess
     }
     
     public function assign($variable) {
-        return new \Delphinium\Blade\Classes\Rules\AssignAction($this, $this->asVariable($variable));
+        return new \Delphinium\Blade\Classes\Rules\Action\AssignAction($this, $this->asVariable($variable));
     }
 }

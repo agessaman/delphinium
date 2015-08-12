@@ -184,4 +184,12 @@ class RuleBuilder implements \ArrayAccess
 
         throw new \LogicException(sprintf('Unknown operator: "%s"', $name));
     }
+    
+    public function excludeResult() {
+        return new \Delphinium\Blade\Classes\Rules\Action\FilterAction(true);
+    }
+    
+    public function includeResult() {
+        return new \Delphinium\Blade\Classes\Rules\Action\FilterAction(false);
+    }
 }

@@ -123,7 +123,8 @@ class Variable implements VariableOperand, ISavable {
         $parent_rule->variables()->save($var);
     }
 
-    public function matches(VariableModel $model) {
+    public function matches(Model $model) {
+        if (!($model instanceof VariableModel)) return false;
         $exists = $model->name == $this->name;
         $child = $model->getChild();
         if (isset($child)) {

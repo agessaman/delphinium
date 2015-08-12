@@ -52,5 +52,9 @@ interface IContext extends \ArrayAccess {
      */
     public function keys();
 
+    public function setExcluded($excluded);
+    
+    public function isExcluded();
+    
     public function getData();
 }

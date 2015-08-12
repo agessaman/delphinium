@@ -30,6 +30,8 @@ class Rule implements IPersistent {
     private $datatype;
     protected $dbid; // database id
     protected $model;
+    private $whitelist; // whether this rule is a whitelisting rule
+    private $course_id;
 
     /**
      * Rule constructor.
@@ -46,6 +48,10 @@ class Rule implements IPersistent {
         if ($actions == null) {
             $this->actions = [];
         }
+        
+        $this->disallowMultipleFilterActions();
+        
+        $this->whitelist = $this->isWhitelistRule();
     }
 
     /**
@@ -88,6 +94,7 @@ class Rule implements IPersistent {
         return $this->datatype;
     }
 
+    // TODO: add saving of course id
     private function save() {
         $model = new RuleModel(
                 ['name' => $this->name,
@@ -143,6 +150,7 @@ class Rule implements IPersistent {
 
     private function actionsMatch(Model $m) {
         $a = $this->actions;
+        
         $b = $m->getActions();
 
         if (count($a) != count($b)) {
@@ -180,4 +188,36 @@ class Rule implements IPersistent {
         }
         return [];
     }
+    
+    public function isWhitelistRule() {
+        if ($this->whitelist == true) return true;
+        
+        foreach ($this->actions as $action) {
+            if ($action->isWhitelistAction()) {
+                $this->whitelist = true;
+                return true;
+            }
+        }
+    }
+    
+    private function disallowMultipleFilterActions() {
+        $count = 0;
+        foreach($this->actions as $action) {
+            if ($action->isWhitelistAction() || $action->isBlacklistAction()) {
+                $count++;
+            }
+        }
+        
+        if ($count > 1) {
+            throw new \InvalidArgumentException('A rule may not have more than one filtering action');
+        }
+    }
+//    
+//    public function setCourseId($id) {
+//        $this->course_id = $id;
+//    }
+//    
+//    public function getCourseId() {
+//        return $this->course_id;
+//    }
 }

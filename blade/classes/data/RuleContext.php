@@ -20,7 +20,7 @@ class RuleContext implements IContext {
     private $values = [];
     private $unset = [];
 
-    public function __construct(Rule $rule, $context) {
+    public function __construct(Rule $rule, IContext $context) {
         $this->rule = $rule;
         $this->context = $context;
     }
@@ -29,9 +29,10 @@ class RuleContext implements IContext {
         if (isset($this->unset[$name])) {
             return null;
         }
-        
-        $value = $this->rule->getVariableDefaultValue($name);
-        return (isset($value)) ? $value : $this->context->offsetGet($name);
+
+        $value = $this->context->offsetGet($name);
+        return (isset($value)) ? $value :
+                $value = $this->rule->getVariableDefaultValue($name);
     }
 
     public function offsetExists($offset) {
@@ -67,4 +68,13 @@ class RuleContext implements IContext {
     public function getData() {
         return $this->context->getData();
     }
+
+    public function isExcluded() {
+        return $this->context->isExcluded();
+    }
+
+    public function setExcluded($excluded) {
+        $this->context->setExcluded($excluded);
+    }
+
 }
