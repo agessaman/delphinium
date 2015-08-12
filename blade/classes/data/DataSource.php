@@ -140,10 +140,11 @@ class DataSource implements IDataSource {
 
             $data = $ctx->getData();
             if ($data != null) {
-                $results[] = array_merge($rgctx->getGroupData(), $data);
+                $results[] = $data;
             }
         }
 
+        $results = array_merge($rgctx->getGroupData(), $results);
         return $this->processResults($results);
     }
 
