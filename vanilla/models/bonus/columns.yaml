@@ -1,0 +1,13 @@
+# ===================================
+#  List Column Definitions
+# ===================================
+
+columns:
+     
+    course_id:
+        label: Course Id
+        searchable: true
+        
+    name:
+        label: Name
+        searchable: true

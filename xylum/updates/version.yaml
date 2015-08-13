@@ -1,0 +1,5 @@
+1.0.1: 
+    - First version of Xylum
+    - create_component_types_table.php
+    - create_component_instances_table.php
+    - create_component_rules_table.php
