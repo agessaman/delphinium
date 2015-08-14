@@ -1,6 +1,7 @@
 <?php namespace Delphinium\Xylum\Components;
 
 use Cms\Classes\ComponentBase;
+use Delphinium\Xylum\Models\ComponentInstance;
 
 class Manager extends ComponentBase
 {
@@ -13,9 +14,16 @@ class Manager extends ComponentBase
         ];
     }
 
-    public function defineProperties()
+    public function onRun() {
+        $this->addJs("/plugins/delphinium/xylum/assets/javascript/angular.min.js");
+        $this->addJs("/plugins/delphinium/xylum/assets/javascript/manager.js");
+        $this->addCss('/plugins/delphinium/stem/assets/css/bootstrap.min.css');
+        $this->prepareData();
+    }
+    
+    private function prepareData()
     {
-        return [];
+        $this->page['allComponents'] = ComponentInstance::all();
     }
 
 }

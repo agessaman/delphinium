@@ -17,10 +17,16 @@ class Plugin extends PluginBase
     {
         return [
             'name'        => 'Xylum',
-            'description' => 'No description provided yet...',
+            'description' => 'Rule Manager',
             'author'      => 'Delphinium',
             'icon'        => 'icon-leaf'
         ];
     }
 
+    public function registerComponents()
+    {
+        return [
+            '\Delphinium\Xylum\Components\Manager' => 'manager'
+        ];
+    }
 }
