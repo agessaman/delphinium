@@ -26,31 +26,30 @@ class Variable extends Model implements IRuleComponent {
     public $morphTo = [
         'parent_model' => []
     ];
-    public $morphOne = [
-        'variable' => ['\Delphinium\Blade\Models\Variable', 'name' => 'parent_model'],
-        'operator' => ['\Delphinium\Blade\Models\Operator', 'name' => 'parent_model']
-    ];
+    
     public $belongsTo = [
         'rule' => ['\Delphinium\Blade\Models\Rule']
     ];
-
-    public function getChild() {
-        if (isset($this->variable)) return $this->variable;
-        if (isset($this->operator)) return $this->operator;
-        return null;
+    
+    public function operator() {
+        return $this->morphOne('\Delphinium\Blade\Models\Operator', 'parent_model');
+    }
+    
+    public function variable() {
+        return $this->morphOne('\Delphinium\Blade\Models\Variable', 'parent_model');
     }
 
-    public function getTree() {
-        $result = (string) $this . "\n";
-        $child = $this->getChild();
-        if($child != null) {
-            $result .= $child->getTree();
-        }
-        return $result;
+    public function getChild() {
+        $op = $this->operator;
+        if($op) return $op;
+        $var = $this->variable;
+        if($var) return $var;
+        return null;
     }
 
     public function toExecutable() {
         $child = $this->getChild();
+        
         if (isset($child)) {
             return new RulerVariable($this->name, $child->toExecutable());
         }
