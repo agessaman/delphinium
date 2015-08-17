@@ -39,7 +39,7 @@ class TestRoots extends ComponentBase
     {  
         $this->roots = new Roots();
 //        $this->refreshCache();
-        $this->test();
+//        $this->test();
         
 //        Cache::flush();
 //        $this->testBasicModulesRequest();
@@ -72,6 +72,7 @@ class TestRoots extends ComponentBase
 //        $this->testStudentAnalyticsAssignmentData();
 //        $this->testGetCourse();
 //        $this->testGetAccount();
+        $this->testGetEnrollments();
     }
     
     private function testBasicModulesRequest()
@@ -527,6 +528,11 @@ class TestRoots extends ComponentBase
         echo json_encode($res);
     }
 
+    public function testGetEnrollments()
+    {
+        $res = $this->roots->getEnrollments();
+        echo json_encode($res);
+    }
     private function convertToUTC()
     {
         $date = new DateTime("now", new \DateTimeZone('America/Denver'));
@@ -536,6 +542,7 @@ class TestRoots extends ComponentBase
         $utc_date = $date->setTimezone( $UTC );
         echo json_encode($utc_date);
     }
+    
 }
 
 

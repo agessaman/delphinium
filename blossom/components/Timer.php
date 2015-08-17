@@ -2,6 +2,8 @@
 
 use Cms\Classes\ComponentBase;
 use Delphinium\Roots\Roots;
+use \DateTime;
+use \DateInterval;
 
 class Timer extends ComponentBase
 {
@@ -26,13 +28,30 @@ class Timer extends ComponentBase
         $this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
         $this->addCss("/plugins/delphinium/blossom/assets/css/timer.css");
 
-        $this->roots = new Roots();
-        $res = $this->roots->getCourse();
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $courseId = $_SESSION['courseID'];
         
-        $start = $res->start_at;
-        $end = $res->end_at;
-        $this->page['start'] = $start;
-        $this->page['end'] = $end;
+        $this->roots = new Roots();
+        $enrollments = $this->roots->getEnrollments();
+        foreach($enrollments as $course)
+        {
+            if ($course->course_id==$courseId)
+            {
+                $res = $course;
+                break;
+            }
+        }
+        
+        $end = new DateTime($res->created_at);
+        $end->add(new DateInterval('P60D'));
+        
+        $this->page['start'] = $res->created_at;
+        $this->page['end'] = $end->format('c');
+        
+        
     
     }
 
