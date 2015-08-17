@@ -5,7 +5,8 @@
 fields:
     id:
         label: ID
-        disabled: true
+        attributes:
+            disabled: true
 
     Name:
         label: Name
