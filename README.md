@@ -25,13 +25,8 @@
   5. Go to the Administrator section and setup your admin information.
     * **Do not forget this!** There's no way to retrieve your admin login information if you lose it.
   6. Finish the installation then try going to `/delphinium/backend` and login with your admin account to make sure everything is setup.
-  7. Now go to `/delphinium/plugins` and clone the repository
-
-    ```bash
-    cd /path/to/delphinium/plugins
-    git clone https://github.com/ProjectDelphinium/delphinium.git
-    ```
-  8. After that, you'll need to install the plugin. Open a command line and do the following:
+  7. Now go to [this Url](https://www.youtube.com/watch?v=V0c8cKe-heI) and follow the instructions on how to create a fork.  You'll want to create the following directory `/delphinium/plugins` and create your fork here.
+  8. After that, you'll need to install all the plugins. Open a command line and do the following:
 
     ```bash
     cd /path/to/delphinium
@@ -94,7 +89,7 @@ You need to go to the octoberCms backend and install the plugin October.Drivers
 
 ## Enabling development mode
 
-1. Go to The Canvas website (uvu.instructure.com). Go to the DEV_MGMT course. From the left navigation menu select "Settings". In the new page select "Student View" from the right hand menu. Now select “Guzzle” from the left menu. Click “Accept” (or log in, or whatever) when you get the message.
+1. Go to The Canvas website (uvu.instructure.com). Go to the DEV_MGMT course and select “Guzzle” from the left menu. Click “Log in" when you get the message. Now from the left navigation menu select "Settings". In the new page select "Student View" from the right hand menu. Go back to the Guzzle page.
 2. Copy your userId, Token, and everything else you see on the page somewhere safe.
 3. Update your app with the latest code from GitHub.
 4. Run the following command from your cmd line: 

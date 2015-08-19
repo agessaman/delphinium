@@ -605,7 +605,31 @@ class Roots
            throw new \Exception("Invalid LMS");  
         }
     }
-          
+     
+    public function getEnrollments()
+    {
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $lms = strtoupper($_SESSION['lms']);
+        if(Lms::isValidValue($lms))
+        {
+            switch ($lms)
+            {
+                case (Lms::CANVAS):
+                    $canvasHelper = new CanvasHelper();
+                    return json_decode($canvasHelper->getEnrollments());
+                default:
+                    $canvasHelper = new CanvasHelper();
+                    return json_decode($canvasHelper->getEnrollments());
+            }
+        }
+        else
+        {
+           throw new \Exception("Invalid LMS");  
+        }
+    }
     public function getCourse()
     {
         if(!isset($_SESSION)) 

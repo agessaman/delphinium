@@ -593,13 +593,13 @@ function createChart(iris)
 
         var height = Math.max( body.scrollHeight, body.offsetHeight, 
                                html.clientHeight, html.scrollHeight, html.offsetHeight );
-        var visibleHeight = html.clientHeight;
-        var yOffset = window.pageYOffset;
+//        var visibleHeight = html.clientHeight;
+//        var yOffset = window.pageYOffset;
         var docWidth = parseInt(window.innerWidth||document.documentElement.clientWidth||document.body.clientWidth||0) - 30; ///-30 to account for the right scrolling bar
         var docHeight = parseInt(height);
 
         var x = parseInt((d3.mouse(body)[0]) + 20); 
-        var y = parseInt((d3.mouse(body)[1]));
+        var y = parseInt((d3.mouse(body)[1]) + 20);
          
         //when running into the right frame
         //only do this if the entire document width isn't smaller than the tooltip width
@@ -611,7 +611,8 @@ function createChart(iris)
         if (docHeight > tipHeight)
         {//when running into the bottom frame
         //only do this if the entire document height isn't smaller than the tooltip height
-            var avaHeight = docHeight - y;
+            var visibleHeight = html.clientHeight;
+            var avaHeight = visibleHeight - y;
             if ((avaHeight) < (tipHeight / 2))
             {
                 if (y - tipHeight > 0)
@@ -889,7 +890,7 @@ function modalBoxShow(content) {
     if (avaHeight < tipHeight)
     {
         slideTooltip = true;
-        y = y-(tipHeight-(docHeight-y));
+        y = y-(tipHeight-avaHeight);
     }
 
     if (slideTooltip)
