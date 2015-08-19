@@ -25,13 +25,8 @@
   5. Go to the Administrator section and setup your admin information.
     * **Do not forget this!** There's no way to retrieve your admin login information if you lose it.
   6. Finish the installation then try going to `/delphinium/backend` and login with your admin account to make sure everything is setup.
-  7. Now go to `/delphinium/plugins` and clone the repository
-
-    ```bash
-    cd /path/to/delphinium/plugins
-    git clone https://github.com/ProjectDelphinium/delphinium.git
-    ```
-  8. After that, you'll need to install the plugin. Open a command line and do the following:
+  7. Now go to [this Url](https://www.youtube.com/watch?v=V0c8cKe-heI) and create a fork of our project. You'll want to create the following directory `/delphinium/plugins` and create your fork here.
+  8. After that, you'll need to install all the plugins. Open a command line and do the following:
 
     ```bash
     cd /path/to/delphinium
