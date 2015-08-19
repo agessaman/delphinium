@@ -35,22 +35,33 @@ class Timer extends ComponentBase
         $courseId = $_SESSION['courseID'];
         
         $this->roots = new Roots();
-        $enrollments = $this->roots->getEnrollments();
-        foreach($enrollments as $course)
-        {
-            if ($course->course_id==$courseId)
+        
+         try {
+            $enrollments = $this->roots->getEnrollments();
+            foreach($enrollments as $course)
             {
-                $res = $course;
-                break;
+                if ($course->course_id==$courseId)
+                {
+                    $res = $course;
+                    break;
+                }
             }
+
+            $end = new DateTime($res->created_at);
+            $end->add(new DateInterval('P60D'));
+
+            $this->page['start'] = $res->created_at;
+            $this->page['end'] = $end->format('c');
+
+        } 
+        catch (\GuzzleHttp\Exception\ClientException $e) 
+        {
+            $end = new DateTime("now");
+            $this->page['start'] = $end->format('c');
+            $this->page['end'] = $end->format('c');
+            echo "In order for the 'Timer' app to run properly you must be a student or you must go in 'Student View'";
+            return;
         }
-        
-        $end = new DateTime($res->created_at);
-        $end->add(new DateInterval('P60D'));
-        
-        $this->page['start'] = $res->created_at;
-        $this->page['end'] = $end->format('c');
-        
         
     
     }

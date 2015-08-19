@@ -69,13 +69,17 @@ function drawTimer(){
     }
      
     function updateArc(arc, value, target, label, labels) {
-        if (value == target)
+        if (value === target)
             value = 0;
-        
-        arc[0].attr("d", arc[2].startAngle((target - value) * pi2 / target));
-        arc[1].attr("d", arc[2].startAngle((target - value) * pi2 / target));
+        var arcVal = pi2;
+        if(target!==0)//don't divide by zero
+        {
+            arcVal = ((target - value) * pi2 / target);
+        }
+        arc[0].attr("d", arc[2].startAngle(arcVal));
+        arc[1].attr("d", arc[2].startAngle(arcVal));
         arc[3].text(value);
-        if (value!=1) 
+        if (value!==1) 
             arc[4].text(labels);
         else
             arc[4].text(label);
@@ -126,6 +130,11 @@ function drawTimer(){
             if (rMinutes < 0)
                 rMinutes = 0;
             
+            if((rDays===0) && (rHours ===0) && (rMinutes ===0))
+            {
+                clearInterval(interval);
+            }
+            
             updateArc(day, rDays, remainingDays(start, end), "DAY", "DAYS");
             updateArc(hour, rHours, 24, "HR", "HRS");
             updateArc(minute, rMinutes, 60, "MIN", "MIN");
@@ -152,7 +161,7 @@ function drawTimer(){
             }
         }
                             
-        setInterval(updateClock, 1000);
+        var interval = setInterval(updateClock, 1000);
         
     }
 
