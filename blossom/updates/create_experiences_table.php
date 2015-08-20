@@ -14,13 +14,17 @@ class CreateExperiencesTable extends Migration
             {
                 $table->engine = 'InnoDB';
                 $table->increments('id');
-                $table->string('Name');
-                $table->string('Maximum');
-                $table->string('Milestones');
-                $table->string('StartDate');
-                $table->string('EndDate');
-                $table->string('Animate');
-                $table->string('Size');
+                $table->string('name');
+                $table->string('total_points');
+                $table->integer('num_milestones');
+                $table->dateTime('start_date');
+                $table->dateTime('end_date');
+                $table->integer('bonus_per_day');
+                $table->integer('penalty_per_day');
+                $table->integer('bonus_days');
+                $table->integer('penalty_days');
+                $table->boolean('animate');
+                $table->integer('size');
                 $table->timestamps();
             });
         }

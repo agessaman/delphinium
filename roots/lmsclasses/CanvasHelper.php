@@ -1315,7 +1315,7 @@ class CanvasHelper
         }
         else
         {
-            return $submission;
+            return $submission->toArray();
         }
     }
     

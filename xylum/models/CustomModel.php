@@ -17,7 +17,7 @@ class CustomModel extends OctoberModel {
         }
         $data = null;//The parent model doesn't have a type field, so we need to clear this field.
         $componentInstance->data = json_encode($this->attributes);
-        $componentInstance->course_id = $this->attributes['course_id'];
+        if(isset($this->attributes['course_id'])){$componentInstance->course_id = $this->attributes['course_id'];}
         $componentInstance->save();
 
         return parent::save($data, $sessionKey);

@@ -3,5 +3,8 @@
     - create_competencies_table.php
     - create_bonuses_table.php
     - create_experiences_table.php
+    - create_milestones_table.php
+    - create_experiences_rules.php
     - create_grades_table.php
     - create_leaderboards_table.php
+    

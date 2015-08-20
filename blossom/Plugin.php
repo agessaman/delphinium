@@ -33,13 +33,14 @@ class Plugin extends PluginBase
     {
         return [
             '\Delphinium\Blossom\Components\Grade' => 'grade',
-			'\Delphinium\Blossom\Components\Bonus' => 'bonus',
+            '\Delphinium\Blossom\Components\Bonus' => 'bonus',
             '\Delphinium\Blossom\Components\Experience' => 'experience',
             '\Delphinium\Blossom\Components\Leaderboard' => 'leaderboard',
             '\Delphinium\Blossom\Components\Competencies' => 'competencies',
             '\Delphinium\Blossom\Components\StudentsGraph' => 'studentsgraph',
             '\Delphinium\Blossom\Components\Timer' => 'timer',
             '\Delphinium\Blossom\Components\Progress' => 'progress',
+            '\Delphinium\Blossom\Components\ExperienceManager' => 'experiencemanager'
         ];
     }
 	

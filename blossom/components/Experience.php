@@ -60,8 +60,8 @@ class Experience extends ComponentBase
     
     public function onRun()
     {
-        $this->addJs("/plugins/delphinium/blossom/assets/javascript/experience.js");
         $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
+        $this->addJs("/plugins/delphinium/blossom/assets/javascript/experience.js");
         $this->addCss("/plugins/delphinium/blossom/assets/css/experience.css");
         $this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
         $this->addCss("/plugins/delphinium/blossom/assets/css/font-awesome.min.css");
