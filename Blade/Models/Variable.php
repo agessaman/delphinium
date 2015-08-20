@@ -26,34 +26,41 @@ class Variable extends Model implements IRuleComponent {
     public $morphTo = [
         'parent_model' => []
     ];
-    
     public $belongsTo = [
-        'rule' => ['\Delphinium\Blade\Models\Rule']
+        'rule' => ['\Delphinium\Blade\Models\Rule'],
     ];
-    
+
+    public function aref_parent() {
+        return $this->belongsTo('\Delphinium\Blade\Models\Variable', 'aref_parent_id');
+    }
+
+    public function aref_children() {
+        return $this->hasMany('\Delphinium\Blade\Models\Variable', 'aref_parent_id');
+    }
+
     public function operator() {
         return $this->morphOne('\Delphinium\Blade\Models\Operator', 'parent_model');
     }
-    
+
     public function variable() {
         return $this->morphOne('\Delphinium\Blade\Models\Variable', 'parent_model');
     }
 
-    public function getChild() {
-        $op = $this->operator;
-        if($op) return $op;
-        $var = $this->variable;
-        if($var) return $var;
-        return null;
-    }
-
     public function toExecutable() {
-        $child = $this->getChild();
-        
-        if (isset($child)) {
-            return new RulerVariable($this->name, $child->toExecutable());
+        $op = $this->operator;
+
+        if (isset($op)) {
+            return new RulerVariable($this->name, $op->toExecutable());
         }
-        return new RulerVariable($this->name, $this->getDefaultValue());
+
+        $var = new RulerVariable($this->name, $this->getDefaultValue());
+
+        $parentmodel = $this->aref_parent;
+        if (isset($parentmodel)) {
+            $parentmodel->toExecutable()->addArefChild($var);
+        }
+
+        return $var;
     }
 
     public function getDefaultValue() {
@@ -64,7 +71,7 @@ class Variable extends Model implements IRuleComponent {
         settype($dv, $dt);
         return $dv;
     }
-    
+
     public function delete() {
         $c = $this->getChild();
         if (isset($c)) {

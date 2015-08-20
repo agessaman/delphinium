@@ -68,7 +68,7 @@ abstract class Operator implements ISavable {
         $operands = $this->getOperands();
 
         for ($i = 0; $i < count($operands); $i++) {
-            $child = $operands[$i]->save($op, $parent_rule, $i);
+            $operands[$i]->save($op, $parent_rule, $i);
         }
         
         $parent->operator()->save($op);

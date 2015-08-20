@@ -19,6 +19,13 @@ use Delphinium\Blade\Classes\Rules\Rule;
 class DataSource implements IDataSource {
 
     private $prettyprint;
+    
+    // these are the different types you can define when creating a rule
+    const ASSIGNMENT = 'assignment';
+    const MODULE = 'module';
+    const SUBMISSION = 'submission';
+    const ASSN_GROUP = 'assignment_group';
+    const ASSN_ANALYTICS = 'assignment_analytics';
 
     public function test() {
         return $this->getModules(null);
@@ -37,7 +44,7 @@ class DataSource implements IDataSource {
     public function getAssignments($params) {
         $request = DataSource::createGetAssignmentsRequest();
         DataSource::setAssignmentParams($request, $params);
-        return $this->runRules('assignment', $this->rg($params), $this->roots->assignments($request));
+        return $this->runRules(DataSource::ASSIGNMENT, $this->rg($params), $this->roots->assignments($request));
         //var_dump($this->roots->assignments($request));
     }
 
@@ -50,7 +57,7 @@ class DataSource implements IDataSource {
     public function getModules($params) {
         $request = DataSource::createGetModulesRequest();
         DataSource::setModuleParams($request, $params);
-        return $this->runRules('module', $this->rg($params), $this->roots->modules($request)->toArray());
+        return $this->runRules(DataSource::MODULE, $this->rg($params), $this->roots->modules($request)->toArray());
     }
 
     //TODO: fix so this gets one module only
@@ -63,7 +70,7 @@ class DataSource implements IDataSource {
     public function getAssignmentGroups($params) {
         $request = DataSource::createGetAssignmentGroupsRequest();
         DataSource::setAssignmentGroupParams($request, $params);
-        return $this->runRules('assignment_group', $this->rg($params), $this->roots->assignmentGroups($request)->toArray());
+        return $this->runRules(DataSource::ASSN_GROUP, $this->rg($params), $this->roots->assignmentGroups($request)->toArray());
     }
 
 //    public function getAssignmentGroup($id, $params) {
@@ -82,12 +89,17 @@ class DataSource implements IDataSource {
     public function getSubmissions($assignment_id, $params) {
         $request = DataSource::createGetSubmissionsRequest($assignment_id);
         DataSource::setSubmissionParams($request, $params);
-        return $this->runRules('submission', $this->rg($params), $this->roots->submissions($request)->toArray());
+        return $this->runRules(DataSource::SUBMISSION, $this->rg($params), $this->roots->submissions($request)->toArray());
     }
 
     public function getUserAssignmentAnalytics($params) {
         $include_tags = isset($params['include_tags']) ? (boolean) $params['include_tags'] : false;
-        return $this->runRules('assignment_analytics', $this->rg($params), $this->roots->getAnalyticsStudentAssignmentData($include_tags));
+        $results= $this->roots->getAnalyticsStudentAssignmentData($include_tags);
+        $data = [];
+        foreach($results as $item) {
+            $data[] = (array) $item;
+        }
+        return $this->runRules(DataSource::ASSN_ANALYTICS, $this->rg($params), $data);
     }
 
     private function processResults($data) {
@@ -124,7 +136,7 @@ class DataSource implements IDataSource {
         $this->sortRules($rules);
 
         $results = [];
-        $rgctx = new ExternalContext();
+        $extctx = new ExternalContext();
 
         foreach ($data as $d) {
             $ctx = new Context($d);
@@ -134,7 +146,7 @@ class DataSource implements IDataSource {
 
             foreach ($rules as $rule) {
                 if ($rule->getDatatype() == $datatype) {
-                    $rule->execute($rgctx->wrap(new RuleContext($rule, $ctx)));
+                    $rule->execute($extctx->wrap(new RuleContext($rule, $ctx)));
                 }
             }
 
@@ -144,7 +156,7 @@ class DataSource implements IDataSource {
             }
         }
 
-        $results = array_merge($rgctx->getGroupData(), $results);
+        $results = array_merge($extctx->getGroupData(), $results);
         return $this->processResults($results);
     }
 
@@ -205,5 +217,5 @@ class DataSource implements IDataSource {
     private static function setSubmissionParams($request, $params) {
         $request->setIncludeTags(isset($params['include_tags']) ? (boolean) $params['include_tags'] : false);
     }
-
+    
 }

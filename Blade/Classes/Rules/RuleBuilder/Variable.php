@@ -48,6 +48,32 @@ class Variable extends BaseVariable implements \ArrayAccess
         parent::__construct($name, $value);
     }
 
+    public function offsetExists($offset) {
+        return isset($this->children[$offset]);
+    }
+
+    public function offsetGet($offset) {
+        if (!$this->offsetExists($offset)) {
+            $child = new Variable($this->ruleBuilder, $offset);
+            $child->parent = $this;
+            $this->addArefChild($child);
+        }
+
+        return $this->children[$offset];
+    }
+
+    public function offsetSet($offset, $value) {
+        if (!$this->offsetExists($offset)) {
+            throw new \LogicException("Variable does not exist");
+        }
+
+        $this->children[$offset]->setValue($value);
+    }
+
+    public function offsetUnset($offset) {
+        unset($this->children[$offset]);
+    }
+    
     /**
      * Get the RuleBuilder instance set on this Variable.
      *
@@ -56,73 +82,6 @@ class Variable extends BaseVariable implements \ArrayAccess
     public function getRuleBuilder()
     {
         return $this->ruleBuilder;
-    }
-
-    /**
-     * Get a VariableProperty for accessing methods, indexes and properties of
-     * the current variable.
-     *
-     * @param string $name  Property name
-     * @param mixed  $value The default VariableProperty value
-     *
-     * @return VariableProperty
-     */
-    public function getProperty($name, $value = null)
-    {
-        if (!isset($this->properties[$name])) {
-            $this->properties[$name] = new VariableProperty($this, $name, $value);
-        }
-
-        return $this->properties[$name];
-    }
-
-    /**
-     * Fluent interface method for checking whether a VariableProperty has been defined.
-     *
-     * @param string $name Property name
-     *
-     * @return bool
-     */
-    public function offsetExists($name)
-    {
-        return isset($this->properties[$name]);
-    }
-
-    /**
-     * Fluent interface method for creating or accessing VariableProperties.
-     *
-     * @see getProperty
-     *
-     * @param string $name Property name
-     *
-     * @return VariableProperty
-     */
-    public function offsetGet($name)
-    {
-        return $this->getProperty($name);
-    }
-
-    /**
-     * Fluent interface method for setting default a VariableProperty value.
-     *
-     * @see setValue
-     *
-     * @param string $name  Property name
-     * @param mixed  $value The default Variable value
-     */
-    public function offsetSet($name, $value)
-    {
-        $this->getProperty($name)->setValue($value);
-    }
-
-    /**
-     * Fluent interface method for removing a VariableProperty reference.
-     *
-     * @param string $name Property name
-     */
-    public function offsetUnset($name)
-    {
-        unset($this->properties[$name]);
     }
 
     /**

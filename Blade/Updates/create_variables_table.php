@@ -17,6 +17,7 @@ class CreateVariablesTable extends Migration
             $table->integer('parent_model_id')->unsigned()->index();
             $table->string('parent_model_type');
             $table->integer('rule_id')->unsigned()->index();
+            $table->integer('aref_parent_id')->unsigned()->index()->nullable();
             $table->string('default_value')->nullable();
             $table->string('datatype');
             $table->boolean('custom')->default(false);
