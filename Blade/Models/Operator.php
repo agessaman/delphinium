@@ -27,7 +27,7 @@ class Operator extends Model implements IRuleComponent
     ];
 
     public $morphMany = [
-        'operators' => ['\Delphinium\Blade\Models\Operator', 'name' => 'parent_model'],
+        //'operators' => ['\Delphinium\Blade\Models\Operator', 'name' => 'parent_model'],
         'variables' => ['\Delphinium\Blade\Models\Variable', 'name' => 'parent_model']
     ];
     
@@ -35,33 +35,34 @@ class Operator extends Model implements IRuleComponent
         return $this->morphMany('\Delphinium\Blade\Models\Variable', 'parent_model');
     }
     
-    function operator() {
-        return $this->morphMany('\Delphinium\Blade\Models\Operator', 'parent_model');
-    }
+    //function operator() {
+    //    return $this->morphMany('\Delphinium\Blade\Models\Operator', 'parent_model');
+    //}
 
-    public function getTree() {
-        $result = (string)$this . "\n";
-        $children = $this->getChildren();
-
-        foreach ($children as $c) {
-            $result .= $c->getTree();
-        }
-        
-        return $result;
-    }
+//    public function getTree() {
+//        $result = (string)$this . "\n";
+//        $children = $this->getChildren();
+//
+//        foreach ($children as $c) {
+//            $result .= $c->getTree();
+//        }
+//        
+//        return $result;
+//    }
     
     // returns a merged array of Operators and Variables in order given by $order field
     public function getChildren() {
-        $children = $this->merge($this->operators, $this->variables);
-        usort($children, Rule::getOrderCmp());
-        return $children;
+        return $this->variables;
+//        $children = $this->merge($this->operators, $this->variables);
+//        usort($children, Rule::getOrderCmp());
+//        return $children;
     }
     
     public function toExecutable() {
-        $rc = new ReflectionClass($this->type);
-        $op = $rc->newInstance();
-        foreach ($this->getChildren() as $c) {
-            $op->addOperand($c->toExecutable());
+        $op = new $this->type;
+        
+        foreach ($this->variables as $v) {
+            $op->addOperand($v->toExecutable());
         }
         return $op;
     }
@@ -74,15 +75,15 @@ class Operator extends Model implements IRuleComponent
         parent::delete();
     }
     
-    private function merge($a, $b) {
-        $arr = [];
-        foreach ($a as $x) {
-            array_push($arr, $x);
-        }
-
-        foreach ($b as $y) {
-            array_push($arr, $y);
-        }
-        return $arr;
-    }
+//    private function merge($a, $b) {
+//        $arr = [];
+//        foreach ($a as $x) {
+//            array_push($arr, $x);
+//        }
+//
+//        foreach ($b as $y) {
+//            array_push($arr, $y);
+//        }
+//        return $arr;
+//    }
 }
