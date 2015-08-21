@@ -73,6 +73,10 @@ class Variable implements VariableOperand, ISavable {
         $this->value = $value;
     }
 
+    // Aref is short for array reference
+    // aref chains are built using the rule builder
+    // "$rb['submission']['score']" is an example
+    // the 'submission' part is the parent, 'score' is the child
     public function addArefChild(Variable $child) {
         if (isset($value)) {
             throw new LogicException('Cannot add array-ref child to variable with a set value.');

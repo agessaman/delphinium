@@ -58,3 +58,12 @@ Route::get($v1prefix . 'courses/{course_id}/analytics/assignments', function($co
     $source = init($course_id);
     return $source->getUserAssignmentAnalytics(\Input::all());
 });
+
+// params:
+//      student_ids: comma seperated list of student-ids to get submissions for, "all" or unspecified for all
+//      assignment_ids: comma sperated list of assignments-ids, "all" or unspecified for all
+//      include_tags
+Route::get($v1prefix . 'courses/{course_id}/students/submissions', function($course_id) {
+    $source = init($course_id);
+    return $source->getMultipleSubmissions(\Input::all());
+});
