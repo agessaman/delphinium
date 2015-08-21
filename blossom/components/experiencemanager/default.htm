@@ -1,6 +1,6 @@
 <form class="form-horizontal"
-      data-request="{{ __SELF__ }}::onAdd">
-    <!--data-request-update="'{{ __SELF__ }}::list': '#result'"-->
+      data-request="{{ __SELF__ }}::onAdd"
+    data-request-update="'{{ __SELF__ }}::list': '#result'">
     
     <div class="panel panel-default">
         <div class="panel-heading">
@@ -45,13 +45,13 @@
                 </span>
             </div>
         </div>
-        <div >
-            {% partial '@list' %}
+        <div id="result">
+<!--            {% partial '@list' %}-->
         </div>
     </div>
     
-    <ul class="list-group" id="result">
-    </ul>
+<!--    <ul class="list-group" id="result">
+    </ul>-->
 </form>
 
 

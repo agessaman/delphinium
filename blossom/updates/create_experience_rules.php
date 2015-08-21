@@ -13,7 +13,13 @@ class CreateRules extends Migration {
     public function up() {
 //        $rb = new RuleBuilder;
 //
-//        $rule1 = $rb->create('allScores', 'submission', $rb['quiz_id']->notEqualTo($rb['no_quiz']), [$rb['has_quiz']->assign($rb['true'])]);
+//        $rb->create('allscores', 'submission', $rb->tautology(), [$rb['(total_score)']->assign($rb['(total_score)']->add($rb['score']))]);
+
+//        $rb['(total_score)'] = 0;
+//        $rb['score'] = 0;
+        
+        
+        
 //        $rg2 = new RuleGroup('bonusRules');
 //        $rg2->add($rule1);
 //        $rg2->saveRules();

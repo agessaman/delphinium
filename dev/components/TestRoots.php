@@ -61,10 +61,10 @@ class TestRoots extends ComponentBase
 //        $this->testSingleAssignmentGroup();
 //        
 //        $this->testGettingSingleSubmissionSingleUserSingleAssignment();
-//        $this->testGettingAllSubmissionForSingleAssignment();
+        $this->testGettingAllSubmissionForSingleAssignment();
 //        $this->testGettingMultipleSubmissionsForSingleStudent();
 //        $this->testGettingMultipleSubmissionsAllStudents();
-        $this->testGettingAllSubmissionsAllStudents();
+//        $this->testGettingAllSubmissionsAllStudents();
 //        $this->testGettingMultipleSubmissionsMultipleStudents();
 //        $this->testGettingSubmissions();
 //        $this->testFileUpload();
