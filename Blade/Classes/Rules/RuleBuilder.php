@@ -111,6 +111,14 @@ class RuleBuilder implements \ArrayAccess
     {
         return new LogicalXor(func_get_args());
     }
+    
+    public function tautology() {
+        return new Operator\Tautology();
+    }
+    
+    public function contradiction() {
+        return new Operator\Contradiction();
+    }
 
     /**
      * Check whether a Variable is already set.
