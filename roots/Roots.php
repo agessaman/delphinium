@@ -606,7 +606,7 @@ class Roots
         }
     }
      
-    public function getEnrollments()
+    public function getUserEnrollments()
     {
         if(!isset($_SESSION)) 
         { 
@@ -619,10 +619,10 @@ class Roots
             {
                 case (Lms::CANVAS):
                     $canvasHelper = new CanvasHelper();
-                    return json_decode($canvasHelper->getEnrollments());
+                    return json_decode($canvasHelper->getUserEnrollments());
                 default:
                     $canvasHelper = new CanvasHelper();
-                    return json_decode($canvasHelper->getEnrollments());
+                    return json_decode($canvasHelper->getUserEnrollments());
             }
         }
         else

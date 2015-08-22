@@ -61,7 +61,7 @@ class TestRoots extends ComponentBase
 //        $this->testSingleAssignmentGroup();
 //        
 //        $this->testGettingSingleSubmissionSingleUserSingleAssignment();
-        $this->testGettingAllSubmissionForSingleAssignment();
+//        $this->testGettingAllSubmissionForSingleAssignment();
 //        $this->testGettingMultipleSubmissionsForSingleStudent();
 //        $this->testGettingMultipleSubmissionsAllStudents();
 //        $this->testGettingAllSubmissionsAllStudents();
@@ -72,7 +72,7 @@ class TestRoots extends ComponentBase
 //        $this->testStudentAnalyticsAssignmentData();
 //        $this->testGetCourse();
 //        $this->testGetAccount();
-//        $this->testGetEnrollments();
+        $this->testGetEnrollments();
     }
     
     private function testBasicModulesRequest()
@@ -530,7 +530,7 @@ class TestRoots extends ComponentBase
 
     public function testGetEnrollments()
     {
-        $res = $this->roots->getEnrollments();
+        $res = $this->roots->getUserEnrollments();
         echo json_encode($res);
     }
     private function convertToUTC()

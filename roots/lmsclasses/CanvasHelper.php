@@ -785,7 +785,7 @@ class CanvasHelper
         return $response->getBody();
     }
     
-    public function getEnrollments()
+    public function getUserEnrollments()
     {///api/v1/users/:user_id/enrollments
         if(!isset($_SESSION)) 
         { 
@@ -794,8 +794,7 @@ class CanvasHelper
         $urlPieces= array();
         $domain = $_SESSION['domain'];
         $userId = $_SESSION['userID'];
-
-        //        GET /api/v1/courses/:course_id/files
+        
         $urlPieces[]= "https://{$domain}/api/v1/users/{$userId}/enrollments";
         $token = \Crypt::decrypt($_SESSION['userToken']);
         $urlArgs = array();
@@ -803,9 +802,11 @@ class CanvasHelper
         $urlArgs[]="access_token={$token}&per_page=5000";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+        
         $response = GuzzleHelper::getAsset($url);
         return $response->getBody();
-    }
+    } 
+        
     public function getCourse()
     {///api/v1/courses/:id
         if(!isset($_SESSION)) 

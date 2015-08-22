@@ -7,7 +7,8 @@ use \DateInterval;
 
 class Timer extends ComponentBase
 {
-
+    public $roots;
+    
     public function componentDetails()
     {
         return [
@@ -37,7 +38,7 @@ class Timer extends ComponentBase
         $this->roots = new Roots();
         
          try {
-            $enrollments = $this->roots->getEnrollments();
+            $enrollments = $this->roots->getUserEnrollments();
             foreach($enrollments as $course)
             {
                 if ($course->course_id==$courseId)
@@ -59,14 +60,10 @@ class Timer extends ComponentBase
             $end = new DateTime("now");
             $this->page['start'] = $end->format('c');
             $this->page['end'] = $end->format('c');
-            echo "In order for the 'Timer' app to run properly you must be a student or you must go in 'Student View'";
+            echo "An error has occurred. An invalid user id was provided. You must be a student to use this app, or go into 'Student View'. "
+            . "Also, make sure that an administrator has approved this application (only administrators have permissions "
+            . "to see user enrollments)";
             return;
         }
-        
-    
     }
-
-    
-        
-
 }
