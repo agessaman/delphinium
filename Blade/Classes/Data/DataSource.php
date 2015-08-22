@@ -19,17 +19,13 @@ use Delphinium\Blade\Classes\Rules\Rule;
 class DataSource implements IDataSource {
 
     private $prettyprint;
-    
+
     // these are the different types you can define when creating a rule
     const ASSIGNMENT = 'assignment';
     const MODULE = 'module';
     const SUBMISSION = 'submission';
     const ASSN_GROUP = 'assignment_group';
     const ASSN_ANALYTICS = 'assignment_analytics';
-
-    public function test() {
-        return $this->getModules(null);
-    }
 
     public function __construct($prettyprint = false) {
         $this->prettyprint = $prettyprint;
@@ -92,11 +88,26 @@ class DataSource implements IDataSource {
         return $this->runRules(DataSource::SUBMISSION, $this->rg($params), $this->roots->submissions($request)->toArray());
     }
 
+    public function getMultipleSubmissions($params) {
+        $all_students = !isset($params['student_ids']) || $params['student_ids'] == 'all';
+        $all_assignments = !isset($params['assignment_ids']) || $params['assignment_ids'] == 'all';
+        $student_ids = $all_students ? [] : explode(',', $params['student_ids']);
+        $assignment_ids = $all_assignments ? [] : explode(',', $params['assignment_ids']);
+        $multiple_students = $all_students || count($student_ids) > 1;
+        $multiple_assignments = $all_assignments || count($assignment_ids) > 1;
+
+        $request = new SubmissionsRequest(ActionType::GET, $student_ids, $all_students, $assignment_ids, $all_assignments, $multiple_students, $multiple_assignments);
+
+        DataSource::setSubmissionParams($request, $params);
+        $results = $this->roots->submissions($request);
+        return $this->runRules(DataSource::SUBMISSION, $this->rg($params), $results);
+    }
+
     public function getUserAssignmentAnalytics($params) {
         $include_tags = isset($params['include_tags']) ? (boolean) $params['include_tags'] : false;
-        $results= $this->roots->getAnalyticsStudentAssignmentData($include_tags);
+        $results = $this->roots->getAnalyticsStudentAssignmentData($include_tags);
         $data = [];
-        foreach($results as $item) {
+        foreach ($results as $item) {
             $data[] = (array) $item;
         }
         return $this->runRules(DataSource::ASSN_ANALYTICS, $this->rg($params), $data);
@@ -217,5 +228,5 @@ class DataSource implements IDataSource {
     private static function setSubmissionParams($request, $params) {
         $request->setIncludeTags(isset($params['include_tags']) ? (boolean) $params['include_tags'] : false);
     }
-    
+
 }
