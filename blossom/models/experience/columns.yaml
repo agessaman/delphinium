@@ -7,30 +7,49 @@ columns:
         label: ID
         searchable: true
 
-    Name:
+    name:
         label: Name
         searchable: true
 
-    Maximum:
-        label: Maximum
+    total_points:
+        label: Total Points
         searchable: true
 
-    Milestones:
-        label: Milestones
+    num_milestones:
+        label: No. Milestones
         searchable: true
 
-    StartDate:
-        label: StartDate
+    start_date:
+        label: Start Date
         searchable: true
 
-    EndDate:
-        label: EndDate
+    end_date:
+        label:  End Date
         searchable: true
 
-    Animate:
+
+    bonus_per_day:
+        label: Bonus per day
+        searchable: true
+
+    bonus_days:
+        label: Bonus days
+        searchable: true
+
+    penalty_per_day:
+        label: Penalty per day
+        searchable: true
+        
+    penalty_days:
+        label: Penalty days
+        searchable: true
+
+    animate:
         label: Animate
         searchable: true
 
-    Size:
+    size:
         label: Size
         searchable: true
+        
+        

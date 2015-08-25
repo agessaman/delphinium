@@ -1,7 +1,9 @@
 <?php namespace Delphinium\Blossom\Controllers;
 
+use Flash;
 use BackendMenu;
 use Backend\Classes\Controller;
+use Delphinium\Blossom\Models\Milestone as Model;
 
 /**
  * Milestone Back-end Controller
@@ -20,6 +22,27 @@ class Milestone extends Controller
     {
         parent::__construct();
 
-        BackendMenu::setContext('Delphinium.Blossom', 'blossom', 'milestone');
+        BackendMenu::setContext('Delphinium.Greenhouse', 'greenhouse', 'greenhouse');
+    }
+    
+    /**
+     * Delete 
+     */
+    public function index_onDelete()
+    {
+        if (($checkedIds = post('checked')) && is_array($checkedIds) && count($checkedIds)) {
+
+            foreach ($checkedIds as $milestoneId) {
+                if (!$milestone = Model::find($milestoneId)) continue;
+                $milestone->delete();
+            }
+
+            Flash::success("Successfully deleted");
+        }
+        else {
+            Flash::error("An error occurred when trying to delete this item");
+        }
+
+        return $this->listRefresh();
     }
 }

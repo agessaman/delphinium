@@ -890,7 +890,7 @@ function modalBoxShow(content) {
     if (avaHeight < tipHeight)
     {
         slideTooltip = true;
-        y = y-(tipHeight-avaHeight);
+        y = y-(tipHeight-avaHeight)-20;//give it a little extra room when it slides up
     }
 
     if (slideTooltip)

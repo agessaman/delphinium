@@ -13,11 +13,11 @@ function scaleExperience(){
 	var experienceHeight = 500;
 	var experienceWidth = 260;
 
-	if(experienceSize == "Small"){
+	if(experienceSize === "small"){
 		experienceWidth= experienceWidth / 2;
 		experienceHeight= experienceHeight / 2;
 		experienceView.attr('transform', "scale(.5)");
-	}else if(experienceSize == "Large"){
+	}else if(experienceSize === "large"){
 		experienceWidth= experienceWidth *1.5;
 		experienceHeight= experienceHeight *1.5;
 		experienceView.attr('transform', "scale(1.5)");
@@ -28,7 +28,7 @@ function scaleExperience(){
 
 function drawAxis(){
 
-	var encouragment = ["You can do it!", "Keep going!", "New Hire", "Trainee", "Star Employee", "Manager", "Executive", "CEO"];
+	var encouragment = milestones;
 	var bonus_penalties = [{"key": 5, "awarded": "y"}, {"key": -13, "awarded": "y"}, {"key": 25, "awarded": "y"},
 							{"key": 0, "awarded": "n"}, {"key": 5, "awarded": "n"}, {"key": 12, "awarded": "n"},
 							{"key": 34, "awarded": "n"}];
