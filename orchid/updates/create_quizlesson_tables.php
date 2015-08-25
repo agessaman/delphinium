@@ -3,12 +3,12 @@
 use Schema;
 use October\Rain\Database\Updates\Migration;
 
-class CreateQuizlessonTable extends Migration
+class CreateQuizlessonsTable extends Migration
 {
 
     public function up()
     {
-        Schema::create('delphinium_orchid_quizlesson', function($table)
+        Schema::create('delphinium_orchid_quizlessons', function($table)
         {
             $table->engine = 'InnoDB';
             $table->increments('id');
@@ -18,7 +18,7 @@ class CreateQuizlessonTable extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('delphinium_orchid_quizlesson');
+        Schema::dropIfExists('delphinium_orchid_quizlessons');
     }
 
 }
