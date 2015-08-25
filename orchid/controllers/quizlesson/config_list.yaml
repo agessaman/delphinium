@@ -3,16 +3,16 @@
 # ===================================
 
 # Model List Column configuration
-list: $/delphinium/vanilla/models/bonus/columns.yaml
+list: $/delphinium/orchid/models/quizlesson/columns.yaml
 
 # Model Class name
-modelClass: Delphinium\Vanilla\Models\Bonus
+modelClass: Delphinium\Orchid\Models\Quizlesson
 
 # List Title
-title: Manage Bonuses
+title: Manage Quizlessons
 
 # Link URL for each record
-recordUrl: delphinium/vanilla/bonus/update/:id
+recordUrl: delphinium/orchid/quizlesson/update/:id
 
 # Message to display if the list is empty
 noRecordsMessage: backend::lang.list.no_records
