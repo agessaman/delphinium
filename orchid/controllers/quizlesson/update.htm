@@ -1,13 +1,13 @@
 <?php Block::put('breadcrumb') ?>
     <ul>
-        <li><a href="<?= Backend::url('delphinium/vanilla/bonus') ?>">Bonus</a></li>
+        <li><a href="<?= Backend::url('delphinium/orchid/quizlesson') ?>">Quizlesson</a></li>
         <li><?= e($this->pageTitle) ?></li>
     </ul>
 <?php Block::endPut() ?>
 
 <?php if (!$this->fatalError): ?>
 
-    <?= Form::open(['class'=>'layout']) ?>
+    <?= Form::open(['class' => 'layout']) ?>
 
         <div class="layout-row">
             <?= $this->formRender() ?>
@@ -20,7 +20,7 @@
                     data-request="onSave"
                     data-request-data="redirect:0"
                     data-hotkey="ctrl+s, cmd+s"
-                    data-load-indicator="Saving Bonus..."
+                    data-load-indicator="Saving quizlesson..."
                     class="btn btn-primary">
                     <u>S</u>ave
                 </button>
@@ -29,7 +29,7 @@
                     data-request="onSave"
                     data-request-data="close:1"
                     data-hotkey="ctrl+enter, cmd+enter"
-                    data-load-indicator="Saving Bonus..."
+                    data-load-indicator="Saving quizlesson..."
                     class="btn btn-default">
                     Save and Close
                 </button>
@@ -37,11 +37,11 @@
                     type="button"
                     class="oc-icon-trash-o btn-icon danger pull-right"
                     data-request="onDelete"
-                    data-load-indicator="Deleting Bonus..."
-                    data-request-confirm="Do you really want to delete this bonus?">
+                    data-load-indicator="Deleting quizlesson..."
+                    data-request-confirm="Do you really want to delete this quizlesson?">
                 </button>
                 <span class="btn-text">
-                    or <a href="<?= Backend::url('delphinium/vanilla/bonus') ?>">Cancel</a>
+                    or <a href="<?= Backend::url('delphinium/orchid/quizlesson') ?>">Cancel</a>
                 </span>
             </div>
         </div>
@@ -51,6 +51,6 @@
 <?php else: ?>
 
     <p class="flash-message static error"><?= e($this->fatalError) ?></p>
-    <p><a href="<?= Backend::url('delphinium/vanilla/bonus') ?>" class="btn btn-default">Return to bonus list</a></p>
+    <p><a href="<?= Backend::url('delphinium/orchid/quizlesson') ?>" class="btn btn-default">Return to quizlesson list</a></p>
 
 <?php endif ?>

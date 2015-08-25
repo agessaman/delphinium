@@ -3,11 +3,6 @@
 # ===================================
 
 columns:
-     
-    course_id:
-        label: Course Id
-        searchable: true
-        
-    name:
-        label: Name
+    id:
+        label: ID
         searchable: true

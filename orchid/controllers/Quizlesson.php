@@ -1,12 +1,12 @@
-<?php namespace Delphinium\Vanilla\Controllers;
+<?php namespace Delphinium\Orchid\Controllers;
 
 use BackendMenu;
 use Backend\Classes\Controller;
 
 /**
- * Bonus Back-end Controller
+ * Quizlesson Back-end Controller
  */
-class Bonus extends Controller
+class Quizlesson extends Controller
 {
     public $implement = [
         'Backend.Behaviors.FormController',
