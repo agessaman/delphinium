@@ -5,4 +5,17 @@
 fields:
     id:
         label: ID
-        disabled: true
+        attributes:
+                disabled: true
+
+    name:
+        label: Name
+        comment: Enter the name of the milestone ("intern", "junior", "senior", "CEO", etc).
+        
+    points:
+        label: Points
+        comment: Enter the number of points for this milestone
+        
+    experience:
+        label: Experience
+        type: relation

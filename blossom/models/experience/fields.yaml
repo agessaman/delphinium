@@ -2,43 +2,75 @@
 #  Form Field Definitions
 # ===================================
 
-fields:
-    id:
-        label: ID
-        attributes:
-            disabled: true
+tabs:
+    fields:
+        id:
+            label: ID
+            attributes:
+                disabled: true
 
-    Name:
-        label: Name
-        span: auto
-        comment: Enter the name of this instance
+        name:
+            label: Name
+            span: auto
+            comment: Enter the name of this instance
 
-    Maximum:
-        label: Maximum
-        span: auto
-        comment: Enter the maximum a bonus can be
+        total_points:
+            label: Total Points
+            span: auto
+            comment: Enter the total points this experience will have
 
-    Milestones:
-        label: Milestones
-        span: auto
-        comment: Enter the number of milestones
+        num_milestones:
+            label: No. of Milestones
+            span: auto
+            comment: Enter the number of milestones
 
-    StartDate:
-        label: StartDate
-        span: auto
-        comment: Enter the start date
+        bonus_per_day:
+            label: Bonus per day
+            span: auto
+            comment: Enter the bonus points to be earned per day
 
-    EndDate:
-        label: EndDate
-        span: auto
-        comment: Enter the end date
+        bonus_days:
+            label: Bonus days
+            span: auto
+            comment: Enter the number of days that bonus should be added (i.e., give bonus only if user submits assignment x days before the 'due date')
 
-    Animate:
-        label: Animate
-        span: auto
-        comment: Enter if you want this component to be animated
+        penalty_per_day:
+            label: Penalty per day
+            span: auto
+            comment: Enter the penalty points to be deducted per day
 
-    Size:
-        label: Size
-        span: auto
-        comment: Enter the the size of component you want
+        penalty_days:
+            label: Penalty days
+            span: auto
+            comment: Enter the number of days that penalty should be added (i.e., give penalty for only x days after an assignment was due)
+
+        start_date:
+            label: Start Date
+            span: auto
+            type: datepicker
+            mode: date
+            comment: Enter the start date
+
+        end_date:
+            label: End Date
+            span: auto
+            type: datepicker
+            mode: date
+            comment: Enter the end date
+
+        animate:
+            label: Animate
+            span: auto
+            comment: Enter 1 if you want this component to be animated, 0 if not
+
+        size:
+            label: Size
+            span: auto
+            type: dropdown
+            options:
+                small: Small
+                medium: Medium
+                large: Large
+            comment: Enter the the size of component you want
+
+        

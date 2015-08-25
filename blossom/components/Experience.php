@@ -3,6 +3,10 @@
 use Cms\Classes\ComponentBase;
 
 use Delphinium\Blossom\Models\Experience as ExperienceModel;
+use Delphinium\Blossom\Models\Milestone;
+use Delphinium\Xylum\Models\ComponentRules;
+use Delphinium\Xylum\Models\ComponentTypes;
+use Delphinium\Blade\Classes\Data\DataSource;
 
 class Experience extends ComponentBase
 {
@@ -18,36 +22,6 @@ class Experience extends ComponentBase
     public function defineProperties()
     {
         return [
-
-            'XP' => [
-                'title'        => 'Experience Points',
-                'description'  => 'Enter Experience Points',
-                'type'         => 'string',
-                'default'      => '5800',
-                'validationPattern' => '^[0-9]+$',
-                'validationMessage' => 'The Experience points value is required and should be integer.'
-            ],
-
-            'experienceGrade' => [
-                'title'        => 'Current Grade',
-                'description'  => 'Enter Current Grade',
-                'type'         => 'string',
-                'default'      => '5968',
-            ],
-
-            'experienceBonus' => [
-                'title'        => 'Bonus',
-                'description'  => 'Enter Bonus',
-                'type'         => 'string',
-                'default'      => '200',
-            ],
-
-            'experiencePenalties' => [
-                'title'        => 'Penalties',
-                'description'  => 'Enter Penalties',
-                'type'         => 'string',
-                'default'      => '-32',
-            ],
 
             'Instance' => [
                 'title' => 'Instance',
@@ -67,28 +41,54 @@ class Experience extends ComponentBase
         $this->addCss("/plugins/delphinium/blossom/assets/css/font-awesome.min.css");
 
         $instance = ExperienceModel::find($this->property('Instance'));
-
-        $this->page['experienceXP'] = $this->property('XP');
-        $this->page['experienceBonus'] = $this->property('experienceBonus');
-        $this->page['experiencePenalties'] = $this->property('experiencePenalties');
-        $this->page['maxXP'] = $instance->Maximum;
-        $this->page['milestones'] = $instance->Milestones;
-        $this->page['startDate'] = $instance->StartDate;
-        $this->page['endDate'] = $instance->EndDate;
-        $this->page['experienceGrade'] = $this->property('experienceGrade');
-        $this->page['experienceSize'] = $instance->Size;
-        $this->page['experienceAnimate'] = $instance->Animate;
+        $milestones = Milestone::orderBy('points','asc')->where('experience_id','=',$instance->id)->get();
+        $milestoneArr = array();
+        foreach($milestones as $item)
+        {
+            $milestoneArr[] = $item->name;
+        }
+        
+        $this->page['encouragement'] = json_encode($milestoneArr);
+        $this->page['experienceXP'] = 300;//current points
+        $this->page['experienceBonus'] = 40;
+        $this->page['experiencePenalties'] = 10;
+        $this->page['maxXP'] = $instance->total_points;//total points for this experience
+        $this->page['milestones'] = $instance->num_milestones;
+        $this->page['startDate'] = $instance->start_date;
+        $this->page['endDate'] = $instance->end_date;
+        $this->page['experienceGrade'] = 500;//?
+        $this->page['experienceSize'] = $instance->size;
+        $this->page['experienceAnimate'] = $instance->animate;
+        
+        $cType = ComponentTypes::where(array('type' => 'experience'))->first();
+        $componentRules = ComponentRules::where(array('component_id' => $cType->id));
+        
+        //run rules
+        $source = new DataSource(false);
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $userId = $_SESSION['userID'];
+        $params = array('student_ids'=>$userId,
+            '$all_assignments'=>true,
+            'fresh_data'=>0,
+            'prettyprint'=>1,
+            'rg'=>'submissionstest');
+        echo json_encode($source->getMultipleSubmissions($params));
+        //calculated variables
+        $this->page['milestone_status']= array(); 
     }
 
     public function getInstanceOptions()
     {
-        $instances = ExperienceModel::where("id","!=","0")->get();
+        $instances = ExperienceModel::all();
 
         $array_dropdown = ['0'=>'- select Experience Instance - '];
 
         foreach ($instances as $instance)
         {
-            $array_dropdown[$instance->id] = $instance->Name;
+            $array_dropdown[$instance->id] = $instance->name;
         }
 
         return $array_dropdown;
