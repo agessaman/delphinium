@@ -8,6 +8,7 @@ use Delphinium\Roots\Roots;
 use Delphinium\Roots\Requestobjects\SubmissionsRequest;
 use Delphinium\Roots\Requestobjects\ModulesRequest;
 use Delphinium\Roots\Requestobjects\AssignmentsRequest;
+use Delphinium\Roots\Requestobjects\QuizRequest;
 use Delphinium\Roots\Requestobjects\AssignmentGroupsRequest;
 use Delphinium\Roots\Enums\ActionType;
 use Delphinium\Roots\Enums\ModuleItemType;
@@ -41,7 +42,7 @@ class TestRoots extends ComponentBase
     {  
         $this->roots = new Roots();
 //        $this->refreshCache();
-        $this->test();
+//        $this->test();
         
 //        Cache::flush();
 //        $this->testBasicModulesRequest();
@@ -75,6 +76,10 @@ class TestRoots extends ComponentBase
 //        $this->testGetCourse();
 //        $this->testGetAccount();
 //        $this->testGetEnrollments();
+//        $this->testGetQuiz();
+        $this->testGetAllQuizzes();
+//        $this->testGetPages();
+        
     }
     
     private function testBasicModulesRequest()
@@ -552,6 +557,28 @@ class TestRoots extends ComponentBase
         $res = $this->roots->getUserEnrollments();
         echo json_encode($res);
     }
+    
+    public function testGetAllQuizzes()
+    {
+        $req = new QuizRequest(ActionType::GET, null, $fresh_data = true);
+        echo json_encode($this->roots->Quizzes($req));
+    }
+    public function testGetQuiz()
+    {   
+        $req = new QuizRequest(ActionType::GET, 464878, $fresh_data = true);
+        echo json_encode($this->roots->Quizzes($req));
+    }
+    public function testGetPages()
+    {
+        echo json_encode($this->roots->getPages());
+    }
+    
+    public function testGetQuizQuestions()
+    {
+        $req = new QuizRequest(ActionType::GET, 464878, $fresh_data = true);
+        $quizId = 464878;
+        echo json_encode($this->roots->getQuizQuestions($quizId));
+    }
     private function convertToUTC()
     {
         $date = new DateTime("now", new \DateTimeZone('America/Denver'));
@@ -561,6 +588,8 @@ class TestRoots extends ComponentBase
         $utc_date = $date->setTimezone( $UTC );
         echo json_encode($utc_date);
     }
+    
+    
     
 }
 

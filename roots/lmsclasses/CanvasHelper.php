@@ -51,7 +51,6 @@ class CanvasHelper
         $urlPieces= array();
         $urlArgs = array();
         $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
-
         $urlPieces[] = 'modules';
         
         $urlArgs[] = "student_id={$userId}";
@@ -80,42 +79,40 @@ class CanvasHelper
     
     public function getFiles()
     {
-        $urlPieces= $this->initUrl();
-        $token = \Crypt::decrypt($_SESSION['userToken']);
-        $urlArgs = array();
-        $urlPieces[] = 'files';
-        
-        //Attach token
-        $urlArgs[]="access_token={$token}&per_page=5000";
-
-        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
-        
-        $response = GuzzleHelper::getAsset($url);
-        return $response->getBody();
+        return $this->simpleGet('files');
     }
     
     public function getPages()
     {
-        $urlPieces= $this->initUrl();
-        $token = \Crypt::decrypt($_SESSION['userToken']);
-        $urlArgs = array();
-        $urlPieces[] = 'pages';
-        
-        //Attach token
-        $urlArgs[]="access_token={$token}&per_page=5000";
-
-        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
-        $response = GuzzleHelper::getAsset($url);
-        return $response->getBody();
+        return $this->simpleGet('pages');
     }
     
-    public function getQuizzes()
+    public function getQuizzes($request)
     {
+        $res = $this->simpleGet('quizzes');
+        if(!isset($_SESSION))
+        {
+        session_start();
+        }
+        $courseId = $_SESSION['courseID'];
+        $quizzes = json_decode($res);
+        $response = array();
+        foreach($quizzes as $quiz)
+        {
+            $response[] = $this->processSingleQuiz($quiz, $courseId);
+        }
+        
+        return $response;
+    }
+    
+    public function getQuizQuestions($quizId)
+    {//api/v1/courses/:course_id/quizzes/:quiz_id/questions
         $urlPieces= $this->initUrl();
         $token = \Crypt::decrypt($_SESSION['userToken']);
         $urlArgs = array();
         $urlPieces[] = 'quizzes';
-        
+        $urlPieces[] = $quizId;
+        $urlPieces[] = 'questions';
         //Attach token
         $urlArgs[]="access_token={$token}&per_page=5000";
 
@@ -126,17 +123,7 @@ class CanvasHelper
     
     public function getExternalTools()
     {
-        $urlPieces= $this->initUrl();
-        $token = \Crypt::decrypt($_SESSION['userToken']);
-        $urlArgs = array();
-        $urlPieces[] = 'external_tools';
-        
-        //Attach token
-        $urlArgs[]="access_token={$token}&per_page=5000";
-
-        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
-        $response = GuzzleHelper::getAsset($url);
-        return $response->getBody();
+        return $this->simpleGet('external_tools');
     }
     
     public function getModuleData(ModulesRequest $request)
@@ -615,6 +602,43 @@ class CanvasHelper
         $response = GuzzleHelper::postData($url);
         return json_decode($response->getBody());
     }
+    
+    /*
+     * Quizzes
+     */
+    public function processSingleQuiz($item, $courseId)
+    {   
+        $quiz = Quiz::firstOrNew(array('id' => $item->id));
+        $quiz->id = $item->id;
+        $quiz->course_id = $courseId;
+        if(isset($item->title)){$quiz->title = $item->title;}
+        if(isset($item->description)){$quiz->description = $item->description;}
+        if(isset($item->html_url)){$quiz->html_url = $item->html_url;}
+        if(isset($item->quiz_type)){$quiz->quiz_type = $item->quiz_type;}
+        if(isset($item->assignment_group_id)){$quiz->assignment_group_id = $item->assignment_group_id;}
+        if(isset($item->time_limit)){$quiz->time_limit = $item->time_limit;}
+        if(isset($item->question_count)){$quiz->question_count = $item->question_count;}
+        if(isset($item->points_possible)){$quiz->points_possible = $item->points_possible;}
+        if(isset($item->due_at)){
+            $due_at= DateTime::createFromFormat(DateTime::ISO8601, $item->due_at);
+            $quiz->due_at = $due_at->format('c');
+        }
+        if(isset($item->lock_at)){
+            $lock_at= DateTime::createFromFormat(DateTime::ISO8601, $item->lock_at);
+            $quiz->lock_at = $lock_at->format('c');
+        }
+        if(isset($item->unlock_at)){
+            $unlock_at= DateTime::createFromFormat(DateTime::ISO8601, $item->unlock_at);
+            $quiz->unlock_at = $unlock_at->format('c');
+        }
+        if(isset($item->published)){$quiz->published = $item->published;}
+        if(isset($item->locked_for_user)){$quiz->locked_for_user = $item->locked_for_user;}
+        if(isset($item->scoring_policy)){$quiz->scoring_policy = $item->scoring_policy;}
+        if(isset($item->allowed_attempts)){$quiz->allowed_attempts = $item->allowed_attempts;}
+        
+        $quiz->save();
+        return $quiz;
+    }
     /*
      * SUBMISSIONS
      */
@@ -693,7 +717,6 @@ class CanvasHelper
         
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
         
-//        return $url;
         $response = GuzzleHelper::makeRequest($request, $url);
         
         return $this->processCanvasSubmissionData(json_decode($response->getBody()), $request->getIncludeTags());
@@ -844,24 +867,6 @@ class CanvasHelper
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
         $response = GuzzleHelper::getAsset($url);
         return $response->getBody();
-    }
-    /*
-     * private functions
-     */
-    
-    private function initUrl()
-    {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
-        $domain = $_SESSION['domain'];
-        $courseId = $_SESSION['courseID'];
-
-        $urlPieces= array();
-        //        GET /api/v1/courses/:course_id/files
-        $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
-        return $urlPieces;
     }
     /*
      * MODULES
@@ -1349,5 +1354,39 @@ class CanvasHelper
             $assignmentWithTags = $this->dbHelper->matchAssignmentWithTags($assignment);
             return $assignmentWithTags['tags'];
         }   
+    }
+    
+    /*
+     * private utility functions
+     */
+    
+    private function initUrl()
+    {
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $domain = $_SESSION['domain'];
+        $courseId = $_SESSION['courseID'];
+
+        $urlPieces= array();
+        $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
+        return $urlPieces;
+    }
+    
+    private function simpleGet($canvasItem)
+    {
+        $urlPieces= $this->initUrl();
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $urlArgs = array();
+        $urlPieces[] = $canvasItem;
+        
+        //Attach token
+        $urlArgs[]="access_token={$token}&per_page=5000";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+
+        $response = GuzzleHelper::getAsset($url);
+        return $response->getBody();
     }
 }

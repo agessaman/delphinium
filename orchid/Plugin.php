@@ -28,7 +28,7 @@ class Plugin extends PluginBase
 	public function registerComponents()
 	{
 	  return [
-		'\Delphinium\orchid\Components\quizlesson' => 'quizlesson'
+		'\Delphinium\Orchid\Components\Quizlesson' => 'quizlesson'
 	  ];
 	}
 

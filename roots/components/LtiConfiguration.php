@@ -28,6 +28,11 @@ class LtiConfiguration extends ComponentBase {
                 'title' => 'LTI Instance',
                 'description' => 'Select the LTI configuration instance to use for connecting to Canvas',
                 'type' => 'dropdown',
+            ],
+            'approver' => [
+                'title' => 'Approver',
+                'description' => 'The approver must have the right permissions to access the data needed for this component',
+                'type' => 'dropdown',
             ]
         ];
     }
@@ -43,10 +48,22 @@ class LtiConfiguration extends ComponentBase {
         return $array_dropdown;
     }
 
+    public function getApproverOptions() {
+        $arr = array(
+            "0" => "Instructor",
+            "1" => "Administrator",
+            "2" => "Student"
+        );
+        return $arr;
+    }
+
     public function doBltiHandshake() {
         //first obtain the details of the LTI configuration they chose
         $instanceFromDB = LtiConfigurations::find($this->property('ltiInstance'));
-
+        $approver = $this->property('approver');
+        $arr = $this->getApproverOptions();
+        $approverRole = $arr[$approver];
+        
         if (!isset($_SESSION)) {
             session_start();
         }
@@ -60,7 +77,6 @@ class LtiConfiguration extends ComponentBase {
 
         //check to see if user is an Instructor
         $rolesStr = \Input::get('roles');
-
         $consumerKey = $instanceFromDB['ConsumerKey'];
         $clientId = $instanceFromDB['DeveloperId'];
 
@@ -69,9 +85,8 @@ class LtiConfiguration extends ComponentBase {
 
         if ($context->valid) { // query DB to see if user has token, if yes, go to LTI.
             $userCheck = User::where('course_id', $_SESSION['courseID'])->first();
-
             if (!$userCheck) { //if no user is found, redirect to canvas permission page
-                if (strstr('Instructor', $rolesStr)) { //but only if it's an instructor. 
+                if (stristr($rolesStr, $approverRole)) {
                     //As per my discussion with Jared, we will use the instructor's token only. This is the token that will be stored in the DB
                     //and the one that will be used to make all requests. We will NOT store student's tokens.
                     //TODO: take this redirectUri out into some parameter somewhere...
@@ -80,7 +95,7 @@ class LtiConfiguration extends ComponentBase {
 
                     $this->redirect($url);
                 } else {
-                    echo ("Your Instructor must authorize this course. Please contact your instructor.");
+                    echo ("A(n) {$approverRole} must authorize this course. Please contact your instructor.");
                     return;
                 }
             } else {

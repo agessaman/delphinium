@@ -42,9 +42,7 @@ class OAuthResponse extends Controller {
         $user->encrypted_token = $encryptedToken;
         $user->save();
 
-
-        // $url = 'https://delphinium.uvu.edu/octobercms/new-iris';
-//         $this->redirect($url);
+        echo "App has been approved. Please reload this page";
     }
 
     function redirect($url) {
