@@ -54,7 +54,7 @@ class SubmissionsRequest extends RootsRequest
     /*
      * Constructor 
      */
-    function __construct($actionType, array $studentIds = null, $allStudents = false, array $assignmentIds = null, $allAssignments = false, 
+    function __construct($actionType, array $studentIds = null, $allStudents = false, array $assignmentIds = array(), $allAssignments = false, 
             $multipleStudents = false, $multipleAssignments = false, $includeTags = false) 
     {
         //this takes care of setting the lms and the ActionType in the parent class (RootsRequest)

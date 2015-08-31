@@ -4,6 +4,7 @@ use Delphinium\Roots\Requestobjects\SubmissionsRequest;
 use Delphinium\Roots\Requestobjects\ModulesRequest;
 use Delphinium\Roots\Requestobjects\AssignmentsRequest;
 use Delphinium\Roots\Requestobjects\AssignmentGroupsRequest;
+use Delphinium\Roots\Requestobjects\QuizRequest;
 use Delphinium\Roots\Models\Page;
 use Delphinium\Roots\Models\File;
 use Delphinium\Roots\Models\Quiz;
@@ -473,7 +474,36 @@ class Roots
         }
     }
     
-    public function getQuizzes()
+    public function Quizzes(QuizRequest $request)
+    {
+        switch($request->getActionType())
+        {
+            case (ActionType::GET):
+                
+                if(!$request->getFresh_data())
+                {
+                    $data = $this->dbHelper->getQuizzes($request);
+                    
+                    //depending on the request we can get an eloquent collection or one of our models. Need to validate them differently
+                    switch(get_class($data))
+                    {
+                        case "Illuminate\Database\Eloquent\Collection":
+                            return (!$data->isEmpty()) ?  $data :  $this->getQuizzesFromLms($request);
+                        default:
+                            return (!is_null($data)) ? $data : $this->getQuizzesFromLms($request);
+                    }
+                }
+                else
+                {
+                    return $this->getQuizzesFromLms($request);
+                }
+                break;
+        }
+        
+        
+    }
+    
+    public function getQuizQuestions($quizId)
     {
         if(!isset($_SESSION)) 
         { 
@@ -482,35 +512,15 @@ class Roots
         $lms = strtoupper($_SESSION['lms']);
         if(Lms::isValidValue($lms))
         {
-            $quizzes = array();
             switch ($lms)
             {
                 case (Lms::CANVAS):
                     $canvasHelper = new CanvasHelper();
-                    $quizzes = json_decode($canvasHelper->getQuizzes());
-                    break;
+                    return $canvasHelper->getQuizQuestions($quizId);
                 default:
                     $canvasHelper = new CanvasHelper();
-                    $quizzes = json_decode($canvasHelper->getQuizzes());
-                    break;
+                    return $canvasHelper->getQuizQuestions($quizId);
             }
-            $return =array();
-            $i=0;
-            foreach($quizzes as $item)
-            {
-                $file = new \stdClass();
-
-                $file->id = $item->id;
-                $file->name=$item->title;
-                $return[] = $file;
-
-                $i++;
-            }
-            return $return;
-        }
-        else
-        {
-           throw new \Exception("Invalid LMS");  
         }
     }
     
@@ -727,5 +737,32 @@ class Roots
         }
     }
     
+    private function getQuizzesFromLms(QuizRequest $request)
+    {
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $lms = strtoupper($_SESSION['lms']);
+        if(Lms::isValidValue($lms))
+        {
+            $quizzes = array();
+            switch ($lms)
+            {
+                case (Lms::CANVAS):
+                    $canvasHelper = new CanvasHelper();
+                    $canvasHelper->getQuizzes($request);
+                    return $this->dbHelper->getQuizzes($request);
+                default:
+                    $canvasHelper = new CanvasHelper();
+                    $canvasHelper->getQuizzes($request);
+                    return $this->dbHelper->getQuizzes($request);
+            }
+        }
+        else
+        {
+           throw new \Exception("Invalid LMS");  
+        }
+    }
     
 }

@@ -7,10 +7,12 @@ use Delphinium\Roots\Models\Tag;
 use Delphinium\Roots\Models\OrderedModule;
 use Delphinium\Roots\Models\Assignment;
 use Delphinium\Roots\Models\Submission;
+use Delphinium\Roots\Models\Quiz;
 use Delphinium\Roots\Models\AssignmentGroup;
 use Delphinium\Roots\Requestobjects\AssignmentsRequest;
 use Delphinium\Roots\Requestobjects\AssignmentGroupsRequest;
 use Delphinium\Roots\Requestobjects\ModulesRequest;
+use Delphinium\Roots\Requestobjects\QuizRequest;
 
 class DbHelper
 {
@@ -199,6 +201,32 @@ class DbHelper
             return "Optional, Description";
         }
         
+    }
+    
+    public function getQuizzes(QuizRequest $request)
+    {
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $courseId = $_SESSION['courseID'];
+        if($request->getId())
+        {
+//            return Quiz::with('content')->where(array(
+//                'module_id' => $request->getModuleId(),
+//                'module_item_id'=> $request->getModuleItemId()
+//            ))->first();
+            return Quiz::where(array(
+                'id' => $request->getId(),
+                'course_id'=> $courseId
+            ))->first(); 
+        }
+        else
+        {//if no moduleId was found they must want all the modules
+            return Quiz::where(array(
+                'course_id' => $courseId
+            ))->get();
+        }
     }
     /*
      * UPDATE
