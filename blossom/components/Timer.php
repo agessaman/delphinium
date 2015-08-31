@@ -7,7 +7,8 @@ use \DateInterval;
 
 class Timer extends ComponentBase
 {
-
+    public $roots;
+    
     public function componentDetails()
     {
         return [
@@ -23,21 +24,20 @@ class Timer extends ComponentBase
 
     public function onRun()
     {
-        $this->addJs("/plugins/delphinium/blossom/assets/javascript/timer.js");
-        $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
-        $this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
-        $this->addCss("/plugins/delphinium/blossom/assets/css/timer.css");
 
         if(!isset($_SESSION)) 
         { 
             session_start(); 
     	}
         $courseId = $_SESSION['courseID'];
-        
+        if(!isset($_SESSION['userToken']))//app hasn't been approved by admin
+        {
+            return;
+        }
         $this->roots = new Roots();
         
          try {
-            $enrollments = $this->roots->getEnrollments();
+            $enrollments = $this->roots->getUserEnrollments();
             foreach($enrollments as $course)
             {
                 if ($course->course_id==$courseId)
@@ -52,6 +52,12 @@ class Timer extends ComponentBase
 
             $this->page['start'] = $res->created_at;
             $this->page['end'] = $end->format('c');
+            
+            
+        	$this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
+	        $this->addJs("/plugins/delphinium/blossom/assets/javascript/timer.js");
+    	    $this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
+	        $this->addCss("/plugins/delphinium/blossom/assets/css/timer.css");
 
         } 
         catch (\GuzzleHttp\Exception\ClientException $e) 
@@ -59,14 +65,10 @@ class Timer extends ComponentBase
             $end = new DateTime("now");
             $this->page['start'] = $end->format('c');
             $this->page['end'] = $end->format('c');
-            echo "In order for the 'Timer' app to run properly you must be a student or you must go in 'Student View'";
+            echo "An error has occurred. An invalid user id was provided. You must be a student to use this app, or go into 'Student View'. "
+            . "Also, make sure that an administrator has approved this application (only administrators have permissions "
+            . "to see user enrollments)";
             return;
         }
-        
-    
     }
-
-    
-        
-
 }

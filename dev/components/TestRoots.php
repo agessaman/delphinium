@@ -8,6 +8,7 @@ use Delphinium\Roots\Roots;
 use Delphinium\Roots\Requestobjects\SubmissionsRequest;
 use Delphinium\Roots\Requestobjects\ModulesRequest;
 use Delphinium\Roots\Requestobjects\AssignmentsRequest;
+use Delphinium\Roots\Requestobjects\QuizRequest;
 use Delphinium\Roots\Requestobjects\AssignmentGroupsRequest;
 use Delphinium\Roots\Enums\ActionType;
 use Delphinium\Roots\Enums\ModuleItemType;
@@ -20,6 +21,8 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Post\PostFile;
 use Delphinium\Iris\Components\Iris;
 use Config;
+use \Delphinium\Blade\Classes\Rules\RuleBuilder;
+use \Delphinium\Blade\Classes\Rules\RuleGroup;
 
 use Delphinium\Roots\Guzzle\GuzzleHelper;
 
@@ -64,7 +67,7 @@ class TestRoots extends ComponentBase
 //        $this->testGettingAllSubmissionForSingleAssignment();
 //        $this->testGettingMultipleSubmissionsForSingleStudent();
 //        $this->testGettingMultipleSubmissionsAllStudents();
-        $this->testGettingAllSubmissionsAllStudents();
+//        $this->testGettingAllSubmissionsAllStudents();
 //        $this->testGettingMultipleSubmissionsMultipleStudents();
 //        $this->testGettingSubmissions();
 //        $this->testFileUpload();
@@ -73,6 +76,10 @@ class TestRoots extends ComponentBase
 //        $this->testGetCourse();
 //        $this->testGetAccount();
 //        $this->testGetEnrollments();
+//        $this->testGetQuiz();
+        $this->testGetAllQuizzes();
+//        $this->testGetPages();
+        
     }
     
     private function testBasicModulesRequest()
@@ -333,11 +340,11 @@ class TestRoots extends ComponentBase
         $studentId = $_SESSION['userID'];
         
         $studentIds = array($studentId);
-        $assignmentIds = array(1660419, 1660406, 1660412);
+        $assignmentIds = array();
         $multipleStudents = false;
         $multipleAssignments = true;
         $allStudents = false;
-        $allAssignments = false;
+        $allAssignments = true;
         
         //can have the student Id param null if multipleUsers is set to false (we'll only get the current user's submissions)
         
@@ -420,7 +427,24 @@ class TestRoots extends ComponentBase
     
     public function test()
     {
+        $rb = new RuleBuilder;
+
+        $bonus_90 = $rb->create('current_user_submissions', 'submission',
+        $rb['submission']['score']->greaterThan($rb['score_threshold']),
+        [
+            $rb['(bonus)']->assign($rb['(bonus)']->add($rb['points']))
+        ]);
         
+        $rb['(bonus)'] = 0;
+        $rb['submission']['score'] = 0;
+        $rb['score_threshold'] = 0;
+        $rb['point'] = 0;
+
+        $rg = new RuleGroup('submissionstest');
+        $rg->add($bonus_90);
+        $rg->saveRules();
+        
+
     }
     
    
@@ -530,8 +554,30 @@ class TestRoots extends ComponentBase
 
     public function testGetEnrollments()
     {
-        $res = $this->roots->getEnrollments();
+        $res = $this->roots->getUserEnrollments();
         echo json_encode($res);
+    }
+    
+    public function testGetAllQuizzes()
+    {
+        $req = new QuizRequest(ActionType::GET, null, $fresh_data = true);
+        echo json_encode($this->roots->Quizzes($req));
+    }
+    public function testGetQuiz()
+    {   
+        $req = new QuizRequest(ActionType::GET, 464878, $fresh_data = true);
+        echo json_encode($this->roots->Quizzes($req));
+    }
+    public function testGetPages()
+    {
+        echo json_encode($this->roots->getPages());
+    }
+    
+    public function testGetQuizQuestions()
+    {
+        $req = new QuizRequest(ActionType::GET, 464878, $fresh_data = true);
+        $quizId = 464878;
+        echo json_encode($this->roots->getQuizQuestions($quizId));
     }
     private function convertToUTC()
     {
@@ -542,6 +588,8 @@ class TestRoots extends ComponentBase
         $utc_date = $date->setTimezone( $UTC );
         echo json_encode($utc_date);
     }
+    
+    
     
 }
 

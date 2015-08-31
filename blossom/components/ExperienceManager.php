@@ -53,6 +53,7 @@ class ExperienceManager extends ComponentBase
         $experience->save();
         
         $this->page['items'] = Model::all();
+        
     }
     
     public function onDelete()

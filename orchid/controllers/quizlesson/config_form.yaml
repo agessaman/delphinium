@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Quizlesson
+
+# Model Form Field configuration
+form: $/delphinium/orchid/models/quizlesson/fields.yaml
+
+# Model Class name
+modelClass: Delphinium\Orchid\Models\Quizlesson
+
+# Default redirect location
+defaultRedirect: delphinium/orchid/quizlesson
+
+# Create page
+create:
+    title: Create Quizlesson
+    redirect: delphinium/orchid/quizlesson/update/:id
+    redirectClose: delphinium/orchid/quizlesson
+
+# Update page
+update:
+    title: Edit Quizlesson
+    redirect: delphinium/orchid/quizlesson
+    redirectClose: delphinium/orchid/quizlesson
+
+# Preview page
+preview:
+    title: Preview Quizlesson

@@ -24,7 +24,7 @@ class CreateExperiencesTable extends Migration
                 $table->integer('bonus_days');
                 $table->integer('penalty_days');
                 $table->boolean('animate');
-                $table->integer('size');
+                $table->string('size');
                 $table->timestamps();
             });
         }

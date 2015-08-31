@@ -14,26 +14,19 @@ class Experience extends CustomModel
     public $table = 'delphinium_blossom_experiences';
 
     public $rules = [
-//        'id'=>'required',
         'name'=>'required',
         'total_points'=>'required',
-//        'num_milestones' => 'required',
+        'num_milestones' => 'required',
         'start_date' => 'required',
         'end_date' => 'required',
         'bonus_per_day' => 'required',
         'penalty_per_day' => 'required',
         'bonus_days' => 'required',
         'penalty_days' => 'required',
-//        'animate'=>'required',
-//        'size' => 'required'
+        'animate'=>'required',
+        'size' => 'required'
     ];
 
-     public $hasMany = [
-        'milestone' => ['\Delphinium\Blossom\Models\Milestone',
-        'table' => 'delphinium_blossom_milestones',
-        'foreignKey' => 'id',
-        'delete'=>'true']
-    ];
      
     public function save(array $data = null, $sessionKey = null)
     {
