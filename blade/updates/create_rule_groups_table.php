@@ -27,8 +27,8 @@ class CreateRuleGroupsTable extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('delphinium_blade_rule_groups');
         Schema::dropIfExists('delphinium_blade_rule_groups_rules');
+        Schema::dropIfExists('delphinium_blade_rule_groups');
     }
 
 }

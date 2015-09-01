@@ -22,6 +22,9 @@ class CreateRulesTable extends Migration
 
     public function down()
     {
+        // drop actions first because they have a foreign key pointing to this table
+        Schema::dropIfExists('delphinium_blade_assign_actions');
+        Schema::dropIfExists('delphinium_blade_filter_actions');
         Schema::dropIfExists('delphinium_blade_rules');
     }
 
