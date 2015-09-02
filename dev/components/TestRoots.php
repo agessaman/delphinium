@@ -20,7 +20,7 @@ use \DateTimeZone;
 use GuzzleHttp\Client;
 use GuzzleHttp\Post\PostFile;
 use Delphinium\Iris\Components\Iris;
-use Config;
+use Cms\Classes\ComponentManager;
 use \Delphinium\Blade\Classes\Rules\RuleBuilder;
 use \Delphinium\Blade\Classes\Rules\RuleGroup;
 
@@ -42,7 +42,7 @@ class TestRoots extends ComponentBase
     {  
         $this->roots = new Roots();
 //        $this->refreshCache();
-//        $this->test();
+        $this->test();
         
 //        Cache::flush();
 //        $this->testBasicModulesRequest();
@@ -77,7 +77,7 @@ class TestRoots extends ComponentBase
 //        $this->testGetAccount();
 //        $this->testGetEnrollments();
 //        $this->testGetQuiz();
-        $this->testGetAllQuizzes();
+//        $this->testGetAllQuizzes();
 //        $this->testGetPages();
         
     }
@@ -427,22 +427,26 @@ class TestRoots extends ComponentBase
     
     public function test()
     {
-        $rb = new RuleBuilder;
-
-        $bonus_90 = $rb->create('current_user_submissions', 'submission',
-        $rb['submission']['score']->greaterThan($rb['score_threshold']),
-        [
-            $rb['(bonus)']->assign($rb['(bonus)']->add($rb['points']))
-        ]);
+//        $rb = new RuleBuilder;
+//
+//        $bonus_90 = $rb->create('current_user_submissions', 'submission',
+//        $rb['submission']['score']->greaterThan($rb['score_threshold']),
+//        [
+//            $rb['(bonus)']->assign($rb['(bonus)']->add($rb['points']))
+//        ]);
+//        
+//        $rb['(bonus)'] = 0;
+//        $rb['submission']['score'] = 0;
+//        $rb['score_threshold'] = 0;
+//        $rb['point'] = 0;
+//
+//        $rg = new RuleGroup('submissionstest');
+//        $rg->add($bonus_90);
+//        $rg->saveRules();
         
-        $rb['(bonus)'] = 0;
-        $rb['submission']['score'] = 0;
-        $rb['score_threshold'] = 0;
-        $rb['point'] = 0;
-
-        $rg = new RuleGroup('submissionstest');
-        $rg->add($bonus_90);
-        $rg->saveRules();
+        $manager = ComponentManager::instance();
+       echo json_encode($manager->listComponents());
+        
         
 
     }
