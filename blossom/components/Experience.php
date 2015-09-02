@@ -46,90 +46,97 @@ class Experience extends ComponentBase
     
     public function onRun()
     {
-        $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
-        $this->addJs("/plugins/delphinium/blossom/assets/javascript/experience.js");
-        $this->addCss("/plugins/delphinium/blossom/assets/css/experience.css");
-        $this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
-        $this->addCss("/plugins/delphinium/blossom/assets/css/font-awesome.min.css");
+        try
+        {
+            $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
+            $this->addJs("/plugins/delphinium/blossom/assets/javascript/experience.js");
+            $this->addCss("/plugins/delphinium/blossom/assets/css/experience.css");
+            $this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
+            $this->addCss("/plugins/delphinium/blossom/assets/css/font-awesome.min.css");
 
-        $this->roots = new Roots();
-        $instance = ExperienceModel::find($this->property('Instance'));
-        $milestonesDesc = Milestone::where('experience_id','=',$instance->id)->orderBy('points','desc')->get();
-        $milestonesAsc = Milestone::where('experience_id','=',$instance->id)->orderBy('points','asc')->get();
-        
-        $milestoneArr = array();
-        foreach($milestonesAsc as $item)
-        {
-            $milestoneArr[] = $item->name;
-        }
-        
-        //set class variables
-        $stDate = new DateTime($instance->start_date);
-        $endDate = new DateTime($instance->end_date);
-        $this->startDate = $stDate;
-        $this->endDate = $endDate;
-        $this->submissions =$this->getSubmissions();
-        $this->ptsPerSecond = $this->getPtsPerSecond($stDate, $endDate, $instance->total_points);
-        $this->penaltySeconds = $instance->penalty_days*24*60*60;
-        $this->penaltyPerSecond = $instance->penalty_per_day/24/60/60;//convert it to milliseconds
-        $this->bonusSeconds = $instance->bonus_days*24*60*60;
-        $this->bonusPerSecond = $instance->bonus_per_day/24/60/60;
-        
-        //set page variables
-        $this->page['encouragement'] = json_encode($milestoneArr);
-        $this->page['experienceXP'] = $this->getUserPoints();//current points
-        $this->page['experienceBonus'] = 40;
-        $this->page['experiencePenalties'] = 10;
-        $this->page['maxXP'] = $instance->total_points;//total points for this experience
-        $this->page['startDate'] = $instance->start_date;
-        $this->page['endDate'] = $instance->end_date;
-        $this->page['experienceSize'] = $instance->size;
-        $this->page['experienceAnimate'] = $instance->animate;
-        $redLine = $this->calculateRedLine($stDate, $endDate, $instance->total_points);
-        $this->page['redLine'] = $redLine;
-        $milestoneClearanceInfo = $this->getMilestoneClearanceInfo($milestonesDesc);
-        $this->page['milestoneClearance'] = json_encode($milestoneClearanceInfo);
-        $this->page['studentScores'] = json_encode($this->getAllStudentScores());
-        
-        $bonus=0;
-        $penalties=0;
-        foreach($milestoneClearanceInfo as $item)
-        {
-            if($item->bonusPenalty>0)
+            $this->roots = new Roots();
+            $instance = ExperienceModel::find($this->property('Instance'));
+            $milestonesDesc = Milestone::where('experience_id','=',$instance->id)->orderBy('points','desc')->get();
+            $milestonesAsc = Milestone::where('experience_id','=',$instance->id)->orderBy('points','asc')->get();
+
+            $milestoneArr = array();
+            foreach($milestonesAsc as $item)
             {
-                $bonus = $bonus+$item->bonusPenalty;
+                $milestoneArr[] = $item->name;
             }
-            else
+
+            //set class variables
+            $stDate = new DateTime($instance->start_date);
+            $endDate = new DateTime($instance->end_date);
+            $this->startDate = $stDate;
+            $this->endDate = $endDate;
+            $this->submissions =$this->getSubmissions();
+            $this->ptsPerSecond = $this->getPtsPerSecond($stDate, $endDate, $instance->total_points);
+            $this->penaltySeconds = $instance->penalty_days*24*60*60;
+            $this->penaltyPerSecond = $instance->penalty_per_day/24/60/60;//convert it to milliseconds
+            $this->bonusSeconds = $instance->bonus_days*24*60*60;
+            $this->bonusPerSecond = $instance->bonus_per_day/24/60/60;
+
+            //set page variables
+            $this->page['encouragement'] = json_encode($milestoneArr);
+            $this->page['experienceXP'] = $this->getUserPoints();//current points
+            $this->page['experienceBonus'] = 40;
+            $this->page['experiencePenalties'] = 10;
+            $this->page['maxXP'] = $instance->total_points;//total points for this experience
+            $this->page['startDate'] = $instance->start_date;
+            $this->page['endDate'] = $instance->end_date;
+            $this->page['experienceSize'] = $instance->size;
+            $this->page['experienceAnimate'] = $instance->animate;
+            $redLine = $this->calculateRedLine($stDate, $endDate, $instance->total_points);
+            $this->page['redLine'] = $redLine;
+            $milestoneClearanceInfo = $this->getMilestoneClearanceInfo($milestonesDesc);
+            $this->page['milestoneClearance'] = json_encode($milestoneClearanceInfo);
+            $this->page['studentScores'] = json_encode($this->getAllStudentScores());
+
+            $bonus=0;
+            $penalties=0;
+            foreach($milestoneClearanceInfo as $item)
             {
-                $penalties = $penalties+$item->bonusPenalty;
+                if($item->bonusPenalty>0)
+                {
+                    $bonus = $bonus+$item->bonusPenalty;
+                }
+                else
+                {
+                    $penalties = $penalties+$item->bonusPenalty;
+                }
             }
+            $this->page['experienceGrade'] =  floor($this->getUserPoints()+$bonus+$penalties);//?
+            $this->page['experienceBonus'] = $bonus;
+            $this->page['experiencePenalties'] = $penalties;
+            /*
+
+            //run rules
+
+            $cType = ComponentTypes::where(array('type' => 'experience'))->first();
+            $componentRules = ComponentRules::where(array('component_id' => $cType->id));
+            $source = new DataSource(false);
+            if(!isset($_SESSION)) 
+            { 
+                session_start(); 
+            }
+            $userId = $_SESSION['userID'];
+            $params = array('student_ids'=>$userId,
+                '$all_assignments'=>true,
+                'fresh_data'=>0,
+                'prettyprint'=>1,
+                'rg'=>'experience');
+            echo json_encode($source->getMultipleSubmissions($params));
+            //calculated variables
+            $this->page['milestone_status']= array(); 
+             * 
+             */
+
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            echo "You must be a student to use this app, or go into 'Student View'. "
+            . "Also, make sure that an Instructor has approved this application";
+            return;
         }
-        $this->page['experienceGrade'] =  floor($this->getUserPoints()+$bonus+$penalties);//?
-        $this->page['experienceBonus'] = $bonus;
-        $this->page['experiencePenalties'] = $penalties;
-        /*
-          
-        //run rules
-         
-        $cType = ComponentTypes::where(array('type' => 'experience'))->first();
-        $componentRules = ComponentRules::where(array('component_id' => $cType->id));
-        $source = new DataSource(false);
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
-        $userId = $_SESSION['userID'];
-        $params = array('student_ids'=>$userId,
-            '$all_assignments'=>true,
-            'fresh_data'=>0,
-            'prettyprint'=>1,
-            'rg'=>'experience');
-        echo json_encode($source->getMultipleSubmissions($params));
-        //calculated variables
-        $this->page['milestone_status']= array(); 
-         * 
-         */
-         
     }
 
     public function getInstanceOptions()
