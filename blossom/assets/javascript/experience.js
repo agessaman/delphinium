@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    scaleExperience();
+    scaleExperience(experienceSize);
     drawAxis();
     drawExperience(redLine);
     drawScatterplot(studentScores);
@@ -7,11 +7,11 @@ $(document).ready(function(){
 
 var bottom = 500;
 
-function scaleExperience(){
+function scaleExperience(experienceSize){
 	var experienceView = d3.select("#experienceView");
 	var experienceSVG = d3.select("#experienceSVG");
 	var experienceHeight = 520;
-	var experienceWidth = 260;
+	var experienceWidth = 280;
 
 	if(experienceSize === "small"){
 		experienceWidth= experienceWidth / 2;

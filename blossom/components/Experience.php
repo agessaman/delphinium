@@ -80,8 +80,6 @@ class Experience extends ComponentBase
             //set page variables
             $this->page['encouragement'] = json_encode($milestoneArr);
             $this->page['experienceXP'] = $this->getUserPoints();//current points
-            $this->page['experienceBonus'] = 40;
-            $this->page['experiencePenalties'] = 10;
             $this->page['maxXP'] = $instance->total_points;//total points for this experience
             $this->page['startDate'] = $instance->start_date;
             $this->page['endDate'] = $instance->end_date;
