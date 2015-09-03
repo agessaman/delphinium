@@ -14,6 +14,7 @@ class SubmissionsRequest extends RootsRequest
     private $assignmentIds;
     private $allAssignments;
     private $multipleAssignments;
+    private $grouped;
     
     private $includeTags;
     
@@ -51,11 +52,19 @@ class SubmissionsRequest extends RootsRequest
     }
 
     
+    function getGrouped() {
+        return $this->grouped;
+    }
+
+    function setGrouped($grouped) {
+        $this->grouped = $grouped;
+    }
+
     /*
      * Constructor 
      */
     function __construct($actionType, array $studentIds = null, $allStudents = false, array $assignmentIds = array(), $allAssignments = false, 
-            $multipleStudents = false, $multipleAssignments = false, $includeTags = false) 
+            $multipleStudents = false, $multipleAssignments = false, $includeTags = false, $grouped = false) 
     {
         //this takes care of setting the lms and the ActionType in the parent class (RootsRequest)
         parent::__construct($actionType);
@@ -112,6 +121,7 @@ class SubmissionsRequest extends RootsRequest
         $this->studentIds=$studentIds;
         $this->allAssignments = $allAssignments;
         $this->includeTags = $includeTags;
+        $this->grouped = $grouped;
     }
     
     

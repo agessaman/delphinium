@@ -305,30 +305,13 @@ class Experience extends ComponentBase
         return $totalPoints/$intervalSeconds;
     }
     
-    private function getAllStudentScoressss()
-    {
-        if(is_null($this->roots))
-        {
-            $this->roots = new Roots();
-        }
-        $req = new SubmissionsRequest(ActionType::GET, array(), true, array(), true, true, true, false);
-        $res = $this->roots->submissions($req);
-        
-        $sum = array_reduce($res, function ($a, $b) {
-        isset($a[$b['user_id']]) ? $a[$b['user_id']]['score'] += $b['score'] : $a[$b['user_id']] = $b;  
-        return $a;
-        });
-        
-        json_encode(array_values($sum));
-    }
-
     private function getAllStudentScores()
     {
         if(is_null($this->roots))
         {
             $this->roots = new Roots();
         }
-        $req = new SubmissionsRequest(ActionType::GET, array(), true, array(), true, true, true, false);
+        $req = new SubmissionsRequest(ActionType::GET, array(), true, array(), true, true, true, false, true);
         $res = $this->roots->submissions($req);
         
         $scores = array();

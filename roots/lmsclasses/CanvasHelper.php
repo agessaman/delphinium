@@ -711,7 +711,10 @@ class CanvasHelper
             }
 
         }
-        
+        if($request->getGrouped())
+        {
+            $urlArgs[]="grouped=true";
+        }
         //Attach token
         $urlArgs[]="access_token={$token}&per_page=5000";
         
@@ -719,7 +722,7 @@ class CanvasHelper
         
         $response = GuzzleHelper::makeRequest($request, $url);
         
-        return $this->processCanvasSubmissionData(json_decode($response->getBody()), $request->getIncludeTags());
+        return $this->processCanvasSubmissionData(json_decode($response->getBody()), $request->getIncludeTags(), $request->getGrouped());
         
     }
     
@@ -1270,20 +1273,34 @@ class CanvasHelper
     /*
      * SUBMISSIONS
      */
-    private function processCanvasSubmissionData($data, $includeTags = false)
+    private function processCanvasSubmissionData($data, $includeTags = false, $grouped = false)
     {
         $submissions = array();
-        if(gettype($data)==="array")//we have a single submission
-        { //we have multiple submissions
-            foreach($data as $row)
+        if($grouped)
+        {
+            foreach($data as $userSubmissions)
             {
-                $subm = $this->processSingleSubmission($row, $includeTags);
-                $submissions[] = $subm;
+                foreach($userSubmissions->submissions as $submission)
+                {
+                    $subm = $this->processSingleSubmission($submission, $includeTags);
+                    $submissions[] = $subm;
+                }
             }
         }
         else
-        {  
-            $submissions[] = $this->processSingleSubmission($data, $includeTags);
+        {
+            if(gettype($data)==="array")//we have a single submission
+            { //we have multiple submissions
+                foreach($data as $row)
+                {
+                    $subm = $this->processSingleSubmission($row, $includeTags);
+                    $submissions[] = $subm;
+                }
+            }
+            else
+            {  
+                $submissions[] = $this->processSingleSubmission($data, $includeTags);
+            }
         }
         return $submissions;
     }
