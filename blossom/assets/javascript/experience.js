@@ -1,8 +1,9 @@
-var div = d3.select("body").append("div")
+var div;
+$(document).ready(function () {
+    div = d3.select("body").append("div")
         .attr("class", "tooltip")
         .style("opacity", 0);
 
-$(document).ready(function () {
     scaleExperience(experienceSize);
     drawAxis();
     drawExperience(redLine);
@@ -15,7 +16,7 @@ function scaleExperience(experienceSize) {
     var experienceView = d3.select("#experienceView");
     var experienceSVG = d3.select("#experienceSVG");
     var experienceHeight = 520;
-    var experienceWidth = 280;
+    var experienceWidth = 300;
 
     if (experienceSize === "small") {
         experienceWidth = experienceWidth / 2;
@@ -110,7 +111,7 @@ function drawAxis() {
                 return (183);
             })
             .attr("y", function (d) {
-                return encouragementAxisScale(d.points - 6);//minus 6 so bonus/penalties are underneath milestone name
+                return encouragementAxisScale(d.points - 23);//minus 6 so bonus/penalties are underneath milestone name
             })
             .text(function (d) {
                 return roundToTwo(d.bonusPenalty);
@@ -157,7 +158,7 @@ function drawAxis() {
                 return (195);
             })
             .attr("y", function (d) {
-                return encouragementAxisScale(d.points - 6);//minus 6 so bonus/penalties are underneath milestone name
+                return encouragementAxisScale(d.points - 23);//minus 6 so bonus/penalties are underneath milestone name
             })
             .text(function (d) {
                 return roundToTwo(d.bonusPenalty);
@@ -247,18 +248,6 @@ function drawScatterplot(studentScores) {
         data.push([0.5, studentScores[i]]);
     }
 
-    alert("delete below lines");
-    var random = [];
-    for (var i = 0; i <= 49; i++)
-    {
-        random.push(Math.floor(Math.random() * 200) + 0);
-    }
-
-
-    for (var i = 0; i <= random.length - 1; i++)
-    {
-        data.push([0.5, random[i]]);
-    }
     var margin = {top: 10, bottom: 10, }, height = 500 - margin.top - margin.bottom;
 
     var x = d3.scale.linear()
