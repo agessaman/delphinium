@@ -19,11 +19,6 @@ tabs:
             span: auto
             comment: Enter the total points this experience will have
 
-        num_milestones:
-            label: No. of Milestones
-            span: auto
-            comment: Enter the number of milestones
-
         bonus_per_day:
             label: Bonus per day
             span: auto

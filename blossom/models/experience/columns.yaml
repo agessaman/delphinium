@@ -15,10 +15,6 @@ columns:
         label: Total Points
         searchable: true
 
-    num_milestones:
-        label: No. Milestones
-        searchable: true
-
     start_date:
         label: Start Date
         searchable: true
