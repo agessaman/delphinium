@@ -307,36 +307,7 @@ class Experience extends ComponentBase
             return 0;
         }
     }
-//    private function calculateBonus()
-//    {
-//        $secsTranspired = ceil($milestonePoints/$this->ptsPerSecond);
-//        $intervalSeconds = "PT".$secsTranspired."S";
-//        $sDate = $this->startDate;
-//        $dueDate = $sDate->add(new \DateInterval($intervalSeconds));
-//        
-//        if($dueDate>$submittedAt)
-//        {//bonus
-//            $diffSeconds = abs($dueDate->getTimestamp() - $submittedAt->getTimestamp());
-//            $bonusSeconds = ($diffSeconds>$this->bonusSeconds) ? $this->bonusSeconds : $diffSeconds;
-//            return $bonusSeconds * $this->bonusPerSecond;
-//        }
-//        else {return 0;}
-//    }
-//    private function calculatePenalty($milestonePoints, $submittedAt)
-//    {
-//        $daysTranspired = ceil($milestonePoints/$this->ptsPerSecond);
-//        $intervalDays = "P".$daysTranspired."D";
-//        $sDate = $this->startDate;
-//        $dueDate = $sDate->add(new \DateInterval($intervalDays));
-//        
-//        $diffMseconds = $this->startDate->diff($this->endDate)->days;
-//        if($dueDate<$submittedAt)
-//        {///penalty
-//            $penaltyDays = ($diffMseconds>$this->penaltySeconds)? $this->penaltySeconds: $diffMseconds;
-//            return $penaltyDays * $this->penaltyPerSecond;
-//        }
-//        else {return 0;}
-//    }
+    
     private function getPtsPerSecond(DateTime $startDate, DateTime $endDate, $totalPoints)
     {
         $intervalSeconds = abs($startDate->getTimestamp() - $endDate->getTimestamp());
