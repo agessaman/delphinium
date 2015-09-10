@@ -16,7 +16,6 @@ class Experience extends CustomModel
     public $rules = [
         'name'=>'required',
         'total_points'=>'required',
-        'num_milestones' => 'required',
         'start_date' => 'required',
         'end_date' => 'required',
         'bonus_per_day' => 'required',
