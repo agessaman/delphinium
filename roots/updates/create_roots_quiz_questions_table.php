@@ -13,7 +13,6 @@ class CreateRootsQuizQuestionsTable extends Migration
             Schema::create('delphinium_roots_quiz_questions', function($table)
             {
                 $table->engine = 'InnoDB';
-                $table->integer('id');
                 $table->integer('quiz_id')->unsigned()->index();
                 $table->integer('position');
                 $table->integer('points_possible');
