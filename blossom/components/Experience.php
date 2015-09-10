@@ -69,6 +69,8 @@ class Experience extends ComponentBase
             $stDate = new DateTime($instance->start_date);
             $endDate = new DateTime($instance->end_date);
             $this->startDate = $stDate;
+            
+            
             $this->endDate = $endDate;
             $this->submissions =$this->getSubmissions();
             $this->ptsPerSecond = $this->getPtsPerSecond($stDate, $endDate, $instance->total_points);
@@ -78,6 +80,7 @@ class Experience extends ComponentBase
             $this->bonusPerSecond = $instance->bonus_per_day/24/60/60;
 
             //set page variables
+            $this->page['numMilestones'] = count($milestonesDesc);
             $this->page['encouragement'] = json_encode($milestoneArr);
             $this->page['experienceXP'] = $this->getUserPoints();//current points
             $this->page['maxXP'] = $instance->total_points;//total points for this experience
@@ -85,9 +88,13 @@ class Experience extends ComponentBase
             $this->page['endDate'] = $instance->end_date;
             $this->page['experienceSize'] = $instance->size;
             $this->page['experienceAnimate'] = $instance->animate;
-            $redLine = $this->calculateRedLine($stDate, $endDate, $instance->total_points);
+            $redLine = $this->calculateRedLine($this->startDate, $this->endDate, $instance->total_points);
+            
+            
+            //up to here good
             $this->page['redLine'] = $redLine;
             $milestoneClearanceInfo = $this->getMilestoneClearanceInfo($milestonesDesc);
+            
             $this->page['milestoneClearance'] = json_encode($milestoneClearanceInfo);
             $this->page['studentScores'] = json_encode($this->getAllStudentScores());
 
@@ -95,16 +102,16 @@ class Experience extends ComponentBase
             $penalties=0;
             foreach($milestoneClearanceInfo as $item)
             {
-                if($item->bonusPenalty>0)
+                if(($item->bonusPenalty>0) && ($item->cleared))
                 {
                     $bonus = $bonus+$item->bonusPenalty;
                 }
-                else
+                else if(($item->bonusPenalty<0) && ($item->cleared))
                 {
                     $penalties = $penalties+$item->bonusPenalty;
                 }
             }
-            $this->page['experienceGrade'] =  floor($this->getUserPoints()+$bonus+$penalties);//?
+            $this->page['experienceGrade'] =  round($this->getUserPoints()+$bonus+$penalties,2);//?
             $this->page['experienceBonus'] = $bonus;
             $this->page['experiencePenalties'] = $penalties;
             /*
@@ -202,10 +209,12 @@ class Experience extends ComponentBase
                 {
                     $mileClearance = new \stdClass();
                     $mileClearance->milestone_id = $mile->id; 
+                    $mileClearance->name = $mile->name;
                     $mileClearance->cleared = 1;
                     $mileClearance->cleared_at = $submission['submitted_at'];
                     $mileClearance->bonusPenalty = $this->calculateBonusOrPenalty($mile->points, new DateTime($submission['submitted_at']));
-//                    $mileClearance->penalty = $this->calculatePenalty($mile->points, new DateTime($submission['submitted_at']));
+                    $mileClearance->points = $mile->points;
+                    $mileClearance->due_at = $this->calculateMilestoneDueDate($mile->points);
                     $milestoneInfo[] = $mileClearance;
                     unset($localMilestones[$key]);
                     
@@ -213,13 +222,32 @@ class Experience extends ComponentBase
             }   
         }
         
-        foreach($localMilestones as $left)
+        //sort the remaining milestones by points asc
+        $mileArray = $milestones->toArray();
+        usort($mileArray, function($a, $b) {
+            $ad = $a['points'];
+            $bd = $b['points'];
+
+            if ($ad == $bd) {
+              return 0;
+            }
+
+            return $ad > $bd ? 1 : -1;
+        });
+        
+        foreach($mileArray as $left)
         {//for the milestones that were left
             $mileClearance = new \stdClass();
-            $mileClearance->milestone_id = $left->id; 
+            $mileClearance->milestone_id = $left['id'];
+            $mileClearance->name = $left['name'];
             $mileClearance->cleared = 0;
             $mileClearance->cleared_at = null;
-            $mileClearance->bonusPenalty = 0;
+            $mileClearance->bonusPenalty = $this->calculateBonusOrPenalty($left['points'], new DateTime('now'));
+            $mileClearance->points = $left['points'];
+            
+            $date = $this->calculateMilestoneDueDate($left['points']);
+            
+            $mileClearance->due_at = $date;
             $milestoneInfo[] = $mileClearance;
         }
         return $milestoneInfo;
@@ -241,16 +269,26 @@ class Experience extends ComponentBase
     {//-Red line = current day (in points)
         $ptsPerSecond = $this->getPtsPerSecond($startDate, $endDate, $totalPoints);
         $now = (new DateTime('now'));
-//        $now->add(new \DateInterval("P1D"));
         $currentSeconds = abs($now->getTimestamp() - $startDate->getTimestamp());
+        
         return floor($ptsPerSecond*$currentSeconds);
     }
     
+    private function calculateMilestoneDueDate($milestonePoints)
+    {
+        $secsTranspired = ceil($milestonePoints/$this->ptsPerSecond);
+        $intervalSeconds = "PT".$secsTranspired."S";
+        
+        $sDate = clone($this->startDate);
+        $dueDate = $sDate->add(new \DateInterval($intervalSeconds));
+        
+        return $dueDate;
+    }
     private function calculateBonusOrPenalty($milestonePoints, $submittedAt)
     {
         $secsTranspired = ceil($milestonePoints/$this->ptsPerSecond);
         $intervalSeconds = "PT".$secsTranspired."S";
-        $sDate = $this->startDate;
+        $sDate = clone($this->startDate);
         $dueDate = $sDate->add(new \DateInterval($intervalSeconds));
         $diffSeconds = abs($dueDate->getTimestamp() - $submittedAt->getTimestamp());
         
