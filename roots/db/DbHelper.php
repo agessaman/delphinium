@@ -212,20 +212,36 @@ class DbHelper
         $courseId = $_SESSION['courseID'];
         if($request->getId())
         {
-//            return Quiz::with('content')->where(array(
-//                'module_id' => $request->getModuleId(),
-//                'module_item_id'=> $request->getModuleItemId()
-//            ))->first();
-            return Quiz::where(array(
-                'id' => $request->getId(),
-                'course_id'=> $courseId
-            ))->first(); 
+            if($request->getInclude_questions())
+            {
+                return Quiz::with('questions')->where(array(
+                    'quiz_id' => $request->getId(),
+                    'course_id'=> $courseId
+                ))->first(); 
+                
+            }
+            else
+            {
+                return Quiz::where(array(
+                    'quiz_id' => $request->getId(),
+                    'course_id'=> $courseId
+                ))->first(); 
+            }
         }
         else
         {//if no moduleId was found they must want all the modules
-            return Quiz::where(array(
-                'course_id' => $courseId
-            ))->get();
+            if($request->getInclude_questions())
+            {
+                return Quiz::with('questions')->where(array(
+                    'course_id' => $courseId
+                ))->get();
+            }
+            else
+            { 
+                return Quiz::where(array(
+                    'course_id' => $courseId
+                ))->get();
+            }
         }
     }
     /*

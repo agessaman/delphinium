@@ -13,7 +13,7 @@ class CreateRootsQuizzesTable extends Migration
             Schema::create('delphinium_roots_quizzes', function($table)
             {
                 $table->engine = 'InnoDB';
-                $table->integer('id');
+                $table->integer('quiz_id')->unsigned()->index();
                 $table->integer('course_id');
                 $table->string('title');
                 $table->string('description');
@@ -37,6 +37,12 @@ class CreateRootsQuizzesTable extends Migration
 
     public function down()
     {
+        //need to drop foreign table first.
+        if( Schema::hasTable('delphinium_roots_quiz_questions') )
+    	{
+            Schema::dropIfExists('delphinium_roots_quiz_questions');
+        }
+        
         if ( Schema::hasTable('delphinium_roots_quizzes') )
     	{
             Schema::drop('delphinium_roots_quizzes');

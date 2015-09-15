@@ -42,7 +42,7 @@ class TestRoots extends ComponentBase
     {  
         $this->roots = new Roots();
 //        $this->refreshCache();
-        $this->test();
+//        $this->test();
         
 //        Cache::flush();
 //        $this->testBasicModulesRequest();
@@ -77,7 +77,8 @@ class TestRoots extends ComponentBase
 //        $this->testGetAccount();
 //        $this->testGetEnrollments();
 //        $this->testGetQuiz();
-//        $this->testGetAllQuizzes();
+//        $this->testGetQuizQuestions();
+        $this->testGetAllQuizzes();
 //        $this->testGetPages();
         
     }
@@ -564,13 +565,15 @@ class TestRoots extends ComponentBase
     
     public function testGetAllQuizzes()
     {
-        $req = new QuizRequest(ActionType::GET, null, $fresh_data = true);
-        echo json_encode($this->roots->Quizzes($req));
+//        $req = new QuizRequest(ActionType::GET, null, $fresh_data = false, true);
+        $req = new QuizRequest(ActionType::GET, null, $fresh_data = true, true);
+        echo json_encode($this->roots->quizzes($req));
     }
     public function testGetQuiz()
     {   
-        $req = new QuizRequest(ActionType::GET, 464878, $fresh_data = true);
-        echo json_encode($this->roots->Quizzes($req));
+        $req = new QuizRequest(ActionType::GET, 464878, $fresh_data = true, true);
+        $result = $this->roots->quizzes($req);
+        echo json_encode($result);
     }
     public function testGetPages()
     {
@@ -579,9 +582,9 @@ class TestRoots extends ComponentBase
     
     public function testGetQuizQuestions()
     {
-        $req = new QuizRequest(ActionType::GET, 464878, $fresh_data = true);
-        $quizId = 464878;
-        echo json_encode($this->roots->getQuizQuestions($quizId));
+        $req = new QuizRequest(ActionType::GET, 464878, false, true);
+        $result = $this->roots->quizzes($req);
+        echo json_encode($result);
     }
     private function convertToUTC()
     {

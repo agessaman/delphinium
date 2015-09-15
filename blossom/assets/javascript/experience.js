@@ -1,4 +1,6 @@
 var div;
+var encouragementAxisScale;
+var maxPoints;
 $(document).ready(function () {
     div = d3.select("body").append("div")
         .attr("class", "tooltip")
@@ -34,14 +36,15 @@ function scaleExperience(experienceSize) {
 function drawAxis() {
     var bonus_penalties = milestoneClearance;
 
-    var maxPoints = d3.max(bonus_penalties, function (d) {
+    maxPoints = d3.max(bonus_penalties, function (d) {
         return +d.points;
     });
 
 //create the milestone scale
-    var encouragementAxisScale = d3.scale.linear()
+    encouragementAxisScale = d3.scale.linear()
             .domain([0, maxPoints])//maxPoints
             .rangeRound([bottom - 5, 10])
+//            .rangeRound([bottom , 0])//.range([0, bottom]);
             .nice(2);
 //create the milestone axis
     var encouragementAxis = d3.svg.axis()
@@ -178,13 +181,15 @@ function drawAxis() {
 function drawExperience(redLine) {
     var datelong = new Date();
     var date = (datelong.getMonth() + 1) + '/' + datelong.getDate() + '/' + datelong.getFullYear();
-    var redLineY = bottom - redLine;
     var scale = d3.scale.linear()
-            .domain([0, maxXP])
-            .range([0, bottom]);
+            .domain([0, maxPoints])
+//            .range([0, bottom]);
+            .rangeRound([10,bottom - 5]);
+    
+    var redLineY = bottom- scale(redLine);
 
     var redLineDom = d3.select("#redLine")
-            .attr('y', bottom - 10)
+            .attr('y', bottom)
             .style("fill", "red")
             .on("mouseover", function (d) {
                 addTooltip("Ideal progress: " + redLine + " pts by today. Getting ahead or behind of the line will result in bonus\n\
@@ -194,9 +199,9 @@ function drawExperience(redLine) {
                 removeTooltip();
             })
             .transition()
-            .delay(4000)
+            .delay(1000)
             .duration(1000)
-            .attr('height', 2, 5)
+            .attr('height', 2)
             .attr('y', redLineY);
 
     var therm = d3.select("#experienceRect")
@@ -209,7 +214,6 @@ function drawExperience(redLine) {
                 removeTooltip();
             })
             .transition()
-            .delay(2000)
             .style('fill', "steelblue")
             .attr('height', Math.round(scale(experienceXP)))
             .attr('y', bottom - Math.round(scale(experienceXP)))
@@ -219,14 +223,7 @@ function drawExperience(redLine) {
 
     var experienceText = d3.select("#experienceView").append("text")
             .attr("fill", "steelblue")
-//            .on("mouseover", function (d) {
-//                addTooltip("This is your total number of points, including bonus and penalties")
-//            })
-//            .on("mouseout", function (d) {
-//                removeTooltip();
-//            })
             .transition()
-            .delay(3000)
             .attr("fill", "#FD994C")
             .style("text-anchor", "middle")
             .attr('font-size', "20px")

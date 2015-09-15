@@ -23,6 +23,71 @@ class Experience extends ComponentBase
     public $bonusSeconds;
     public $penaltyPerSecond;
     public $penaltySeconds;
+    
+    function setSubmissions($submissions) {
+        $this->submissions = $submissions;
+    }
+
+    function setPtsPerSecond($ptsPerSecond) {
+        $this->ptsPerSecond = $ptsPerSecond;
+    }
+
+        function getRoots() {
+        return $this->roots;
+    }
+
+    function getStartDate() {
+        return $this->startDate;
+    }
+
+    function getEndDate() {
+        return $this->endDate;
+    }
+
+    function getBonusPerSecond() {
+        return $this->bonusPerSecond;
+    }
+
+    function getBonusSeconds() {
+        return $this->bonusSeconds;
+    }
+
+    function getPenaltyPerSecond() {
+        return $this->penaltyPerSecond;
+    }
+
+    function getPenaltySeconds() {
+        return $this->penaltySeconds;
+    }
+
+    function setRoots($roots) {
+        $this->roots = $roots;
+    }
+
+    function setStartDate($startDate) {
+        $this->startDate = $startDate;
+    }
+
+    function setEndDate($endDate) {
+        $this->endDate = $endDate;
+    }
+
+    function setBonusPerSecond($bonusPerSecond) {
+        $this->bonusPerSecond = $bonusPerSecond;
+    }
+
+    function setBonusSeconds($bonusSeconds) {
+        $this->bonusSeconds = $bonusSeconds;
+    }
+
+    function setPenaltyPerSecond($penaltyPerSecond) {
+        $this->penaltyPerSecond = $penaltyPerSecond;
+    }
+
+    function setPenaltySeconds($penaltySeconds) {
+        $this->penaltySeconds = $penaltySeconds;
+    }
+
     public function componentDetails()
     {
         return [
@@ -161,6 +226,11 @@ class Experience extends ComponentBase
     public function getUserPoints()
     {
         $score =0;
+        if(is_null($this->submissions))
+        {
+            $this->submissions = $this->getSubmissions();
+        }
+        
         foreach($this->submissions as $item)
         {
             $score = $score+intval($item['score']);
@@ -182,7 +252,7 @@ class Experience extends ComponentBase
         return $analytics;
     }
     
-    private function getMilestoneClearanceInfo($milestones)
+    public function getMilestoneClearanceInfo($milestones)
     {
         $localMilestones = $milestones;
         //order submissions by date
@@ -262,7 +332,8 @@ class Experience extends ComponentBase
         $userId = $_SESSION['userID'];
         $roots = new Roots();
         $request = new SubmissionsRequest(ActionType::GET, array($userId), false, array(), true, false, true, false);
-        return  $roots->submissions($request);
+        $submissions =  $roots->submissions($request);
+        return $submissions;
     }
     
     private function calculateRedLine(DateTime $startDate, DateTime $endDate, $totalPoints)
@@ -308,7 +379,7 @@ class Experience extends ComponentBase
         }
     }
     
-    private function getPtsPerSecond(DateTime $startDate, DateTime $endDate, $totalPoints)
+    public function getPtsPerSecond(DateTime $startDate, DateTime $endDate, $totalPoints)
     {
         $intervalSeconds = abs($startDate->getTimestamp() - $endDate->getTimestamp());
         return $totalPoints/$intervalSeconds;
