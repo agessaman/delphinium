@@ -32,7 +32,7 @@ class Experience extends ComponentBase
         $this->ptsPerSecond = $ptsPerSecond;
     }
 
-        function getRoots() {
+    function getRoots() {
         return $this->roots;
     }
 
@@ -88,6 +88,7 @@ class Experience extends ComponentBase
         $this->penaltySeconds = $penaltySeconds;
     }
 
+    
     public function componentDetails()
     {
         return [

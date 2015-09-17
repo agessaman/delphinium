@@ -18,7 +18,7 @@ circle {
     fill: steelblue;
 }
 .dot{
-    opacity: 0.15;   
+    opacity: 0.5;   
 }
 
 #gradedot{
@@ -51,11 +51,16 @@ div.tooltip {
     width:auto;
 }
 
-.locked
+#experienceSVG
 {
-    
+    margin:1em;
 }
-.unlocked
+.name
 {
-    
+    margin-bottom:15px;
+}
+.bonusPoints
+{
+    font-size:12px;
+    margin-left:3px;
 }

@@ -3,13 +3,13 @@ var encouragementAxisScale;
 var maxPoints;
 $(document).ready(function () {
     div = d3.select("body").append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0);
+            .attr("class", "tooltip")
+            .style("opacity", 0);
 
     scaleExperience(experienceSize);
-    drawAxis();
-    drawExperience(redLine);
-    drawScatterplot(studentScores);
+//    drawAxis();
+//    drawExperience(redLine);
+//    drawScatterplot(studentScores);
 });
 
 var bottom = 500;
@@ -34,6 +34,8 @@ function scaleExperience(experienceSize) {
 }
 
 function drawAxis() {
+
+    //get milestoneClearance info
     var bonus_penalties = milestoneClearance;
 
     maxPoints = d3.max(bonus_penalties, function (d) {
@@ -55,10 +57,26 @@ function drawAxis() {
                 return;
             })
             .tickSize(0, 0);
-
-
+    
     //add a line per each milestone
     var g = d3.select("#experienceAxis").append("svg:g");
+    //Add a line at the bottom of the experience (for the zero mark)
+            d3.select("#experienceAxis").append("svg:rect")
+            .attr("x", function (d) {
+                return (0);
+            })
+            .attr("width", function (d) {
+                return (185);
+            })
+            .attr("y", function (d) {
+                return bottom-5;
+            })
+            .attr("height", function (d) {
+                return 0.5;
+            })
+            .attr("stroke-width", 0.5)
+            .attr("stroke", "#606060");
+    
     g.selectAll("scatter-dots")
             .data(bonus_penalties)
             .enter().append("svg:rect")
@@ -74,8 +92,8 @@ function drawAxis() {
             .attr("height", function (d) {
                 return 0.5;
             })
-            .attr("stroke-width", 1)
-            .attr("stroke", "black")
+            .attr("stroke-width", 0.5)
+            .attr("stroke", "#606060")
             .on("mouseover", function (d) {
                 var date = new Date(d.due_at.date);
                 addTooltip(d.points + " pts due " + date.toDateString() + " at " + date.toLocaleTimeString())
@@ -84,13 +102,22 @@ function drawAxis() {
                 removeTooltip();
             });
 
-    //Add text
+    var monthNames = [
+        "Jan", "Feb", "Mar",
+        "Apr", "May", "Jun", "Jul",
+        "Aug", "Sep", "Oct",
+        "Nov", "Dec"
+    ];
+    //Add  milestone text
     g.selectAll("scatter-dots")
             .data(bonus_penalties)
+//            .enter().append("svg:textArea")
             .enter().append("svg:text")
             .attr("x", function (d) {
-                return (185);
+                return (195);
             })
+//            .attr("width", "200")
+//            .attr("height", "auto")
             .attr("y", function (d) {
                 return encouragementAxisScale(d.points - 2);//minus 2 so line and text are center aligned
             })
@@ -98,8 +125,15 @@ function drawAxis() {
                 return d.name;
             })
             .on("mouseover", function (d) {
+
                 var date = new Date(d.due_at.date);
-                addTooltip(d.points + " pts due " + date.toDateString() + " at " + date.toLocaleTimeString())
+                var day = date.getDate();
+                var monthIndex = date.getMonth();
+                var year = date.getFullYear();
+
+                var time = formatAMPM(date);
+
+                addTooltip(d.points + " pts due " + monthNames[monthIndex] + " " + day + " @ " + time);
             })
             .on("mouseout", function (d) {
                 removeTooltip();
@@ -116,16 +150,6 @@ function drawAxis() {
             .attr("y", function (d) {
                 return encouragementAxisScale(d.points - 23);//minus 6 so bonus/penalties are underneath milestone name
             })
-            .text(function (d) {
-                return roundToTwo(d.bonusPenalty);
-            })
-            .on("mouseover", function (d) {
-//                var penalti
-                addTooltip()
-            })
-            .on("mouseout", function (d) {
-                removeTooltip();
-            })
             .attr('font-family', 'FontAwesome')
             .attr("fill", "gray")
             .attr("transform", "translate(15,5)")
@@ -135,19 +159,22 @@ function drawAxis() {
                 }
                 else
                 {
-                    return "\uf13e";
+                    if (d.bonusPenalty < 0)
+                    {
+                        return "\uf017";
+                    }
                 }
             }).style('fill', function (d) {
-        if (d.bonusPenalty === 0) {
-            return 'black';
-        } else if (d.bonusPenalty < 0) {
-            return 'red';
-        } else {
-            return 'green';
-        }
-    })
+                if (d.bonusPenalty === 0) {
+                    return 'black';
+                } else if (d.bonusPenalty < 0) {
+                    return 'red';
+                } else {
+                    return 'green';
+                }
+            })
             .on("mouseover", function (d) {
-                var text = (d.cleared === 1) ? "Locked in points" : "Pts not locked in";
+                var text = getBonusPenaltyTooltipText(d);
                 addTooltip(text);
             })
             .on("mouseout", function (d) {
@@ -158,7 +185,7 @@ function drawAxis() {
             .data(bonus_penalties)
             .enter().append("svg:text")
             .attr("x", function (d) {
-                return (195);
+                return (200);
             })
             .attr("y", function (d) {
                 return encouragementAxisScale(d.points - 23);//minus 6 so bonus/penalties are underneath milestone name
@@ -166,9 +193,26 @@ function drawAxis() {
             .text(function (d) {
                 return roundToTwo(d.bonusPenalty);
             })
+            .attr("class","bonusPoints")
             .attr("transform", "translate(15,5)")
             .text(function (d) {
                 return roundToTwo(d.bonusPenalty);
+            })
+            .style('fill', function (d) {
+                if (d.bonusPenalty === 0) {
+                    return 'black';
+                } else if (d.bonusPenalty < 0) {
+                    return 'red';
+                } else {
+                    return 'green';
+                }
+            })
+            .on("mouseover", function (d) {
+                var text = getBonusPenaltyTooltipText(d);
+                addTooltip(text);
+            })
+            .on("mouseout", function (d) {
+                removeTooltip();
             });
 
 //apply the axis to a dom object
@@ -184,16 +228,16 @@ function drawExperience(redLine) {
     var scale = d3.scale.linear()
             .domain([0, maxPoints])
 //            .range([0, bottom]);
-            .rangeRound([10,bottom - 5]);
-    
-    var redLineY = bottom- scale(redLine);
+            .rangeRound([10, bottom - 5]);
+
+    var redLineY = encouragementAxisScale(redLine)+5;
 
     var redLineDom = d3.select("#redLine")
             .attr('y', bottom)
             .style("fill", "red")
             .on("mouseover", function (d) {
                 addTooltip("Ideal progress: " + redLine + " pts by today. Getting ahead or behind of the line will result in bonus\n\
-                    or penalties respectively")
+                    or penalties")
             })
             .on("mouseout", function (d) {
                 removeTooltip();
@@ -215,8 +259,8 @@ function drawExperience(redLine) {
             })
             .transition()
             .style('fill', "steelblue")
-            .attr('height', Math.round(scale(experienceXP)))
-            .attr('y', bottom - Math.round(scale(experienceXP)))
+            .attr('height', encouragementAxisScale(Math.round(experienceXP)))
+            .attr('y', encouragementAxisScale(Math.round(experienceXP)))
             .duration(1000)
             .ease('bounce');
 
@@ -255,11 +299,17 @@ function drawScatterplot(studentScores) {
             .domain([0, maxXP])
             .range([height, 0]);
 
-
+//            var scale = d3.scale.linear()
+//            .domain([0, maxPoints])
+////            .range([0, bottom]);
+//            .rangeRound([10, bottom - 5]);
+//
+//    var redLineY = bottom - scale(redLine);
 
     var g = d3.select("#experienceView").append("svg:g");
 
 
+var radius = 6;
     g.selectAll("scatter-dots")
             .data(data)
             .enter().append("svg:circle")
@@ -267,13 +317,13 @@ function drawScatterplot(studentScores) {
                 return x(d[0]);
             })
             .attr("cy", function (d) {
-                return y(d[1]);
+                return (encouragementAxisScale(d[1]));
             })
-            .attr("r", 6)
+            .attr("r", radius)
             .attr("class", "dot")
-            .attr("transform", "translate(140,15)")
+            .attr("transform", "translate(140,0)")
             .on("mouseover", function (d) {
-                addTooltip("Your peers: " + d[1] + " points")
+                addTooltip("Your peer: " + d[1] + " points")
             })
             .on("mouseout", function (d) {
                 removeTooltip();
@@ -281,11 +331,11 @@ function drawScatterplot(studentScores) {
 
     g.append("svg:circle")
             .attr("cx", x(0.5))
-            .attr("cy", y(experienceXP))
-            .attr("r", 6)
+            .attr("cy", (encouragementAxisScale(Math.round(experienceXP))))
+            .attr("r", radius)
             .attr("id", "gradedot")
             .style("stroke", "black")
-            .attr("transform", "translate(140,15)")
+            .attr("transform", "translate(140,0)")
             .on("mouseover", function (d) {
                 addTooltip("You: " + experienceXP + " points")
             })
@@ -295,6 +345,33 @@ function drawScatterplot(studentScores) {
 
 }
 
+function getBonusPenaltyTooltipText(d)
+{
+    var text = "";
+    if (d.cleared === 0)
+    {
+        if (d.bonusPenalty < 0)
+        {
+            text = "Limit your penalties to " + roundToTwo(d.bonusPenalty) + " points by reaching this milestone now";
+        }
+        else if (d.bonusPenalty > 0)
+        {
+            text = "Bonus you could earn if you reach this milestone now";
+        }
+    }
+    if (d.cleared === 1)
+    {
+        if (d.bonusPenalty < 0)
+        {
+            text = "Points lost for falling behind in this milestone";
+        }
+        else if (d.bonusPenalty > 0)
+        {
+            text = "Bonus earned for this milestone ";
+        }
+    }
+    return text;
+}
 function roundToTwo(num) {
     return +(Math.round(num + "e+2") + "e-2");
 }
@@ -315,4 +392,16 @@ function removeTooltip()
     div.transition()
             .duration(500)
             .style("opacity", 0);
+}
+
+//from http://stackoverflow.com/questions/8888491/how-do-you-display-javascript-datetime-in-12-hour-am-pm-format
+function formatAMPM(date) {
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
+    var ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    minutes = minutes < 10 ? '0' + minutes : minutes;
+    var strTime = hours + ':' + minutes + ' ' + ampm;
+    return strTime;
 }
