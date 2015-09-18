@@ -1,18 +1,28 @@
 var div;
 var encouragementAxisScale;
 var maxPoints;
+var bottom = 500;
+
 $(document).ready(function () {
     div = d3.select("body").append("div")
             .attr("class", "tooltip")
             .style("opacity", 0);
 
+    //scale experience
     scaleExperience(experienceSize);
-//    drawAxis();
-//    drawExperience(redLine);
-//    drawScatterplot(studentScores);
+
+    //prepare milestone info. 
+    var experiencePromise = prepareMilestoneInfo();
+    experiencePromise.then(function (resolve) {
+        //prepare experience info
+        prepareExperienceInfo();
+        //draw scatterplot
+        drawScatterplot();
+    }, function (reject) {
+        console.log(reject);
+    });
 });
 
-var bottom = 500;
 
 function scaleExperience(experienceSize) {
     var experienceView = d3.select("#experienceView");
@@ -33,22 +43,33 @@ function scaleExperience(experienceSize) {
             .attr('height', experienceHeight);
 }
 
-function drawAxis() {
+function prepareMilestoneInfo() {
 
+    var bonus_penalties;
     //get milestoneClearance info
-    var bonus_penalties = milestoneClearance;
+    var promise = $.get("getMilestoneClearanceInfo", {experienceInstanceId: instanceId});
+    promise.then(function (data1, textStatus, jqXHR) {
+        bonus_penalties = data1;
+        drawMilestoneInfo(bonus_penalties);
+    })
+    .fail(function (data2) {
+        console.log("An error has occurred. Please notify your instructor");
+    });
+    return promise;
+}
 
+function drawMilestoneInfo(bonus_penalties) {
+
+    //create the milestone scale
     maxPoints = d3.max(bonus_penalties, function (d) {
         return +d.points;
     });
-
-//create the milestone scale
     encouragementAxisScale = d3.scale.linear()
             .domain([0, maxPoints])//maxPoints
             .rangeRound([bottom - 5, 10])
-//            .rangeRound([bottom , 0])//.range([0, bottom]);
             .nice(2);
-//create the milestone axis
+    
+    //create the milestone axis
     var encouragementAxis = d3.svg.axis()
             .scale(encouragementAxisScale)
             .orient('left')
@@ -57,11 +78,11 @@ function drawAxis() {
                 return;
             })
             .tickSize(0, 0);
-    
+
     //add a line per each milestone
     var g = d3.select("#experienceAxis").append("svg:g");
     //Add a line at the bottom of the experience (for the zero mark)
-            d3.select("#experienceAxis").append("svg:rect")
+    d3.select("#experienceAxis").append("svg:rect")
             .attr("x", function (d) {
                 return (0);
             })
@@ -69,14 +90,14 @@ function drawAxis() {
                 return (185);
             })
             .attr("y", function (d) {
-                return bottom-5;
+                return bottom - 5;
             })
             .attr("height", function (d) {
                 return 0.5;
             })
             .attr("stroke-width", 0.5)
             .attr("stroke", "#606060");
-    
+
     g.selectAll("scatter-dots")
             .data(bonus_penalties)
             .enter().append("svg:rect")
@@ -109,21 +130,21 @@ function drawAxis() {
         "Nov", "Dec"
     ];
     //Add  milestone text
-    g.selectAll("scatter-dots")
+    var mileLabels = g.selectAll("scatter-dots")
             .data(bonus_penalties)
-//            .enter().append("svg:textArea")
+//            .enter().append("svg:text")
             .enter().append("svg:text")
+            .attr('width','200')
             .attr("x", function (d) {
                 return (195);
             })
-//            .attr("width", "200")
-//            .attr("height", "auto")
             .attr("y", function (d) {
-                return encouragementAxisScale(d.points - 2);//minus 2 so line and text are center aligned
+                return encouragementAxisScale(d.points)+4;//minus 2 so line and text are center aligned
             })
             .text(function (d) {
                 return d.name;
             })
+            .call(wrap, 95, 195)
             .on("mouseover", function (d) {
 
                 var date = new Date(d.due_at.date);
@@ -139,7 +160,6 @@ function drawAxis() {
                 removeTooltip();
             });
 
-
     // add bonus
     g.selectAll("scatter-dots")
             .data(bonus_penalties)
@@ -148,9 +168,10 @@ function drawAxis() {
                 return (183);
             })
             .attr("y", function (d) {
-                return encouragementAxisScale(d.points - 23);//minus 6 so bonus/penalties are underneath milestone name
+                return encouragementAxisScale(d.points)-16;//minus 6 so bonus/penalties are underneath milestone name
             })
             .attr('font-family', 'FontAwesome')
+            .attr('font-size','11px')
             .attr("fill", "gray")
             .attr("transform", "translate(15,5)")
             .text(function (d) {
@@ -165,14 +186,14 @@ function drawAxis() {
                     }
                 }
             }).style('fill', function (d) {
-                if (d.bonusPenalty === 0) {
-                    return 'black';
-                } else if (d.bonusPenalty < 0) {
-                    return 'red';
-                } else {
-                    return 'green';
-                }
-            })
+        if (d.bonusPenalty === 0) {
+            return 'black';
+        } else if (d.bonusPenalty < 0) {
+            return 'red';
+        } else {
+            return 'green';
+        }
+    })
             .on("mouseover", function (d) {
                 var text = getBonusPenaltyTooltipText(d);
                 addTooltip(text);
@@ -188,12 +209,12 @@ function drawAxis() {
                 return (200);
             })
             .attr("y", function (d) {
-                return encouragementAxisScale(d.points - 23);//minus 6 so bonus/penalties are underneath milestone name
+                return encouragementAxisScale(d.points)-16;//minus 6 so bonus/penalties are underneath milestone name
             })
             .text(function (d) {
                 return roundToTwo(d.bonusPenalty);
             })
-            .attr("class","bonusPoints")
+            .attr("class", "bonusPoints")
             .attr("transform", "translate(15,5)")
             .text(function (d) {
                 return roundToTwo(d.bonusPenalty);
@@ -215,14 +236,27 @@ function drawAxis() {
                 removeTooltip();
             });
 
-//apply the axis to a dom object
+    //apply the axis to a dom object
     var encourage = d3.select("#experienceAxis")
             .attr('class', 'axis')
             .call(encouragementAxis);
 
 }
 
-function drawExperience(redLine) {
+function prepareExperienceInfo() {
+
+    var promise = $.get("getRedLinePoints", {experienceInstanceId: instanceId});
+    promise.then(function (data1, textStatus, jqXHR) {
+        redLinePoints = data1;
+        drawExperience(redLinePoints);
+    })
+            .fail(function (data2) {
+                console.log("An error has occurred. Please notify your instructor");
+            });
+}
+
+function drawExperience(redLine)
+{
     var datelong = new Date();
     var date = (datelong.getMonth() + 1) + '/' + datelong.getDate() + '/' + datelong.getFullYear();
     var scale = d3.scale.linear()
@@ -230,7 +264,7 @@ function drawExperience(redLine) {
 //            .range([0, bottom]);
             .rangeRound([10, bottom - 5]);
 
-    var redLineY = encouragementAxisScale(redLine)+5;
+    var redLineY = encouragementAxisScale(redLine);
 
     var redLineDom = d3.select("#redLine")
             .attr('y', bottom)
@@ -282,67 +316,67 @@ function drawExperience(redLine) {
 
 }
 
-function drawScatterplot(studentScores) {
-    var data = [];
-    for (var i = 0; i <= studentScores.length - 1; i++)
-    {
-        data.push([0.5, studentScores[i]]);
-    }
+function drawScatterplot() {
+    //get student scores
+    var promise = $.get("getStudentsScores");//TODO: grab the real id
+    promise.then(function (data1, textStatus, jqXHR) {
+        studentScores = data1;
 
-    var margin = {top: 10, bottom: 10, }, height = 500 - margin.top - margin.bottom;
+        var data = [];
+        for (var i = 0; i <= studentScores.length - 1; i++)
+        {
+            data.push([0.5, studentScores[i]]);
+        }
 
-    var x = d3.scale.linear()
-            .domain([0, 1])
-            .range([0, 25]);
+        var margin = {top: 10, bottom: 10, }, height = 500 - margin.top - margin.bottom;
 
-    var y = d3.scale.linear()
-            .domain([0, maxXP])
-            .range([height, 0]);
+        var x = d3.scale.linear()
+                .domain([0, 1])
+                .range([0, 25]);
 
-//            var scale = d3.scale.linear()
-//            .domain([0, maxPoints])
-////            .range([0, bottom]);
-//            .rangeRound([10, bottom - 5]);
-//
-//    var redLineY = bottom - scale(redLine);
+        var y = d3.scale.linear()
+                .domain([0, maxXP])
+                .range([height, 0]);
 
-    var g = d3.select("#experienceView").append("svg:g");
+        var g = d3.select("#experienceView").append("svg:g");
 
 
-var radius = 6;
-    g.selectAll("scatter-dots")
-            .data(data)
-            .enter().append("svg:circle")
-            .attr("cx", function (d) {
-                return x(d[0]);
-            })
-            .attr("cy", function (d) {
-                return (encouragementAxisScale(d[1]));
-            })
-            .attr("r", radius)
-            .attr("class", "dot")
-            .attr("transform", "translate(140,0)")
-            .on("mouseover", function (d) {
-                addTooltip("Your peer: " + d[1] + " points")
-            })
-            .on("mouseout", function (d) {
-                removeTooltip();
+        var radius = 6;
+        g.selectAll("scatter-dots")
+                .data(data)
+                .enter().append("svg:circle")
+                .attr("cx", function (d) {
+                    return x(d[0]);
+                })
+                .attr("cy", function (d) {
+                    return (encouragementAxisScale(d[1]));
+                })
+                .attr("r", radius)
+                .attr("class", "dot")
+                .attr("transform", "translate(140,0)")
+                .on("mouseover", function (d) {
+                    addTooltip("Your peer: " + d[1] + " points")
+                })
+                .on("mouseout", function (d) {
+                    removeTooltip();
+                });
+
+        g.append("svg:circle")
+                .attr("cx", x(0.5))
+                .attr("cy", (encouragementAxisScale(Math.round(experienceXP))))
+                .attr("r", radius)
+                .attr("id", "gradedot")
+                .style("stroke", "black")
+                .attr("transform", "translate(140,0)")
+                .on("mouseover", function (d) {
+                    addTooltip("You: " + experienceXP + " points")
+                })
+                .on("mouseout", function (d) {
+                    removeTooltip();
+                });
+    })
+            .fail(function (data2) {
             });
-
-    g.append("svg:circle")
-            .attr("cx", x(0.5))
-            .attr("cy", (encouragementAxisScale(Math.round(experienceXP))))
-            .attr("r", radius)
-            .attr("id", "gradedot")
-            .style("stroke", "black")
-            .attr("transform", "translate(140,0)")
-            .on("mouseover", function (d) {
-                addTooltip("You: " + experienceXP + " points")
-            })
-            .on("mouseout", function (d) {
-                removeTooltip();
-            });
-
 }
 
 function getBonusPenaltyTooltipText(d)
@@ -404,4 +438,29 @@ function formatAMPM(date) {
     minutes = minutes < 10 ? '0' + minutes : minutes;
     var strTime = hours + ':' + minutes + ' ' + ampm;
     return strTime;
+}
+
+function wrap(text, width, x) {
+  text.each(function() {
+    var text = d3.select(this);
+    var words = text.text().split(/\s+/).reverse(),
+        word,
+        line = [],
+        lineNumber = 0,
+        lineHeight = 1.1; // ems
+        var y = (text.attr("y"));
+        console.log(y);
+        var dy = 1,
+        tspan = text.text(null).append("tspan").attr("x", x).attr("y", y);
+    while (word = words.pop()) {
+      line.push(word);
+      tspan.text(line.join(" "));
+      if (tspan.node().getComputedTextLength() > width) {
+        line.pop();
+        tspan.text(line.join(" "));
+        line = [word];
+        tspan = text.append("tspan").attr("x", x).attr("y", y).attr("dy", (++lineNumber-1) * lineHeight + dy + "em").text(word);
+      }
+    }
+  });
 }

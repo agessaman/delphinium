@@ -122,21 +122,11 @@ class Experience extends ComponentBase
 
             $this->roots = new Roots();
             $instance = ExperienceModel::find($this->property('Instance'));
-            $milestonesDesc = Milestone::where('experience_id','=',$instance->id)->orderBy('points','desc')->get();
-            $milestonesAsc = Milestone::where('experience_id','=',$instance->id)->orderBy('points','asc')->get();
-
-            $milestoneArr = array();
-            foreach($milestonesAsc as $item)
-            {
-                $milestoneArr[] = $item->name;
-            }
-
+            
             //set class variables
             $stDate = new DateTime($instance->start_date);
             $endDate = new DateTime($instance->end_date);
             $this->startDate = $stDate;
-            
-            
             $this->endDate = $endDate;
             $this->submissions =$this->getSubmissions();
             $this->ptsPerSecond = $this->getPtsPerSecond($stDate, $endDate, $instance->total_points);
@@ -146,42 +136,13 @@ class Experience extends ComponentBase
             $this->bonusPerSecond = $instance->bonus_per_day/24/60/60;
 
             //set page variables
-            $this->page['numMilestones'] = count($milestonesDesc);
-            $this->page['encouragement'] = json_encode($milestoneArr);
+            $this->page['instanceId'] = $instance->id;
             $this->page['experienceXP'] = $this->getUserPoints();//current points
             $this->page['maxXP'] = $instance->total_points;//total points for this experience
-            $this->page['startDate'] = $instance->start_date;
-            $this->page['endDate'] = $instance->end_date;
             $this->page['experienceSize'] = $instance->size;
             $this->page['experienceAnimate'] = $instance->animate;
-            $redLine = $this->calculateRedLine($this->startDate, $this->endDate, $instance->total_points);
             
-            
-            //up to here good
-            $this->page['redLine'] = $redLine;
-            $milestoneClearanceInfo = $this->getMilestoneClearanceInfo($milestonesDesc);
-            
-            $this->page['milestoneClearance'] = json_encode($milestoneClearanceInfo);
-            $this->page['studentScores'] = json_encode($this->getAllStudentScores());
-
-            $bonus=0;
-            $penalties=0;
-            foreach($milestoneClearanceInfo as $item)
-            {
-                if(($item->bonusPenalty>0) && ($item->cleared))
-                {
-                    $bonus = $bonus+$item->bonusPenalty;
-                }
-                else if(($item->bonusPenalty<0) && ($item->cleared))
-                {
-                    $penalties = $penalties+$item->bonusPenalty;
-                }
-            }
-            $this->page['experienceGrade'] =  round($this->getUserPoints()+$bonus+$penalties,2);//?
-            $this->page['experienceBonus'] = $bonus;
-            $this->page['experiencePenalties'] = $penalties;
             /*
-
             //run rules
 
             $cType = ComponentTypes::where(array('type' => 'experience'))->first();

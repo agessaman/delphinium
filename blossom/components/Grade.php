@@ -82,7 +82,6 @@ class Grade extends ComponentBase {
        
         
         //todo: get the bonus, etc from blade, not from experience
-        $this->page['gradeAnimate'] = $instance->Animate;
         $this->page['gradeSize'] = $instance->Size;
 
         $this->getGradeData();
