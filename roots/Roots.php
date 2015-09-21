@@ -474,7 +474,7 @@ class Roots
         }
     }
     
-    public function Quizzes(QuizRequest $request)
+    public function quizzes(QuizRequest $request)
     {
         switch($request->getActionType())
         {
@@ -488,9 +488,25 @@ class Roots
                     switch(get_class($data))
                     {
                         case "Illuminate\Database\Eloquent\Collection":
-                            return (!$data->isEmpty()) ?  $data :  $this->getQuizzesFromLms($request);
+                            if($data->isEmpty()||($request->getInclude_questions()&& count($data->first()->questions)<1))
+                            {
+                                return $this->getQuizzesFromLms($request);
+                            }
+                            else
+                            {
+                                return $data;
+                            }
+//                            return (!$data->isEmpty()) ?  $data :  $this->getQuizzesFromLms($request);
                         default:
-                            return (!is_null($data)) ? $data : $this->getQuizzesFromLms($request);
+                            if(is_null($data)||($request->getInclude_questions()&&count($data->questions)<1))
+                            {
+                                return $this->getQuizzesFromLms($request);
+                            }
+                            else 
+                            {
+                                return $data;
+                            }
+
                     }
                 }
                 else
@@ -502,28 +518,6 @@ class Roots
         
         
     }
-    
-    public function getQuizQuestions($quizId)
-    {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
-        $lms = strtoupper($_SESSION['lms']);
-        if(Lms::isValidValue($lms))
-        {
-            switch ($lms)
-            {
-                case (Lms::CANVAS):
-                    $canvasHelper = new CanvasHelper();
-                    return $canvasHelper->getQuizQuestions($quizId);
-                default:
-                    $canvasHelper = new CanvasHelper();
-                    return $canvasHelper->getQuizQuestions($quizId);
-            }
-        }
-    }
-    
     public function getExternalTools()
     {
         if(!isset($_SESSION)) 
@@ -751,11 +745,33 @@ class Roots
             {
                 case (Lms::CANVAS):
                     $canvasHelper = new CanvasHelper();
-                    $canvasHelper->getQuizzes($request);
+                    $quizzes = $canvasHelper->getQuizzes();
+                    if($request->getInclude_questions()&& !is_null($request->getId()))
+                    {
+                        $canvasHelper->getQuizQuestions($request->getId());
+                    }
+                    else if ($request->getInclude_questions())
+                    {
+                        foreach($quizzes as $quiz)
+                        {
+                            $canvasHelper->getQuizQuestions($quiz->quiz_id);
+                        }
+                    }
                     return $this->dbHelper->getQuizzes($request);
                 default:
                     $canvasHelper = new CanvasHelper();
-                    $canvasHelper->getQuizzes($request);
+                    $quizzes = $canvasHelper->getQuizzes();
+                    if($request->getInclude_questions()&& !is_null($request->getId()))
+                    {
+                        $canvasHelper->getQuizQuestions($request->getId());
+                    }
+                    else if ($request->getInclude_questions())
+                    {
+                        foreach($quizzes as $quiz)
+                        {
+                            $canvasHelper->getQuizQuestions($quiz->id);
+                        }
+                    }
                     return $this->dbHelper->getQuizzes($request);
             }
         }

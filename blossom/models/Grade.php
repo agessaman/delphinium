@@ -15,7 +15,6 @@ class Grade extends Model
 
     public $rules = [
         'Name'=>'required',
-        'Animate'=>'required',
         'Size' => 'required'
     ];
 

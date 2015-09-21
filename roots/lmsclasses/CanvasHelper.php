@@ -14,11 +14,13 @@ use Delphinium\Roots\Models\Submission;
 use Delphinium\Roots\Models\Page;
 use Delphinium\Roots\Models\File;
 use Delphinium\Roots\Models\Quiz;
+use Delphinium\Roots\Models\Quizquestion;
 use Delphinium\Roots\Models\Discussion;
 use Delphinium\Roots\Requestobjects\SubmissionsRequest;
 use Delphinium\Roots\Requestobjects\ModulesRequest;
 use Delphinium\Roots\Requestobjects\AssignmentsRequest;
 use Delphinium\Roots\Requestobjects\AssignmentGroupsRequest;
+use Delphinium\Roots\Requestobjects\QuizRequest;
 use Delphinium\Roots\Updatableobjects\Module as UpdatableModule;
 use Delphinium\Roots\Updatableobjects\ModuleItem as UpdatableModuleItem;
 
@@ -87,8 +89,9 @@ class CanvasHelper
         return $this->simpleGet('pages');
     }
     
-    public function getQuizzes($request)
+    public function getQuizzes()
     {
+        //process quiz
         $res = $this->simpleGet('quizzes');
         if(!isset($_SESSION))
         {
@@ -107,7 +110,11 @@ class CanvasHelper
     
     public function getQuizQuestions($quizId)
     {//api/v1/courses/:course_id/quizzes/:quiz_id/questions
-        $urlPieces= $this->initUrl();
+       $urlPieces= $this->initUrl();
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
         $token = \Crypt::decrypt($_SESSION['userToken']);
         $urlArgs = array();
         $urlPieces[] = 'quizzes';
@@ -118,7 +125,14 @@ class CanvasHelper
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
         $response = GuzzleHelper::getAsset($url);
-        return $response->getBody();
+        $questions = json_decode($response->getBody());
+
+        $response = array();
+        foreach($questions as $question)
+        {
+            $response[] = $this->processSingleQuizQuestion($question);
+        }
+        return $response;
     }
     
     public function getExternalTools()
@@ -608,8 +622,8 @@ class CanvasHelper
      */
     public function processSingleQuiz($item, $courseId)
     {   
-        $quiz = Quiz::firstOrNew(array('id' => $item->id));
-        $quiz->id = $item->id;
+        $quiz = Quiz::firstOrNew(array('quiz_id' => $item->id));
+        $quiz->quiz_id = $item->id;
         $quiz->course_id = $courseId;
         if(isset($item->title)){$quiz->title = $item->title;}
         if(isset($item->description)){$quiz->description = $item->description;}
@@ -638,6 +652,25 @@ class CanvasHelper
         
         $quiz->save();
         return $quiz;
+    }
+    
+    public function processSingleQuizQuestion($quizQuestion)
+    {
+        $question = Quizquestion::firstOrNew(array('question_id' => $quizQuestion->id));
+        $question->question_id = $quizQuestion->id;
+        $question->quiz_id = $quizQuestion->quiz_id;
+        if(isset($quizQuestion->position)){$question->position = $quizQuestion->position;}
+        if(isset($quizQuestion->points_possible)){$question->points_possible = $quizQuestion->points_possible;}
+        if(isset($quizQuestion->question_name)){$question->name = $quizQuestion->question_name;}
+        if(isset($quizQuestion->question_type)){$question->type = $quizQuestion->question_type;}
+        if(isset($quizQuestion->question_text)){$question->text = htmlspecialchars(($quizQuestion->question_text));}
+        if(isset($quizQuestion->correct_comments)){$question->correct_comments = $quizQuestion->correct_comments;}
+        if(isset($quizQuestion->incorrect_comments)){$question->incorrect_comments = $quizQuestion->incorrect_comments;}
+        if(isset($quizQuestion->neutral_comments)){$question->neutral_comments = $quizQuestion->neutral_comments;}
+        if(isset($quizQuestion->answers)){$question->answers = json_encode($quizQuestion->answers);}
+        
+        $question->save();
+        return $question;
     }
     /*
      * SUBMISSIONS
@@ -711,7 +744,10 @@ class CanvasHelper
             }
 
         }
-        
+        if($request->getGrouped())
+        {
+            $urlArgs[]="grouped=true";
+        }
         //Attach token
         $urlArgs[]="access_token={$token}&per_page=5000";
         
@@ -719,7 +755,7 @@ class CanvasHelper
         
         $response = GuzzleHelper::makeRequest($request, $url);
         
-        return $this->processCanvasSubmissionData(json_decode($response->getBody()), $request->getIncludeTags());
+        return $this->processCanvasSubmissionData(json_decode($response->getBody()), $request->getIncludeTags(), $request->getGrouped());
         
     }
     
@@ -1270,20 +1306,34 @@ class CanvasHelper
     /*
      * SUBMISSIONS
      */
-    private function processCanvasSubmissionData($data, $includeTags = false)
+    private function processCanvasSubmissionData($data, $includeTags = false, $grouped = false)
     {
         $submissions = array();
-        if(gettype($data)==="array")//we have a single submission
-        { //we have multiple submissions
-            foreach($data as $row)
+        if($grouped)
+        {
+            foreach($data as $userSubmissions)
             {
-                $subm = $this->processSingleSubmission($row, $includeTags);
-                $submissions[] = $subm;
+                foreach($userSubmissions->submissions as $submission)
+                {
+                    $subm = $this->processSingleSubmission($submission, $includeTags);
+                    $submissions[] = $subm;
+                }
             }
         }
         else
-        {  
-            $submissions[] = $this->processSingleSubmission($data, $includeTags);
+        {
+            if(gettype($data)==="array")//we have a single submission
+            { //we have multiple submissions
+                foreach($data as $row)
+                {
+                    $subm = $this->processSingleSubmission($row, $includeTags);
+                    $submissions[] = $subm;
+                }
+            }
+            else
+            {  
+                $submissions[] = $this->processSingleSubmission($data, $includeTags);
+            }
         }
         return $submissions;
     }
@@ -1385,7 +1435,7 @@ class CanvasHelper
         $urlArgs[]="access_token={$token}&per_page=5000";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
-
+        
         $response = GuzzleHelper::getAsset($url);
         return $response->getBody();
     }

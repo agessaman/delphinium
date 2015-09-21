@@ -15,7 +15,6 @@ class CreateGradesTable extends Migration
                 $table->engine = 'InnoDB';
                 $table->increments('id');
                 $table->string('Name');
-                $table->string('Animate');
                 $table->string('Size');
                 $table->timestamps();
             });

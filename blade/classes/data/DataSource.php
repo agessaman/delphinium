@@ -40,52 +40,52 @@ class DataSource implements IDataSource {
     public function getAssignments($params) {
         $request = DataSource::createGetAssignmentsRequest();
         DataSource::setAssignmentParams($request, $params);
-        return $this->runRules(DataSource::ASSIGNMENT, $this->rg($params), $this->roots->assignments($request));
+        return $this->runRules(DataSource::ASSIGNMENT, $params, $this->roots->assignments($request));
         //var_dump($this->roots->assignments($request));
     }
 
 //    public function getAssignment($id, $params) {
 //        $request = DataSource::createGetAssignmentsRequest($id);
 //        DataSource::setAssignmentParams($request, $params);
-//        return $this->runRules('assignment', $this->rg($params), $this->roots->assignments($request)->toArray());
+//        return $this->runRules('assignment', $params, $this->roots->assignments($request)->toArray());
 //    }
 
     public function getModules($params) {
         $request = DataSource::createGetModulesRequest();
         DataSource::setModuleParams($request, $params);
-        return $this->runRules(DataSource::MODULE, $this->rg($params), $this->roots->modules($request)->toArray());
+        return $this->runRules(DataSource::MODULE, $params, $this->roots->modules($request)->toArray());
     }
 
     //TODO: fix so this gets one module only
 //    public function getModule($id, $params) {
 //        $request = DataSource::createGetModulesRequest($id);
 //        DataSource::setModuleParams($request, $params);
-//        return $this->runRules('module', $this->rg($params), $this->roots->modules($request)->toArray());
+//        return $this->runRules('module', $params, $this->roots->modules($request)->toArray());
 //    }
 
     public function getAssignmentGroups($params) {
         $request = DataSource::createGetAssignmentGroupsRequest();
         DataSource::setAssignmentGroupParams($request, $params);
-        return $this->runRules(DataSource::ASSN_GROUP, $this->rg($params), $this->roots->assignmentGroups($request)->toArray());
+        return $this->runRules(DataSource::ASSN_GROUP, $params, $this->roots->assignmentGroups($request)->toArray());
     }
 
 //    public function getAssignmentGroup($id, $params) {
 //        $request = DataSource::createGetAssignmentGroupsRequest($id);
-//        return $this->requestAssignmentGroups($this->rg($params), $request, $params);
+//        return $this->requestAssignmentGroups($params, $request, $params);
 //    }
 //    public function getAssignmentSubmissions($assignment_id, $params) {
 //        $request = DataSource::createGetSubmissionsRequest();
-//        return $this->requestSubmissions($this->rg($params), $request, $params);
+//        return $this->requestSubmissions($params, $request, $params);
 //    }
 //    public function getAssignmentSubmission($assignment_id, $id, $params) {
 //        $request = DataSource::createGetSubmissionsRequest();
-//        return $this->requestSubmissions($this->rg($params), $request, $params);
+//        return $this->requestSubmissions($params, $request, $params);
 //    }
 
     public function getSubmissions($assignment_id, $params) {
         $request = DataSource::createGetSubmissionsRequest($assignment_id);
         DataSource::setSubmissionParams($request, $params);
-        return $this->runRules(DataSource::SUBMISSION, $this->rg($params), $this->roots->submissions($request)->toArray());
+        return $this->runRules(DataSource::SUBMISSION, $params, $this->roots->submissions($request)->toArray());
     }
 
     public function getMultipleSubmissions($params) {
@@ -100,7 +100,7 @@ class DataSource implements IDataSource {
 
         DataSource::setSubmissionParams($request, $params);
         $results = $this->roots->submissions($request);
-        return $this->runRules(DataSource::SUBMISSION, $this->rg($params), $results);
+        return $this->runRules(DataSource::SUBMISSION, $params, $results);
     }
 
     public function getUserAssignmentAnalytics($params) {
@@ -110,10 +110,10 @@ class DataSource implements IDataSource {
         foreach ($results as $item) {
             $data[] = (array) $item;
         }
-        return $this->runRules(DataSource::ASSN_ANALYTICS, $this->rg($params), $data);
+        return $this->runRules(DataSource::ASSN_ANALYTICS, $params, $data);
     }
 
-    private function processResults($data) {
+    private function printResults($data) {
         if ($this->prettyprint) {
             var_dump($data);
             return null;
@@ -138,20 +138,23 @@ class DataSource implements IDataSource {
     }
 
     // TODO: don't run rules on excluded groups if all whitelist rules have finished
-    private function runRules($datatype, $rulegroups, $data) {
+    private function runRules($datatype, $params, $data) {
+        $rulegroups = $this->rg($params);
         if (empty($rulegroups)) {
-            return $this->processResults($data);
+            $this->sortResults($data, $params);
+            return $this->printResults($data);
         }
-
+        
         $rules = $this->getRules($rulegroups);
         $this->sortRules($rules);
+        $exclude = isset($rules[0]) && $rules[0]->isWhitelistRule(); // exclude all if whitelist present
 
         $results = [];
         $extctx = new ExternalContext();
 
         foreach ($data as $d) {
             $ctx = new Context($d);
-            if (isset($rules[0]) && $rules[0]->isWhitelistRule()) {
+            if ($exclude) {
                 $ctx->setExcluded(true);
             }
 
@@ -167,11 +170,11 @@ class DataSource implements IDataSource {
             }
         }
 
-        $results = array_merge($extctx->getGroupData(), $results);
-        return $this->processResults($results);
+        $this->sortResults($results, $params);
+        $merged_results = array_merge($extctx->getGroupData(), $results);
+        return $this->printResults($merged_results);
     }
 
-    // TODO: fix rule sorting
     private function sortRules(&$rules) {
         usort($rules, function(Rule $rule1, Rule $rule2) {
             if ($rule1->isWhitelistRule() && !$rule2->isWhitelistRule()) {
@@ -185,8 +188,37 @@ class DataSource implements IDataSource {
             return 0;
         });
 
-        //var_dump($rules);
         return $rules;
+    }
+    
+    // uses 'orderby' and 'desc' params to determine a sort order
+    // 'orderby' is a comma seperated list of indexes that specify which
+    // item on a result that you want to sort by.
+    // If the item you want is multiple levels deep, specify the whole path in orderby
+    private function sortResults(&$results, $params) {
+        $orderby = isset($params['orderby']) ? explode(',', $params['orderby']) : [];
+        $asc = isset($params['desc']) ? !$params['desc'] : true;
+        
+        if (!empty($orderby)) {
+            usort($results, $this->getResultComparer($orderby, $asc));
+        }
+    }
+
+    private function getResultComparer($orderby, $asc) {
+        return function($item1, $item2) use ($orderby, $asc) {
+            foreach($orderby as $spec) {
+                $item1 = $item1[$spec];
+                $item2 = $item2[$spec];
+            }
+            
+            if (($item1 < $item2) xor !$asc) {
+                return -1;
+            }
+            if (($item1 > $item2) xor !$asc) {
+                return 1;
+            }
+            return 0;
+        };
     }
 
     private static function createGetModulesRequest($id = null) {

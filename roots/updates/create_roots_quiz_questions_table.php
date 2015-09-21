@@ -13,19 +13,21 @@ class CreateRootsQuizQuestionsTable extends Migration
             Schema::create('delphinium_roots_quiz_questions', function($table)
             {
                 $table->engine = 'InnoDB';
-                $table->integer('id');
+                $table->integer('question_id')->unsigned();
                 $table->integer('quiz_id')->unsigned()->index();
-                $table->integer('position');
-                $table->integer('points_possible');
+                $table->integer('position')->unsigned();
+                $table->integer('points_possible')->unsigned();
                 $table->string('name');
                 $table->string('type');
-                $table->string('text');
-                $table->string('correct_comments');
-                $table->string('incorrect_comments');
-                $table->string('neutral_comments');
+                $table->longText('text');
+                $table->longText('correct_comments');
+                $table->longText('incorrect_comments');
+                $table->longText('neutral_comments');
                 $table->longText('answers');
                 $table->timestamps();
-                $table->foreign('quiz_id')->references('id')->on('delphinium_roots_quizzes');
+                
+
+                $table->foreign('quiz_id')->references('quiz_id')->on('delphinium_roots_quizzes');
 
             });
         }

@@ -33,6 +33,7 @@ class LtiConfiguration extends ComponentBase {
                 'title' => 'Approver',
                 'description' => 'The approver must have the right permissions to access the data needed for this component',
                 'type' => 'dropdown',
+                'default' => 'Instructor',
             ]
         ];
     }

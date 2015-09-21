@@ -16,11 +16,10 @@ class CreateExperiencesTable extends Migration
                 $table->increments('id');
                 $table->string('name');
                 $table->string('total_points');
-                $table->integer('num_milestones');
                 $table->dateTime('start_date');
                 $table->dateTime('end_date');
-                $table->integer('bonus_per_day');
-                $table->integer('penalty_per_day');
+                $table->float('bonus_per_day');
+                $table->float('penalty_per_day');
                 $table->integer('bonus_days');
                 $table->integer('penalty_days');
                 $table->boolean('animate');

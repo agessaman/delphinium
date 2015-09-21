@@ -20,7 +20,7 @@ use \DateTimeZone;
 use GuzzleHttp\Client;
 use GuzzleHttp\Post\PostFile;
 use Delphinium\Iris\Components\Iris;
-use Config;
+use Cms\Classes\ComponentManager;
 use \Delphinium\Blade\Classes\Rules\RuleBuilder;
 use \Delphinium\Blade\Classes\Rules\RuleGroup;
 
@@ -77,6 +77,7 @@ class TestRoots extends ComponentBase
 //        $this->testGetAccount();
 //        $this->testGetEnrollments();
 //        $this->testGetQuiz();
+//        $this->testGetQuizQuestions();
         $this->testGetAllQuizzes();
 //        $this->testGetPages();
         
@@ -427,22 +428,26 @@ class TestRoots extends ComponentBase
     
     public function test()
     {
-        $rb = new RuleBuilder;
-
-        $bonus_90 = $rb->create('current_user_submissions', 'submission',
-        $rb['submission']['score']->greaterThan($rb['score_threshold']),
-        [
-            $rb['(bonus)']->assign($rb['(bonus)']->add($rb['points']))
-        ]);
+//        $rb = new RuleBuilder;
+//
+//        $bonus_90 = $rb->create('current_user_submissions', 'submission',
+//        $rb['submission']['score']->greaterThan($rb['score_threshold']),
+//        [
+//            $rb['(bonus)']->assign($rb['(bonus)']->add($rb['points']))
+//        ]);
+//        
+//        $rb['(bonus)'] = 0;
+//        $rb['submission']['score'] = 0;
+//        $rb['score_threshold'] = 0;
+//        $rb['point'] = 0;
+//
+//        $rg = new RuleGroup('submissionstest');
+//        $rg->add($bonus_90);
+//        $rg->saveRules();
         
-        $rb['(bonus)'] = 0;
-        $rb['submission']['score'] = 0;
-        $rb['score_threshold'] = 0;
-        $rb['point'] = 0;
-
-        $rg = new RuleGroup('submissionstest');
-        $rg->add($bonus_90);
-        $rg->saveRules();
+        $manager = ComponentManager::instance();
+       echo json_encode($manager->listComponents());
+        
         
 
     }
@@ -560,13 +565,15 @@ class TestRoots extends ComponentBase
     
     public function testGetAllQuizzes()
     {
-        $req = new QuizRequest(ActionType::GET, null, $fresh_data = true);
-        echo json_encode($this->roots->Quizzes($req));
+//        $req = new QuizRequest(ActionType::GET, null, $fresh_data = false, true);
+        $req = new QuizRequest(ActionType::GET, null, $fresh_data = true, true);
+        echo json_encode($this->roots->quizzes($req));
     }
     public function testGetQuiz()
     {   
-        $req = new QuizRequest(ActionType::GET, 464878, $fresh_data = true);
-        echo json_encode($this->roots->Quizzes($req));
+        $req = new QuizRequest(ActionType::GET, 464878, $fresh_data = true, true);
+        $result = $this->roots->quizzes($req);
+        echo json_encode($result);
     }
     public function testGetPages()
     {
@@ -575,9 +582,9 @@ class TestRoots extends ComponentBase
     
     public function testGetQuizQuestions()
     {
-        $req = new QuizRequest(ActionType::GET, 464878, $fresh_data = true);
-        $quizId = 464878;
-        echo json_encode($this->roots->getQuizQuestions($quizId));
+        $req = new QuizRequest(ActionType::GET, 464878, false, true);
+        $result = $this->roots->quizzes($req);
+        echo json_encode($result);
     }
     private function convertToUTC()
     {

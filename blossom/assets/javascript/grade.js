@@ -75,16 +75,18 @@ function calculateGrade(){
 	}
 
 	if(gradeBonus >= 0){
-		document.getElementById("bonus").innerHTML = "+ " + gradeBonus;
+		document.getElementById("bonus").innerHTML = "+ " + roundToTwo(gradeBonus);
 	}else{
-		document.getElementById("bonus").innerHTML = gradeBonus;
+		document.getElementById("bonus").innerHTML = roundToTwo(gradeBonus);
 	}
 
-	document.getElementById("total").innerHTML = achieved;
+	document.getElementById("total").innerHTML = roundToTwo(achieved);
 	document.getElementById("grade").innerHTML = letterGrade;
 
 
-	if(gradeAnimate){
-	d3.select("table").attr('class', 'animated bounce');
-	}
+}
+
+
+function roundToTwo(num) {
+    return +(Math.round(num + "e+2") + "e-2");
 }

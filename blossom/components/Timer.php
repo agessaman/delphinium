@@ -54,10 +54,10 @@ class Timer extends ComponentBase
             $this->page['end'] = $end->format('c');
             
             
-        	$this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
-	        $this->addJs("/plugins/delphinium/blossom/assets/javascript/timer.js");
+            $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
+            $this->addJs("/plugins/delphinium/blossom/assets/javascript/timer.js");
     	    $this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
-	        $this->addCss("/plugins/delphinium/blossom/assets/css/timer.css");
+            $this->addCss("/plugins/delphinium/blossom/assets/css/timer.css");
 
         } 
         catch (\GuzzleHttp\Exception\ClientException $e) 

@@ -8,7 +8,7 @@ class Quiz extends Model
 
     public $table = 'delphinium_roots_quizzes';
 
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'quiz_id';
     public $incrementing = false;//since we are using our own custom primary key (and it's not auto-incrementing)
     //we need to set this incrementing property to false
     //TODO: decide which items will be "fillable" and which ones will not
@@ -16,15 +16,15 @@ class Quiz extends Model
     
     //Validation 
     public $rules = [
-    	'id'=>'required',
+    	'quiz_id'=>'required',
         'title'=>'required'
     ];
 
 
-//    public $hasMany = [
-//            'module_items' => ['Delphinium\Roots\Models\ModuleItem', 
-//            'foreignKey' => 'module_item_id',
-//            'delete'=>'true']
-//    ];
+    public $hasMany = [
+            'questions' => ['Delphinium\Roots\Models\Quizquestion', 
+            'foreignKey' => 'question_id',
+            'delete'=>'true']
+    ];
     
 }

@@ -18,9 +18,49 @@ circle {
     fill: steelblue;
 }
 .dot{
-    opacity: 0.15;   
+    opacity: 0.5;   
 }
 
 #gradedot{
     fill: #FD994C; 
+}
+
+#experienceSVG
+{
+    padding:10px
+}
+
+div.tooltip {	
+    position: absolute;			
+    text-align: center;
+    max-width: 400px;			
+    width: auto;
+    height: auto;					
+    padding: 3px;				
+    font: 12px sans-serif;		
+    background: lightsteelblue;	
+    border: 0px;		
+    border-radius: 8px;			
+    pointer-events: none;			
+}
+
+.bonusPenalty
+{
+    border:1px solid black;
+    height:auto;
+    width:auto;
+}
+
+#experienceSVG
+{
+    margin:1em;
+}
+.name
+{
+    margin-bottom:15px;
+}
+.bonusPoints
+{
+    font-size:11px;
+    margin-left:3px;
 }
