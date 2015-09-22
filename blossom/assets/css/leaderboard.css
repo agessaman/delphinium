@@ -7,9 +7,9 @@
  
 #accordion {
     overflow:hidden;
-    box-shadow:0px 1px 3px rgba(0,0,0,0.25);
-    border-radius:3px;
-    background:#f7f7f7;
+    //box-shadow:0px 1px 3px rgba(0,0,0,0.25);
+    //border-radius:3px;
+    //background:#f7f7f7;
 }
  
 /*----- Tab Titles -----*/
@@ -17,46 +17,66 @@
     width:300px;
     padding:15px;
     display:inline-block;
-    border-bottom:1px solid #1a1a1a;
-    background:#333;
+    border:1px solid lightgrey;
+    background:#FDFFD5;
     transition:all linear 0.15s;
     font-size:1.200em;
-    text-shadow:0px 1px 0px #1a1a1a;
-    color:#fff;
+    text-shadow:0px 1px 0px gray;
+    color:#gray;
 }
  
 .accordionTabTitle.active, .accordionTabTitle:hover{
-    background:#4c4c4c;
+    background:#FAFF9B;
 }
 
 .accordionTabTitle:hover, .accordionTabTitle:focus, .accordionTabTitle:visited, .accordionTabTitle:active, .accordionTabTitle:link{
     text-decoration: none;
-    color: white;
+    color: #grey;
 }
 
 .accordionTab:last-child .accordionTabTitle {
-    border-bottom:none;
+    //border-bottom:none;
 }
  
 /*----- Tab Content -----*/
 .accordionTabContent {
-    padding:15px;
+    //padding:15px;
     display:none;
     width:300px;
+	color:grey;
 }
 
 
 .accordionTabContentStudent{
-    border: 2px solid black;
-    border-radius: 15px;
-    background-color: #FDFFD5;
-    padding: 10px;
+    border: 1px solid lightgray;
+    //border-radius: 15px;
+    //background-color: #FDFFD5;
+    padding-top: 5px;
+    padding-bottom: 3px;
+    margin-left: 10px;
 }
 
 .accordionTabContentStudentCurrent{
-    border: 2px solid black;
-    border-radius: 15px;
-    background-color: #66FF33;
-    padding: 10px;
+    border: 1px solid gray;
+    //border-radius: 15px;
+    background-color: #D9FF9B;
+    //padding: 10px;
+}
+
+.studentRank{
+	font-size:30px;
+	margin-left:10px;
+	margin-right:10px;
+	font-style:italic;
+	color:gray;
+}
+
+.accordionTabContentStudentCurrent .studentRank{
+	font-size:40px;
+	margin-left:10px;
+	margin-right:10px;
+	font-style:italic;
+	color:gray;
+	font-weight:bold;
 }
 
