@@ -7,9 +7,12 @@
  
 #accordion {
     overflow:hidden;
+	border-bottom:grey;
     //box-shadow:0px 1px 3px rgba(0,0,0,0.25);
     //border-radius:3px;
     //background:#f7f7f7;
+    border-bottom: 1px solid lightgray;
+    display: table;
 }
  
 /*----- Tab Titles -----*/
@@ -46,6 +49,9 @@
 	color:grey;
 }
 
+.accordionTabContent .open{
+	border-bottom:1px solid lightgrey;
+}
 
 .accordionTabContentStudent{
     border: 1px solid lightgray;
