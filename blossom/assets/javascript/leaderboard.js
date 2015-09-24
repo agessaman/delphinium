@@ -50,7 +50,7 @@ function makeAccordion(){
 	scores.sort(sortNumber);
 	shuffle(aliases);
 
-	var studentScore = 5968;
+	var studentScore = 6911;
 	var count;
 
 	for (var i = 0; i < scores.length; i++) {
@@ -86,7 +86,7 @@ function makeAccordion(){
 				competition = "Your Competition";
 				student.className='accordionTabContentStudent';
 			}else if(scores[j].place == 1){
-				competition = "Your Next Conquest";
+				competition = "Your Next Conquest!";
 				student.className='accordionTabContentStudent';
 			}else if(scores[j].place == 0){
 				competition = "You";
@@ -95,10 +95,10 @@ function makeAccordion(){
 				content.className='accordionTabContent open';
 				content.style.display='block';
 			}else if(scores[j].place == -1){
-				competition = "Your Last Conquest";
+				competition = "Your Last Conquest!";
 				student.className='accordionTabContentStudent';
 			}else if(scores[j].place == -2){
-				competition = "Conquered";
+				competition = "Conquered!";
 				student.className='accordionTabContentStudent';
 			}else{
 				competition = "Error";
@@ -106,13 +106,16 @@ function makeAccordion(){
 			}
 			
 			var html ="";
+			html +=	"<span class = 'studentRank'>";
+			html +=	(j + 1);
+			html += "</span>";
 			html += "<span style =' display:inline-block;'>";
+			html +=		"<b>" + aliases[j] + "</b> <br> ";
 			html += 	competition;
-			html +=		" <br> Alias: " + aliases[j] + "";
+
 			html += "</span>";
 			html += "<span style ='display:inline-block; float:right; padding-right: 10px;'>";
-			html +=		"Rank: " + (j + 1);
-			html +=		" <br> XP: " + scores[j].score;
+			html +=		" <br>" + scores[j].score + " pts.";
 			html +=	"</span>";
 			student.innerHTML=html;
 			content.appendChild(student);
