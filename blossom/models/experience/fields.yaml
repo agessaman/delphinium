@@ -43,14 +43,14 @@ tabs:
             label: Start Date
             span: auto
             type: datepicker
-            mode: date
+            mode: datetime
             comment: Enter the start date
 
         end_date:
             label: End Date
             span: auto
             type: datepicker
-            mode: date
+            mode: datetime
             comment: Enter the end date
 
         animate:

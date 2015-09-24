@@ -1,0 +1,16 @@
+<div>
+    Analytics data: min_score:{{ min_score }}, max_score: {{ max_score }}--
+    {{first_quartile}} -- {{median}} -- {{third_quartile}}
+    <script>
+        if({{min_score == null}})
+        {
+            var min_score = 0;
+        }
+        else
+        {
+            var min_score = {{min_score}};
+        }
+                
+      </script>
+    <button onclick="hello({{min_score}})">Click me</button>
+</div>

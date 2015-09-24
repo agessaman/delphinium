@@ -41,7 +41,8 @@ class Plugin extends PluginBase
             '\Delphinium\Blossom\Components\StudentsGraph' => 'studentsgraph',
             '\Delphinium\Blossom\Components\Timer' => 'timer',
             '\Delphinium\Blossom\Components\Progress' => 'progress',
-            '\Delphinium\Blossom\Components\ExperienceManager' => 'experiencemanager'
+            '\Delphinium\Blossom\Components\ExperienceManager' => 'experiencemanager',
+            '\Delphinium\Blossom\Components\Gradebook' => 'gradebook'
         ];
     }
 	

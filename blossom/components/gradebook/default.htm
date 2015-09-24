@@ -1,0 +1,45 @@
+<div id="boxplotWrap"></div>
+
+<div>
+    {% for group in data %}
+        {{ group.group_name }}
+    <div class="table-responsive table-bordered table-striped table-condensed">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <td>Assignment Name</td>
+                        <td>Score</td>
+                        <td>Out of</td>
+                        <td>Analytics</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {%for item in group.content%}
+                    <tr>
+                        <td data-field="name"><a href="{{item.html_url}}">{{item.name}}</td>
+                        {%if group.content.score == null%}
+                        <td data-field="score"> 0</td>
+                        {% else %}
+                        <td data-field="score"> {{item.score}}/</td>
+                        {% endif %}
+                        <td>{{item.points_possible}} pts</td>
+                        <td>
+                            <!--Pass variables to analytics partial-->
+                            {% partial __SELF__ ~ "::analytics" 
+                                min_score=item.min_score 
+                                max_score = item.max_score 
+                                first_quartile= item.first_quartile 
+                                median = item.median
+                                third_quartile = item.third_quartile%}
+                        </td>
+                    </tr>
+                    {%endfor%}
+                </tbody>
+            </table>
+
+        {% endfor %}
+
+    </div>
+
+
+</div>

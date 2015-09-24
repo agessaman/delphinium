@@ -3,6 +3,7 @@
 use Model as OctoberModel;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Delphinium\Xylum\Models\ComponentInstance;
+
 class CustomModel extends OctoberModel {
     /**
      * Save the model to the database.

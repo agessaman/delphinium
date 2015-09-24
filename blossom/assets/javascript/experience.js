@@ -2,7 +2,7 @@ var div;
 var encouragementAxisScale;
 var maxPoints;
 var bottom = 500;
-
+var radius = 6;
 $(document).ready(function () {
     div = d3.select("body").append("div")
             .attr("class", "tooltip")
@@ -10,17 +10,18 @@ $(document).ready(function () {
 
     //scale experience
     scaleExperience(experienceSize);
-
+    var interval = initScatterplot();
     //prepare milestone info. 
     var experiencePromise = prepareMilestoneInfo();
     experiencePromise.then(function (resolve) {
         //prepare experience info
         prepareExperienceInfo();
         //draw scatterplot
-        drawScatterplot();
+        drawScatterplot(interval);
     }, function (reject) {
         console.log(reject);
     });
+
 });
 
 
@@ -28,7 +29,7 @@ function scaleExperience(experienceSize) {
     var experienceView = d3.select("#experienceView");
     var experienceSVG = d3.select("#experienceSVG");
     var experienceHeight = 520;
-    var experienceWidth = 300;
+    var experienceWidth = 600;
 
     if (experienceSize === "small") {
         experienceWidth = experienceWidth / 2;
@@ -49,12 +50,13 @@ function prepareMilestoneInfo() {
     //get milestoneClearance info
     var promise = $.get("getMilestoneClearanceInfo", {experienceInstanceId: instanceId});
     promise.then(function (data1, textStatus, jqXHR) {
+        console.log(data1);
         bonus_penalties = data1;
         drawMilestoneInfo(bonus_penalties);
     })
-    .fail(function (data2) {
-        console.log("An error has occurred. Please notify your instructor");
-    });
+            .fail(function (data2) {
+                console.log("An error has occurred. Please notify your instructor");
+            });
     return promise;
 }
 
@@ -68,35 +70,9 @@ function drawMilestoneInfo(bonus_penalties) {
             .domain([0, maxPoints])//maxPoints
             .rangeRound([bottom - 5, 10])
             .nice(2);
-    
-    //create the milestone axis
-    var encouragementAxis = d3.svg.axis()
-            .scale(encouragementAxisScale)
-            .orient('left')
-            .ticks(bonus_penalties.length)
-            .tickFormat(function (d) {
-                return;
-            })
-            .tickSize(0, 0);
 
-    //add a line per each milestone
+    //add a line per milestone
     var g = d3.select("#experienceAxis").append("svg:g");
-    //Add a line at the bottom of the experience (for the zero mark)
-    d3.select("#experienceAxis").append("svg:rect")
-            .attr("x", function (d) {
-                return (0);
-            })
-            .attr("width", function (d) {
-                return (185);
-            })
-            .attr("y", function (d) {
-                return bottom - 5;
-            })
-            .attr("height", function (d) {
-                return 0.5;
-            })
-            .attr("stroke-width", 0.5)
-            .attr("stroke", "#606060");
 
     g.selectAll("scatter-dots")
             .data(bonus_penalties)
@@ -114,7 +90,7 @@ function drawMilestoneInfo(bonus_penalties) {
                 return 0.5;
             })
             .attr("stroke-width", 0.5)
-            .attr("stroke", "#606060")
+            .attr("stroke", "lightgray")
             .on("mouseover", function (d) {
                 var date = new Date(d.due_at.date);
                 addTooltip(d.points + " pts due " + date.toDateString() + " at " + date.toLocaleTimeString())
@@ -132,19 +108,18 @@ function drawMilestoneInfo(bonus_penalties) {
     //Add  milestone text
     var mileLabels = g.selectAll("scatter-dots")
             .data(bonus_penalties)
-//            .enter().append("svg:text")
             .enter().append("svg:text")
-            .attr('width','200')
+            .attr('width', '200')
             .attr("x", function (d) {
                 return (195);
             })
             .attr("y", function (d) {
-                return encouragementAxisScale(d.points)+4;//minus 2 so line and text are center aligned
+                return encouragementAxisScale(d.points) + 4;//minus 2 so line and text are center aligned
             })
             .text(function (d) {
                 return d.name;
             })
-            .call(wrap, 95, 195)
+            .call(wrap, 380, 195)
             .on("mouseover", function (d) {
 
                 var date = new Date(d.due_at.date);
@@ -160,56 +135,16 @@ function drawMilestoneInfo(bonus_penalties) {
                 removeTooltip();
             });
 
-    // add bonus
-    g.selectAll("scatter-dots")
-            .data(bonus_penalties)
-            .enter().append("svg:text")
-            .attr("x", function (d) {
-                return (183);
-            })
-            .attr("y", function (d) {
-                return encouragementAxisScale(d.points)-16;//minus 6 so bonus/penalties are underneath milestone name
-            })
-            .attr('font-family', 'FontAwesome')
-            .attr('font-size','11px')
-            .attr("fill", "gray")
-            .attr("transform", "translate(15,5)")
-            .text(function (d) {
-                if (d.cleared) {
-                    return '\uf023';
-                }
-                else
-                {
-                    if (d.bonusPenalty < 0)
-                    {
-                        return "\uf017";
-                    }
-                }
-            }).style('fill', function (d) {
-        if (d.bonusPenalty === 0) {
-            return 'black';
-        } else if (d.bonusPenalty < 0) {
-            return 'red';
-        } else {
-            return 'green';
-        }
-    })
-            .on("mouseover", function (d) {
-                var text = getBonusPenaltyTooltipText(d);
-                addTooltip(text);
-            })
-            .on("mouseout", function (d) {
-                removeTooltip();
-            });
 
+    //bonus/penalties   
     g.selectAll("scatter-dots")
             .data(bonus_penalties)
             .enter().append("svg:text")
             .attr("x", function (d) {
-                return (200);
+                return (195);
             })
             .attr("y", function (d) {
-                return encouragementAxisScale(d.points)-16;//minus 6 so bonus/penalties are underneath milestone name
+                return encouragementAxisScale(d.points) + 15;//minus 6 so bonus/penalties are underneath milestone name
             })
             .text(function (d) {
                 return roundToTwo(d.bonusPenalty);
@@ -236,11 +171,48 @@ function drawMilestoneInfo(bonus_penalties) {
                 removeTooltip();
             });
 
-    //apply the axis to a dom object
-    var encourage = d3.select("#experienceAxis")
-            .attr('class', 'axis')
-            .call(encouragementAxis);
 
+    // add bonus
+    g.selectAll("scatter-dots")
+            .data(bonus_penalties)
+            .enter().append("svg:text")
+            .attr("x", function (d) {
+                return (225);
+            })
+            .attr("y", function (d) {
+                return encouragementAxisScale(d.points) + 15;//minus 6 so bonus/penalties are underneath milestone name
+            })
+            .attr('font-family', 'FontAwesome')
+            .attr('font-size', '11px')
+            .attr("fill", "gray")
+            .attr("transform", "translate(15,5)")
+            .text(function (d) {
+                if (d.cleared) {
+                    return '\uf023';
+                }
+                else
+                {
+                    if (d.bonusPenalty < 0 || d.bonusPenalty < maxBonus)
+                    {
+                        return "\uf017";
+                    }
+                }
+            }).style('fill', function (d) {
+        if (d.bonusPenalty === 0) {
+            return 'black';
+        } else if (d.bonusPenalty < 0) {
+            return 'red';
+        } else {
+            return 'green';
+        }
+    })
+            .on("mouseover", function (d) {
+                var text = getBonusPenaltyTooltipText(d);
+                addTooltip(text);
+            })
+            .on("mouseout", function (d) {
+                removeTooltip();
+            });
 }
 
 function prepareExperienceInfo() {
@@ -270,8 +242,8 @@ function drawExperience(redLine)
             .attr('y', bottom)
             .style("fill", "red")
             .on("mouseover", function (d) {
-                addTooltip("Ideal progress: " + redLine + " pts by today. Getting ahead or behind of the line will result in bonus\n\
-                    or penalties")
+                addTooltip("Ideal progress: " + redLine + " pts by today. Reach the next milestone before this line to earn a bonus. \n\
+If this line beats you, you will receive a penalty.")
             })
             .on("mouseout", function (d) {
                 removeTooltip();
@@ -301,6 +273,12 @@ function drawExperience(redLine)
 
     var experienceText = d3.select("#experienceView").append("text")
             .attr("fill", "steelblue")
+            .on("mouseover", function (d) {
+                addTooltip("Your total points")
+            })
+            .on("mouseout", function (d) {
+                removeTooltip();
+            })
             .transition()
             .attr("fill", "#FD994C")
             .style("text-anchor", "middle")
@@ -316,18 +294,22 @@ function drawExperience(redLine)
 
 }
 
-function drawScatterplot() {
+function drawScatterplot(interval) {
     //get student scores
-    var promise = $.get("getStudentsScores");//TODO: grab the real id
+    var promise = $.get("getStudentsScores");
     promise.then(function (data1, textStatus, jqXHR) {
-        studentScores = data1;
 
+        //kill the bouncy ball interval
+        clearInterval(interval);
+        var initx = bottom - radius;
+        studentScores = data1;
         var data = [];
         for (var i = 0; i <= studentScores.length - 1; i++)
         {
             data.push([0.5, studentScores[i]]);
         }
 
+         
         var margin = {top: 10, bottom: 10, }, height = 500 - margin.top - margin.bottom;
 
         var x = d3.scale.linear()
@@ -338,44 +320,119 @@ function drawScatterplot() {
                 .domain([0, maxXP])
                 .range([height, 0]);
 
-        var g = d3.select("#experienceView").append("svg:g");
+        var g = d3.select("#circles");
+        var circ = g.selectAll("circle")
+                .data(data);
 
-
-        var radius = 6;
-        g.selectAll("scatter-dots")
-                .data(data)
-                .enter().append("svg:circle")
+        // ENTER
+        // Create new elements as needed.
+        circ.enter().append("circle");
+        
+        //update new and old elements
+        circ.on("mouseover", function (d) {
+                    if((d[1] === experienceXP))
+                    {
+                        addTooltip("You: " + experienceXP + " points");
+                    }
+                    else
+                    {
+                        addTooltip("Your peer: " + d[1] + " points")
+                    }
+                })
+                .on("mouseout", function (d) {
+                    removeTooltip();
+                })
                 .attr("cx", function (d) {
                     return x(d[0]);
                 })
                 .attr("cy", function (d) {
+                    return (initx);
+                })
+                .attr("r", radius)
+                .attr("transform", "translate(140,0)")
+                .attr("class", function (d) {
+                    if (d[1] === experienceXP)//this is the current student
+                    {
+                        return "gradedot";
+                    }
+                    else
+                    {
+                        return "dot";
+                    }
+                })
+                .transition()
+                .duration(600)
+                .ease("linear")
+                .attr("cy", function (d) {
                     return (encouragementAxisScale(d[1]));
-                })
-                .attr("r", radius)
-                .attr("class", "dot")
-                .attr("transform", "translate(140,0)")
-                .on("mouseover", function (d) {
-                    addTooltip("Your peer: " + d[1] + " points")
-                })
-                .on("mouseout", function (d) {
-                    removeTooltip();
                 });
+                
+        //remove old elements
+        circ.exit().remove();
 
-        g.append("svg:circle")
-                .attr("cx", x(0.5))
-                .attr("cy", (encouragementAxisScale(Math.round(experienceXP))))
-                .attr("r", radius)
-                .attr("id", "gradedot")
-                .style("stroke", "black")
-                .attr("transform", "translate(140,0)")
-                .on("mouseover", function (d) {
-                    addTooltip("You: " + experienceXP + " points")
-                })
-                .on("mouseout", function (d) {
-                    removeTooltip();
-                });
     })
-            .fail(function (data2) {
+    .fail(function (data2) {
+    });
+}
+
+function initScatterplot()
+{
+    var x = d3.scale.linear()
+            .domain([0, 1])
+            .range([0, 25]);
+    var initx = bottom - radius;
+
+    var data = [0.5, initx];
+
+
+    var g = d3.select("#experienceView").append("g")
+            .attr("id", "circles");
+    var circle = g.selectAll("circle")
+            .data(data)
+            .enter()
+            .append("circle")
+            .attr("cx", x(data[0]))
+            .attr("cy", x(data[1]))
+            .attr("r", radius)
+            .attr("id", "dot")
+            .attr("transform", "translate(140,0)");
+
+    //make the ball bounce until data arrives
+    var interval = 2000;
+    bounceCircle(false, circle, initx, interval);
+    myVar = setInterval(function () {
+        bounceCircle(false, circle, initx, interval);
+    }, interval);
+
+    return myVar;
+}
+
+
+function bounceCircle(stopTransition, circleElement, initx, interval)
+{
+    var stop = 0;
+    var cy = 1;
+    if (stopTransition)
+    {
+        stop = bottom - radius;
+
+    }
+    else
+    {
+        stop = bottom - radius;
+        cy = bottom - radius - 50;
+    }
+    circleElement.transition()
+            .duration(800)
+            .attr("cy", cy)
+            .each("end", function () {
+                circleElement
+                        .transition()
+                        .duration(800)
+                        .ease("bounce")
+                        .attr({
+                            cy: stop
+                        });
             });
 }
 
@@ -441,26 +498,25 @@ function formatAMPM(date) {
 }
 
 function wrap(text, width, x) {
-  text.each(function() {
-    var text = d3.select(this);
-    var words = text.text().split(/\s+/).reverse(),
-        word,
-        line = [],
-        lineNumber = 0,
-        lineHeight = 1.1; // ems
+    text.each(function () {
+        var text = d3.select(this);
+        var words = text.text().split(/\s+/).reverse(),
+                word,
+                line = [],
+                lineNumber = 0,
+                lineHeight = 1.1; // ems
         var y = (text.attr("y"));
-        console.log(y);
         var dy = 1,
-        tspan = text.text(null).append("tspan").attr("x", x).attr("y", y);
-    while (word = words.pop()) {
-      line.push(word);
-      tspan.text(line.join(" "));
-      if (tspan.node().getComputedTextLength() > width) {
-        line.pop();
-        tspan.text(line.join(" "));
-        line = [word];
-        tspan = text.append("tspan").attr("x", x).attr("y", y).attr("dy", (++lineNumber-1) * lineHeight + dy + "em").text(word);
-      }
-    }
-  });
+                tspan = text.text(null).append("tspan").attr("x", x).attr("y", y);
+        while (word = words.pop()) {
+            line.push(word);
+            tspan.text(line.join(" "));
+            if (tspan.node().getComputedTextLength() > width) {
+                line.pop();
+                tspan.text(line.join(" "));
+                line = [word];
+                tspan = text.append("tspan").attr("x", x).attr("y", y).attr("dy", (++lineNumber - 1) * lineHeight + dy + "em").text(word);
+            }
+        }
+    });
 }

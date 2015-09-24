@@ -14,38 +14,45 @@ columns:
     total_points:
         label: Total Points
         searchable: true
-
+        type: number
+        
     start_date:
         label: Start Date
         searchable: true
-
+        type: datetime
+        
     end_date:
         label:  End Date
         searchable: true
-
+        type: datetime
 
     bonus_per_day:
         label: Bonus per day
         searchable: true
-
+        type: number
+        
     bonus_days:
         label: Bonus days
         searchable: true
-
+        type: number
+        
     penalty_per_day:
         label: Penalty per day
         searchable: true
+        type: number
         
     penalty_days:
         label: Penalty days
         searchable: true
-
+        type: number
+        
     animate:
         label: Animate
         searchable: true
-
+        type: switch
+        
     size:
         label: Size
         searchable: true
-        
+        type: number
         

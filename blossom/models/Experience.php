@@ -1,6 +1,8 @@
 <?php namespace Delphinium\Blossom\Models;
 
 use Delphinium\Xylum\Models\CustomModel;
+use Delphinium\Roots\Utils;
+use \DateTime;
 /**
  * experience Model
  */
@@ -26,7 +28,38 @@ class Experience extends CustomModel
         'size' => 'required'
     ];
 
+    public function getStartDateAttribute($value)
+    {
+        if(!is_null($value))
+        {
+            return Utils::convertUTCDateTimetoLocal($value);
+        }
+    }
+    
+    public function getEndDateAttribute($value)
+    {
+        if(!is_null($value))
+        {
+            return Utils::convertUTCDateTimetoLocal($value);
+        }
+    }
      
+    public function setStartDateAttribute($value)
+    {
+        //first convert it to local so it has the right timezone property
+        $localDate = Utils::convertUTCDateTimetoLocal($value);
+        //then convert it to UTC and store it like that
+        $this->attributes['start_date'] = Utils::convertLocalDateTimeToUTC($localDate);
+    }
+    
+    public function setEndDateAttribute($value)
+    {
+        //first convert it to local so it has the right timezone property
+        $localDate = Utils::convertUTCDateTimetoLocal($value);
+        //then convert it to UTC and store it like that
+        $this->attributes['end_date'] = Utils::convertLocalDateTimeToUTC($localDate);
+    }
+    
     public function save(array $data = null, $sessionKey = null)
     {
         if(is_null($data))

@@ -124,8 +124,8 @@ class Experience extends ComponentBase
             $instance = ExperienceModel::find($this->property('Instance'));
             
             //set class variables
-            $stDate = new DateTime($instance->start_date);
-            $endDate = new DateTime($instance->end_date);
+            $stDate = $instance->start_date;
+            $endDate = $instance->end_date;
             $this->startDate = $stDate;
             $this->endDate = $endDate;
             $this->submissions =$this->getSubmissions();
@@ -135,6 +135,7 @@ class Experience extends ComponentBase
             $this->bonusSeconds = $instance->bonus_days*24*60*60;
             $this->bonusPerSecond = $instance->bonus_per_day/24/60/60;
 
+            $this->page['maxBonus'] = $this->bonusSeconds * $this->bonusPerSecond;
             //set page variables
             $this->page['instanceId'] = $instance->id;
             $this->page['experienceXP'] = $this->getUserPoints();//current points

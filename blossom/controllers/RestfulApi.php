@@ -2,11 +2,12 @@
 
 use Illuminate\Routing\Controller;
 use Delphinium\Blossom\Models\Milestone;
-use \DateTime;
 use Delphinium\Blossom\Models\Experience as ExperienceModel;
 use Delphinium\Roots\Roots;
 use Delphinium\Roots\Requestobjects\SubmissionsRequest;
 use Delphinium\Roots\Enums\ActionType;
+use \DateTime;
+use DateTimeZone;
 
 class RestfulApi extends Controller 
 {
@@ -28,8 +29,8 @@ class RestfulApi extends Controller
         
         $this->instance = ExperienceModel::find($instanceId);
         
-        $stDate = new DateTime($this->instance->start_date);
-        $endDate = new DateTime($this->instance->end_date);
+        $stDate = $this->instance->start_date;
+        $endDate = $this->instance->end_date;
         $this->startDate = $stDate;
         $this->endDate = $endDate;
         
@@ -98,7 +99,8 @@ class RestfulApi extends Controller
             $mileClearance->name = $left['name'];
             $mileClearance->cleared = 0;
             $mileClearance->cleared_at = null;
-            $mileClearance->bonusPenalty = $this->calculateBonusOrPenalty($left['points'], new DateTime('now'));
+            $now = new DateTime('now',new DateTimeZone('UTC'));
+            $mileClearance->bonusPenalty = $this->calculateBonusOrPenalty($left['points'], $now);
             $mileClearance->points = $left['points'];
             
             $date = $this->calculateMilestoneDueDate($left['points']);
@@ -113,10 +115,9 @@ class RestfulApi extends Controller
     {
         $instanceId = \Input::get('experienceInstanceId');
         $this->instance = ExperienceModel::find($instanceId);
-        $now = new DateTime(date("Y-m-d"));//we don't do "now" because that means the red line keeps moving by the hour. We can to keep it fixed
-        //for each day
-        $startDate = new DateTime($this->instance->start_date);
-        $endDate = new DateTime($this->instance->end_date);
+        $now = new DateTime('now',new DateTimeZone('UTC'));
+        $startDate = $this->instance->start_date;
+        $endDate = $this->instance->end_date;
         $currentSeconds = abs($now->getTimestamp() - $startDate->getTimestamp());
         $this->ptsPerSecond = $this->getPtsPerSecond($startDate, $endDate, $this->instance->total_points);
         return floor($this->ptsPerSecond*$currentSeconds);
@@ -188,11 +189,12 @@ class RestfulApi extends Controller
         return $submissions;
     }
     
-    private function calculateBonusOrPenalty($milestonePoints, $submittedAt)
+    private function calculateBonusOrPenalty($milestonePoints, $submittedAt)//submittedAt will also be in UTC
     {
         $secsTranspired = ceil($milestonePoints/$this->ptsPerSecond);
         $intervalSeconds = "PT".$secsTranspired."S";
-        $sDate = clone($this->startDate);
+        $sDate = clone($this->startDate);//this start date is in UTC
+        
         $dueDate = $sDate->add(new \DateInterval($intervalSeconds));
         $diffSeconds = abs($dueDate->getTimestamp() - $submittedAt->getTimestamp());
         
@@ -220,7 +222,7 @@ class RestfulApi extends Controller
         $sDate = clone($this->startDate);
         $dueDate = $sDate->add(new \DateInterval($intervalSeconds));
         
-        return $dueDate;
+        return $dueDate;//this is in UTC!
     }
     
     public function getPtsPerSecond(DateTime $startDate, DateTime $endDate, $totalPoints)
