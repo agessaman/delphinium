@@ -1,16 +1,11 @@
+
+<script>
+    var min = {{min_score}};
+    var max = {{max_score}};
+    var median = {{median}};
+    var first_quartile = {{first_quartile}};
+    var third_quartile = {{third_quartile}};
+</script>
 <div>
-    Analytics data: min_score:{{ min_score }}, max_score: {{ max_score }}--
-    {{first_quartile}} -- {{median}} -- {{third_quartile}}
-    <script>
-        if({{min_score == null}})
-        {
-            var min_score = 0;
-        }
-        else
-        {
-            var min_score = {{min_score}};
-        }
-                
-      </script>
-    <button onclick="hello({{min_score}})">Click me</button>
+    <svg id="boxplot"></svg>
 </div>

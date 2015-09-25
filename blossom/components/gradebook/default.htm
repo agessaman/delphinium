@@ -1,36 +1,36 @@
 <div id="boxplotWrap"></div>
 
-<div>
+<div class="body">
     {% for group in data %}
-        {{ group.group_name }}
-    <div class="table-responsive table-bordered table-striped table-condensed">
-            <table class="table">
+    <div>
+            <table class="table table-condensed table-responsive table-bordered table-striped table-hover">
+                <caption>{{ group.group_name }}</caption>
                 <thead>
                     <tr>
-                        <td>Assignment Name</td>
-                        <td>Score</td>
-                        <td>Out of</td>
-                        <td>Analytics</td>
+                        <th>Assignment Name</th>
+                        <th>Score</th>
+                        <th>Analytics</th>
                     </tr>
                 </thead>
                 <tbody>
                     {%for item in group.content%}
                     <tr>
-                        <td data-field="name"><a href="{{item.html_url}}">{{item.name}}</td>
-                        {%if group.content.score == null%}
-                        <td data-field="score"> 0</td>
+                        <td data-field="name"><a href="{{item.html_url}}" target="_blank">{{item.name}}</td>
+                        {%if item.score != null%}
+                        <td data-field="score">{{item.score}} / {{item.points_possible}} pts</td>
                         {% else %}
-                        <td data-field="score"> {{item.score}}/</td>
+                        <td data-field="score">-- / {{item.points_possible}} pts</td>
                         {% endif %}
-                        <td>{{item.points_possible}} pts</td>
+                        
                         <td>
                             <!--Pass variables to analytics partial-->
                             {% partial __SELF__ ~ "::analytics" 
-                                min_score=item.min_score 
-                                max_score = item.max_score 
-                                first_quartile= item.first_quartile 
-                                median = item.median
-                                third_quartile = item.third_quartile%}
+                                min_score=item.min_score != null?item.min_score:0
+                                max_score = item.max_score != null?item.max_score:0
+                                first_quartile= item.first_quartile != null?item.first_quartile:0
+                                median = item.median!= null?item.median :0
+                                third_quartile = item.third_quartile!= null?item.third_quartile :0
+                            %}
                         </td>
                     </tr>
                     {%endfor%}

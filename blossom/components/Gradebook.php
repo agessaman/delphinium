@@ -39,7 +39,7 @@ class Gradebook extends ComponentBase
         {
             $wrap = new \stdClass();
             $wrap->group_name = $group->name;
-            $wrap->content[] = array();
+            $wrap->content = array();
             foreach($group->assignments as $assignment)//loop through each assignment in the group
             {
 //                //retrieve the corresponding assignment in $analytics ($group->assignment_id)
@@ -53,14 +53,14 @@ class Gradebook extends ComponentBase
                     $obj->name = $assignment->name;
                     $obj->html_url = $assignment->html_url;
                     $obj->points_possible = $assignment->points_possible;
-                    $obj->score = isset($analyticsObj->submission)?$analyticsObj->submission:null;
+                    $obj->score = (isset($analyticsObj->submission))?($analyticsObj->submission->score):null;
                     $obj->max_score= $analyticsObj->max_score;
                     $obj->min_score= $analyticsObj->min_score;
                     $obj->first_quartile = $analyticsObj->first_quartile;
                     $obj->median = $analyticsObj->median;
                     $obj->third_quartile = $analyticsObj->third_quartile;
                     
-                    $wrap->content[] = $obj;
+                    array_push($wrap->content, $obj);
                     
                 }
                 else
@@ -72,11 +72,11 @@ class Gradebook extends ComponentBase
             $result[] = $wrap;
         }
         
-        $this->page['data'] = $result;
+        $this->page['data'] = ($result);
         $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
         $this->addJs("/plugins/delphinium/blossom/assets/javascript/boxplot.js");
         $this->addCss("/plugins/delphinium/blossom/assets/css/bootstrap.min.css");
-        $this->addCss("/plugins/delphinium/blossom/assets/css/font-awesome.min.css");
+        $this->addCss("/plugins/delphinium/blossom/assets/css/gradebook.css");
     }
     
     private function findAssignmentById($assignmentId, $analytics)

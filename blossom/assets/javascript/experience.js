@@ -361,8 +361,8 @@ function drawScatterplot(interval) {
                     }
                 })
                 .transition()
-                .duration(1600)
-                .ease("quad-out")
+                .duration(800)
+                .ease("quad-in-out")
                 .attr("cy", function (d) {
                     return (encouragementAxisScale(d[1]));
                 });

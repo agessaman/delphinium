@@ -7,5 +7,17 @@ and open the template in the editor.
     Created on : Sep 24, 2015, 12:48:40 PM
     Author     : damaris
 */
+.body
+{
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif !important;
+}
 
+a{
+    color:dimgray !important;
+}
+
+a:hover
+{
+    text-decoration: none !important;
+}
 
