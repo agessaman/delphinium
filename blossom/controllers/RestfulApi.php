@@ -111,17 +111,6 @@ class RestfulApi extends Controller
         return $milestoneInfo;
     }
     
-    public function getRedLinePoints()
-    {
-        $instanceId = \Input::get('experienceInstanceId');
-        $this->instance = ExperienceModel::find($instanceId);
-        $now = new DateTime('now',new DateTimeZone('UTC'));
-        $startDate = $this->instance->start_date;
-        $endDate = $this->instance->end_date;
-        $currentSeconds = abs($now->getTimestamp() - $startDate->getTimestamp());
-        $this->ptsPerSecond = $this->getPtsPerSecond($startDate, $endDate, $this->instance->total_points);
-        return floor($this->ptsPerSecond*$currentSeconds);
-    }
     
     public function getStudentsScores()
     {

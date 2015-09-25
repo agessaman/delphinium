@@ -11,11 +11,11 @@ $(document).ready(function () {
     //scale experience
     scaleExperience(experienceSize);
     var interval = initScatterplot();
+    
     //prepare milestone info. 
-    var experiencePromise = prepareMilestoneInfo();
+    var experiencePromise = prepareMilestoneInfo();//prepare experience info
     experiencePromise.then(function (resolve) {
-        //prepare experience info
-        prepareExperienceInfo();
+        drawExperience(redLine);
         //draw scatterplot
         drawScatterplot(interval);
     }, function (reject) {
@@ -50,7 +50,6 @@ function prepareMilestoneInfo() {
     //get milestoneClearance info
     var promise = $.get("getMilestoneClearanceInfo", {experienceInstanceId: instanceId});
     promise.then(function (data1, textStatus, jqXHR) {
-        console.log(data1);
         bonus_penalties = data1;
         drawMilestoneInfo(bonus_penalties);
     })
@@ -177,7 +176,7 @@ function drawMilestoneInfo(bonus_penalties) {
             .data(bonus_penalties)
             .enter().append("svg:text")
             .attr("x", function (d) {
-                return (225);
+                return (235);
             })
             .attr("y", function (d) {
                 return encouragementAxisScale(d.points) + 15;//minus 6 so bonus/penalties are underneath milestone name
@@ -215,18 +214,6 @@ function drawMilestoneInfo(bonus_penalties) {
             });
 }
 
-function prepareExperienceInfo() {
-
-    var promise = $.get("getRedLinePoints", {experienceInstanceId: instanceId});
-    promise.then(function (data1, textStatus, jqXHR) {
-        redLinePoints = data1;
-        drawExperience(redLinePoints);
-    })
-            .fail(function (data2) {
-                console.log("An error has occurred. Please notify your instructor");
-            });
-}
-
 function drawExperience(redLine)
 {
     var datelong = new Date();
@@ -243,7 +230,7 @@ function drawExperience(redLine)
             .style("fill", "red")
             .on("mouseover", function (d) {
                 addTooltip("Ideal progress: " + redLine + " pts by today. Reach the next milestone before this line to earn a bonus. \n\
-If this line beats you, you will receive a penalty.")
+                    If this line beats you, you will receive a penalty.")
             })
             .on("mouseout", function (d) {
                 removeTooltip();
@@ -304,11 +291,24 @@ function drawScatterplot(interval) {
         var initx = bottom - radius;
         studentScores = data1;
         var data = [];
+        var counter = 0;
         for (var i = 0; i <= studentScores.length - 1; i++)
         {
-            data.push([0.5, studentScores[i]]);
+            if(studentScores[i]!= experienceXP)//*sigh* SVG doesn't play nice with z-index. 
+            //current user's score must be added LAST so the dot appears on top. 
+            {
+                data.push([0.5, studentScores[i]]);
+            }
+            else
+            {
+                counter++;
+            }
         }
 
+        for(var i=0;i<=counter;i++)
+        {
+            data.push([0.5, experienceXP]);
+        }
          
         var margin = {top: 10, bottom: 10, }, height = 500 - margin.top - margin.bottom;
 
@@ -361,8 +361,8 @@ function drawScatterplot(interval) {
                     }
                 })
                 .transition()
-                .duration(600)
-                .ease("linear")
+                .duration(1600)
+                .ease("quad-out")
                 .attr("cy", function (d) {
                     return (encouragementAxisScale(d[1]));
                 });

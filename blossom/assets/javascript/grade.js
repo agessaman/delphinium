@@ -6,15 +6,15 @@ $(document).ready(function(){
 function scaleGrade(){
 	var dataFont;
 	var labelFont;
-	if(gradeSize == "Small"){
+	if(gradeSize == "small"){
 		dataFont = "10px";
 		labelFont = "7.5px";
-	}else if(gradeSize == "Medium"){
+	}else if(gradeSize == "medium"){
 		dataFont = "20px";
-		labelFont = "15px";
+		labelFont = "14px";
 	}else{
-		dataFont = "30px";
-		labelFont = "22.5px";
+		dataFont = "24px";
+		labelFont = "20px";
 	}
 	var dataClass = document.getElementsByClassName("data");
 	for (var i = 0; i < dataClass.length; i++) {

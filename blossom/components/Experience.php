@@ -11,6 +11,7 @@ use Delphinium\Roots\Roots;
 use Delphinium\Roots\Requestobjects\SubmissionsRequest;
 use Delphinium\Roots\Enums\ActionType;
 use \DateTime;
+use \DateTimeZone;
 
 class Experience extends ComponentBase
 {
@@ -23,6 +24,7 @@ class Experience extends ComponentBase
     public $bonusSeconds;
     public $penaltyPerSecond;
     public $penaltySeconds;
+    public $instance;
     
     function setSubmissions($submissions) {
         $this->submissions = $submissions;
@@ -122,6 +124,7 @@ class Experience extends ComponentBase
 
             $this->roots = new Roots();
             $instance = ExperienceModel::find($this->property('Instance'));
+            $this->instance = $instance;
             
             //set class variables
             $stDate = $instance->start_date;
@@ -142,7 +145,7 @@ class Experience extends ComponentBase
             $this->page['maxXP'] = $instance->total_points;//total points for this experience
             $this->page['experienceSize'] = $instance->size;
             $this->page['experienceAnimate'] = $instance->animate;
-            
+            $this->page['redLine'] = $this->getRedLinePoints();
             /*
             //run rules
 
@@ -170,6 +173,16 @@ class Experience extends ComponentBase
             . "Also, make sure that an Instructor has approved this application";
             return;
         }
+    }
+    
+    public function getRedLinePoints()
+    {
+        $now = new DateTime('now',new DateTimeZone('UTC'));
+        $startDate = $this->instance->start_date;
+        $endDate = $this->instance->end_date;
+        $currentSeconds = abs($now->getTimestamp() - $startDate->getTimestamp());
+        $this->ptsPerSecond = $this->getPtsPerSecond($startDate, $endDate, $this->instance->total_points);
+        return floor($this->ptsPerSecond*$currentSeconds);
     }
 
     public function getInstanceOptions()

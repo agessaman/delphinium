@@ -6,17 +6,21 @@
     var maxXP = {{maxXP}};
     var experienceSize = '{{experienceSize}}';
     var maxBonus = {{maxBonus}};
+    var redLine = {{redLine}};
 </script>
 <svg width= "225" height="520" id = "experienceSVG">
 	<g id = "experienceView">
 		<g id = "experienceAxis"></g>
 		<g id = "bpAxis"></g>
-		<path d ="  	M 50,35 
+                <g fill="white" stroke="lightgray">
+                    <path d ="  	M 50,35 
 						L 50,400
 						A 50 50, 0, 1, 0, 100 400
 						L 100,35
 						A 25 25, 0, 0, 0, 50 35"
-						fill="white" stroke = "black" stroke-width = "2" />
+						stroke-width="0.5"/>
+                </g>
+		
 		<clipPath id="experienceClipPath">
 			<path d ="  M 50,35 
 						L 50,400
@@ -33,6 +37,6 @@
 						A 50 50, 0, 1, 0, 100 400
 						L 100,35
 						A 25 25, 0, 0, 0, 50 35"
-						fill="none" stroke = "black" stroke-width = "2" />
+						fill="none" stroke = "lightgray" stroke-width = "1" />
 	</g>
 </svg>
