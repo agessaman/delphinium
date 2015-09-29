@@ -15,6 +15,8 @@ class Experience extends CustomModel
      */
     public $table = 'delphinium_blossom_experiences';
 
+    protected $dates = ['start_date', 'end_date'];
+    
     public $rules = [
         'name'=>'required',
         'total_points'=>'required',
@@ -32,7 +34,7 @@ class Experience extends CustomModel
     {
         if(!is_null($value))
         {
-            return Utils::convertUTCDateTimetoLocal($value);
+            return  Utils::convertUTCDateTimetoLocal($value);
         }
     }
     

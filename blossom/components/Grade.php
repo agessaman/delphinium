@@ -40,38 +40,15 @@ class Grade extends ComponentBase {
         
         if(!is_null($this->property('experienceInstance')))
         {
-            $experienceInstance = ExperienceModel::find($this->property('experienceInstance'));    
-            
             $exComp = new ExperienceComponent();
-            
-             //set class variables
-            $stDate = $experienceInstance->start_date;
-            $endDate = $experienceInstance->end_date;
-            
-            $ptsPerSecond = $exComp->getPtsPerSecond($stDate, $endDate, $experienceInstance->total_points);
-            $exComp->setPtsPerSecond($ptsPerSecond);
-            $exComp->setStartDate($stDate);
-            $exComp->setBonusPerSecond($experienceInstance->bonus_per_day/24/60/60);
-            $exComp->setBonusSeconds($experienceInstance->bonus_days*24*60*60);
-            $exComp->setPenaltyPerSecond($experienceInstance->penalty_per_day/24/60/60);
-            $exComp->setPenaltySeconds($experienceInstance->penalty_days*24*60*60);
-            
+            $exComp->initVariables($this->property('experienceInstance'));
             $points = $exComp->getUserPoints();
             
-            $milestonesDesc = Milestone::where('experience_id','=',$experienceInstance->id)->orderBy('points','desc')->get();
-            $mileClearance = $exComp->getMilestoneClearanceInfo($milestonesDesc);
-            
-            $bonusPenalties = 0;
-            foreach($mileClearance as $item)
-            {
-                if(($item->cleared))
-                {
-                    $bonusPenalties = $bonusPenalties+$item->bonusPenalty;
-                }
-            }
-            
+            $bonusPenaltiesObj = $exComp->calculateTotalBonusPenalties($this->property('experienceInstance'));
+            $totalBonusPenalties = ($bonusPenaltiesObj->bonus)+($bonusPenaltiesObj->penalties);//penalties come with negative sign
+          
             $this->page['XP'] = round($points,2);
-            $this->page['gradeBonus'] = round($bonusPenalties,2);
+            $this->page['gradeBonus'] = round($totalBonusPenalties,2);
         }
         else
         {

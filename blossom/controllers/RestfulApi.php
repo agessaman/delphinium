@@ -6,6 +6,7 @@ use Delphinium\Blossom\Models\Experience as ExperienceModel;
 use Delphinium\Roots\Roots;
 use Delphinium\Roots\Requestobjects\SubmissionsRequest;
 use Delphinium\Roots\Enums\ActionType;
+use Delphinium\Blossom\Components\Experience as ExperienceController;
 use \DateTime;
 use DateTimeZone;
 
@@ -27,87 +28,9 @@ class RestfulApi extends Controller
         $this->submissions = $this->getSubmissions();
         $instanceId = \Input::get('experienceInstanceId');
         
-        $this->instance = ExperienceModel::find($instanceId);
+        $expController = new ExperienceController();
+        $milestoneInfo = $expController->getMilestoneClearanceInfo($instanceId);
         
-        $stDate = $this->instance->start_date;
-        $endDate = $this->instance->end_date;
-        $this->startDate = $stDate;
-        $this->endDate = $endDate;
-        
-        $this->ptsPerSecond = $this->getPtsPerSecond($stDate, $endDate, $this->instance->total_points);
-        $this->penaltySeconds = $this->instance->penalty_days*24*60*60;
-        $this->penaltyPerSecond = $this->instance->penalty_per_day/24/60/60;//convert it to milliseconds
-        $this->bonusSeconds = $this->instance->bonus_days*24*60*60;
-        $this->bonusPerSecond = $this->instance->bonus_per_day/24/60/60;
-        
-        $localMilestones = Milestone::where('experience_id','=',$instanceId)->orderBy('points','desc')->get();
-
-        //order submissions by date
-        usort($this->submissions, function($a, $b) {
-            $ad = new DateTime($a['submitted_at']);
-            $bd = new DateTime($b['submitted_at']);
-
-            if ($ad == $bd) {
-              return 0;
-            }
-
-            return $ad > $bd ? 1 : -1;
-        });
-        $milestoneInfo = array();
-        $carryingScore=0;
-        foreach($this->submissions as $submission)
-        {
-            
-            $carryingScore = $carryingScore+intval($submission['score']);
-            foreach($localMilestones as $key=>$mile)
-            {
-                
-                if($carryingScore>=$mile->points)//milestone cleared
-                {
-                    $mileClearance = new \stdClass();
-                    $mileClearance->milestone_id = $mile->id; 
-                    $mileClearance->name = $mile->name;
-                    $mileClearance->cleared = 1;
-                    $mileClearance->cleared_at = $submission['submitted_at'];
-                    $mileClearance->bonusPenalty = $this->calculateBonusOrPenalty($mile->points, new DateTime($submission['submitted_at']));
-                    $mileClearance->points = $mile->points;
-                    $mileClearance->due_at = $this->calculateMilestoneDueDate($mile->points);
-                    $milestoneInfo[] = $mileClearance;
-                    unset($localMilestones[$key]);
-                    
-                }
-            }   
-        }
-        
-        //sort the remaining milestones by points asc
-        $mileArray = $localMilestones->toArray();
-        usort($mileArray, function($a, $b) {
-            $ad = $a['points'];
-            $bd = $b['points'];
-
-            if ($ad == $bd) {
-              return 0;
-            }
-
-            return $ad > $bd ? 1 : -1;
-        });
-        
-        foreach($mileArray as $left)
-        {//for the milestones that were left
-            $mileClearance = new \stdClass();
-            $mileClearance->milestone_id = $left['id'];
-            $mileClearance->name = $left['name'];
-            $mileClearance->cleared = 0;
-            $mileClearance->cleared_at = null;
-            $now = new DateTime('now',new DateTimeZone('UTC'));
-            $mileClearance->bonusPenalty = $this->calculateBonusOrPenalty($left['points'], $now);
-            $mileClearance->points = $left['points'];
-            
-            $date = $this->calculateMilestoneDueDate($left['points']);
-            
-            $mileClearance->due_at = $date;
-            $milestoneInfo[] = $mileClearance;
-        }
         return $milestoneInfo;
     }
     

@@ -175,6 +175,11 @@ class Experience extends ComponentBase
         }
     }
     
+//    public function getMilestoneClearanceInfo($experienceInstanceId)
+//    {
+//        
+//    }
+    
     public function getRedLinePoints()
     {
         $now = new DateTime('now',new DateTimeZone('UTC'));
@@ -214,6 +219,7 @@ class Experience extends ComponentBase
         return $score;
     }
     
+    
     private function getTotalPoints()
     {  
         if (!isset($_SESSION)) {
@@ -228,9 +234,12 @@ class Experience extends ComponentBase
         return $analytics;
     }
     
-    public function getMilestoneClearanceInfo($milestones)
+    public function getMilestoneClearanceInfo($experienceInstanceId)
     {
-        $localMilestones = $milestones;
+        $this->initVariables($experienceInstanceId);
+        $milestonesDesc = Milestone::where('experience_id','=',$experienceInstanceId)->orderBy('points','desc')->get();
+        
+        $localMilestones = $milestonesDesc;
         //order submissions by date
         usort($this->submissions, function($a, $b) {
             $ad = new DateTime($a['submitted_at']);
@@ -269,7 +278,7 @@ class Experience extends ComponentBase
         }
         
         //sort the remaining milestones by points asc
-        $mileArray = $milestones->toArray();
+        $mileArray = $milestonesDesc->toArray();
         usort($mileArray, function($a, $b) {
             $ad = $a['points'];
             $bd = $b['points'];
@@ -299,6 +308,52 @@ class Experience extends ComponentBase
         return $milestoneInfo;
     }
      
+    public function calculateTotalBonusPenalties($experienceInstanceId)
+    {
+        $mileClearance = $this->getMilestoneClearanceInfo($experienceInstanceId);
+
+        $obj = new \stdClass();
+        $obj->bonus = 0;
+        $obj->penalties = 0;
+        
+        foreach($mileClearance as $item)
+        {
+            if(($item->cleared))
+            {
+                if($item->bonusPenalty > 0)
+                {
+                    $obj->bonus = $obj->bonus+$item->bonusPenalty;
+                }
+                else
+                {
+                    $obj->penalties = $obj->penalties+$item->bonusPenalty;
+                }
+            }
+        }
+        return $obj;
+    }
+    
+    public function initVariables($experienceInstanceId)
+    {//set class variables
+        $experienceInstance = ExperienceModel::find($experienceInstanceId);    
+          
+        $stDate = $experienceInstance->start_date;
+        $endDate = $experienceInstance->end_date;
+
+        $ptsPerSecond = $this->getPtsPerSecond($stDate, $endDate, $experienceInstance->total_points);
+        $this->setPtsPerSecond($ptsPerSecond);
+        $this->setStartDate($stDate);
+        $this->setBonusPerSecond($experienceInstance->bonus_per_day/24/60/60);
+        $this->setBonusSeconds($experienceInstance->bonus_days*24*60*60);
+        $this->setPenaltyPerSecond($experienceInstance->penalty_per_day/24/60/60);
+        $this->setPenaltySeconds($experienceInstance->penalty_days*24*60*60);
+        
+        if(is_null($this->submissions))
+        {
+            $this->submissions = $this->getSubmissions();
+        }
+    }
+
     private function getSubmissions()
     {
         if (!isset($_SESSION)) {

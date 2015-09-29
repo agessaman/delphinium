@@ -3,6 +3,7 @@
 use Cms\Classes\ComponentBase;
 
 use Delphinium\Blossom\Models\Experience as ExperienceModel;
+use Delphinium\Blossom\Components\Experience as ExperienceComponent;
 use Delphinium\Blossom\Models\Milestone;
 use Delphinium\Xylum\Models\ComponentRules;
 use Delphinium\Xylum\Models\ComponentTypes;
@@ -23,6 +24,35 @@ class Gradebook extends ComponentBase
         ];
     }
 
+     public function defineProperties() {
+        return [
+            'experienceInstance' => [
+                'title' => 'Experience instance',
+                'description' => 'Select the experience instance to display the student\'s bonus and penalties',
+                'type' => 'dropdown',
+            ]
+        ];
+    }
+    
+    public function getExperienceInstanceOptions()
+    {
+        $instances = ExperienceModel::all();
+
+        if(count($instances)===0)
+        {
+            return $array_dropdown = ['0'=>'No instances available. Bonus/penalties won\'t appear in the gradebook'];
+        }
+        else
+        {
+            $array_dropdown = ['0'=>'- select Experience Instance - '];
+            foreach ($instances as $instance)
+            {
+                $array_dropdown[$instance->id] = $instance->name;
+            }
+            return $array_dropdown;
+        }
+    }
+    
     public function onRun()
     {   
         $this->roots = new Roots();
@@ -73,10 +103,28 @@ class Gradebook extends ComponentBase
         }
         
         $this->page['data'] = ($result);
-        $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
-        $this->addJs("/plugins/delphinium/blossom/assets/javascript/boxplot.js");
+        
+        $bonusPenalties = $this->getBonusPenalties();
+        $this->page['bonus'] = $bonusPenalties ===0? 0: round($bonusPenalties->bonus,2);
+        $this->page['penalties'] = $bonusPenalties ===0? 0: round($bonusPenalties->penalties,2);
+        
         $this->addCss("/plugins/delphinium/blossom/assets/css/bootstrap.min.css");
         $this->addCss("/plugins/delphinium/blossom/assets/css/gradebook.css");
+        $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
+//        $this->addJs("/plugins/delphinium/blossom/assets/javascript/boxplot.js");
+    }
+    
+    private function getBonusPenalties()
+    {
+        $experienceComp = new ExperienceComponent();
+        if((!is_null($this->property('experienceInstance')))&&($this->property('experienceInstance')>0))
+        {
+            return $experienceComp->calculateTotalBonusPenalties($this->property('experienceInstance'));
+        }
+        else
+        {
+            return 0;
+        }
     }
     
     private function findAssignmentById($assignmentId, $analytics)

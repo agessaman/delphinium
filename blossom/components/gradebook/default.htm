@@ -1,9 +1,11 @@
 <div id="boxplotWrap"></div>
 
+<script type="text/javascript" src="plugins/delphinium/blossom/assets/javascript/d3.min.js"></script>
 <div class="body">
-    {% for group in data %}
     <div>
-            <table class="table table-condensed table-responsive table-bordered table-striped table-hover">
+        {% for group in data %}
+        <div>
+            <table class="table table-condensed table-responsive table-bordered table-hover">
                 <caption>{{ group.group_name }}</caption>
                 <thead>
                     <tr>
@@ -14,32 +16,58 @@
                 </thead>
                 <tbody>
                     {%for item in group.content%}
-                    <tr>
+                    {%if item.score != null%}
+                    {%set class="done"%}
+                    {%else%}
+                    {%set class = "undone" %}
+                    {% endif %}
+                    <tr class="{{class}}">
                         <td data-field="name"><a href="{{item.html_url}}" target="_blank">{{item.name}}</td>
                         {%if item.score != null%}
                         <td data-field="score">{{item.score}} / {{item.points_possible}} pts</td>
                         {% else %}
-                        <td data-field="score">-- / {{item.points_possible}} pts</td>
+                        <td data-field="score" >-- / {{item.points_possible}} pts</td>
                         {% endif %}
-                        
+
                         <td>
-                            <!--Pass variables to analytics partial-->
-                            {% partial __SELF__ ~ "::analytics" 
+                            <div class="boxplot">
+                                <svg class="boxplot" width="400" height="40">
+                                {% partial __SELF__ ~ "::analytics" 
                                 min_score=item.min_score != null?item.min_score:0
                                 max_score = item.max_score != null?item.max_score:0
                                 first_quartile= item.first_quartile != null?item.first_quartile:0
                                 median = item.median!= null?item.median :0
                                 third_quartile = item.third_quartile!= null?item.third_quartile :0
-                            %}
+                                score = item.score
+                                %}
+                                </svg>
+                            </div>
                         </td>
                     </tr>
                     {%endfor%}
                 </tbody>
             </table>
 
+
+        </div>
+
         {% endfor %}
-
     </div>
-
-
+    
+    <table class="table table-condensed table-responsive table-bordered table-hover">
+        <caption>Bonus/Penalties</caption>
+        <tbody>
+            <tr class="undone">
+                <td>Bonus</td>
+                <td>{{bonus}}</td>
+            </tr>
+            <tr class="undone">
+                <td>Penalty</td>
+                <td>{{penalties}}</td>
+            </tr>
+        </tbody>
+    </table>
 </div>
+
+
+<script type="text/javascript" src="plugins/delphinium/blossom/assets/javascript/boxplot.js"></script>

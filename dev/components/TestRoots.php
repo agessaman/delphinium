@@ -61,7 +61,7 @@ class TestRoots extends ComponentBase
 //        $this->testingGettingAssignments();
 //        $this->testGettingSingleAssignment();
         
-        $this->testAssignmentGroups();
+//        $this->testAssignmentGroups();
 //        $this->testSingleAssignmentGroup();
 //        
 //        $this->testGettingSingleSubmissionSingleUserSingleAssignment();
@@ -73,7 +73,7 @@ class TestRoots extends ComponentBase
 //        $this->testGettingSubmissions();
 //        $this->testFileUpload();
 //        $this->testAddingAssignment();
-//        $this->testStudentAnalyticsAssignmentData();
+        $this->testStudentAnalyticsAssignmentData();
 //        $this->testGetCourse();
 //        $this->testGetAccount();
 //        $this->testGetEnrollments();
