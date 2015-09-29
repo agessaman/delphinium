@@ -5,6 +5,7 @@ use Delphinium\Roots\UpdatableObjects\ModuleItem;
 use Delphinium\Roots\Models\Assignment;
 use Delphinium\Roots\Models\ModuleItem as DbModuleItem;
 use Delphinium\Roots\Roots;
+use Delphinium\Roots\Utils;
 use Delphinium\Roots\Requestobjects\SubmissionsRequest;
 use Delphinium\Roots\Requestobjects\ModulesRequest;
 use Delphinium\Roots\Requestobjects\AssignmentsRequest;
@@ -60,7 +61,7 @@ class TestRoots extends ComponentBase
 //        $this->testingGettingAssignments();
 //        $this->testGettingSingleAssignment();
         
-//        $this->testAssignmentGroups();
+        $this->testAssignmentGroups();
 //        $this->testSingleAssignmentGroup();
 //        
 //        $this->testGettingSingleSubmissionSingleUserSingleAssignment();
@@ -78,7 +79,7 @@ class TestRoots extends ComponentBase
 //        $this->testGetEnrollments();
 //        $this->testGetQuiz();
 //        $this->testGetQuizQuestions();
-        $this->testGetAllQuizzes();
+//        $this->testGetAllQuizzes();
 //        $this->testGetPages();
         
     }
@@ -425,9 +426,23 @@ class TestRoots extends ComponentBase
         echo json_encode($res);
     }
     
+    public function convertDatesUTCLocal()
+    {
+        $utcTime = Utils::convertLocalDateTimeToUTC(new DateTime('now'));
+        echo "UTC:".json_encode($utcTime);
+        
+        $localTime = Utils::convertUTCDateTimetoLocal($utcTime);
+        echo "MOUNTAIN".json_encode($localTime);
+        
+    }
     
     public function test()
     {
+//        $this->convertDatesUTCLocal();
+//        
+        $now = new DateTime(date("Y-m-d"));
+        
+        echo json_encode($now);
 //        $rb = new RuleBuilder;
 //
 //        $bonus_90 = $rb->create('current_user_submissions', 'submission',
@@ -445,8 +460,8 @@ class TestRoots extends ComponentBase
 //        $rg->add($bonus_90);
 //        $rg->saveRules();
         
-        $manager = ComponentManager::instance();
-       echo json_encode($manager->listComponents());
+//        $manager = ComponentManager::instance();
+//       echo json_encode($manager->listComponents());
         
         
 

@@ -12,7 +12,12 @@ fields:
         span: auto
         comment: Enter the name of this instance
 
-    Size:
+    size:
         label: Size
         span: auto
+        type: dropdown
+        options:
+            small: Small
+            medium: Medium
+            large: Large
         comment: Enter the the size of component you want

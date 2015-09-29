@@ -18,11 +18,14 @@ circle {
     fill: steelblue;
 }
 .dot{
-    opacity: 0.5;   
+    opacity: 0.4; 
+    stroke:none !important;  
 }
 
-#gradedot{
+.gradedot{
     fill: #FD994C; 
+    stroke:black;
+    z-index:1000;
 }
 
 #experienceSVG
@@ -50,17 +53,12 @@ div.tooltip {
     height:auto;
     width:auto;
 }
-
-#experienceSVG
-{
-    margin:1em;
-}
 .name
 {
     margin-bottom:15px;
 }
 .bonusPoints
 {
-    font-size:11px;
+    font-size:12px;
     margin-left:3px;
 }

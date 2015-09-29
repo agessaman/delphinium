@@ -11,6 +11,7 @@ use Delphinium\Roots\Roots;
 use Delphinium\Roots\Requestobjects\SubmissionsRequest;
 use Delphinium\Roots\Enums\ActionType;
 use \DateTime;
+use \DateTimeZone;
 
 class Experience extends ComponentBase
 {
@@ -23,6 +24,7 @@ class Experience extends ComponentBase
     public $bonusSeconds;
     public $penaltyPerSecond;
     public $penaltySeconds;
+    public $instance;
     
     function setSubmissions($submissions) {
         $this->submissions = $submissions;
@@ -122,10 +124,11 @@ class Experience extends ComponentBase
 
             $this->roots = new Roots();
             $instance = ExperienceModel::find($this->property('Instance'));
+            $this->instance = $instance;
             
             //set class variables
-            $stDate = new DateTime($instance->start_date);
-            $endDate = new DateTime($instance->end_date);
+            $stDate = $instance->start_date;
+            $endDate = $instance->end_date;
             $this->startDate = $stDate;
             $this->endDate = $endDate;
             $this->submissions =$this->getSubmissions();
@@ -135,13 +138,14 @@ class Experience extends ComponentBase
             $this->bonusSeconds = $instance->bonus_days*24*60*60;
             $this->bonusPerSecond = $instance->bonus_per_day/24/60/60;
 
+            $this->page['maxBonus'] = $this->bonusSeconds * $this->bonusPerSecond;
             //set page variables
             $this->page['instanceId'] = $instance->id;
             $this->page['experienceXP'] = $this->getUserPoints();//current points
             $this->page['maxXP'] = $instance->total_points;//total points for this experience
             $this->page['experienceSize'] = $instance->size;
             $this->page['experienceAnimate'] = $instance->animate;
-            
+            $this->page['redLine'] = $this->getRedLinePoints();
             /*
             //run rules
 
@@ -169,6 +173,16 @@ class Experience extends ComponentBase
             . "Also, make sure that an Instructor has approved this application";
             return;
         }
+    }
+    
+    public function getRedLinePoints()
+    {
+        $now = new DateTime('now',new DateTimeZone('UTC'));
+        $startDate = $this->instance->start_date;
+        $endDate = $this->instance->end_date;
+        $currentSeconds = abs($now->getTimestamp() - $startDate->getTimestamp());
+        $this->ptsPerSecond = $this->getPtsPerSecond($startDate, $endDate, $this->instance->total_points);
+        return floor($this->ptsPerSecond*$currentSeconds);
     }
 
     public function getInstanceOptions()

@@ -45,8 +45,8 @@ class Grade extends ComponentBase {
             $exComp = new ExperienceComponent();
             
              //set class variables
-            $stDate = new DateTime($experienceInstance->start_date);
-            $endDate = new DateTime($experienceInstance->end_date);
+            $stDate = $experienceInstance->start_date;
+            $endDate = $experienceInstance->end_date;
             
             $ptsPerSecond = $exComp->getPtsPerSecond($stDate, $endDate, $experienceInstance->total_points);
             $exComp->setPtsPerSecond($ptsPerSecond);
