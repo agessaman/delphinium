@@ -21,20 +21,21 @@
     padding:15px;
     display:inline-block;
     border:1px solid lightgrey;
-    background:#FDFFD5;
+    background:#39A4F3;
     transition:all linear 0.15s;
     font-size:1.200em;
     text-shadow:0px 1px 0px gray;
-    color:#gray;
+    color:whitesmoke;
 }
  
 .accordionTabTitle.active, .accordionTabTitle:hover{
-    background:#FAFF9B;
+    background:#4682B4;
+	color: white;
 }
 
 .accordionTabTitle:hover, .accordionTabTitle:focus, .accordionTabTitle:visited, .accordionTabTitle:active, .accordionTabTitle:link{
     text-decoration: none;
-    color: #grey;
+    //color: white;
 }
 
 .accordionTab:last-child .accordionTabTitle {
@@ -65,7 +66,7 @@
 .accordionTabContentStudentCurrent{
     border: 1px solid gray;
     //border-radius: 15px;
-    background-color: #D9FF9B;
+    background-color: #FFBA39;
     //padding: 10px;
 }
 
