@@ -10,11 +10,11 @@ function scaleBonus(){
 	var bonusSVG = d3.select("#bonusSVG");
 	var bonusHeight = 115;
 	var bonusWidth = 340;
-	if(bonusSize == "Small"){
+	if(bonusSize == "1"){
 		bonusSVG.attr('width', bonusWidth / 2)
 				.attr('height', bonusHeight / 2);
 		bonusView.attr('transform', "scale(.5)");
-	}else if(bonusSize == "Medium"){
+	}else if(bonusSize == "2"){
 		bonusSVG.attr('width', bonusWidth)
 				.attr('height', bonusHeight);
 	}else{
@@ -128,7 +128,7 @@ function drawBonus(){
 
 		//Draw penalty
 		prectangle.transition()
-			.delay(2000)
+			//.delay(2000)
 			.duration(1000)
 			.style('fill', "#FF4747")
 			.attr('width', Math.round(minScale(penalty)))
@@ -137,7 +137,7 @@ function drawBonus(){
 
 		//Draw bonus
 		brectangle.transition()
-			.delay(3500)
+			.delay(1500)
 			.duration(1500)
 			.style('fill', "#66FF33")
 			.attr('width', Math.round(maxScale(bonus)));
@@ -145,7 +145,7 @@ function drawBonus(){
 
 		//Erase overlap
 		brectangle.transition()
-			.delay(5000)
+			.delay(3000)
 			.duration(1000)
 			.style('fill', "white");
 		

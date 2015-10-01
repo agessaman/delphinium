@@ -1,0 +1,119 @@
+<script>
+	var bonus = 20;
+	var penalty = -30;
+	function updateComponent(){
+		$( "#loading" ).show( "slow", function() {});
+		$('#updateForm').request('onUpdate', {
+			success: function(data) {
+				location.reload();
+			}
+		})
+	}
+</script>
+<style>
+@-webkit-keyframes spinnerRotate
+{
+    from{-webkit-transform:rotate(0deg);}
+    to{-webkit-transform:rotate(360deg);}
+}
+@-moz-keyframes spinnerRotate
+{
+    from{-moz-transform:rotate(0deg);}
+    to{-moz-transform:rotate(360deg);}
+}
+@-ms-keyframes spinnerRotate
+{
+    from{-ms-transform:rotate(0deg);}
+    to{-ms-transform:rotate(360deg);}
+}
+#loading{
+	opacity: 0.6;
+	display: none;
+	position:absolute; 
+    top:60%;
+    left:37%;
+	color:blue;
+	font-size:5em;
+    -webkit-animation-name: spinnerRotate;
+    -webkit-animation-duration: 2s;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: linear;
+    -moz-animation-name: spinnerRotate;
+    -moz-animation-duration: 2s;
+    -moz-animation-iteration-count: infinite;
+    -moz-animation-timing-function: linear;
+    -ms-animation-name: spinnerRotate;
+    -ms-animation-duration: 2s;
+    -ms-animation-iteration-count: infinite;
+    -ms-animation-timing-function: linear;
+}
+</style>
+{% partial 'bonus::display' %}
+
+<a data-toggle="modal" href="#content-confirmation" class=""><i class="icon-cog"></i> Settings</a>
+
+<div class="control-popup modal fade" id="content-confirmation" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content" style="width:260px">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Configure Bonus Settings</h4>
+            </div>
+            <div class="modal-body">
+				<i id="loading" class="icon-refresh"></i>
+				<form class="form-elements" role="form" id="updateForm">
+					<div class="form-group span-full">
+						<label data-toggle="tooltip" title="Input the name to identify this bonus meter">Name</label>
+						<input type="text" name="name" value="{{name}}" class="form-control" />
+					</div>
+
+					<div class="form-group span-left" style="width:7em; float:left; margin-right:2em;">
+						<label data-toggle="tooltip" title="Input the maximum amount for penalties">Penalty Max</label>
+						<input type="text" name="minBonus" value="{{minBonus}}" class="form-control" />
+					</div>
+
+					<div class="form-group span-right" style="width:7em; float:left;">
+						<label data-toggle="tooltip" title="Input the maximum amount for bonuses">Bonus Max</label>
+						<input type="text" name="maxBonus" value="{{maxBonus}}" class="form-control" />
+					</div>
+
+					<div style="width:7em; float:left; margin-right:2em;">
+						<label data-toggle="tooltip" title="Select the size of the bonus meter">Size</label>
+						<select id="selectSize" name="size" class="form-control custom-select">
+							<option value="1">Small</option>
+							<option value="2">Medium</option>
+							<option value="3">Large</option>
+						</select>
+					</div>
+					<div style="width:7em; float:left;">
+						<label data-toggle="tooltip" title="Select whether or not to animate the bonus meter when the page loads">Animate</label>
+						<select id="selectAnimate" name="animate" class="form-control custom-select">
+							<option value="1">Yes</option>
+							<option value="0">No</option>
+						</select>
+					</div>
+				</form>
+            </div>
+			<div style="clear:both; height:1.5em"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="updateComponent()">Update</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+	var s = document.getElementById("selectSize");
+	for ( var i = 0; i < s.options.length; i++ ) {
+        if ( s.options[i].value == {{bonusSize}} ) {
+            s.options[i].selected = true;
+        }
+    }
+	var s = document.getElementById("selectAnimate");
+	for ( var i = 0; i < s.options.length; i++ ) {
+        if ( s.options[i].value == {{bonusAnimate}} ) {
+            s.options[i].selected = true;
+        }
+    }
+</script>

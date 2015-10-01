@@ -1,11 +1,13 @@
 <?php namespace delphinium\greenhouse\classes;
 
-use Cms\Classes\ComponentBase;
-use ApplicationException;
+use Delphinium\Blossom\Models\Experience;
+use Cms\Classes\Controller;
+use Cms\Classes\CmsObject;
 
 class frontend 
 {
 	public function launchGreenhouse(){
+		$controller = Controller::getController() ?: new Controller;
 		if(isset($_POST['lti_message_type'])){
 			$this['messageType']=$_POST['lti_message_type'];
 
@@ -20,7 +22,7 @@ class frontend
 					break;
 			}
 		} else { //return xml configuration file for LTI tool
-			$this->returnXML();
+			$this->returnXML($controller);
 		}
 	}
 
@@ -59,8 +61,8 @@ class frontend
 		];        
 	}
 
-private function returnXML() {
-    $url = $this->pageUrl($this->page->getFileName());
+private function returnXML($controller) {
+    $url = $controller->pageUrl($this->page->getFileName());
         
     $string = <<<XML
 <cartridge_basiclti_link xmlns="http://www.imsglobal.org/xsd/imslticc_v1p0" xmlns:blti="http://www.imsglobal.org/xsd/imsbasiclti_v1p0" xmlns:lticm="http://www.imsglobal.org/xsd/imslticm_v1p0" xmlns:lticp="http://www.imsglobal.org/xsd/imslticp_v1p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imslticc_v1p0 http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticc_v1p0.xsd http://www.imsglobal.org/xsd/imsbasiclti_v1p0 http://www.imsglobal.org/xsd/lti/ltiv1p0/imsbasiclti_v1p0p1.xsd http://www.imsglobal.org/xsd/imslticm_v1p0 http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticm_v1p0.xsd http://www.imsglobal.org/xsd/imslticp_v1p0 http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticp_v1p0.xsd">
