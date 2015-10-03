@@ -4,10 +4,6 @@ use Cms\Classes\ComponentBase;
 
 use Delphinium\Blossom\Models\Experience as ExperienceModel;
 use Delphinium\Blossom\Components\Experience as ExperienceComponent;
-use Delphinium\Blossom\Models\Milestone;
-use Delphinium\Xylum\Models\ComponentRules;
-use Delphinium\Xylum\Models\ComponentTypes;
-use Delphinium\Blade\Classes\Data\DataSource;
 use Delphinium\Roots\Roots;
 use Delphinium\Roots\Requestobjects\AssignmentGroupsRequest;
 use Delphinium\Roots\Enums\ActionType;
@@ -84,11 +80,11 @@ class Gradebook extends ComponentBase
                     $obj->html_url = $assignment->html_url;
                     $obj->points_possible = $assignment->points_possible;
                     $obj->score = (isset($analyticsObj->submission))?($analyticsObj->submission->score):null;
-                    $obj->max_score= $analyticsObj->max_score;
-                    $obj->min_score= $analyticsObj->min_score;
-                    $obj->first_quartile = $analyticsObj->first_quartile;
-                    $obj->median = $analyticsObj->median;
-                    $obj->third_quartile = $analyticsObj->third_quartile;
+                    $obj->max_score= 18;//$analyticsObj->max_score;
+                    $obj->min_score= 3;//$analyticsObj->min_score;
+                    $obj->first_quartile = 4;//$analyticsObj->first_quartile;
+                    $obj->median = 10;//$analyticsObj->median;
+                    $obj->third_quartile = 15;//$analyticsObj->third_quartile;
                     
                     array_push($wrap->content, $obj);
                     
@@ -102,7 +98,7 @@ class Gradebook extends ComponentBase
             $result[] = $wrap;
         }
         
-        $this->page['data'] = ($result);
+        $this->page['data'] = json_encode($result);
         
         $bonusPenalties = $this->getBonusPenalties();
         $this->page['bonus'] = $bonusPenalties ===0? 0: round($bonusPenalties->bonus,2);
@@ -112,6 +108,7 @@ class Gradebook extends ComponentBase
         $this->addCss("/plugins/delphinium/blossom/assets/css/gradebook.css");
         $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
 //        $this->addJs("/plugins/delphinium/blossom/assets/javascript/boxplot.js");
+        $this->addJs("/plugins/delphinium/blossom/assets/javascript/boxplot_d3.js");
     }
     
     private function getBonusPenalties()

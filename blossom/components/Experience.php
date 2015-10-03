@@ -18,8 +18,8 @@ class Experience extends ComponentBase
     public $roots;
     public $submissions;
     public $ptsPerSecond;
-    public $startDate;
-    public $endDate;
+    public $startDateUTC;
+    public $endDateUTC;
     public $bonusPerSecond;
     public $bonusSeconds;
     public $penaltyPerSecond;
@@ -39,11 +39,11 @@ class Experience extends ComponentBase
     }
 
     function getStartDate() {
-        return $this->startDate;
+        return $this->startDateUTC;
     }
 
     function getEndDate() {
-        return $this->endDate;
+        return $this->endDateUTC;
     }
 
     function getBonusPerSecond() {
@@ -66,12 +66,12 @@ class Experience extends ComponentBase
         $this->roots = $roots;
     }
 
-    function setStartDate($startDate) {
-        $this->startDate = $startDate;
+    function setStartDateUTC($startDate) {
+        $this->startDateUTC = $startDate;
     }
 
-    function setEndDate($endDate) {
-        $this->endDate = $endDate;
+    function setEndDateUTC($endDate) {
+        $this->endDateUTC = $endDate;
     }
 
     function setBonusPerSecond($bonusPerSecond) {
@@ -113,7 +113,7 @@ class Experience extends ComponentBase
     }
     
     public function onRun()
-    {
+    {//this.startDate and this.endDate are in UTC. The instance in the model will remain in the user's timezone
         try
         {
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
@@ -127,10 +127,11 @@ class Experience extends ComponentBase
             $this->instance = $instance;
             
             //set class variables
-            $stDate = $instance->start_date;
-            $endDate = $instance->end_date;
-            $this->startDate = $stDate;
-            $this->endDate = $endDate;
+            $utcTimeZone = new DateTimeZone('UTC');
+            $stDate = $instance->start_date->setTimezone($utcTimeZone);
+            $endDate = $instance->end_date->setTimezone($utcTimeZone);
+            $this->startDateUTC = $stDate;
+            $this->endDateUTC = $endDate;
             $this->submissions =$this->getSubmissions();
             $this->ptsPerSecond = $this->getPtsPerSecond($stDate, $endDate, $instance->total_points);
             $this->penaltySeconds = $instance->penalty_days*24*60*60;
@@ -146,28 +147,7 @@ class Experience extends ComponentBase
             $this->page['experienceSize'] = $instance->size;
             $this->page['experienceAnimate'] = $instance->animate;
             $this->page['redLine'] = $this->getRedLinePoints();
-            /*
-            //run rules
-
-            $cType = ComponentTypes::where(array('type' => 'experience'))->first();
-            $componentRules = ComponentRules::where(array('component_id' => $cType->id));
-            $source = new DataSource(false);
-            if(!isset($_SESSION)) 
-            { 
-                session_start(); 
-            }
-            $userId = $_SESSION['userID'];
-            $params = array('student_ids'=>$userId,
-                '$all_assignments'=>true,
-                'fresh_data'=>0,
-                'prettyprint'=>1,
-                'rg'=>'experience');
-            echo json_encode($source->getMultipleSubmissions($params));
-            //calculated variables
-            $this->page['milestone_status']= array(); 
-             * 
-             */
-
+            
         } catch (\GuzzleHttp\Exception\ClientException $e) {
             echo "You must be a student to use this app, or go into 'Student View'. "
             . "Also, make sure that an Instructor has approved this application";
@@ -175,18 +155,15 @@ class Experience extends ComponentBase
         }
     }
     
-//    public function getMilestoneClearanceInfo($experienceInstanceId)
-//    {
-//        
-//    }
-    
     public function getRedLinePoints()
-    {
-        $now = new DateTime('now',new DateTimeZone('UTC'));
-        $startDate = $this->instance->start_date;
-        $endDate = $this->instance->end_date;
-        $currentSeconds = abs($now->getTimestamp() - $startDate->getTimestamp());
-        $this->ptsPerSecond = $this->getPtsPerSecond($startDate, $endDate, $this->instance->total_points);
+    {//only deal with UTC dates. The model will return the date in the user's timezone, but we'll convert it to UTC
+        $utcTimeZone = new DateTimeZone('UTC');
+        $now = new DateTime('now',$utcTimeZone);
+        $startDateUTC = $this->instance->start_date->setTimezone($utcTimeZone);
+        $endDateUTC = $this->instance->end_date->setTimezone($utcTimeZone);
+        $currentSeconds = abs($now->getTimestamp() - $startDateUTC->getTimestamp());
+        
+        $this->ptsPerSecond = $this->getPtsPerSecond($startDateUTC, $endDateUTC, $this->instance->total_points);
         return floor($this->ptsPerSecond*$currentSeconds);
     }
 
@@ -337,12 +314,13 @@ class Experience extends ComponentBase
     {//set class variables
         $experienceInstance = ExperienceModel::find($experienceInstanceId);    
           
-        $stDate = $experienceInstance->start_date;
-        $endDate = $experienceInstance->end_date;
+        $utcTimeZone = new DateTimeZone('UTC');
+        $stDate = $experienceInstance->start_date->setTimezone($utcTimeZone);
+        $endDate = $experienceInstance->end_date->setTimezone($utcTimeZone);
 
         $ptsPerSecond = $this->getPtsPerSecond($stDate, $endDate, $experienceInstance->total_points);
         $this->setPtsPerSecond($ptsPerSecond);
-        $this->setStartDate($stDate);
+        $this->setStartDateUTC($stDate);
         $this->setBonusPerSecond($experienceInstance->bonus_per_day/24/60/60);
         $this->setBonusSeconds($experienceInstance->bonus_days*24*60*60);
         $this->setPenaltyPerSecond($experienceInstance->penalty_per_day/24/60/60);
@@ -367,11 +345,12 @@ class Experience extends ComponentBase
         return $submissions;
     }
     
-    private function calculateRedLine(DateTime $startDate, DateTime $endDate, $totalPoints)
+    private function calculateRedLine(DateTime $startDateUTC, DateTime $endDateUTC, $totalPoints)
     {//-Red line = current day (in points)
-        $ptsPerSecond = $this->getPtsPerSecond($startDate, $endDate, $totalPoints);
-        $now = (new DateTime('now'));
-        $currentSeconds = abs($now->getTimestamp() - $startDate->getTimestamp());
+        $ptsPerSecond = $this->getPtsPerSecond($startDateUTC, $endDateUTC, $totalPoints);
+        $now = (new DateTime('now',new DateTimeZone('UTC')));
+        
+        $currentSeconds = abs($now->getTimestamp() - $startDateUTC->getTimestamp());
         
         return floor($ptsPerSecond*$currentSeconds);
     }
@@ -381,7 +360,7 @@ class Experience extends ComponentBase
         $secsTranspired = ceil($milestonePoints/$this->ptsPerSecond);
         $intervalSeconds = "PT".$secsTranspired."S";
         
-        $sDate = clone($this->startDate);
+        $sDate = clone($this->startDateUTC);
         $dueDate = $sDate->add(new \DateInterval($intervalSeconds));
         
         return $dueDate;
@@ -390,7 +369,7 @@ class Experience extends ComponentBase
     {
         $secsTranspired = ceil($milestonePoints/$this->ptsPerSecond);
         $intervalSeconds = "PT".$secsTranspired."S";
-        $sDate = clone($this->startDate);
+        $sDate = clone($this->startDateUTC);
         $dueDate = $sDate->add(new \DateInterval($intervalSeconds));
         $diffSeconds = abs($dueDate->getTimestamp() - $submittedAt->getTimestamp());
         
@@ -410,9 +389,9 @@ class Experience extends ComponentBase
         }
     }
     
-    public function getPtsPerSecond(DateTime $startDate, DateTime $endDate, $totalPoints)
+    public function getPtsPerSecond(DateTime $UTCstartDate, DateTime $UTCendDate, $totalPoints)
     {
-        $intervalSeconds = abs($startDate->getTimestamp() - $endDate->getTimestamp());
+        $intervalSeconds = abs($UTCstartDate->getTimestamp() - $UTCendDate->getTimestamp());
         return $totalPoints/$intervalSeconds;
     }
     

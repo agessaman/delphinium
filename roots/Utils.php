@@ -4,36 +4,43 @@ use \DateTime;
 use \DateTimeZone;
 
 class Utils
-{
-    public static function convertUTCDateTimetoLocal($inUtcDateTime)
+{   
+    public static function setLocalTimezone($value)
     {
         if(!isset($_SESSION)) 
         { 
             session_start(); 
     	}
-        
         $localTimeZone = $_SESSION['timezone'];
         
-        //check if we have a string or a DateTime obj
-        if(is_string($inUtcDateTime))
+        if(is_string($value))
         {
-            return new DateTime($inUtcDateTime,$localTimeZone);
+            return new DateTime($value,$localTimeZone);
         }
-        else
+        else if($value instanceof DateTime)
         {
-            return $inUtcDateTime->setTimezone($localTimeZone);
+            return $value->setTimezone($localTimeZone);
         }
     }
     
-    public static function convertLocalDateTimeToUTC($inLocalDateTime)
+    public static function setUTCTimezone($value)
     {
-        if(is_string($inLocalDateTime))
+        if(is_string($value))
         {
-            return new DateTime($inLocalDateTime,new DateTimeZone('UTC'));
+            return new DateTime($value,new DateTimeZone('UTC'));
         }
-        else
+        else if($value instanceof DateTime)
         {
-            return $inLocalDateTime->setTimezone(new DateTimeZone('UTC'));
+            return $value->setTimezone(new DateTimeZone('UTC'));
         }
+    }
+    
+    public static function getLocalTimeZone()
+    {
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        return $_SESSION['timezone'];
     }
 }

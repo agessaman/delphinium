@@ -65,7 +65,7 @@ class TestRoots extends ComponentBase
 //        $this->testSingleAssignmentGroup();
 //        
 //        $this->testGettingSingleSubmissionSingleUserSingleAssignment();
-//        $this->testGettingAllSubmissionForSingleAssignment();
+        $this->testGettingAllSubmissionForSingleAssignment();
 //        $this->testGettingMultipleSubmissionsForSingleStudent();
 //        $this->testGettingMultipleSubmissionsAllStudents();
 //        $this->testGettingAllSubmissionsAllStudents();
@@ -73,7 +73,7 @@ class TestRoots extends ComponentBase
 //        $this->testGettingSubmissions();
 //        $this->testFileUpload();
 //        $this->testAddingAssignment();
-        $this->testStudentAnalyticsAssignmentData();
+//        $this->testStudentAnalyticsAssignmentData();
 //        $this->testGetCourse();
 //        $this->testGetAccount();
 //        $this->testGetEnrollments();
@@ -438,11 +438,14 @@ class TestRoots extends ComponentBase
     
     public function test()
     {
-//        $this->convertDatesUTCLocal();
-//        
-        $now = new DateTime(date("Y-m-d"));
         
-        echo json_encode($now);
+        
+//        $this->convertDatesUTCLocal();
+//        $now = new DateTime(date("Y-m-d"));
+//        echo json_encode($now);
+//        
+//        
+//        
 //        $rb = new RuleBuilder;
 //
 //        $bonus_90 = $rb->create('current_user_submissions', 'submission',
