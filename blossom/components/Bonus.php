@@ -50,10 +50,22 @@ class Bonus extends ComponentBase{
 
         $this->page['Bonus'] = $this->property('Bonus');
 		$this->page['Penalty'] = $this->property('Penalty');
+		$this->page['name'] = $instance->Name;
 		$this->page['maxBonus'] = $instance->Maximum;
 		$this->page['minBonus'] = $instance->Minimum;
 		$this->page['bonusAnimate'] = $instance->Animate;
 		$this->page['bonusSize'] = $instance->Size;
+		$this->page['role'] = $_POST['roles'];
+	}
+	
+	public function onUpdate(){
+			$instance = BonusModel::find($this->property('Instance'));
+			$instance->Name = $_POST['name'];
+			$instance->Maximum = $_POST['maxBonus'];
+			$instance->Minimum = $_POST['minBonus'];
+			$instance->Animate = $_POST['animate'];
+			$instance->Size = $_POST['size'];
+			$instance->save();
 	}
 
 	public function getInstanceOptions()

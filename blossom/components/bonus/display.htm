@@ -1,0 +1,34 @@
+<script>
+	var maxBonus = {{maxBonus}};
+	var minBonus = {{minBonus}};
+	var bonusAnimate = {{bonusAnimate}};
+	var bonusSize = '{{bonusSize}}';
+</script>
+<svg id = "bonusSVG">
+	<g id = "bonusView">
+		<clipPath id="bonusClipPath">
+			<path d ="  M26,30 
+						L126,30 
+						A 50 50, 0, 0, 1, 214 30  
+						L314,30 
+						A 25 25, 0, 0, 1, 314 80
+						L214,80
+						A 50 50, 0, 0, 1, 126 80
+						L26,80
+						A 25 25, 0, 0, 1, 26 30" />
+		</clipPath>
+		<rect  id = "penaltyRect" width="0" height="115" style=" fill:none; clip-path: url(#bonusClipPath); "/>
+		<rect  id = "bonusRect" width="0" height="115" style=" fill:none; clip-path: url(#bonusClipPath); "/>
+		<rect  id = "center" width="0" height="115" style=" fill:none; clip-path: url(#bonusClipPath); "/>
+		<path d ="  	M26,30 
+						L126,30 
+						A 50 50, 0, 0, 1, 214 30  
+						L314,30 
+						A 25 25, 0, 0, 1, 314 80
+						L214,80
+						A 50 50, 0, 0, 1, 126 80
+						L26,80
+						A 25 25, 0, 0, 1, 26 30"
+						fill="none" stroke = "black" stroke-width = "2" />
+	</g>
+</svg>
