@@ -214,6 +214,28 @@ function drawMilestoneInfo(bonus_penalties) {
             });
 }
 
+function pulseRedLine(redLineElement, interval, normalRedLineValue)
+{
+    redLineElement.transition()
+        .duration(interval/2)
+        .ease("quad-in-out")
+        .attr('height', 4)
+        .attr('y',normalRedLineValue-1)
+        .attr('opacity',1)
+        .each("end", function () {
+            redLineElement
+                .transition()
+                .duration(interval/2)
+                .ease("quad-in-out")
+                .attr('height', 2)
+                .attr('y',normalRedLineValue)
+                .attr('opacity',0.5);
+        });
+}
+
+
+
+
 function drawExperience(redLine)
 {
     var datelong = new Date();
@@ -225,21 +247,35 @@ function drawExperience(redLine)
 
     var redLineY = encouragementAxisScale(redLine);
 
-    var redLineDom = d3.select("#redLine")
-            .attr('y', bottom)
-            .style("fill", "red")
-            .on("mouseover", function (d) {
-                addTooltip("Ideal progress: " + redLine + " pts by today. Reach the next milestone before this line to earn a bonus. \n\
-                    If this line beats you, you will receive a penalty.")
-            })
-            .on("mouseout", function (d) {
-                removeTooltip();
-            })
-            .transition()
-            .delay(1000)
-            .duration(1000)
-            .attr('height', 2)
-            .attr('y', redLineY);
+    var redLineDom = d3.select("#redLine");
+    
+    d3.select("#redLine")
+        .attr('y', bottom)
+        .style("fill", "red")
+        .on("mouseover", function (d) {
+            addTooltip("Ideal progress: " + redLine + " pts by today. Reach the next milestone before this line to earn a bonus. \n\
+                If this line beats you, you will receive a penalty.")
+        })
+        .on("mouseout", function (d) {
+            removeTooltip();
+        })
+        .transition()
+        .delay(1000)
+        .duration(1000)
+        .attr('height', 2)
+        .attr('stroke-width',1)
+        .attr('stroke-linecap', 'round')
+        .attr('y', redLineY);
+
+
+//add an interval transition for the red line
+//        pulseRedLine(redLineDom,4000);
+var interval = 2000;
+//    bounceCircle(false, circle, initx, interval);
+    myVar = setInterval(function () {
+        pulseRedLine(redLineDom,interval, redLineY);
+    }, interval);
+
 
     var therm = d3.select("#experienceRect")
             .attr('y', bottom)
@@ -253,7 +289,7 @@ function drawExperience(redLine)
             .transition()
             .style('fill', "steelblue")
             .attr('height', encouragementAxisScale(Math.round(experienceXP)))
-            .attr('y', encouragementAxisScale(Math.round(experienceXP)))
+            .attr('y', bottom-encouragementAxisScale(Math.round(experienceXP)))
             .duration(1000)
             .ease('bounce');
 
@@ -261,7 +297,7 @@ function drawExperience(redLine)
     var experienceText = d3.select("#experienceView").append("text")
             .attr("fill", "steelblue")
             .on("mouseover", function (d) {
-                addTooltip("Your total points")
+                addTooltip("Your total points");
             })
             .on("mouseout", function (d) {
                 removeTooltip();

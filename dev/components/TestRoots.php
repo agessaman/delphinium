@@ -65,7 +65,7 @@ class TestRoots extends ComponentBase
 //        $this->testSingleAssignmentGroup();
 //        
 //        $this->testGettingSingleSubmissionSingleUserSingleAssignment();
-        $this->testGettingAllSubmissionForSingleAssignment();
+//        $this->testGettingAllSubmissionForSingleAssignment();
 //        $this->testGettingMultipleSubmissionsForSingleStudent();
 //        $this->testGettingMultipleSubmissionsAllStudents();
 //        $this->testGettingAllSubmissionsAllStudents();
@@ -78,7 +78,7 @@ class TestRoots extends ComponentBase
 //        $this->testGetAccount();
 //        $this->testGetEnrollments();
 //        $this->testGetQuiz();
-//        $this->testGetQuizQuestions();
+        $this->testGetQuizQuestions();
 //        $this->testGetAllQuizzes();
 //        $this->testGetPages();
         
@@ -438,8 +438,11 @@ class TestRoots extends ComponentBase
     
     public function test()
     {
+        $req = new ModulesRequest(ActionType::GET, 380206, null, true, true, null, null , false);
+        $db = new \Delphinium\Roots\DB\DbHelper();
+        $res = $db->getModuleData($req);
         
-        
+        echo json_encode($res);
 //        $this->convertDatesUTCLocal();
 //        $now = new DateTime(date("Y-m-d"));
 //        echo json_encode($now);
@@ -602,7 +605,18 @@ class TestRoots extends ComponentBase
     {
         $req = new QuizRequest(ActionType::GET, 464878, false, true);
         $result = $this->roots->quizzes($req);
-        echo json_encode($result);
+        
+        foreach($result['questions'] as $question)
+        {
+            
+            $answers = $question['answers'];
+            $obj = json_decode($answers, true);
+            foreach($obj as $answer)
+            {
+                echo json_encode($answer['text']);
+            }
+        }
+        
     }
     private function convertToUTC()
     {

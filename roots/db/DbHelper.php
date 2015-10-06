@@ -45,24 +45,35 @@ class DbHelper
                 return ModuleItem::with('content')->where(array(
                     'module_id' => $request->getModuleId(),
                     'module_item_id'=> $request->getModuleItemId()
-                ))->first();
+                ))
+                ->orderBy('position', 'asc')
+                ->first();
             }
             else
             {
-                return Module::with('module_items.content')->where(array(
-                    'module_id' => $request->getModuleId(),
-                    'course_id' => $courseId
-                ))->first();
+                return Module::with(array('module_items' => 
+                    function($query) {
+                        $query->orderBy('position', 'ASC');
+                    },'module_items.content'))
+                    ->where(array(
+                        'module_id' => $request->getModuleId(),
+                        'course_id' => $courseId
+                    ))->first();
             }
         }
         else
         {//if no moduleId was found they must want all the modules
+            
             $modules = Module::orderBy('parent_id', 'ASC')
                     ->orderBy('order', 'ASC')
-                    ->with('module_items.content')->where(array(
-                'course_id' => $courseId
-            ))->get();
-            
+                    ->with(array('module_items' => function($query) {
+                        $query->orderBy('position', 'ASC');
+                    },'module_items.content'))
+                    ->where(array(
+                        'course_id' => $courseId
+                    ))
+                    ->get();
+    
             return $modules;
         }
     }

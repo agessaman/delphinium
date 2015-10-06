@@ -10,6 +10,7 @@ use Delphinium\Blade\Classes\Data\DataSource;
 use Delphinium\Roots\Roots;
 use Delphinium\Roots\Requestobjects\SubmissionsRequest;
 use Delphinium\Roots\Enums\ActionType;
+use Delphinium\Roots\Utils;
 use \DateTime;
 use \DateTimeZone;
 
@@ -363,7 +364,10 @@ class Experience extends ComponentBase
         $sDate = clone($this->startDateUTC);
         $dueDate = $sDate->add(new \DateInterval($intervalSeconds));
         
-        return $dueDate;
+        //set to user's timezone
+        $localDate = Utils::setLocalTimezone($dueDate);
+        
+        return $localDate;
     }
     private function calculateBonusOrPenalty($milestonePoints, $submittedAt)
     {

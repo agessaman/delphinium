@@ -33,3 +33,17 @@ a:hover
 .boxplot{
     
 }
+.whisker
+{
+    stroke:black;
+}
+
+.box
+{
+    stroke:black;
+    fill:white;
+}
+.studentScore
+{
+    fill:red;
+}

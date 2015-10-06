@@ -1,3 +1,4 @@
+
 //GLOBAL VARIABLES
 var rawSubmissionData;
 var accessibleSubmissData = new Array();
@@ -45,7 +46,6 @@ function createChart(iris)
 {
     irisObj = iris;
     graphData = iris.graphData[0];
-
 //todo: calculate how big each svg needs to be
 //get parent size
     var parent = $("#wrapper" + iris.filter).parent();

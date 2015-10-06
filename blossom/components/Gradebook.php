@@ -80,11 +80,11 @@ class Gradebook extends ComponentBase
                     $obj->html_url = $assignment->html_url;
                     $obj->points_possible = $assignment->points_possible;
                     $obj->score = (isset($analyticsObj->submission))?($analyticsObj->submission->score):null;
-                    $obj->max_score= 18;//$analyticsObj->max_score;
-                    $obj->min_score= 3;//$analyticsObj->min_score;
-                    $obj->first_quartile = 4;//$analyticsObj->first_quartile;
-                    $obj->median = 10;//$analyticsObj->median;
-                    $obj->third_quartile = 15;//$analyticsObj->third_quartile;
+                    $obj->max_score= $analyticsObj->max_score;
+                    $obj->min_score= $analyticsObj->min_score;
+                    $obj->first_quartile = $analyticsObj->first_quartile;
+                    $obj->median = $analyticsObj->median;
+                    $obj->third_quartile = $analyticsObj->third_quartile;
                     
                     array_push($wrap->content, $obj);
                     

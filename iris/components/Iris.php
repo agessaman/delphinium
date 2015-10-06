@@ -47,6 +47,7 @@ class Iris extends ComponentBase
 
         $roots = new Roots();
         $moduleData = $roots->modules($req);
+        
         $this->page['rawData'] = json_encode($moduleData);
         $modArr = $moduleData->toArray();
         
