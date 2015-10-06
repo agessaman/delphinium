@@ -107,7 +107,6 @@ class Gradebook extends ComponentBase
         $this->addCss("/plugins/delphinium/blossom/assets/css/bootstrap.min.css");
         $this->addCss("/plugins/delphinium/blossom/assets/css/gradebook.css");
         $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
-//        $this->addJs("/plugins/delphinium/blossom/assets/javascript/boxplot.js");
         $this->addJs("/plugins/delphinium/blossom/assets/javascript/boxplot_d3.js");
     }
     
