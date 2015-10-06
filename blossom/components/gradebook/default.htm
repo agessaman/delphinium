@@ -1,8 +1,14 @@
-<script>
-    var data = {{data|raw}};
-    var bonus = {{bonus}};
-    var penalties = {{penalties}};
-</script>
+ {%if 'Instructor' in user%}
+    {% partial __SELF__ ~ "instructor"%} 
+ {% else %}
+ 
+    <div id="gradebook">
+    </div>
 
-<div id="gradebook">
-</div>
+    <script type="text/javascript">
+        var data = {{data|raw}};
+        var bonus = {{bonus}};
+        var penalties = {{penalties}};
+    </script>
+    <script type="text/javascript" src="plugins/delphinium/blossom/assets/javascript/boxplot_d3.js"></script>
+ {% endif %}

@@ -49,8 +49,10 @@ class Gradebook extends ComponentBase
         }
     }
     
-    public function onRun()
+    public function onRender()
     {   
+        
+        $this->page['user'] = $_POST["roles"];
         $this->roots = new Roots();
         //GET ANALYTICS STUDENT DATA
         $analytics = $this->roots->getAnalyticsStudentAssignmentData(false);
@@ -103,11 +105,9 @@ class Gradebook extends ComponentBase
         $bonusPenalties = $this->getBonusPenalties();
         $this->page['bonus'] = $bonusPenalties ===0? 0: round($bonusPenalties->bonus,2);
         $this->page['penalties'] = $bonusPenalties ===0? 0: round($bonusPenalties->penalties,2);
-        
         $this->addCss("/plugins/delphinium/blossom/assets/css/bootstrap.min.css");
         $this->addCss("/plugins/delphinium/blossom/assets/css/gradebook.css");
         $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
-        $this->addJs("/plugins/delphinium/blossom/assets/javascript/boxplot_d3.js");
     }
     
     private function getBonusPenalties()
