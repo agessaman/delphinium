@@ -5,7 +5,7 @@ use Cms\Classes\Controller;
 use Cms\Classes\CmsObject;
 
 class frontend 
-{
+{//TODO get this to run in a page, along with the green house partial -- TODO make adding a component to this dynamic, something that a component author can do from their component
 	public function launchGreenhouse(){
 		$controller = Controller::getController() ?: new Controller;
 		if(isset($_POST['lti_message_type'])){
