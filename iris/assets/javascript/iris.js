@@ -286,89 +286,92 @@ function createChart(iris)
         var contentItems = d.module_items;
         if (contentItems !== undefined)
         {
-            var tooltip = d3.select("#tooltip");
-            //register a mousemove event so the tooltip keeps following the mouse
-
-            var tit = d.name;
-            if (tit.length > 67)
+            if(d.published!=="0")
             {
-                tit = tit.substring(0, 64) + "...";
-            }
-            tooltip.select("#spTitle")
-                    .text(tit);
+                var tooltip = d3.select("#tooltip");
+                //register a mousemove event so the tooltip keeps following the mouse
 
-            var optionalTags = false;
-            var requiredAssignments = [];
-            var optTagsArr = [];
-            for (var i = 0; i <= contentItems.length - 1; i++)
-            {
-                var optTags = getTags(contentItems[i]);
-
-                if (optTags)
+                var tit = d.name;
+                if (tit.length > 67)
                 {
-                    optionalTags = true;
-                    optTagsArr.push(contentItems[i]);
+                    tit = tit.substring(0, 64) + "...";
                 }
-                else if ((contentItems[i].type === "Quiz") || (contentItems[i].type === "Assignment"))
-                {
-                    requiredAssignments.push(contentItems[i]);
-                }
-            }
+                tooltip.select("#spTitle")
+                        .text(tit);
 
-//        $(".assignmentBox").css("background-color",backColor);
-            if (optionalTags)
-            {
-                var ob = [];
-                //only display optional tags if required content has been completed
-                for (var i = 0; i <= requiredAssignments.length - 1; i++)
+                var optionalTags = false;
+                var requiredAssignments = [];
+                var optTagsArr = [];
+                for (var i = 0; i <= contentItems.length - 1; i++)
                 {
+                    var optTags = getTags(contentItems[i]);
+
+                    if (optTags)
+                    {
+                        optionalTags = true;
+                        optTagsArr.push(contentItems[i]);
+                    }
+                    else if ((contentItems[i].type === "Quiz") || (contentItems[i].type === "Assignment"))
+                    {
+                        requiredAssignments.push(contentItems[i]);
+                    }
+                }
+
+                if (optionalTags)
+                {
+                    var ob = [];
                     //only display optional tags if required content has been completed
-                    ob = accessibleSubmissData.filter(function (ob)
+                    for (var i = 0; i <= requiredAssignments.length - 1; i++)
                     {
-                        if (ob.content_id === requiredAssignments[i.content_id])
+                        //only display optional tags if required content has been completed
+                        ob = accessibleSubmissData.filter(function (ob)
                         {
-                            return ob;
-                        }
-                    });
-                }
+                            if (ob.content_id === requiredAssignments[i.content_id])
+                            {
+                                return ob;
+                            }
+                        });
+                    }
 
-                if (ob.length !== requiredAssignments.length)
-                {
-                    for (var j = 0; j <= optTagsArr.length - 1; j++)
+                    if (ob.length !== requiredAssignments.length)
                     {
-                        var parent = $("#content" + optTagsArr[j].content_id).parent();
-                        var cnt = parent.contents();
-                        parent.replaceWith(cnt);
-                        var optTag = $("#content" + optTagsArr[j].content_id + " #divOptionalAssig");
-                        optTag.html("You must finished the required assignments first");
+                        for (var j = 0; j <= optTagsArr.length - 1; j++)
+                        {
+                            var parent = $("#content" + optTagsArr[j].content_id).parent();
+                            var cnt = parent.contents();
+                            parent.replaceWith(cnt);
+                            var optTag = $("#content" + optTagsArr[j].content_id + " #divOptionalAssig");
+                            optTag.html("You must finished the required assignments first");
 
-                        optTag.parent().css("color", "gray");
+                            optTag.parent().css("color", "gray");
+                        }
+
                     }
 
                 }
 
+                if (hasPrereqs)
+                {
+                    var links = $("#ulAssignments li a");
+                    links.each(function (i) {
+                        var parent = $(this).parent();//li
+                        var cnt = $(this).contents();
+                        $(this).replaceWith(cnt);
+                        parent.css("cursor", "default");
+                        parent.css("color", "rgb(162, 154, 158)");
+                    });
+                    $(".assignmentBox").css("background-color", "#F0F0F0");
+                    $(".assignmentBox").hover(
+                            function () {
+                                $(this).css("border", "1px solid #D0D0D0");
+                            });
+
+                }
+
+                var optDiv = $("#divOptionalAssignments");
+                optionalTags ? optDiv.attr("class", "visible") : optDiv.attr("class", "hidden");
             }
-
-            if (hasPrereqs)
-            {
-                var links = $("#ulAssignments li a");
-                links.each(function (i) {
-                    var parent = $(this).parent();//li
-                    var cnt = $(this).contents();
-                    $(this).replaceWith(cnt);
-                    parent.css("cursor", "default");
-                    parent.css("color", "rgb(162, 154, 158)");
-                });
-                $(".assignmentBox").css("background-color", "#F0F0F0");
-                $(".assignmentBox").hover(
-                        function () {
-                            $(this).css("border", "1px solid #D0D0D0");
-                        });
-
-            }
-
-            var optDiv = $("#divOptionalAssignments");
-            optionalTags ? optDiv.attr("class", "visible") : optDiv.attr("class", "hidden");
+            
         }
 
         return true;
@@ -402,41 +405,16 @@ function createChart(iris)
                 console.log(prereqDoms[i]);
 //                originalColors[prereqDoms[i].]
             }
-//            var mod = d3.select("#" + prereqId);
-//            if (mod !== undefined)
-//            {
-//                mod.style("fill", originalColor);
-//            }
         });
-//                .on("mouseenter", function (d)
-//                {
-//                    var mod = d3.select("#path" + prereqId);
-//                    if (mod !== undefined)
-//                    {
-//                        originalColor = mod.style("fill");
-//                        mod.style("fill", "#FF6600");
-//
-//                        d3.select("#tooltip")
-//                                .attr("class", "seeThroughOnly");
-//                    }
-//                })
-//                .on("mouseleave", function (d)
-//                {
-//                    d3.select(this).style("color", "black");
-//                    d3.select("#tooltip")
-//                            .attr("class", "solid");
-//
-//                    var mod = d3.select("#" + prereqId);
-//                    if (mod !== undefined)
-//                    {
-//                        mod.style("fill", originalColor);
-//                    }
-//                });
     }
 
 
     function getTags(dd)
     {
+        if(dd.published==="0")
+        {
+            return false;
+        }
         if (dd.content.length < 1)
         {
             return null;

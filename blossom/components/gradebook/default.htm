@@ -1,5 +1,5 @@
- {%if 'Instructor' in user%}
-    {% partial __SELF__ ~ "instructor"%} 
+ {%if ('Instructor' in userRoles or 'TeachingAssistant' in userRoles)%}
+    {% partial __SELF__ ~ "::instructor" %}
  {% else %}
  
     <div id="gradebook">

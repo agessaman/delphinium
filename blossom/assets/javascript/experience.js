@@ -269,14 +269,13 @@ function drawExperience(redLine)
 
 
 //add an interval transition for the red line
-//        pulseRedLine(redLineDom,4000);
-var interval = 2000;
-//    bounceCircle(false, circle, initx, interval);
+    var interval = 2000;
     myVar = setInterval(function () {
         pulseRedLine(redLineDom,interval, redLineY);
     }, interval);
 
-
+    var height = bottom-encouragementAxisScale(Math.round(experienceXP));
+    var newY = bottom-height;
     var therm = d3.select("#experienceRect")
             .attr('y', bottom)
             .style("fill", "white")
@@ -288,8 +287,8 @@ var interval = 2000;
             })
             .transition()
             .style('fill', "steelblue")
-            .attr('height', encouragementAxisScale(Math.round(experienceXP)))
-            .attr('y', bottom-encouragementAxisScale(Math.round(experienceXP)))
+            .attr('height', height)
+            .attr('y', newY)
             .duration(1000)
             .ease('bounce');
 
