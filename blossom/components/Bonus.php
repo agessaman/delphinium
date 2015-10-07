@@ -47,7 +47,7 @@ class Bonus extends ComponentBase{
 		$this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
 		$this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
 		$instance = BonusModel::find($this->property('Instance'));
-
+		
         $this->page['Bonus'] = $this->property('Bonus');
 		$this->page['Penalty'] = $this->property('Penalty');
 		$this->page['name'] = $instance->Name;
