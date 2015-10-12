@@ -844,6 +844,11 @@ class CanvasHelper
         return $response->getBody();
     }
     
+    public function getUsersInCourse()
+    {
+    	return $this->simpleGet('users');
+    }
+    
     public function getUserEnrollments()
     {///api/v1/users/:user_id/enrollments
         if(!isset($_SESSION)) 
@@ -1250,6 +1255,7 @@ class CanvasHelper
         if(isset($row->locked_for_user)){$assignment->locked_for_user = $row->locked_for_user;}
         if(isset($row->quiz_id)){$assignment->quiz_id = $row->quiz_id;}
         if(isset($row->additional_info)){$assignment->additional_info = $row->additional_info;}
+        if(isset($row->position)){$assignment->position = $row->position;}
         
         $assignment->save();
         

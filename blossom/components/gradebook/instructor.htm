@@ -1,1 +1,27 @@
-<div>Instructor\'s interface</div>
+{% set studentData = __SELF__.studentData %}
+
+<table class='table table-condensed table-responsive table-bordered table-hover table-striped'>
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Exp. Pts.</th>
+            <th>Bonus/Penalties</th>
+            <th>Current Score</th>
+        </tr>
+    </thead>
+    <tbody>
+    	{% for item in studentData %}
+    	<tr>
+    		<td>{{ item.id }}</td>
+        	<td>{{ item.name }}</td>
+        	<td>{{ item.score }}</td>
+        </tr>
+    	{% endfor %}
+    
+    </tbody>
+</table>
+
+
+<script type="text/javascript" src="plugins/delphinium/blossom/assets/javascript/light-table-sorter.min.js"></script>
+<script> LightTableSorter.init() </script>

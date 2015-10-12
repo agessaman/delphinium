@@ -144,13 +144,19 @@ class DbHelper
         {
             if($request->getInclude_assignments())
             {
-                return AssignmentGroup::with('assignments')->where(array(
+                return AssignmentGroup::orderBy('assignment_group_id', 'ASC')
+                    ->with(array('assignments' => 
+                        function($query) {
+                            $query->orderBy('position', 'ASC');
+                        }))
+                    ->where(array(
                     'assignment_group_id' => $request->getAssignment_group_id() 
-               ))->first();
+                   ))->first();
             }
             else
             {
-                return AssignmentGroup::where(array(
+                return AssignmentGroup::orderBy('assignment_group_id', 'ASC')
+                        ->where(array(
                     'assignment_group_id' => $request->getAssignment_group_id() 
                ))->first();
             }
@@ -160,13 +166,19 @@ class DbHelper
         {
             if($request->getInclude_assignments())
             {
-                return AssignmentGroup::with('assignments')->where(array(
+                return AssignmentGroup::orderBy('assignment_group_id', 'ASC')
+                    ->with(array('assignments' => 
+                        function($query) {
+                            $query->orderBy('position', 'ASC');
+                        }))
+                    ->where(array(
                      'course_id' => $courseId
                 ))->get();
             }
             else
             {
-                return AssignmentGroup::where(array(
+                return AssignmentGroup::orderBy('assignment_group_id', 'ASC')
+                        ->where(array(
                      'course_id' => $courseId
                 ))->get();
             }

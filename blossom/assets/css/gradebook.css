@@ -18,20 +18,55 @@ a{
 
 a:hover
 {
+    color: #0096db !important;
     text-decoration: none !important;
 }
 
-.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+.table
+{
+	font-size:13px;
+}
+.table caption
+{
+	font-size:15px;
+	font-weight:bold;
+	color:black;
+}
+
+.table th
+{
+	color:#777 !important;
+}
+.table th:first-child
+{
+	padding-left:10px;
+}
+.table-hover tbody tr:hover td, .table-hover tbody tr:hover th 
+{
   background-color: #ebf1ff;
 }
 
+.gradebook table
+{
+	width:80% !important;
+}
 .done
 {
     background-color:#eee;
 }
 
-.boxplot{
-    
+.boxplot
+{
+	width:300px;    
+}
+.score
+{
+	width:40px;
+}
+.name
+{
+	width:350px;
+	padding-left:10px !important;
 }
 .whisker
 {

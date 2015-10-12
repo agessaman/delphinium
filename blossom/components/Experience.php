@@ -399,7 +399,7 @@ class Experience extends ComponentBase
         return $totalPoints/$intervalSeconds;
     }
     
-    private function getAllStudentScores()
+    public function getAllStudentScores()
     {
         if(is_null($this->roots))
         {

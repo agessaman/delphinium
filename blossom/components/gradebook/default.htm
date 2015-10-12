@@ -1,8 +1,29 @@
- {%if ('Instructor' in userRoles or 'TeachingAssistant' in userRoles)%}
+
+<!-- {%if ('Instructor' in userRoles or 'TeachingAssistant' in userRoles)%}
     {% partial __SELF__ ~ "::instructor" %}
- {% else %}
+ {% else %}-->
  
-    <div id="gradebook">
+ <!--STUDENT'S INTERFACE-->
+ 	<!--Bonus/penalties-->
+    <div class="gradebook">
+    
+    	<table class="table table-condensed table-responsive table-bordered table-striped table-hover">
+            <caption>Bonus/Penalties</caption>
+            <thead>
+            </thead>
+            <tbody>
+                <tr>
+                    <th class='name td'>Bonus</td>
+                    <td>{{bonus}}</td>
+                </tr>
+                <tr>
+                    <th class='name td'>Penalties</td>
+                    <td>{{penalties}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="gradebook" id="gradebook">
     </div>
 
     <script type="text/javascript">
@@ -10,5 +31,8 @@
         var bonus = {{bonus}};
         var penalties = {{penalties}};
     </script>
+    <script type="text/javascript" src="plugins/delphinium/blossom/assets/javascript/d3.min.js"></script>
     <script type="text/javascript" src="plugins/delphinium/blossom/assets/javascript/boxplot_d3.js"></script>
- {% endif %}
+    
+    
+ <!--{% endif %}-->

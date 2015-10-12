@@ -68,7 +68,7 @@ class TestRoots extends ComponentBase
 //        $this->testGettingAllSubmissionForSingleAssignment();
 //        $this->testGettingMultipleSubmissionsForSingleStudent();
 //        $this->testGettingMultipleSubmissionsAllStudents();
-//        $this->testGettingAllSubmissionsAllStudents();
+        $this->testGettingAllSubmissionsAllStudents();
 //        $this->testGettingMultipleSubmissionsMultipleStudents();
 //        $this->testGettingSubmissions();
 //        $this->testFileUpload();
@@ -78,7 +78,7 @@ class TestRoots extends ComponentBase
 //        $this->testGetAccount();
 //        $this->testGetEnrollments();
 //        $this->testGetQuiz();
-        $this->testGetQuizQuestions();
+//        $this->testGetQuizQuestions();
 //        $this->testGetAllQuizzes();
 //        $this->testGetPages();
         

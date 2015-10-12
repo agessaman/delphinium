@@ -13,3 +13,6 @@
     - Added quiz functionality
     - create_roots_quizzes_table.php
     - create_roots_quiz_questions_table.php
+1.0.3:
+    - Added assignment position
+    - update_roots_assignments_table.php

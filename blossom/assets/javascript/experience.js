@@ -28,7 +28,7 @@ $(document).ready(function () {
 function scaleExperience(experienceSize) {
     var experienceView = d3.select("#experienceView");
     var experienceSVG = d3.select("#experienceSVG");
-    var experienceHeight = 520;
+    var experienceHeight = 540;
     var experienceWidth = 600;
 
     if (experienceSize === "small") {
@@ -69,7 +69,7 @@ function drawMilestoneInfo(bonus_penalties) {
             .domain([0, maxPoints])//maxPoints
             .rangeRound([bottom - 5, 10])
             .nice(2);
-
+       
     //add a line per milestone
     var g = d3.select("#experienceAxis").append("svg:g");
 
@@ -247,6 +247,7 @@ function drawExperience(redLine)
 
     var redLineY = encouragementAxisScale(redLine);
 
+
     var redLineDom = d3.select("#redLine");
     
     d3.select("#redLine")
@@ -269,11 +270,12 @@ function drawExperience(redLine)
 
 
 //add an interval transition for the red line
-    var interval = 2000;
+var interval = 2000;
     myVar = setInterval(function () {
         pulseRedLine(redLineDom,interval, redLineY);
     }, interval);
-
+    
+   
     var height = bottom-encouragementAxisScale(Math.round(experienceXP));
     var newY = bottom-height;
     var therm = d3.select("#experienceRect")
@@ -433,7 +435,7 @@ function initScatterplot()
             .attr("transform", "translate(140,0)");
 
     //make the ball bounce until data arrives
-    var interval = 2000;
+    var interval = 3000;
     bounceCircle(false, circle, initx, interval);
     myVar = setInterval(function () {
         bounceCircle(false, circle, initx, interval);
