@@ -561,6 +561,54 @@ class Roots
         }
     }
             
+    public function getAnalyticsAssignmentData($includeTags = false)
+    {
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $lms = strtoupper($_SESSION['lms']);
+        if(Lms::isValidValue($lms))
+        {
+            switch ($lms)
+            {
+                case (Lms::CANVAS):
+                    $canvasHelper = new CanvasHelper();
+                    $data = json_decode($canvasHelper->getAnalyticsAssignmentData());
+                    if($includeTags)
+                    {
+                        $result = [];
+                        foreach($data as $item)
+                        {   
+                            $item->tags = $canvasHelper->matchAssignmentIdWithTags($item->assignment_id);
+                            $result[] = $item;
+                        }
+                        
+                        return $result;
+                    }
+                    return $data;
+                default:
+                    $canvasHelper = new CanvasHelper();
+                    $data = json_decode($canvasHelper->getAnalyticsAssignmentData());
+                    if($includeTags)
+                    {
+                        $result = [];
+                        foreach($data as $item)
+                        {   
+                            $item->tags = $canvasHelper->matchAssignmentIdWithTags($item->assignment_id);
+                            $result[] = item;
+                        }
+                        
+                        return $result;
+                    }
+                    return $data;
+            }
+        }
+        else
+        {
+           throw new \Exception("Invalid LMS");  
+        }
+    }
     public function getAnalyticsStudentAssignmentData($includeTags = false)
     {
         if(!isset($_SESSION)) 
@@ -659,6 +707,31 @@ class Roots
            throw new \Exception("Invalid LMS");  
         }
     }
+    
+    public function getGradingStandards()
+    {
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $lms = strtoupper($_SESSION['lms']);
+        if(Lms::isValidValue($lms))
+        {
+            switch ($lms)
+            {
+                case (Lms::CANVAS):
+                    $canvasHelper = new CanvasHelper();
+                    return json_decode($canvasHelper->getGradingStandards());
+                default:
+                    $canvasHelper = new CanvasHelper();
+                    return json_decode($canvasHelper->getGradingStandards());
+            }
+        }
+        else
+        {
+           throw new \Exception("Invalid LMS");  
+        }
+    }
     public function getCourse()
     {
         if(!isset($_SESSION)) 
@@ -672,10 +745,10 @@ class Roots
             {
                 case (Lms::CANVAS):
                     $canvasHelper = new CanvasHelper();
-                    return json_decode($canvasHelper->getCourse());
+                    return ($canvasHelper->getCourse());
                 default:
                     $canvasHelper = new CanvasHelper();
-                    return json_decode($canvasHelper->getCourse());
+                    return ($canvasHelper->getCourse());
             }
         }
         else

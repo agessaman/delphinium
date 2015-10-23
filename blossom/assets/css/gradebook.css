@@ -12,6 +12,19 @@ and open the template in the editor.
     font-family: "Helvetica Neue",Helvetica,Arial,sans-serif !important;
 }
 
+.tooltip
+{
+    position: absolute;	
+    max-width: 400px;			
+    width: auto;
+    height: auto;					
+    padding: 3px;				
+    font: 12px sans-serif;		
+    background: lightsteelblue;	
+    border: 0px;		
+    border-radius: 8px;			
+    pointer-events: none;			
+}
 a{
     color:dimgray !important;
 }
@@ -33,22 +46,30 @@ a:hover
 	color:black;
 }
 
+.imp
+{
+	color:black !important;
+	font-weight: bold !important;
+}
 .table th
 {
-	color:#777 !important;
+	color:#3A2A30 !important;
+	padding:10px !important
 }
 .table th:first-child
 {
 	padding-left:10px;
 }
-.table-hover tbody tr:hover td, .table-hover tbody tr:hover th 
+.table th:nth-child(2)
 {
+	text-align: center;
+}
+.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
   background-color: #ebf1ff;
 }
-
-.gradebook table
+.gradebook
 {
-	width:80% !important;
+	padding:15px;
 }
 .done
 {
@@ -57,15 +78,17 @@ a:hover
 
 .boxplot
 {
-	width:300px;    
+	width:35%;    
 }
 .score
 {
-	width:40px;
+	width:8%;
+	padding-left:10px !important;
+	text-align: right;
 }
 .name
 {
-	width:350px;
+	width:65%;
 	padding-left:10px !important;
 }
 .whisker
@@ -80,5 +103,5 @@ a:hover
 }
 .studentScore
 {
-    fill:red;
+    fill: #FD994C;
 }

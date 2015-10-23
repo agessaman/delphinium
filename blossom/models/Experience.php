@@ -31,6 +31,10 @@ class Experience extends CustomModel
         'animate'=>'required',
         'size' => 'required'
     ];
+    
+    public $hasMany = [
+        'milestones' => ['Delphinium\Blossom\Models\Milestone'],
+    ];
 
     public function getStartDateAttribute($value)
     {//when coming from DB the date gets stripped of its timezone. So we need to set it back to UTC and then to local timezone

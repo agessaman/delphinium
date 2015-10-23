@@ -1,0 +1,13 @@
+# ===================================
+#  Relation Behavior Config
+# ===================================
+
+
+milestones:
+    label: Milestones
+    view:
+        list: $/delphinium/blossom/models/milestone/columns.yaml
+        toolbarButtons: create|add|remove
+    manage:
+        form: $/delphinium/blossom/models/milestone/fields.yaml
+        

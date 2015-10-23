@@ -76,14 +76,6 @@ class Plugin extends PluginBase
                     'url' => Backend::url('delphinium/blossom/experience'),
                     'group'       => 'Blossom',
                 ],
-                
-                'Milestone' => [
-                    'label' => 'Milestones',
-                    'icon' => 'icon-shield',
-                    'owner' => 'Delphinium.Greenhouse',
-                    'url' => Backend::url('delphinium/blossom/milestone'),
-                    'group'       => 'Blossom',
-                ],
 
                 'Grade' => [
                     'label' => 'Grade',

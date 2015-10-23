@@ -13,7 +13,7 @@ class CreateMilestonesTable extends Migration
             $table->engine = 'InnoDB';
             $table->increments('id');
             $table->string('name');
-            $table->integer('experience_id')->unsigned()->index();
+            $table->integer('experience_id')->unsigned()->nullable()->index();
             $table->integer('points');
             $table->timestamps();
             $table->foreign('experience_id')->references('id')->on('delphinium_blossom_experiences');

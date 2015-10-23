@@ -7,6 +7,7 @@ use Delphinium\Roots\Roots;
 use Delphinium\Roots\Requestobjects\SubmissionsRequest;
 use Delphinium\Roots\Enums\ActionType;
 use Delphinium\Blossom\Components\Experience as ExperienceController;
+use Delphinium\Blossom\Components\Gradebook as GradebookComponent;
 use \DateTime;
 use DateTimeZone;
 
@@ -141,5 +142,23 @@ class RestfulApi extends Controller
     {
         $intervalSeconds = abs($startDate->getTimestamp() - $endDate->getTimestamp());
         return $totalPoints/$intervalSeconds;
+    }
+    
+    public function getStudentGradebookData()
+    {
+    	$gradebook = new GradebookComponent();
+    	return $gradebook->getStudentData(true);
+    }
+    
+    public function getGradeData()
+    {
+    	$gradebook = new GradebookComponent();
+    	$bonusPenalties = $gradebook->getBonusPenalties();
+    }
+    
+    public function getTotalUserPoints()
+    {
+    	$exp = new ExperienceComponent();
+        $pts = $exp->getUserPoints();
     }
 }

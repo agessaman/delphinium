@@ -25,14 +25,6 @@ use \October\Rain\Database\Traits\Validation;
     /**
      * @var array Relations
      */
-//    public $belongsTo = [
-//        'experience' => [
-//            '\Delphinium\Blossom\Models\Experience']
-////            ,
-////            'table' => 'delphinium_blossom_experiences',
-////            'foreignKey' => 'experience_id',
-////            'delete'=>'true']
-//    ];
     public $belongsTo = [
         'experience' => ['Delphinium\Blossom\Models\Experience'],
     ];

@@ -68,4 +68,7 @@ tabs:
                 large: Large
             comment: Enter the the size of component you want
 
-        
+        milestones:
+            type: partial
+            path: field_milestones
+            tab: Milestones

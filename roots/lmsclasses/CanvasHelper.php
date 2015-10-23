@@ -702,14 +702,14 @@ class CanvasHelper
             {
                 $urlArgs[]="student_ids[]=all";
             }
-            else if($request->getMultipleStudents())
+            else if($request->getMultipleStudents()&&count($request->getStudentIds()>1))
             {
                 $ids = json_encode($request->getStudentIds());
                 $urlArgs[]="student_ids[]={$ids}";
             }
             else
             {
-                $urlArgs[]="student_ids[]={$userId}";
+                $urlArgs[]="student_ids[]={$request->getStudentIds()[0]}";
             }
             
             //ASSIGNMENT IDS
@@ -740,7 +740,7 @@ class CanvasHelper
                 $urlPieces[]= "assignments"; //input1
                 $urlPieces[]= $request->getAssignmentIds()[0]; // get the first assignment id from the array (there shouldn't be more than one anyway)
                 $urlPieces[] = "submissions";
-                $urlPieces[] = $userId;
+                $urlPieces[] = $request->getStudentIds()[0];
             }
 
         }
@@ -823,6 +823,10 @@ class CanvasHelper
         
     }
     
+    public function getAnalyticsAssignmentData()
+    {
+        return $this->simpleGet("analytics/assignments");
+    }
     public function getAnalyticsStudentAssignmentData()
     {//GET /api/v1/courses/:course_id/analytics/users/:student_id/assignments
         if(!isset($_SESSION)) 
@@ -871,6 +875,29 @@ class CanvasHelper
         return $response->getBody();
     } 
         
+    public function getGradingStandards()
+    {///api/v1/accounts/:account_id/grading_standards
+        $course = $this->getCourse();
+        
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $domain = $_SESSION['domain'];
+
+        $urlPieces= array();
+        $urlPieces[]= "https://{$domain}/api/v1/accounts/{$course->account_id}/grading_standards";
+        
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $urlArgs = array();
+        //Attach token
+        $urlArgs[]="access_token={$token}";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+        $response = GuzzleHelper::getAsset($url);
+        return $response->getBody();
+    }
+    
     public function getCourse()
     {///api/v1/courses/:id
         if(!isset($_SESSION)) 
@@ -886,7 +913,7 @@ class CanvasHelper
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
         $response = GuzzleHelper::getAsset($url);
-        return $response->getBody();
+        return json_decode($response->getBody());
     }
     
     public function getAccount($accountId)
