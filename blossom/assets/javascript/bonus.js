@@ -10,11 +10,11 @@ function scaleBonus(){
 	var bonusSVG = d3.select("#bonusSVG");
 	var bonusHeight = 115;
 	var bonusWidth = 340;
-	if(bonusSize == "1"){
+	if(bonusSize == "0"){
 		bonusSVG.attr('width', bonusWidth / 2)
 				.attr('height', bonusHeight / 2);
 		bonusView.attr('transform', "scale(.5)");
-	}else if(bonusSize == "2"){
+	}else if(bonusSize == "1"){
 		bonusSVG.attr('width', bonusWidth)
 				.attr('height', bonusHeight);
 	}else{

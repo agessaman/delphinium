@@ -5,7 +5,7 @@ use Delphinium\Roots\Roots;
 
 class Progress extends ComponentBase
 {
-
+	public $roots;
     public function componentDetails()
     {
         return [

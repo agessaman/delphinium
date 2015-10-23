@@ -109,6 +109,7 @@ class LtiConfiguration extends ComponentBase {
                 $account = $roots->getAccount($account_id);
 
                 $_SESSION['timezone'] = new \DateTimeZone($account->default_time_zone);
+                
             }
         } else {
             echo('There is a problem. Please notify your instructor');
