@@ -59,10 +59,12 @@ class Bonus extends ComponentBase {
         
         $this->page['bonus'] = $bonusPenalties === 0 ? 0 : round($bonusPenalties->bonus, 2);
         $this->page['penalties'] = $bonusPenalties === 0 ? 0 : round($bonusPenalties->penalties, 2);
-            
-            
-        $this->page['maxBonus'] = $experienceInstance->bonus_days * $experienceInstance->bonus_per_day;
-        $this->page['minBonus'] = $experienceInstance->penalty_days * $experienceInstance->penalty_per_day;
+     
+        //don't multiply by zero!
+        $milestoneNum = count($experienceInstance->milestones)>0?count($experienceInstance->milestones):1;
+        
+        $this->page['maxBonus'] = $experienceInstance->bonus_days * $experienceInstance->bonus_per_day*$milestoneNum;
+        $this->page['minBonus'] = -$experienceInstance->penalty_days * $experienceInstance->penalty_per_day*$milestoneNum;
         $this->page['bonusSize'] = $this->property('Size');
         $this->page['role'] = 'Learner';//$_POST['roles'];
     }
