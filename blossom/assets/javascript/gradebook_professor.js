@@ -32,11 +32,7 @@ var g = svg.append("g")
         .attr("id", "gChart");
 
 // Get the data
-data = chartData;
-data.forEach(function (d) {
-    d.date = Date.parse(d.date);
-    d.points = +d.points;
-});
+data = parseDates(chartData);
 
 
 // Scale the range of the data
@@ -48,7 +44,7 @@ y.domain([0, d3.max(data, function (d) {
     })]);
 
 //add the red line chart
-addLine(data);
+addLine(data, "red");
 //     add circles for each milestone
 g.selectAll("dot")
         .data(data)
@@ -64,8 +60,6 @@ g.selectAll("dot")
         })
         .attr("r", 4)
         .attr("cx", function (d) {
-            console.log((d.date));
-            console.log(x((d.date)));
             return x(d.date);
         })
         .attr("cy", function (d) {
@@ -91,17 +85,17 @@ g.append("g")
 
 
 //add a line for each student
-// parseStudentData(submissions);
+parseStudentData(submissions);
 
 function parseStudentData(masterArray)
 {
     for (x in masterArray) {
-        addLine(masterArray[x].items);
+    	var parsedData = parseDates(masterArray[x].items);
+        addLine(parsedData, "steelblue");
     }
 }
-function addLine(data)
+function addLine(data, strokeColor)
 {
-
     // Define the line
     var valueline = d3.svg.line()
             .x(function (d) {
@@ -114,10 +108,18 @@ function addLine(data)
     g.append("path")
             .attr("class", "line")
             .attr("d", valueline(data))
-            .style("stroke", "red");
+            .style("stroke", strokeColor);
 
 }
 
+function parseDates(data)
+{
+	data.forEach(function (d) {
+    d.date = Date.parse(d.date);
+    d.points = +d.points;
+});
+	return data;
+}
 function addLineToChart(data)
 {
     var margin = {top: 30, right: 20, bottom: 30, left: 50},
