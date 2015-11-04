@@ -609,7 +609,7 @@ class Roots
            throw new \Exception("Invalid LMS");  
         }
     }
-    public function getAnalyticsStudentAssignmentData($includeTags = false)
+    public function getAnalyticsStudentAssignmentData($includeTags = false, $userId = null)
     {
         if(!isset($_SESSION)) 
         { 
@@ -622,7 +622,7 @@ class Roots
             {
                 case (Lms::CANVAS):
                     $canvasHelper = new CanvasHelper();
-                    $data = json_decode($canvasHelper->getAnalyticsStudentAssignmentData());
+                    $data = json_decode($canvasHelper->getAnalyticsStudentAssignmentData($userId));
                     if($includeTags)
                     {
                         $result = [];
@@ -637,7 +637,7 @@ class Roots
                     return $data;
                 default:
                     $canvasHelper = new CanvasHelper();
-                    $data = json_decode($canvasHelper->getAnalyticsStudentAssignmentData());
+                    $data = json_decode($canvasHelper->getAnalyticsStudentAssignmentData($userId));
                     if($includeTags)
                     {
                         $result = [];

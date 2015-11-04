@@ -1,46 +1,74 @@
+<script>
+    var chartData = {{chartData | raw}};
+    var submissions = {{submissions | raw}};
+    var numMilestones = {{numMilestones}};
+</script>
+
 {% set studentData = __SELF__.studentData %}
+<div id="chart"></div>
 <div class="container">
 
-	<!-- 
+    <!-- 
 <form data-request="onRefreshData">
-	    <input type="submit" value="Refresh from Canvas">
-	</form>
- -->
-<table class='table table-condensed table-responsive table-bordered table-hover table-striped'>
-    <thead>
-        <tr>
-            <th title="Student UV Id">Id</th>
-            <th title="Student's name">Name</th>
-            <th title="Points earned">Exp. Pts.</th>
-            <th title="Bonus/penalties earned">Bonus/Penalties</th>
-            <th title="Total points">Current Score</th>
-            <th title="Letter grade">Grade</th>
-            <th title="See student view for selected student">Details</th>
-        </tr>
-    </thead>
-    <tbody>
-    	{% for item in studentData %}
-    	<tr>
-    		<td>{{ item.id }}</td>
-        	<td>{{ item.name }}</td>
-        	<td>{{ item.score }}</td>
-        	<td>{{ item.bonusPenalty }}</td>
-        	<td>{{ item.total }}</td>
-        	<td>{{ item.grade }}</td>
-        	<td><a href="#" 
-				id="populateModal" 
-				data-request="onGetStudentDetails" 
-				data-request-update="mypartial: '#modalContent'" 
-				style="display: none">Details</a>
-			</td>
+        <input type="submit" value="Refresh from Canvas">
+    </form>
+    -->
+    <table class='table table-condensed table-responsive table-bordered table-hover table-striped'>
+        <thead>
+            <tr>
+                <th title="Student's name">Name</th>
+                <th title="Points earned">Exp. Pts.</th>
+                <th title="Bonus/penalties earned">Bonus/Penalties</th>
+                <th title="Total points">Current Score</th>
+                <th title="Letter grade">Grade</th>
+                <th title="See student view for selected student">Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in studentData %}
+            <tr>
+                <td><a target="_blank" href="{{item.profile_url}}">{{ item.name }}</a></td>
+                <td>{{ item.score }}</td>
+                <td>{{ item.bonusPenalty }}</td>
+                <td>{{ item.total }}</td>
+                <td>{{ item.grade }}</td>
+                <td><button type="button" data-toggle="modal" data-target="#myModal"
+                            data-request="onGetContent"
+                            data-request-update="delete: '#modalContent'">Details</button>
+                    <!-- 
+            <a href="#" 
+                                            id="populateModal" 
+                                            data-request="onGetStudentDetails" 
+                                            data-request-update="mypartial: '#modalContent'" 
+                                            style="display: none">Details</a>
+                    -->
+                </td>
 
-        </tr>
-    	{% endfor %}
-    
-    </tbody>
-</table>
+            </tr>
+            {% endfor %}
+
+        </tbody>
+    </table>
 </div>
+
+<div id="myModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Modal title</h4>
+            </div>
+            <div class="modal-body">
+                <div id="modalContent"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 
 <script type="text/javascript" src="plugins/delphinium/blossom/assets/javascript/light-table-sorter.min.js"></script>
-<script> LightTableSorter.init() </script>
+<script> LightTableSorter.init()</script>

@@ -135,6 +135,7 @@ class Experience extends ComponentBase {
             $this->bonusSeconds = $instance->bonus_days * 24 * 60 * 60;
             $this->bonusPerSecond = $instance->bonus_per_day / 24 / 60 / 60;
 
+			$this->page['bonusDays'] = $instance->bonus_days;
             $this->page['maxBonus'] = $this->bonusSeconds * $this->bonusPerSecond;
             //set page variables
             $this->page['instanceId'] = $instance->id;

@@ -827,13 +827,16 @@ class CanvasHelper
     {
         return $this->simpleGet("analytics/assignments");
     }
-    public function getAnalyticsStudentAssignmentData()
+    public function getAnalyticsStudentAssignmentData($userId=null)
     {//GET /api/v1/courses/:course_id/analytics/users/:student_id/assignments
         if(!isset($_SESSION)) 
         { 
             session_start(); 
     	}
-        $userId = $_SESSION['userID'];
+        if(is_null($userId))
+        {
+            $userId = $_SESSION['userID'];
+        }
         $urlPieces= $this->initUrl();
         $token = \Crypt::decrypt($_SESSION['userToken']);
         $urlArgs = array();

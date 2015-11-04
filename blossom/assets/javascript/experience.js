@@ -190,8 +190,20 @@ function drawMilestoneInfo(bonus_penalties) {
                     return '\uf023';
                 }
                 else
-                {
-                    if (d.bonusPenalty < 0 || d.bonusPenalty < maxBonus)
+                {//only show the clock if the due date is within 5 days. 
+                	var currentDate = new Date();
+                	var date = Date.parse(d.due_at.date);
+                	var dueDate = new Date(date);
+                	var diffDays = 0;
+                	if(dueDate > currentDate)
+                	{
+                		t1 = currentDate.getTime();
+                		t2 = dueDate.getTime();
+                	
+                		diffDays = parseInt((t2-t1)/(24*3600*1000));
+                	}
+                	
+                    if ((diffDays<=bonusDays)&&(d.bonusPenalty < 0 || d.bonusPenalty < maxBonus))
                     {
                         return "\uf017";
                     }
@@ -213,6 +225,7 @@ function drawMilestoneInfo(bonus_penalties) {
                 removeTooltip();
             });
 }
+
 
 function pulseRedLine(redLineElement, interval, normalRedLineValue)
 {

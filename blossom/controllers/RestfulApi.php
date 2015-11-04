@@ -161,4 +161,14 @@ class RestfulApi extends Controller
     	$exp = new ExperienceComponent();
         $pts = $exp->getUserPoints();
     }
+    
+    
+    public function getStudentChartData()
+    {
+    	$studentId = (!is_null(\Input::get('studentId')))?\Input::get('studentId'):null;
+    	
+        $gradebook = new GradebookComponent();
+        return $gradebook->getStudentChartData($studentId);
+    }
+    
 }

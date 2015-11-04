@@ -1,14 +1,10 @@
 <script>
-	var bonus = {{bonus}};
-	var penalty = {{penalties}};
 	var maxBonus = {{maxBonus}};
 	var minBonus = {{minBonus}};
 	var bonusSize = {{bonusSize}};
 </script>
-{% if role == "Learner" %}
+{% if ('Learner' in role) %}
 	{% partial 'bonus::studentView' %}
-{% elseif role == "Instructor" %}
+{% elseif ('Instructor' in userRoles or 'TeachingAssistant' in userRoles) %}
 	{% partial 'bonus::instructorView' %}
 {% endif %}
-
-

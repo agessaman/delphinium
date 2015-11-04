@@ -24,14 +24,17 @@ class Bonus extends ComponentBase {
             ],
             'Size' => [
                 'title' => 'Widget Size',
-                'description' => 'Select the size of the component',
-                'type' => 'dropdown'
+                'description' => 'Enter the size of the component (as a percentage, no sign)',
+                'type' => 'string',
+                'default' => '100',
+                'validationPattern' => '^([1-9]|[1-9][0-9]|[1][0-9][0-9]|20[0-0])$',
+                'validationMessage' => 'A number between 1 and 200 is required',
+                'placeholder' => 'Enter a number w/o sign'
             ]
         ];
     }
 
-    public function getExperienceOptions()
-    {
+    public function getExperienceOptions() {
         $instances = ExperienceModel::all();
 
         if (count($instances) === 0) {
@@ -44,38 +47,37 @@ class Bonus extends ComponentBase {
             return $array_dropdown;
         }
     }
-    
-    public function getSizeOptions()
-    {
-        $arr=['small','medium','large'];
-        return $arr;
-    }
-    
-    public function onRun() {
-        $experienceInstance = ExperienceModel::find($this->property('Experience'));
 
-        
-        $bonusPenalties = $this->getBonusPenalties();
-        
-        $this->page['bonus'] = $bonusPenalties === 0 ? 0 : round($bonusPenalties->bonus, 2);
-        $this->page['penalties'] = $bonusPenalties === 0 ? 0 : round($bonusPenalties->penalties, 2);
-     
-        //don't multiply by zero!
-        $milestoneNum = count($experienceInstance->milestones)>0?count($experienceInstance->milestones):1;
-        
-        $this->page['maxBonus'] = $experienceInstance->bonus_days * $experienceInstance->bonus_per_day*$milestoneNum;
-        $this->page['minBonus'] = -$experienceInstance->penalty_days * $experienceInstance->penalty_per_day*$milestoneNum;
-        $this->page['bonusSize'] = $this->property('Size');
-        $this->page['role'] = 'Learner';//$_POST['roles'];
+
+    public function onRun() {
+    	try
+    	{
+            $experienceInstance = ExperienceModel::find($this->property('Experience'));
+
+            //don't multiply by zero!
+            $milestoneNum = count($experienceInstance->milestones) > 0 ? count($experienceInstance->milestones) : 1;
+
+            $this->page['maxBonus'] = $experienceInstance->bonus_days * $experienceInstance->bonus_per_day * $milestoneNum;
+            $this->page['minBonus'] = -$experienceInstance->penalty_days * $experienceInstance->penalty_per_day * $milestoneNum;
+            $size = $this->property('Size');
+            $this->page['bonusSize'] = $size;
+            
+            
+            $bonusPenalties = $this->getBonusPenalties();
+
+            $this->page['totalBonus'] = $bonusPenalties === 0 ? 0 : round($bonusPenalties->bonus, 2);
+            $this->page['totalPenalties'] = $bonusPenalties === 0 ? 0 : round($bonusPenalties->penalties, 2);
+            $this->page['role'] = $_POST['roles'];//'Learner'; //
+
+            $this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
+        }
+        catch (\GuzzleHttp\Exception\ClientException $e) {
+            echo "You must be a student to use the Bonus component";
+            return;
+        }
     }
-    
-    public function onRender()
-    {
-        $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
-        $this->addJs("/plugins/delphinium/blossom/assets/javascript/bonus.js");
-        $this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
-    }
-    
+
+
     private function getBonusPenalties($userId = null) {
         $experienceComp = new ExperienceComponent();
         if ((!is_null($this->property('Experience'))) && ($this->property('Experience') > 0)) {

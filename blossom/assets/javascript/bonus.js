@@ -1,31 +1,23 @@
-$(document).ready(function () {
-    scaleBonus();
-    drawBonus();
-});
 
 var textSize;
+var delay = 1000;
+var duration = 500;
+
+scaleBonus();
+drawBonus();
 
 function scaleBonus() {
     var bonusView = d3.select("#bonusView");
     var bonusSVG = d3.select("#bonusSVG");
     var bonusHeight = 115;
     var bonusWidth = 340;
-    if (bonusSize == "0") {
-        bonusSVG.attr('width', bonusWidth / 2)
-                .attr('height', bonusHeight / 2);
-        bonusView.attr('transform', "scale(.5)");
-    } else if (bonusSize == "1") {
-        bonusSVG.attr('width', bonusWidth)
-                .attr('height', bonusHeight);
-    } else {
-        bonusSVG.attr('width', bonusWidth * 1.5)
-                .attr('height', bonusHeight * 1.5);
-        bonusView.attr('transform', "scale(1.5)");
-    }
+        bonusSVG.attr('width', bonusWidth *(bonusSize/100))
+                .attr('height', bonusHeight *(bonusSize/100));
+        var multiplier = bonusSize/100;
+        bonusView.attr('transform', "scale("+multiplier+")");
 }
 
 function drawBonus() {
-
     var origin = 170;
     var textx = origin;
     var height = 115;
@@ -48,124 +40,175 @@ function drawBonus() {
     prectangle.style("fill", "white")
             .attr('x', origin);
 
-    
-    if (bonus + penalty > 0) {
+
+    if (totalBonus + totalPenalties > 0) {
         //Positive
 
-        //set text
-        textx = origin + (Math.round(maxScale(bonus + penalty) / 2));
 
         //Set brectangle
         brectangle.style("fill", "white")
                 .attr('x', origin);
-        //Draw penalty
-        prectangle.transition()
-                .delay(2000)
-                .duration(1000)
-                .style('fill', "#FF4747")
-                .attr('width', Math.round(minScale(penalty)))
-                .attr('x', origin - Math.round(minScale(penalty)))
-                .ease('bounce');
 
-        //Change penalty to green	
-        prectangle.transition()
-                .delay(3000)
-                .duration(500)
-                .style('fill', "#66FF33")
-                .attr('x', origin - Math.round(minScale(penalty)))
-                .ease('bounce');
+        bonusDelay = delay;
+        //Draw penalty
+        if (totalPenalties !== 0)
+        {
+            prectangle.transition()
+                    .delay(delay)
+                    .duration(duration)
+                    .style('fill', "#FF4747")
+                    .attr('width', Math.round(minScale(totalPenalties)))
+                    .attr('x', origin - Math.round(minScale(totalPenalties)))
+                    .ease('bounce');
+
+            //Change penalty to green	
+            prectangle.transition()
+                    .delay(delay * 2)
+                    .duration(duration)
+                    .style('fill', "#66FF33")
+                    .attr('x', origin - Math.round(minScale(totalPenalties)))
+                    .each("end", function () {
+                        //Draw bonus
+                        brectangle.transition()
+                                .style('fill', "#66FF33")
+                                .attr('width', (Math.round(maxScale(totalBonus + totalPenalties))))
+                                .attr('x', origin)
+                                .ease('exp')
+                                .each("end", function () {
+                                    //Erase overlap
+                                    prectangle.transition()
+                                            .style('fill-opacity', 0)
+                                            .each("end", function ()
+                                            {
+                                                drawText(duration * 2);
+                                            });
+                                });
+
+                    });
+            bonusDelay = delay * 2;
+        }
 
         //Draw bonus
         brectangle.transition()
-                .delay(4500)
-                .duration(1000)
+                .delay(bonusDelay)
+                .duration(duration * 2)
                 .style('fill', "#66FF33")
-                .attr('width', (Math.round(maxScale(bonus + penalty))))
+                .attr('width', (Math.round(maxScale(totalBonus + totalPenalties))))
                 .attr('x', origin)
-                .ease('bounce');
+                .ease('exp')
+                .each("end", function ()
+                {
+                    drawText(duration * 2);
+                });
 
-        //Erase overlap
-        prectangle.transition()
-                .delay(4000)
-                .duration(500)
-                .style('fill-opacity', 0);
+        //figure out where to place the text
+        textx = origin + Math.round(maxScale(totalBonus + totalPenalties));
         
-
-    } else if (bonus + penalty == 0) {
+        
+    } else if (totalBonus + totalPenalties == 0) {
         //Zero
+        if (totalPenalties !== 0)
+        {
+            //Draw penalty
+            prectangle.transition()
+                    .delay(delay)
+                    .duration(duration)
+                    .style('fill', "#FF4747")
+                    .attr('width', Math.round(minScale(totalPenalties)))
+                    .attr('x', origin - Math.round(minScale(totalPenalties)))
+                    .ease('bounce');
 
-        //Draw penalty
-        prectangle.transition()
-                .delay(2000)
-                .duration(1000)
-                .style('fill', "#FF4747")
-                .attr('width', Math.round(minScale(penalty)))
-                .attr('x', origin - Math.round(minScale(penalty)))
-                .ease('bounce');
+            //Change penalty to green	
+            prectangle.transition()
+                    .delay(delay * 2)
+                    .duration(duration)
+                    .style('fill', "#66FF33")
+                    .attr('x', origin - Math.round(minScale(totalPenalties)))
+                    .ease('exp');
 
-        //Change penalty to green	
-        prectangle.transition()
-                .delay(3000)
-                .duration(500)
-                .style('fill', "#66FF33")
-                .attr('x', origin - Math.round(minScale(penalty)))
-                .ease('bounce');
-
-        //Erase overlap
-        prectangle.transition()
-                .delay(4000)
-                .duration(500)
-                .style('fill-opacity', 0);
+            //Erase overlap
+            prectangle.transition()
+                    .delay(delay * 2.5)
+                    .duration(duration)
+                    .style('fill-opacity', 0)
+                    .each("end", function ()
+                    {
+                        drawText(duration);
+                    });
+        }
+        else
+        {
+            drawText(duration);
+        }
+        textx = origin;
 
     } else {
         //Negative
 
         //set text
-        textx = origin - Math.round(minScale(bonus+penalty)) ;
+        textx = origin - Math.round(minScale(totalBonus + totalPenalties));
 
         //Set brectangle
         brectangle.style("fill", "white")
-                .attr('x', origin - Math.round(minScale(penalty)));
+                .attr('x', origin - Math.round(minScale(totalPenalties)));
 
 
         //Draw penalty
         prectangle.transition()
-                .duration(1000)
+                .delay(delay)
+                .duration(duration)
                 .style('fill', "#FF4747")
-                .attr('width', Math.round(minScale(penalty)))
-                .attr('x', origin - Math.round(minScale(penalty)))
+                .attr('width', Math.round(minScale(totalPenalties)))
+                .attr('x', origin - Math.round(minScale(totalPenalties)))
                 .ease('bounce');
-        
-        
-        //Draw bonus
-        brectangle.transition()
-                .delay(1500)
-                .duration(1000)
-                .style('fill', "#66FF33")
-                .attr('width', Math.round(minScale(-bonus)));
+                
+        if (totalBonus > 0)
+        {
+            //Draw bonus
+            brectangle.transition()
+                    .delay(delay * 1.5)
+                    .duration(duration)
+                    .style('fill', "#66FF33")
+                    .attr('width', Math.round(minScale(-totalBonus)))
+                    .ease('exp');
+                    
+            //        //Erase overlap
+            prectangle.transition()
+                    .delay(delay * 1.5)
+                    .duration(duration)
+                    .attr('width', Math.round(minScale(totalBonus + totalPenalties)))
+                    .attr('x', origin - Math.round(minScale(totalBonus + totalPenalties)))
+                    .ease('exp');
 
-//        //Erase overlap
-        prectangle.transition()
-                .delay(2500)
-                .duration(500)
-                .attr('width', Math.round(minScale(bonus+penalty)))
-                .attr('x', origin - Math.round(minScale(bonus+penalty)));
-        
-        brectangle.transition()
-                .delay(3000)
-                .duration(1000)
-                .style('fill-opacity', 0);
+
+            brectangle.transition()
+                    .delay(delay * 2)
+                    .duration(duration)
+                    .style('fill-opacity', 0)
+                    .each("end", function ()
+                    {
+                        drawText(duration);
+                    });
+        }
+        else
+        {
+            drawText(delay * 2);
+        }
     }
-    
-var text = d3.select('#bonusView').append("text")
-		.attr("fill", "none")
-	    .style("text-anchor", "middle")
-	    .attr('font-size', "20px")
-	    .attr('x', textx-10)
-	    .attr('y', height/2)
-	    .text(bonus + penalty)
-	
-	text.transition()
-		.delay(4000)
-		.attr("fill", "black");
+
+
+    function drawText(delay)
+    {
+        var text = d3.select('#bonusView').append("text")
+                .attr("fill", "none")
+                .style("text-anchor", "middle")
+                .attr('font-size', "20px")
+                .attr('x', textx - 10)
+                .attr('y', height / 2)
+                .text(totalBonus + totalPenalties);
+
+        text.transition()
+                .delay(delay)
+                .attr("fill", "black");
+    }
 }
