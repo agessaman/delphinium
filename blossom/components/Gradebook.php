@@ -130,12 +130,12 @@ class Gradebook extends ComponentBase {
     private function getProfessorData() {
         $aggregateSubmissionScores = $this->aggregateSubmissionScores();
 
-        // $users = $this->roots->getUsersInCourse();
-// 
-//         $submissionData = $this->matchSubmissionsAndUsers($users, $aggregateSubmissionScores);
-// 
-//         $this->page['studentData'] = ($submissionData);
-//         $this->studentData = ($submissionData);
+        $users = $this->roots->getUsersInCourse();
+
+        $submissionData = $this->matchSubmissionsAndUsers($users, $aggregateSubmissionScores);
+
+        $this->page['studentData'] = ($submissionData);
+        $this->studentData = ($submissionData);
         //get chart data
 
 
@@ -198,12 +198,12 @@ class Gradebook extends ComponentBase {
             $masterArr = array();
             $users = $this->roots->getUsersInCourse();
 
-            $i = 0;
+//             $i = 0;
             foreach ($users as $user) {
-                if ($i === 10) {
-                    return $masterArr;
-                }
-                $i++;
+                // if ($i === 10) {
+//                     return $masterArr;
+//                 }
+//                 $i++;
                 try {
                     $userAnalytics = $this->roots->getAnalyticsStudentAssignmentData(false, $user->id);
 
@@ -317,16 +317,23 @@ class Gradebook extends ComponentBase {
         $userId = 0;
 
         $i = 0;
+        
+        $student = new \stdClass();
+        $studentItems = array();
         foreach ($res as $submission) {
-            if ($userId === 0) {
-                $student = new \stdClass();
+            if(!isset($submission['submitted_at']))//skip items that have no submission date
+            {
+               continue; 
+            }
+            if ($userId === 0) {//init variables
                 $student->id = $submission['user_id'];
-                $studentItems = array();
             }
             $item = new \stdClass();
 
             $item->points = $userId === 0 ? $submission['score'] : $carryingScore;
             $item->date = $submission['submitted_at'];
+            
+//             echo $submission['submitted_at'];
             $studentItems[] = $item;
 
             if ($userId === 0 || $userId === $submission['user_id']) {//first loop or looping through same user
@@ -335,6 +342,8 @@ class Gradebook extends ComponentBase {
                 $carryingScore = $carryingScore + $submission['score'];
                 $userId = $submission['user_id'];
             } else {//we moved on to a new student
+           
+//             echo json_encode($studentItems)."|||||||";
                 $student->items = $studentItems;
                 //add the previous student to the master array
                 $masterArr[] = $student;
@@ -350,15 +359,15 @@ class Gradebook extends ComponentBase {
                 $subm->user_id = $submission['user_id'];
                 $carryingScore = $submission['score'];
                 $userId = $submission['user_id'];
-                $i++;
+            // if ($i === 15) {
+//                 break;
+//             }
+//                 $i++;
             }
 
 
-            if ($i === 15) {
-                break;
-            }
         }
-
+// echo json_encode($masterArr);
 
         $this->page['submissions'] = json_encode($masterArr);
         //attach the last item we looped through
@@ -369,6 +378,7 @@ class Gradebook extends ComponentBase {
 
     private function orderSubmissionsByUsersAndDate($arr) {
         $sorted = $this->array_orderby($arr, 'user_id', SORT_ASC, 'submitted_at', SORT_ASC);
+        
         return $sorted;
     }
 

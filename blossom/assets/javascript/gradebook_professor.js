@@ -13,6 +13,7 @@ var parseDate = d3.time.format("%d-%b-%y").parse;
 var x = d3.time.scale().range([0, width]);
 var y = d3.scale.linear().range([height, 0]);
 
+            
 // Define the axes
 var xAxis = d3.svg.axis().scale(x)
         .orient("bottom").ticks(6);
@@ -27,7 +28,7 @@ var svg = d3.select("#chart")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom);
 var g = svg.append("g")
-        .attr("transform",
+        .attr("transform", 
                 "translate(" + margin.left + "," + margin.top + ")")
         .attr("id", "gChart");
 
@@ -35,13 +36,6 @@ var g = svg.append("g")
 data = parseDates(chartData);
 
 
-// Scale the range of the data
-x.domain(d3.extent(data, function (d) {
-    return d.date;
-}));
-y.domain([0, d3.max(data, function (d) {
-        return d.points;
-    })]);
 
 //add the red line chart
 addLine(data, "red");
@@ -85,23 +79,39 @@ g.append("g")
 
 
 //add a line for each student
-parseStudentData(submissions);
+// parseStudentData(submissions);
 
 function parseStudentData(masterArray)
 {
-    for (x in masterArray) {
-    	var parsedData = parseDates(masterArray[x].items);
+    for (var j in masterArray) {
+    	var parsedData = parseDates(masterArray[j].items);
         addLine(parsedData, "steelblue");
     }
 }
 function addLine(data, strokeColor)
 {
+	// Scale the range of the data
+	x.domain(d3.extent(data, function (d) {
+    	return d.date;
+	}));
+	y.domain([0, d3.max(data, function (d) {
+        return d.points;
+    })]);
+    
     // Define the line
     var valueline = d3.svg.line()
             .x(function (d) {
+            var dddate = new Date(d.date);
+            console.log(d.date);
+            if(dddate==="Invalid Date")
+            {
+            	alert("date was invalid");
+            }
+            	console.log(dddate);
                 return x(d.date);
             })
             .y(function (d) {
+            console.log(d.points);
                 return y(d.points);
             });
 // Add the valueline path.
@@ -115,7 +125,14 @@ function addLine(data, strokeColor)
 function parseDates(data)
 {
 	data.forEach(function (d) {
+	
+	var newDate = Date.parse(d.date);
+	// if(isNaN(newDate))
+//     {
+//     	console.log(d);
+//     }
     d.date = Date.parse(d.date);
+    
     d.points = +d.points;
 });
 	return data;
