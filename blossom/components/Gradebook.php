@@ -61,7 +61,8 @@ class Gradebook extends ComponentBase {
         $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
 
         $this->page['userRoles'] = $_POST["roles"];
-        if (stristr($_POST["roles"], 'Learner')) {
+        if (stristr($_POST["roles"], 'Learner')) 
+        {
             $bonusPenalties = $this->getBonusPenalties();
             $this->page['bonus'] = $bonusPenalties === 0 ? 0 : round($bonusPenalties->bonus, 2);
             $this->page['penalties'] = $bonusPenalties === 0 ? 0 : round($bonusPenalties->penalties, 2);
@@ -69,8 +70,27 @@ class Gradebook extends ComponentBase {
             $exp = new ExperienceComponent();
             $pts = $exp->getUserPoints();
             $this->page['totalPts'] = $pts;
+            
+            //get letter grade
+            if(!is_null($this->property('experienceInstance')))
+            {
+                $instance = ExperienceModel::find($this->property('experienceInstance'));
+                $maxExperiencePts = $instance->total_points;
+                
+                if(is_null($this->roots))
+                {
+                    $this->roots = new Roots();
+                }
+                $standards = $this->roots->getGradingStandards();
+                $grading_scheme = $standards[0]->grading_scheme;
+                $letterGrade = $this->getLetterGrade($pts, $maxExperiencePts, $grading_scheme);
+                
+                $this->page['letterGrade'] = $letterGrade;
+            }
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/boxplot_d3.js");
-        } else if ((stristr($_POST["roles"], 'Instructor')) || (stristr($_POST["roles"], 'TeachingAssistant'))) {
+        } 
+        else if ((stristr($_POST["roles"], 'Instructor')) || (stristr($_POST["roles"], 'TeachingAssistant'))) 
+        {
             $this->getProfessorData();
             $this->addCss("/plugins/delphinium/blossom/assets/css/light-js-table-sorter.css");
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/gradebook_professor.js");
@@ -457,7 +477,6 @@ class Gradebook extends ComponentBase {
             $allStudents[] = $userObj;
         }
 
-// echo json_encode($allStudents);
         return $allStudents;
     }
 
