@@ -77,14 +77,6 @@ class Plugin extends PluginBase
                     'group'       => 'Blossom',
                 ],
 
-                'Grade' => [
-                    'label' => 'Grade',
-                    'icon' => 'icon-signal',
-                    'owner' => 'Delphinium.Greenhouse',
-                    'url' => Backend::url('delphinium/blossom/grade'),
-                    'group'       => 'Blossom',
-                ],
-
                 'Leaderboard' => [
                     'label' => 'Leaderboard',
                     'icon' => 'icon-sitemap',

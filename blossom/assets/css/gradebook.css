@@ -118,8 +118,15 @@ a:hover
     stroke-width: 1;
     shape-rendering: crispEdges;
 }
+#chart{
+	float:left;
+}
 #chart path { 
     stroke: steelblue;
     stroke-width: 2;
     fill: none;
+}
+#selection{
+	width:250px;
+	height:250px;
 }

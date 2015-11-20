@@ -2,10 +2,27 @@
     var chartData = {{chartData | raw}};
     var submissions = {{submissions | raw}};
     var numMilestones = {{numMilestones}};
+	var students = {{users|raw}};
+	var today = {{today}};
 </script>
 
 {% set studentData = __SELF__.studentData %}
+{% set users = __SELF__.users %}
+
+	
+
+<div>
+
+
+</div>
 <div id="chart"></div>
+<select multiple id="selection">
+	{% for item in users %}
+		<option value='{{item.id}}'>{{item.short_name}}</option>
+		<div>{{item.id}}</div>
+		
+	{% endfor %}
+</select>
 <div class="container">
 
     <!-- 
@@ -51,6 +68,7 @@
     </table>
 </div>
 
+
 <div id="myModal" class="modal fade">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -72,3 +90,5 @@
 
 <script type="text/javascript" src="plugins/delphinium/blossom/assets/javascript/light-table-sorter.min.js"></script>
 <script> LightTableSorter.init()</script>
+
+

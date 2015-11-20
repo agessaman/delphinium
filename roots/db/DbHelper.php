@@ -8,6 +8,8 @@ use Delphinium\Roots\Models\OrderedModule;
 use Delphinium\Roots\Models\Assignment;
 use Delphinium\Roots\Models\Submission;
 use Delphinium\Roots\Models\Quiz;
+use Delphinium\Roots\Models\Quizquestion;
+use Delphinium\Roots\Models\QuizSubmission;
 use Delphinium\Roots\Models\AssignmentGroup;
 use Delphinium\Roots\Requestobjects\AssignmentsRequest;
 use Delphinium\Roots\Requestobjects\AssignmentGroupsRequest;
@@ -266,6 +268,15 @@ class DbHelper
                 ))->get();
             }
         }
+    }
+    
+    public function getQuizQuestion($quizId, $quizQuestionId)
+    {   
+        return Quizquestion::where(array(
+            'quiz_id' => $quizId,
+            'question_id'=> $quizQuestionId
+        ))->first(); 
+                
     }
     /*
      * UPDATE
@@ -566,5 +577,15 @@ class DbHelper
         {
             return "";
         }
+    }
+    
+    public function getQuizSubmission($quiz_id, $user_id)
+    {
+        $quizSubmission = QuizSubmission::where(array(
+            'user_id' => $user_id,
+            'quiz_id'=> $quiz_id
+        ))->first();
+        
+        return $quizSubmission;
     }
 }

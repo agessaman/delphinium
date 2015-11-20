@@ -1,23 +1,17 @@
 <script>
-	var xp = {{XP}};
-	var gradeBonus = {{gradeBonus}};
-	var gradeSize = '{{gradeSize}}';
-	var thresholds = [  ['{{apName}}',{{apValue}}], ['{{aName}}',{{aValue}}], ['{{amName}}',{{amValue}}], 
-						['{{bpName}}',{{bpValue}}], ['{{bName}}',{{bValue}}], ['{{bmName}}',{{bmValue}}],  
-						['{{cpName}}',{{cpValue}}], ['{{cName}}',{{cValue}}], ['{{cmName}}',{{cmValue}}], 
-						['{{dpName}}',{{dpValue}}], ['{{dName}}',{{dValue}}], ['{{dmName}}',{{dmValue}}], ['{{fName}}',{{fValue}}]  ];
+	var gradeSize = {{gradeSize}};
 </script>
 <table class="grade_table">
-	<tr>
-		<td class ="data">{{XP}}</td>
-		<td class = "labels">Experience</td>
-	</tr>
-	<tr>
-		<td class ="data" id = "bonus"></td>
-		<td class = "labels">Bonus</td>
-	</tr>
-	<tr id ="borderTop">
-		<td class ="data"  id = "total"></td>
-		<td id = "grade"></td>
-	</tr>
+    <tr>
+        <td class ="data">{{XP|round(2, 'common')}}</td>
+        <td class = "labels">Experience</td>
+    </tr>
+    <tr>
+        <td class ="data" id = "bonus">{{gradeBonus|round(2, 'common')}}</td>
+        <td class = "labels">Bonus</td>
+    </tr>
+    <tr id ="borderTop">
+        <td class ="data"  id = "total">{{XP+gradeBonus|round(2, 'common')}}</td>
+        <td id = "grade">{{letterGrade}}</td>
+    </tr>
 </table>

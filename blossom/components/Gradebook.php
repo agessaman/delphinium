@@ -5,6 +5,7 @@ namespace Delphinium\Blossom\Components;
 use Cms\Classes\ComponentBase;
 use Delphinium\Blossom\Models\Experience as ExperienceModel;
 use Delphinium\Blossom\Components\Experience as ExperienceComponent;
+use Delphinium\Blossom\Components\Grade as GradeComponent;
 use Delphinium\Roots\Roots;
 use Delphinium\Roots\Utils;
 use Delphinium\Roots\Requestobjects\AssignmentGroupsRequest;
@@ -19,6 +20,7 @@ class Gradebook extends ComponentBase {
 
     public $roots;
     public $studentData;
+    public $users;
     public $allStudentSubmissions;
 
     public function componentDetails() {
@@ -61,8 +63,7 @@ class Gradebook extends ComponentBase {
         $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
 
         $this->page['userRoles'] = $_POST["roles"];
-        if (stristr($_POST["roles"], 'Learner')) 
-        {
+        if (stristr($_POST["roles"], 'Learner')) {
             $bonusPenalties = $this->getBonusPenalties();
             $this->page['bonus'] = $bonusPenalties === 0 ? 0 : round($bonusPenalties->bonus, 2);
             $this->page['penalties'] = $bonusPenalties === 0 ? 0 : round($bonusPenalties->penalties, 2);
@@ -70,27 +71,25 @@ class Gradebook extends ComponentBase {
             $exp = new ExperienceComponent();
             $pts = $exp->getUserPoints();
             $this->page['totalPts'] = $pts;
-            
+
             //get letter grade
-            if(!is_null($this->property('experienceInstance')))
-            {
+            if (!is_null($this->property('experienceInstance'))) {
                 $instance = ExperienceModel::find($this->property('experienceInstance'));
                 $maxExperiencePts = $instance->total_points;
-                
-                if(is_null($this->roots))
-                {
+
+                if (is_null($this->roots)) {
                     $this->roots = new Roots();
                 }
                 $standards = $this->roots->getGradingStandards();
                 $grading_scheme = $standards[0]->grading_scheme;
-                $letterGrade = $this->getLetterGrade($pts, $maxExperiencePts, $grading_scheme);
-                
+                $grade = new GradeComponent();
+
+                $letterGrade = $grade->getLetterGrade($pts, $maxExperiencePts, $grading_scheme);
+
                 $this->page['letterGrade'] = $letterGrade;
             }
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/boxplot_d3.js");
-        } 
-        else if ((stristr($_POST["roles"], 'Instructor')) || (stristr($_POST["roles"], 'TeachingAssistant'))) 
-        {
+        } else if ((stristr($_POST["roles"], 'Instructor')) || (stristr($_POST["roles"], 'TeachingAssistant'))) {
             $this->getProfessorData();
             $this->addCss("/plugins/delphinium/blossom/assets/css/light-js-table-sorter.css");
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/gradebook_professor.js");
@@ -150,16 +149,17 @@ class Gradebook extends ComponentBase {
     private function getProfessorData() {
         $aggregateSubmissionScores = $this->aggregateSubmissionScores();
 
-        $users = $this->roots->getUsersInCourse();
-
+        $users = $this->roots->getStudentsInCourse();
+        $this->page['users'] = json_encode($users);
         $submissionData = $this->matchSubmissionsAndUsers($users, $aggregateSubmissionScores);
-
-        $this->page['studentData'] = ($submissionData);
-        $this->studentData = ($submissionData);
-        //get chart data
-
-
+        $this->studentData = $submissionData;
+        $this->users = $users;
+        
+        //chart data
         $this->page['chartData'] = json_encode($this->getRedLineData());
+
+        $experience = new ExperienceComponent();
+        $this->page['today'] = $experience->getRedLinePoints($this->property('experienceInstance'));
     }
 
     private function getRedLineData() {
@@ -167,11 +167,12 @@ class Gradebook extends ComponentBase {
             $instance = ExperienceModel::find($this->property('experienceInstance'));
 
             $milestones = $instance->milestones;
-			$this->page['numMilestones'] = count($milestones);
-            //For this function we will keep the dates in local, because the operations are not timezone specific!
-            //but for the most part we shoul convert to UTC and only display local on the client side.
-            $stDate = $instance->start_date;
-            $endDate = $instance->end_date;
+            $this->page['numMilestones'] = count($milestones);
+
+
+            $utcTimeZone = new DateTimeZone('UTC');
+            $stDate = $instance->start_date->setTimezone($utcTimeZone);
+            $endDate = $instance->end_date->setTimezone($utcTimeZone);
 
             $expComponent = new ExperienceComponent();
             $ptsPerSecond = $expComponent->getPtsPerSecond($stDate, $endDate, $instance->total_points);
@@ -220,10 +221,10 @@ class Gradebook extends ComponentBase {
 
 //             $i = 0;
             foreach ($users as $user) {
-                // if ($i === 10) {
-//                     return $masterArr;
-//                 }
-//                 $i++;
+                if ($i === 3) {
+                    return $masterArr;
+                }
+                $i++;
                 try {
                     $userAnalytics = $this->roots->getAnalyticsStudentAssignmentData(false, $user->id);
 
@@ -265,8 +266,7 @@ class Gradebook extends ComponentBase {
         }
     }
 
-    public function fillInMissingDays($milestoneData)
-    {
+    public function fillInMissingDays($milestoneData) {
         $newArr = array();
         for ($i = 0; $i <= count($milestoneData) - 1; $i++) {
             if ($i < count($milestoneData) - 1) {
@@ -289,6 +289,7 @@ class Gradebook extends ComponentBase {
         }//for
         return $newArr;
     }
+
     private function processAnalyticsChartData($analyticsData) {
 
         $carryingScore = 0;
@@ -336,40 +337,39 @@ class Gradebook extends ComponentBase {
         $carryingScore = 0;
         $userId = 0;
 
-        $i = 0;
-        
         $student = new \stdClass();
         $studentItems = array();
         foreach ($res as $submission) {
-            if(!isset($submission['submitted_at']))//skip items that have no submission date
-            {
-               continue; 
+            if (!isset($submission['submitted_at'])) {//skip items that have no submission date
+                continue;
             }
+
             if ($userId === 0) {//init variables
                 $student->id = $submission['user_id'];
             }
+            $carryingScore = $carryingScore + $submission['score'];
             $item = new \stdClass();
 
             $item->points = $userId === 0 ? $submission['score'] : $carryingScore;
             $item->date = $submission['submitted_at'];
-            
-//             echo $submission['submitted_at'];
-            $studentItems[] = $item;
 
-            if ($userId === 0 || $userId === $submission['user_id']) {//first loop or looping through same user
+
+            if ($userId === 0 || $userId === $submission['user_id']) {//first loop or looping through same user               
+                //Add the current item to this user's item array
+                $studentItems[] = $item;
                 $subm = new \stdClass();
                 $subm->user_id = $submission['user_id'];
-                $carryingScore = $carryingScore + $submission['score'];
                 $userId = $submission['user_id'];
             } else {//we moved on to a new student
-           
-//             echo json_encode($studentItems)."|||||||";
                 $student->items = $studentItems;
                 //add the previous student to the master array
                 $masterArr[] = $student;
                 $student = new \stdClass(); //reset the student
                 $student->id = $submission['user_id'];
-                $studentItems = array(); //reset the items array
+                //if we have moved to a new student we must reset the carrying score
+                $item->points = $submission['score'];
+                $studentItems = array(); //reset the items array               
+                $studentItems[] = $item;
                 //add the last item to the array 
                 $subm->score = $carryingScore;
                 $scoresArr[] = $subm;
@@ -379,15 +379,8 @@ class Gradebook extends ComponentBase {
                 $subm->user_id = $submission['user_id'];
                 $carryingScore = $submission['score'];
                 $userId = $submission['user_id'];
-            // if ($i === 15) {
-//                 break;
-//             }
-//                 $i++;
             }
-
-
         }
-// echo json_encode($masterArr);
 
         $this->page['submissions'] = json_encode($masterArr);
         //attach the last item we looped through
@@ -398,7 +391,7 @@ class Gradebook extends ComponentBase {
 
     private function orderSubmissionsByUsersAndDate($arr) {
         $sorted = $this->array_orderby($arr, 'user_id', SORT_ASC, 'submitted_at', SORT_ASC);
-        
+
         return $sorted;
     }
 
@@ -451,7 +444,7 @@ class Gradebook extends ComponentBase {
 
             $userObj = new \stdClass();
             $userObj->name = $user->name;
-            $userObj->id = $user->sis_login_id;
+            $userObj->id = $user->login_id;
             //add link to user profile
 
             if (!isset($_SESSION)) {
@@ -459,7 +452,7 @@ class Gradebook extends ComponentBase {
             }
             $domain = $_SESSION['domain'];
             $courseId = $_SESSION['courseID'];
-            $userObj->profile_url = "https://{$domain}/courses/{$courseId}/users/$user->id"; //"https://uvu.instructure.com/courses/357790/users/1417818"
+            $userObj->profile_url = "https://{$domain}/courses/{$courseId}/users/$user->id";
             $userObj->bonusPenalty = round($bonus + $penalty, 2);
             if (count($submissionsArr) >= 1) {
                 $score = $submissionsArr[0];
@@ -473,27 +466,12 @@ class Gradebook extends ComponentBase {
             }
 
             //get letter grade
-            $userObj->grade = $this->getLetterGrade($totalPoints, $maxExperiencePts, $grading_scheme);
+            $grade = new GradeComponent();
+            $userObj->grade = $grade->getLetterGrade($totalPoints, $maxExperiencePts, $grading_scheme);
             $allStudents[] = $userObj;
         }
 
         return $allStudents;
-    }
-
-    private function getLetterGrade($studentPoints, $maxPoints, $gradingScheme) {
-        if ($maxPoints === 0) {
-            return "F";
-        }
-        $percentage = $studentPoints / $maxPoints;
-
-        if ($percentage < 0) {
-            return "F";
-        }
-        foreach ($gradingScheme as $grade) {
-            if ($percentage >= $grade->value) {
-                return $grade->name;
-            }
-        }
     }
 
     private function findScoreByUserId($userId, $scores) {

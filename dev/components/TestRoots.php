@@ -15,6 +15,7 @@ use Delphinium\Roots\Enums\ActionType;
 use Delphinium\Roots\Enums\ModuleItemType;
 use Delphinium\Roots\Enums\CompletionRequirementType;
 use Delphinium\Roots\DB\DbHelper;
+use Delphinium\Roots\Lmsclasses\CanvasHelper;
 use Cms\Classes\ComponentBase;
 use \DateTime;
 use \DateTimeZone;
@@ -24,13 +25,12 @@ use Delphinium\Iris\Components\Iris;
 use Cms\Classes\ComponentManager;
 use \Delphinium\Blade\Classes\Rules\RuleBuilder;
 use \Delphinium\Blade\Classes\Rules\RuleGroup;
-
 use Delphinium\Roots\Guzzle\GuzzleHelper;
-
 
 class TestRoots extends ComponentBase
 {
     public $roots;
+    public $canvasHelper;
     public function componentDetails()
     {
         return [
@@ -42,10 +42,9 @@ class TestRoots extends ComponentBase
     public function onRun()
     {  
         $this->roots = new Roots();
+        $this->canvasHelper = new CanvasHelper();
 //        $this->refreshCache();
 //        $this->test();
-        
-//        Cache::flush();
 //        $this->testBasicModulesRequest();
 //        $this->testDeleteTag();
 //        $this->testAddingUpdatingTags();
@@ -68,7 +67,7 @@ class TestRoots extends ComponentBase
 //        $this->testGettingAllSubmissionForSingleAssignment();
 //        $this->testGettingMultipleSubmissionsForSingleStudent();
 //        $this->testGettingMultipleSubmissionsAllStudents();
-        $this->testGettingAllSubmissionsAllStudents();
+//        $this->testGettingAllSubmissionsAllStudents();
 //        $this->testGettingMultipleSubmissionsMultipleStudents();
 //        $this->testGettingSubmissions();
 //        $this->testFileUpload();
@@ -81,7 +80,9 @@ class TestRoots extends ComponentBase
 //        $this->testGetQuizQuestions();
 //        $this->testGetAllQuizzes();
 //        $this->testGetPages();
-        
+        $this->testQuizTakingWorkflow();
+//        $this->testIsQuestionAnswered();
+//        $this->testSubmitQuiz();
     }
     
     private function testBasicModulesRequest()
@@ -438,11 +439,20 @@ class TestRoots extends ComponentBase
     
     public function test()
     {
-        $req = new ModulesRequest(ActionType::GET, 380206, null, true, true, null, null , false);
-        $db = new \Delphinium\Roots\DB\DbHelper();
-        $res = $db->getModuleData($req);
+//        $canvasHelper->getQuizSubmissionsFromCanvas($quizId);
         
-        echo json_encode($res);
+//        $req = new ModulesRequest(ActionType::GET, 380206, null, true, true, null, null , false);
+//        $db = new \Delphinium\Roots\DB\DbHelper();
+//        $res = $db->getModuleData($req);
+//        
+//        echo json_encode($res);
+        
+        
+        
+        
+        
+        
+        
 //        $this->convertDatesUTCLocal();
 //        $now = new DateTime(date("Y-m-d"));
 //        echo json_encode($now);
@@ -603,21 +613,124 @@ class TestRoots extends ComponentBase
     
     public function testGetQuizQuestions()
     {
-        $req = new QuizRequest(ActionType::GET, 464878, false, true);
+        $req = new QuizRequest(ActionType::GET, 621540, false, true);
         $result = $this->roots->quizzes($req);
         
-        foreach($result['questions'] as $question)
-        {
-            
-            $answers = $question['answers'];
-            $obj = json_decode($answers, true);
-            foreach($obj as $answer)
-            {
-                echo json_encode($answer['text']);
-            }
-        }
+        echo json_encode($result);
+//        foreach($result['questions'] as $question)
+//        {
+//            
+//            $answers = $question['answers'];
+//            $obj = json_decode($answers, true);
+//            foreach($obj as $answer)
+//            {
+//                echo json_encode($answer['text']);
+//            }
+//        }
         
     }
+    public function testQuizTakingWorkflow()
+    {
+        $quizId = 621540;
+        $questionId = 10897397;
+        $canvasHelper = new CanvasHelper();
+        $dbHelper = new DbHelper();
+        
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $studentId = $_SESSION['userID'];
+        
+        $quizSubmission = $dbHelper->getQuizSubmission($quizId, $studentId);
+        if(is_null($quizSubmission))
+        {//try to get it from Canvas
+            $canvasHelper->getQuizSubmissionsFromCanvas($quizId);
+            $quizSubmission = $dbHelper->getQuizSubmission($quizId, $studentId);
+            if(is_null($quizSubmission))
+            {//it wasn't on canvas
+                //create a new submission
+                $canvasHelper->postQuizTakingSession($quizId);
+                $quizSubmission = $dbHelper->getQuizSubmission($quizId, $studentId);
+            }
+            
+        }
+        
+        //get the quiz Object
+        $quizQuestion = $dbHelper->getQuizQuestion($quizId, $questionId);
+        if(is_null($quizQuestion))
+        {
+            $req = new QuizRequest(ActionType::GET, $quizId, false, true);
+            $this->roots->quizzes($req);
+            $quizQuestion = $dbHelper->getQuizQuestion($quizId, $questionId);
+        }
+        //get the question and see if it's answered
+        $isAnswered = $canvasHelper->isQuestionAnswered($quizId, $questionId, $quizSubmission->quiz_submission_id);
+        if($isAnswered){
+            //do something if the question has been answered
+        }
+        else
+        {
+            $questionsWrap = array();
+            $answer = new \stdClass();
+            $answer->id = $quizQuestion->question_id;
+            
+            
+  
+              //the "answer" will vary between question types
+            switch(strtolower($quizQuestion->type))
+            {
+                case "text":
+                    break;
+                case "multiple_choice_question":
+                    $answer->answer = 1;
+                    break;
+
+            }
+
+            $questionsWrap[] = $answer;
+            //answer question
+            
+            $result =$canvasHelper->postAnswerQuestion($quizSubmission, $questionsWrap);
+            echo json_encode($result);
+        }
+    }
+    
+    
+    public function testIsQuestionAnswered()
+    {
+        $quizSubmissionId = 8287196;
+        $quizId = 621794;
+        $questionId = 10902238;
+        $answer = $this->canvasHelper->isQuestionAnswered($quizId, $questionId, $quizSubmissionId);
+        if($answer)
+        {
+            echo json_encode($answer);
+        }
+        else
+        {
+            echo "no";
+        }
+    }
+    
+    public function testSubmitQuiz()
+    {
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $userId = $_SESSION['userID'];
+        $quizId = 621753;
+        $dbHelper = new DbHelper();
+        $canvasHelper = new CanvasHelper();
+        
+//        $canvasHelper->postQuizTakingSession($quizId);
+        
+        $quizSubmission = $dbHelper->getQuizSubmission($quizId, $userId);
+        $result = $canvasHelper->postSubmitQuiz($quizSubmission);
+        echo json_encode($result);
+    }
+    
     private function convertToUTC()
     {
         $date = new DateTime("now", new \DateTimeZone('America/Denver'));
@@ -631,5 +744,4 @@ class TestRoots extends ComponentBase
     
     
 }
-
 

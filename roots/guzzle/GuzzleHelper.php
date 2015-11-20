@@ -40,6 +40,56 @@ class GuzzleHelper
         return $client->post($url);
     }
     
+    public static function postDataWithParams($url, $obj)
+    {
+        $client = new Client();
+        $response = $client->post($url,[
+              'json' => json_encode($obj)
+           ]);
+        
+        
+//        $response = $client->post($url, array(
+//            'headers' => array('Content-type' => 'application/json'),
+//            'body' => json_encode($paramArray)
+//        ));
+        
+        
+        
+//        $obj->attempt = $attempt;
+//        $obj->validation_token = $quizSubmission->validation_token;
+//        $obj->quiz_questions = ($questions);
+        
+//        this doesn't work
+//        $response = $client->request('POST', $url, [
+//            'json' => [
+//                'attempt' => $paramArray->attempt,
+//                'validation_token' => $paramArray->validation_token,
+//                'quiz_questions' => [
+//                    $paramArray->quiz_questions
+//                ]
+//            ]
+//        ]);
+//        echo json_encode($response->getBody());
+        
+        //this gives 403
+//        $response = $client->post($url, ['json' => json_encode($paramArray)]);
+        
+        
+        //this gves 403
+//        $request = $client->post($url,($paramArray->toArray()));
+//        $request->setBody(json_encode($paramArray)); #set body!
+//        $response = $request->send();
+//        
+//        echo json_encode($request);
+//        $json = json_encode($paramArray);
+//        $response = $client->request('POST', $url, ['json' => $json]);
+        
+//        $response =$client->post($url,[
+//        'body' => array(
+//             json_encode($paramArray)
+//        )]);
+        return $response;
+    }
     public static function postMultipartRequest($params, $file, $upload_url)
     {
 //        $client = new Client();

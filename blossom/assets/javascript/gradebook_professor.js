@@ -1,7 +1,8 @@
 div = d3.select("body").append("div")
         .attr("class", "tooltip")
         .style("opacity", 0);
-
+        
+var selectedStudents = [];
 var margin = {top: 30, right: 20, bottom: 30, left: 50},
 width = 600 - margin.left - margin.right,
         height = 270 - margin.top - margin.bottom;
@@ -13,7 +14,7 @@ var parseDate = d3.time.format("%d-%b-%y").parse;
 var x = d3.time.scale().range([0, width]);
 var y = d3.scale.linear().range([height, 0]);
 
-            
+
 // Define the axes
 var xAxis = d3.svg.axis().scale(x)
         .orient("bottom").ticks(6);
@@ -28,22 +29,31 @@ var svg = d3.select("#chart")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom);
 var g = svg.append("g")
-        .attr("transform", 
+        .attr("transform",
                 "translate(" + margin.left + "," + margin.top + ")")
         .attr("id", "gChart");
 
+
+console.log(submissions);
+//add a line for each student
+// parseStudentData(submissions);
+
 // Get the data
+console.log(chartData);
 data = parseDates(chartData);
+// Scale the range of the data
+x.domain(d3.extent(data, function (d) {
+    return d.date;
+}));
+y.domain([0, d3.max(data, function (d) {
+        return d.points;
+    })]);
 
-
-
-//add the red line chart
-addLine(data, "red");
-//     add circles for each milestone
+// add the red line chart
+addLine(data, "red", "red");
+// add circles for each milestone
 g.selectAll("dot")
-        .data(data)
-        .enter().append("circle")
-        .filter(function (d, i) {
+        .data(data.filter(function (d, i) {
             if (i === 0) {
                 return d;
             }
@@ -51,7 +61,9 @@ g.selectAll("dot")
             {
                 return d;
             }
-        })
+        }))
+        .enter().append("circle")
+        
         .attr("r", 4)
         .attr("cx", function (d) {
             return x(d.date);
@@ -66,6 +78,7 @@ g.selectAll("dot")
             removeTooltip();
         });
 
+
 // Add the X Axis
 g.append("g")
         .attr("class", "x axis")
@@ -78,111 +91,161 @@ g.append("g")
         .call(yAxis);
 
 
-//add a line for each student
-// parseStudentData(submissions);
-
-function parseStudentData(masterArray)
-{
-    for (var j in masterArray) {
-    	var parsedData = parseDates(masterArray[j].items);
-        addLine(parsedData, "steelblue");
-    }
-}
-function addLine(data, strokeColor)
-{
-	// Scale the range of the data
-	x.domain(d3.extent(data, function (d) {
-    	return d.date;
-	}));
-	y.domain([0, d3.max(data, function (d) {
-        return d.points;
-    })]);
-    
-    // Define the line
-    var valueline = d3.svg.line()
-            .x(function (d) {
-            var dddate = new Date(d.date);
-            console.log(d.date);
-            if(dddate==="Invalid Date")
-            {
-            	alert("date was invalid");
-            }
-            	console.log(dddate);
-                return x(d.date);
+var todayDate = new Date();
+    g.selectAll("scatter-dots")
+    	.data(today)
+        .enter()
+    	.append("svg:rect")
+            .attr("x", function (d) {
+                return x(Date.parse(d));
             })
-            .y(function (d) {
-            console.log(d.points);
-                return y(d.points);
-            });
-// Add the valueline path.
-    g.append("path")
-            .attr("class", "line")
-            .attr("d", valueline(data))
-            .style("stroke", strokeColor);
-
-}
-
-function parseDates(data)
-{
-	data.forEach(function (d) {
-	
-	var newDate = Date.parse(d.date);
-	// if(isNaN(newDate))
-//     {
-//     	console.log(d);
-//     }
-    d.date = Date.parse(d.date);
-    
-    d.points = +d.points;
-});
-	return data;
-}
-function addLineToChart(data)
-{
-    var margin = {top: 30, right: 20, bottom: 30, left: 50},
-    width = 600 - margin.left - margin.right,
-            height = 270 - margin.top - margin.bottom;
-
-    var parseDate = d3.time.format("%Y-%m-%dT%H:%M:%SZ").parse;
-
-// Set the ranges
-    var x = d3.time.scale().range([0, width]);
-    var y = d3.scale.linear().range([height, 0]);
-
-    data.forEach(function (d) {
-        d.date = Date.parse(d.date);
-        d.points = +d.points;
-    });
-    // Define the line
-    var valueline = d3.svg.line()
-            .x(function (d) {
-                return x(d.date);
+            .attr("width", function (d) {
+                return (185);
             })
-            .y(function (d) {
-                return y(d.points);
+            .attr("y", function (d) {
+                return y(d);
             })
+            .attr("height", function (d) {
+                return 0.5;
+            })
+            .attr("stroke-width", 0.5)
+            .attr("stroke", "lightgray")
             .on("mouseover", function (d) {
-                addTooltip(d.points + " on " + d.date);
+                addTooltip("Today: " + d + " points");
             })
             .on("mouseout", function (d) {
                 removeTooltip();
             });
 
-    // Scale the range of the data
-    x.domain(d3.extent(data, function (d) {
-        return d.date;
-    }));
-    y.domain([0, d3.max(data, function (d) {
-            return d.points;
-        })]);
+function addLine(data, strokeColor, id)
+{
+	console.log(data);
+    // Define the line
+    var valueline = d3.svg.line()
+            .x(function (d) {
+                var dddate = new Date(d.date);
+                return x(d.date);
+            })
+            .y(function (d) {
+                return y(d.points);
+            });
 
-    // Add the valueline path.
-    d3.select("#gChart").append("path")
+var arr = id.split("path");
+
+
+var studentId = arr.length>0?arr[1]:0;
+
+var filteredData = students.filter(function (d) {
+	var match = d.id === parseInt(studentId)
+            return match;
+        });
+var text = "User Id: "+studentId;
+        if(filteredData.length>0)
+        {
+        	text = filteredData[0].name;
+        }
+// Add the valueline path.
+    g.append("path")
+            .attr("id", id)
             .attr("class", "line")
             .attr("d", valueline(data))
-            .style("stroke", "steelblue")
-            .style("opacity", 0.4);
+            .style("stroke", strokeColor)
+            .on("mouseover", function (d) {
+            	addTooltip(text);
+	        })
+    	    .on("mouseout", function (d) {
+        	    removeTooltip();
+	        });
 
+}
+
+d3.select("#selection").on("change", multipleChange);
+
+
+function multipleChange()
+{
+    var selection = this.selectedOptions;
+
+    var masterArr = [];
+    var newSelectedStudents = [];
+
+    //add each selected student
+    for (var k in selection)
+    {
+        var num = parseInt(selection[k].value);
+
+        if (!isNaN(num))
+        {
+            newSelectedStudents.push(num);
+        }
+        else
+        {
+        	continue; 
+        }
+
+
+        var filteredData = submissions.filter(function (d) {
+            return d.id === parseInt(selection[k].value);
+        });
+
+        masterArr = masterArr.concat(filteredData);
+    }
+
+    if (selectedStudents.length > 0)
+    {
+        for (var l in selectedStudents)
+        {
+            var index = newSelectedStudents.indexOf(selectedStudents[l]);
+            if (index < 0)
+            {
+                //remove the old lines that are not currently selected
+                d3.select("#path" + selectedStudents[l]).remove();
+            }
+
+        }
+    }
+    if (masterArr.length > 0)
+    {
+        for (var p in masterArr) {
+            if (selectedStudents.length > 0)
+            {
+                var index = selectedStudents.indexOf(parseInt(masterArr[p].id));
+                if (index ===-1)//don't add the path line if it's already on the page
+                { 
+            		var parsedData = parseDates(masterArr[p].items);
+            		addLine(parsedData, "steelblue", "path" + masterArr[p].id);
+                }
+            }
+            else
+            {//first time running the chart selectedStudents will be null;
+            	var parsedData = parseDates(masterArr[p].items);
+            	addLine(parsedData, "steelblue", "path" + masterArr[p].id);
+            }
+        }
+
+        selectedStudents = newSelectedStudents;//reset the array with all the students that were selected this time
+    }
+    else
+    {
+        alert("The selection is invalid or the selected user has no submissions");
+    }
+
+}
+
+function parseDates(data)
+{
+    data.forEach(function (d) {
+
+        var newDate = Date.parse(d.date);
+        if(isNaN(newDate))//if the user has been selected before the dates have already been parsed. Trying to parse them again will throw an error
+        {
+        	return;
+        }
+        d.date = Date.parse(d.date);
+
+        d.points = +d.points;
+    });
+    return data;
 }
 
 function addTooltip(text)

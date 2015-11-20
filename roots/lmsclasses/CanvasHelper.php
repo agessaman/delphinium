@@ -856,6 +856,11 @@ class CanvasHelper
     	return $this->simpleGet('users');
     }
     
+    public function getStudentsInCourse()
+    {
+    	return $this->simpleGet('students');
+    }
+    
     public function getUserEnrollments()
     {///api/v1/users/:user_id/enrollments
         if(!isset($_SESSION)) 

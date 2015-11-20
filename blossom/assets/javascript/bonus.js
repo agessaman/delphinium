@@ -205,10 +205,14 @@ function drawBonus() {
                 .attr('font-size', "20px")
                 .attr('x', textx - 10)
                 .attr('y', height / 2)
-                .text(totalBonus + totalPenalties);
+                .text(Math.round(totalBonus + totalPenalties));
 
         text.transition()
                 .delay(delay)
                 .attr("fill", "black");
+    }
+    
+    function roundToTwo(num) {
+        return +(Math.round(num + "e+2") + "e-2");
     }
 }

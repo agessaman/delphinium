@@ -683,6 +683,31 @@ class Roots
         }
     }
     
+    public function getStudentsInCourse()
+    {
+    	if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $lms = strtoupper($_SESSION['lms']);
+        if(Lms::isValidValue($lms))
+        {
+            switch ($lms)
+            {
+                case (Lms::CANVAS):
+                    $canvasHelper = new CanvasHelper();
+                    return json_decode($canvasHelper->getStudentsInCourse());
+                default:
+                    $canvasHelper = new CanvasHelper();
+                    return json_decode($canvasHelper->getStudentsInCourse());
+            }
+        }
+        else
+        {
+           throw new \Exception("Invalid LMS");  
+        }
+    }
+    
     public function getUserEnrollments()
     {
         if(!isset($_SESSION)) 

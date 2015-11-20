@@ -143,7 +143,7 @@ class Experience extends ComponentBase {
             $this->page['maxXP'] = $instance->total_points; //total points for this experience
             $this->page['experienceSize'] = $instance->size;
             $this->page['experienceAnimate'] = $instance->animate;
-            $this->page['redLine'] = $this->getRedLinePoints();
+            $this->page['redLine'] = $this->getRedLinePoints($this->property('Instance'));
         } catch (\GuzzleHttp\Exception\ClientException $e) {
             echo "You must be a student to use this app, or go into 'Student View'. "
             . "Also, make sure that an Instructor has approved this application";
@@ -151,14 +151,16 @@ class Experience extends ComponentBase {
         }
     }
 
-    public function getRedLinePoints() {//only deal with UTC dates. The model will return the date in the user's timezone, but we'll convert it to UTC
+    public function getRedLinePoints($experienceInstanceId) {//only deal with UTC dates. The model will return the date in the user's timezone, but we'll convert it to UTC
+        $instance = ExperienceModel::find($experienceInstanceId);
+        
         $utcTimeZone = new DateTimeZone('UTC');
         $now = new DateTime('now', $utcTimeZone);
-        $startDateUTC = $this->instance->start_date->setTimezone($utcTimeZone);
-        $endDateUTC = $this->instance->end_date->setTimezone($utcTimeZone);
+        $startDateUTC = $instance->start_date->setTimezone($utcTimeZone);
+        $endDateUTC = $instance->end_date->setTimezone($utcTimeZone);
         $currentSeconds = abs($now->getTimestamp() - $startDateUTC->getTimestamp());
 
-        $this->ptsPerSecond = $this->getPtsPerSecond($startDateUTC, $endDateUTC, $this->instance->total_points);
+        $this->ptsPerSecond = $this->getPtsPerSecond($startDateUTC, $endDateUTC, $instance->total_points);
         return floor($this->ptsPerSecond * $currentSeconds);
     }
 
