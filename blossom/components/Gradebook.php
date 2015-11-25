@@ -83,7 +83,6 @@ class Gradebook extends ComponentBase {
                 $standards = $this->roots->getGradingStandards();
                 $grading_scheme = $standards[0]->grading_scheme;
                 $grade = new GradeComponent();
-
                 $letterGrade = $grade->getLetterGrade($pts, $maxExperiencePts, $grading_scheme);
 
                 $this->page['letterGrade'] = $letterGrade;
@@ -151,8 +150,11 @@ class Gradebook extends ComponentBase {
 
         $users = $this->roots->getStudentsInCourse();
         $this->page['users'] = json_encode($users);
+        
+        //comment these two lines 
         $submissionData = $this->matchSubmissionsAndUsers($users, $aggregateSubmissionScores);
         $this->studentData = $submissionData;
+        
         $this->users = $users;
         
         //chart data
@@ -453,7 +455,9 @@ class Gradebook extends ComponentBase {
             $domain = $_SESSION['domain'];
             $courseId = $_SESSION['courseID'];
             $userObj->profile_url = "https://{$domain}/courses/{$courseId}/users/$user->id";
-            $userObj->bonusPenalty = round($bonus + $penalty, 2);
+            $userObj->bonuses = round($bonus,2);
+            $userObj->penalties = round($penalty,2);
+            $userObj->totalBP = round(round($bonus,2) + round($penalty,2),2);
             if (count($submissionsArr) >= 1) {
                 $score = $submissionsArr[0];
                 $userObj->score = round($score->score, 2);

@@ -34,12 +34,11 @@ var g = svg.append("g")
         .attr("id", "gChart");
 
 
-console.log(submissions);
 //add a line for each student
 // parseStudentData(submissions);
 
 // Get the data
-console.log(chartData);
+//console.log(chartData);
 data = parseDates(chartData);
 // Scale the range of the data
 x.domain(d3.extent(data, function (d) {
@@ -63,7 +62,7 @@ g.selectAll("dot")
             }
         }))
         .enter().append("circle")
-        
+
         .attr("r", 4)
         .attr("cx", function (d) {
             return x(d.date);
@@ -130,23 +129,18 @@ function addLine(data, strokeColor, id)
                 return y(d.points);
             });
 
-var arr = id.split("path");
-
-
-var studentId = arr.length>0?arr[1]:0;
-
 var filteredData = students.filter(function (d) {
-	var match = d.id === parseInt(studentId)
+	var match = d.id === parseInt(id)
             return match;
         });
-var text = "User Id: "+studentId;
+var text = "User Id: "+id;
         if(filteredData.length>0)
         {
         	text = filteredData[0].name;
         }
 // Add the valueline path.
     g.append("path")
-            .attr("id", id)
+            .attr("id", "path"+id)
             .attr("class", "line")
             .attr("d", valueline(data))
             .style("stroke", strokeColor)
@@ -156,6 +150,68 @@ var text = "User Id: "+studentId;
     	    .on("mouseout", function (d) {
         	    removeTooltip();
 	        });
+     
+     console.log(data.length);           
+    g.selectAll("dot")
+        .data(data.filter(function (d, i) {
+            if (i === 0) {
+                return d;
+            }
+            if (data[i].points != data[i - 1].points)
+            {
+                return d;
+            }
+        }))
+        .enter().append("circle")
+        
+        .attr("r", 2)
+        .attr("class",function(d)
+        {
+        	return "cir"+id;
+        })
+        .attr("fill","steelblue")
+        .attr("cx", function (d) {
+            return x(d.date);
+        })
+        .attr("cy", function (d) {
+            return y(d.points);
+        })
+        .on("mouseover", function (d) {
+            addTooltip(d.points);
+        })
+        .on("mouseout", function (d) {
+            removeTooltip();
+        });
+        
+        if(id!="red")
+        {
+        
+        // var red = d3.select("#pathred");
+//         red.attr("stroke","blue");
+        	// var paragraphs = g.selectAll(".cir"+id);
+//         	
+//         	for(var k=0;k<=paragraphs[0].length-1;k++)
+//         	{
+//         		if(k===paragraphs[0].length-1)
+//         		{
+//         			paragraphs[0][k].attr("fill", "orange");
+//         		}
+//         	}
+//         	paragraphs.each(function(d,i)
+//         	{
+//         		var lastChild = this.lastChild;
+//         		if(this === lastChild)
+//         		{
+//         		    d3.select(this).attr("fill", "orange");
+//         		}
+// 
+// //         		var item = paragraphs[0][i+1];
+// //         		item.attr("fill", "orange");
+//         		
+//         	});
+// 			var lastParag  = paragraphs[0].pop();
+// 	        lastParag.attr("fill","orange");
+        }
 
 }
 
@@ -200,6 +256,8 @@ function multipleChange()
             {
                 //remove the old lines that are not currently selected
                 d3.select("#path" + selectedStudents[l]).remove();
+                var selector = ".cir"+selectedStudents[l].toString();
+                d3.selectAll(selector).remove();
             }
 
         }
@@ -213,13 +271,13 @@ function multipleChange()
                 if (index ===-1)//don't add the path line if it's already on the page
                 { 
             		var parsedData = parseDates(masterArr[p].items);
-            		addLine(parsedData, "steelblue", "path" + masterArr[p].id);
+            		addLine(parsedData, "steelblue", masterArr[p].id);
                 }
             }
             else
             {//first time running the chart selectedStudents will be null;
             	var parsedData = parseDates(masterArr[p].items);
-            	addLine(parsedData, "steelblue", "path" + masterArr[p].id);
+            	addLine(parsedData, "steelblue", masterArr[p].id);
             }
         }
 

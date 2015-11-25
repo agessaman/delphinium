@@ -21,6 +21,12 @@ class InvalidRequestException extends \Exception
         $this->reason = $reason;
     }
 
+    /**
+     * 
+     * @param string $action The action that was being performed
+     * @param string $reason The reason the action failed
+     * @param int $code optionl- The error code
+     */
     public function __construct($action, $reason, $code=null) {
         $this->setAction($action);
         $this->setReason($reason);

@@ -437,51 +437,6 @@ class TestRoots extends ComponentBase
         
     }
     
-    public function test()
-    {
-//        $canvasHelper->getQuizSubmissionsFromCanvas($quizId);
-        
-//        $req = new ModulesRequest(ActionType::GET, 380206, null, true, true, null, null , false);
-//        $db = new \Delphinium\Roots\DB\DbHelper();
-//        $res = $db->getModuleData($req);
-//        
-//        echo json_encode($res);
-        
-        
-        
-        
-        
-        
-        
-//        $this->convertDatesUTCLocal();
-//        $now = new DateTime(date("Y-m-d"));
-//        echo json_encode($now);
-//        
-//        
-//        
-//        $rb = new RuleBuilder;
-//
-//        $bonus_90 = $rb->create('current_user_submissions', 'submission',
-//        $rb['submission']['score']->greaterThan($rb['score_threshold']),
-//        [
-//            $rb['(bonus)']->assign($rb['(bonus)']->add($rb['points']))
-//        ]);
-//        
-//        $rb['(bonus)'] = 0;
-//        $rb['submission']['score'] = 0;
-//        $rb['score_threshold'] = 0;
-//        $rb['point'] = 0;
-//
-//        $rg = new RuleGroup('submissionstest');
-//        $rg->add($bonus_90);
-//        $rg->saveRules();
-        
-//        $manager = ComponentManager::instance();
-//       echo json_encode($manager->listComponents());
-        
-        
-
-    }
     
    
 
@@ -632,7 +587,7 @@ class TestRoots extends ComponentBase
     public function testQuizTakingWorkflow()
     {
         $quizId = 621540;
-        $questionId = 10897397;
+        $questionId = 10934834;
         $canvasHelper = new CanvasHelper();
         $dbHelper = new DbHelper();
         
@@ -645,7 +600,7 @@ class TestRoots extends ComponentBase
         $quizSubmission = $dbHelper->getQuizSubmission($quizId, $studentId);
         if(is_null($quizSubmission))
         {//try to get it from Canvas
-            $canvasHelper->getQuizSubmissionsFromCanvas($quizId);
+            $canvasHelper->getQuizSubmission($quizId);
             $quizSubmission = $dbHelper->getQuizSubmission($quizId, $studentId);
             if(is_null($quizSubmission))
             {//it wasn't on canvas
@@ -656,7 +611,11 @@ class TestRoots extends ComponentBase
             
         }
         
-        //get the quiz Object
+        //post quiz
+        $res = $canvasHelper->postTurnInQuiz($quizId, $quizSubmission);
+        echo json_encode($res);
+        return;
+//        //get the quiz Object
         $quizQuestion = $dbHelper->getQuizQuestion($quizId, $questionId);
         if(is_null($quizQuestion))
         {
@@ -664,35 +623,38 @@ class TestRoots extends ComponentBase
             $this->roots->quizzes($req);
             $quizQuestion = $dbHelper->getQuizQuestion($quizId, $questionId);
         }
+        
         //get the question and see if it's answered
         $isAnswered = $canvasHelper->isQuestionAnswered($quizId, $questionId, $quizSubmission->quiz_submission_id);
+        echo json_encode($isAnswered);
         if($isAnswered){
-            //do something if the question has been answered
+            echo "was answered";//do something if the question has been answered
         }
         else
         {
-            $questionsWrap = array();
-            $answer = new \stdClass();
-            $answer->id = $quizQuestion->question_id;
-            
-            
-  
-              //the "answer" will vary between question types
-            switch(strtolower($quizQuestion->type))
-            {
-                case "text":
-                    break;
-                case "multiple_choice_question":
-                    $answer->answer = 1;
-                    break;
-
-            }
-
-            $questionsWrap[] = $answer;
-            //answer question
-            
-            $result =$canvasHelper->postAnswerQuestion($quizSubmission, $questionsWrap);
-            echo json_encode($result);
+            echo "was not answered";
+//            $questionsWrap = array();
+//            $answer = new \stdClass();
+//            $answer->id = $quizQuestion->question_id;
+//            
+//            
+//  
+//              //the "answer" will vary between question types
+//            switch(strtolower($quizQuestion->type))
+//            {
+//                case "text":
+//                    break;
+//                case "multiple_choice_question":
+//                    $answer->answer = 1;
+//                    break;
+//
+//            }
+//
+//            $questionsWrap[] = $answer;
+//            //answer question
+//            
+//            $result =$canvasHelper->postAnswerQuestion($quizSubmission, $questionsWrap);
+//            echo json_encode($result);
         }
     }
     
@@ -742,6 +704,59 @@ class TestRoots extends ComponentBase
     }
     
     
+    public function test()
+    {
+        $quizId = 623422;
+        $questionId = 10897397;
+        $canvasHelper = new CanvasHelper();
+        $dbHelper = new DbHelper();
+        $res = $canvasHelper->postQuizTakingSession($quizId);
+        
+        echo json_encode($res);
+            
+//        $canvasHelper->getQuizSubmissionsFromCanvas($quizId);
+        
+//        $req = new ModulesRequest(ActionType::GET, 380206, null, true, true, null, null , false);
+//        $db = new \Delphinium\Roots\DB\DbHelper();
+//        $res = $db->getModuleData($req);
+//        
+//        echo json_encode($res);
+        
+        
+        
+        
+        
+        
+        
+//        $this->convertDatesUTCLocal();
+//        $now = new DateTime(date("Y-m-d"));
+//        echo json_encode($now);
+//        
+//        
+//        
+//        $rb = new RuleBuilder;
+//
+//        $bonus_90 = $rb->create('current_user_submissions', 'submission',
+//        $rb['submission']['score']->greaterThan($rb['score_threshold']),
+//        [
+//            $rb['(bonus)']->assign($rb['(bonus)']->add($rb['points']))
+//        ]);
+//        
+//        $rb['(bonus)'] = 0;
+//        $rb['submission']['score'] = 0;
+//        $rb['score_threshold'] = 0;
+//        $rb['point'] = 0;
+//
+//        $rg = new RuleGroup('submissionstest');
+//        $rg->add($bonus_90);
+//        $rg->saveRules();
+        
+//        $manager = ComponentManager::instance();
+//       echo json_encode($manager->listComponents());
+        
+        
+
+    }
     
 }
 

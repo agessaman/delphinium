@@ -101,13 +101,26 @@ a:hover
 {
     fill: #FD994C;
 }
-
+#topContainer
+{
+	text-align:center;
+}
+#gridContainer
+{
+	margin-top:40px;
+	width:900px !important;
+}
 .container th:after {
 	margin-right:5px;
 }
 
 .container th:before {
 	margin-right:5px;
+}
+.tdName
+{
+	width:20%;
+	padding-left:10px !important;
 }
 
 /*styles for the professor line graph*/
@@ -119,7 +132,7 @@ a:hover
     shape-rendering: crispEdges;
 }
 #chart{
-	float:left;
+	display: inline-block;
 }
 #chart path { 
     stroke: steelblue;

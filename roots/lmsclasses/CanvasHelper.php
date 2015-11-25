@@ -4,6 +4,7 @@ use \DateTime;
 use Delphinium\Roots\DB\DbHelper;
 use Delphinium\Roots\Enums\ActionType;
 use Delphinium\Roots\Exceptions\InvalidParameterInRequestObjectException;
+use Delphinium\Roots\Exceptions\InvalidRequestException;
 use Delphinium\Roots\Guzzle\GuzzleHelper;
 use Delphinium\Roots\Models\ModuleItem;
 use Delphinium\Roots\Models\Content;
@@ -15,6 +16,7 @@ use Delphinium\Roots\Models\Page;
 use Delphinium\Roots\Models\File;
 use Delphinium\Roots\Models\Quiz;
 use Delphinium\Roots\Models\Quizquestion;
+use Delphinium\Roots\Models\QuizSubmission;
 use Delphinium\Roots\Models\Discussion;
 use Delphinium\Roots\Requestobjects\SubmissionsRequest;
 use Delphinium\Roots\Requestobjects\ModulesRequest;
@@ -89,6 +91,182 @@ class CanvasHelper
         return $this->simpleGet('pages');
     }
     
+    public function getQuizSubmission($quizId, $quizSubmissionId=null)
+    {///api/v1/courses/:course_id/quizzes/:quiz_id/submissions/:id
+        $urlPieces= $this->initUrl();
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $urlArgs = array();
+        $urlPieces[] = 'quizzes';
+        $urlPieces[] = $quizId;
+        $urlPieces[] = 'submissions';
+        if(!is_null($quizSubmissionId))
+        {
+            $urlPieces[] = $quizSubmissionId;
+        }
+        
+        $urlArgs[]="access_token={$token}&per_page=5000";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+        
+        $response = GuzzleHelper::getAsset($url);
+        $items = json_decode($response->getBody());
+        
+        if(count($items->quiz_submissions)>0)
+        {
+            $subm = $this->saveQuizSubmission($items->quiz_submissions[0]);
+            return $subm;
+        }
+        else
+        {
+            return null;
+        }
+    }
+    
+    public function postAnswerQuestion($quizSubmission, $questionsWrap)
+    {
+        
+    }
+    public function postQuizTakingSession($quizId)
+    {///ap i/v1/courses/:course_id/quizzes/:quiz_id/submissions
+        $urlPieces= $this->initUrl();
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $urlArgs = array();
+        $urlPieces[] = 'quizzes';
+        $urlPieces[] = $quizId;
+        $urlPieces[] = 'submissions';
+        $urlArgs[]="access_token={$token}";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+       
+        try
+        {
+            $response = GuzzleHelper::postData($url);
+            $items = json_decode($response->getBody());
+            
+            if(count($items->quiz_submissions)>0)
+            {
+                return $this->saveQuizSubmission($items->quiz_submissions[0]);
+            }
+            else
+            {
+                $action = "start a quiz taking session";
+                $exception = new InvalidRequestException($action, "unknown error", 400);
+            }
+        } 
+        catch (\GuzzleHttp\Exception\ClientException $e) {
+            $code = $e->getCode();
+            $action = "start a quiz taking session";
+            
+            switch($code)
+            {
+                case 400:
+                    $exception = new InvalidRequestException($action, "the quiz is locked", 400);
+                    throw $exception;
+                case 403:
+                    $exception = new InvalidRequestException($action, "the access code was invalid, or the IP is restricted", 403);
+                    throw $exception;
+                case 409:
+                    $exception = new InvalidRequestException($action, "a quiz submission already exists for this user", 409);
+                    throw $exception;
+            }
+            
+        }
+    }
+    
+    public function isQuestionAnswered($quizId, $questionId, $quizSubmissionId)
+    {///api/v1/quiz_submissions/:quiz_submission_id/questions
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $domain = $_SESSION['domain'];
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $urlPieces= array();
+        $urlPieces[]= "https://{$domain}/api/v1/quiz_submissions/{$quizSubmissionId}/questions";
+        
+        $urlArgs[]="access_token={$token}";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+        $response = GuzzleHelper::getAsset($url);
+        $items= json_decode($response->getBody());
+        
+        foreach($items->quiz_submission_questions as $submission)
+        {
+            $question = $submission->id === $questionId && $quizId === $submission->quiz_id;
+            $isAnswered = !is_null($submission->answer) && isset($submission->answer);
+            if(($question) && ($isAnswered))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }    
+        }
+    }
+    
+    public function postTurnInQuiz($quizId, QuizSubmission $quizSubmission)
+    {///api/v1/courses/:course_id/quizzes/:quiz_id/submissions/:id/complete
+        $urlPieces= $this->initUrl();
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $urlArgs = array();
+        $urlPieces[] = 'quizzes';
+        $urlPieces[] = $quizId;
+        $urlPieces[] = 'submissions';
+        $urlPieces[] = $quizSubmission->quiz_submission_id;
+        $urlPieces[] = 'complete';
+        
+        $urlArgs[]="attempt={$quizSubmission->attempt}";
+        $urlArgs[]="validation_token={$quizSubmission->validation_token}";
+        $urlArgs[]="access_token={$token}";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+       
+        try
+        {
+            $response = GuzzleHelper::postData($url);
+            $items = json_decode($response->getBody());
+            
+            if(count($items->quiz_submissions)>0)
+            {
+                return $this->saveQuizSubmission($items->quiz_submissions[0]);
+            }
+            else
+            {
+                $action = "turn in quiz";
+                $exception = new InvalidRequestException($action, "unknown error", 400);
+            }
+        }
+        catch (\GuzzleHttp\Exception\ClientException $e)
+        {
+            $code = $e->getCode();
+            $action = "turn in a quiz";
+            
+            switch($code)
+            {
+                case 400:
+                    $exception = new InvalidRequestException($action, "the quiz has already been turned in; "
+                            . "or the attempt parameter is incorrect or missing", 400);
+                    throw $exception;
+                case 403:
+                    $exception = new InvalidRequestException($action, "the access code or token was invalid, or the IP is restricted", 403);
+                    throw $exception;
+            }
+        }
+        
+    }
     public function getQuizzes()
     {
         //process quiz
@@ -672,6 +850,40 @@ class CanvasHelper
         $question->save();
         return $question;
     }
+    
+    public function saveQuizSubmission($quizSubmission)
+    {
+        $dbQuizSubmission = QuizSubmission::firstOrNew(
+                array('quiz_submission_id' => $quizSubmission->id, 'user_id'=> $quizSubmission->user_id, 'quiz_id'=>$quizSubmission->quiz_id)
+            );
+        $dbQuizSubmission->quiz_submission_id = $quizSubmission->id;
+        $dbQuizSubmission->user_id = $quizSubmission->user_id;
+        $dbQuizSubmission->quiz_id = $quizSubmission->quiz_id;
+        $dbQuizSubmission->submission_id = $quizSubmission->submission_id;
+        $dbQuizSubmission->validation_token = $quizSubmission->validation_token;
+        if(isset($quizSubmission->quiz_version)){$dbQuizSubmission->quiz_version = $quizSubmission->quiz_version;}
+        if(isset($quizSubmission->attempt)){$dbQuizSubmission->attempt = $quizSubmission->attempt;}
+        if(isset($quizSubmission)){$dbQuizSubmission->extra_attempts = $quizSubmission->extra_attempts;}
+        if(isset($quizSubmission->attempts_left)){$dbQuizSubmission->attempts_left = $quizSubmission->attempts_left;}
+        if(isset($quizSubmission->time_spent)){$dbQuizSubmission->time_spent = $quizSubmission->time_spent;}
+        if(isset($quizSubmission->extra_time)){$dbQuizSubmission->extra_time = $quizSubmission->extra_time;}
+        if(isset($quizSubmission->started_at)){$dbQuizSubmission->started_at = $quizSubmission->started_at;}
+        if(isset($quizSubmission->finished_at)){$dbQuizSubmission->finished_at = $quizSubmission->finished_at;}
+        if(isset($quizSubmission->end_at)){$dbQuizSubmission->end_at = $quizSubmission->end_at;}
+        if(isset($quizSubmission->workflow_state)){$dbQuizSubmission->workflow_state = $quizSubmission->workflow_state;}
+        if(isset($quizSubmission->has_seen_results)){$dbQuizSubmission->has_seen_results = $quizSubmission->has_seen_results;}
+        if(isset($quizSubmission->manually_unlocked)){$dbQuizSubmission->manually_unlocked = $quizSubmission->manually_unlocked;}
+        if(isset($quizSubmission->overdue_and_needs_submission)){$dbQuizSubmission->overdue_and_needs_submission = $quizSubmission->overdue_and_needs_submission;}
+        if(isset($quizSubmission->score)){$dbQuizSubmission->score =  $quizSubmission->score;}
+        if(isset($quizSubmission->score_before_regrade)){$dbQuizSubmission->score_before_regrade = $quizSubmission->score_before_regrade;}
+        if(isset($quizSubmission->quiz_points_possible)){$dbQuizSubmission->quiz_points_possible = $quizSubmission->quiz_points_possible;}
+        if(isset($quizSubmission->kept_score)){$dbQuizSubmission->kept_score = $quizSubmission->kept_score;}
+        if(isset($quizSubmission->fudge_points)){$dbQuizSubmission->fudge_points = $quizSubmission->fudge_points;}
+        if(isset($quizSubmission->html_url)){$dbQuizSubmission->html_url = $quizSubmission->html_url;}
+        
+        $dbQuizSubmission->save();
+        return $dbQuizSubmission;
+    }
     /*
      * SUBMISSIONS
      */
@@ -884,26 +1096,8 @@ class CanvasHelper
     } 
         
     public function getGradingStandards()
-    {///api/v1/accounts/:account_id/grading_standards
-        $course = $this->getCourse();
-        
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
-        $domain = $_SESSION['domain'];
-
-        $urlPieces= array();
-        $urlPieces[]= "https://{$domain}/api/v1/accounts/{$course->account_id}/grading_standards";
-        
-        $token = \Crypt::decrypt($_SESSION['userToken']);
-        $urlArgs = array();
-        //Attach token
-        $urlArgs[]="access_token={$token}";
-
-        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
-        $response = GuzzleHelper::getAsset($url);
-        return $response->getBody();
+    {///api/v1/courses/:course_id/grading_standards
+        return $this->simpleGet('grading_standards');
     }
     
     public function getCourse()
