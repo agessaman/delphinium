@@ -114,11 +114,22 @@ class CanvasHelper
         
         $response = GuzzleHelper::getAsset($url);
         $items = json_decode($response->getBody());
-        
+        $arr = array();
         if(count($items->quiz_submissions)>0)
         {
-            $subm = $this->saveQuizSubmission($items->quiz_submissions[0]);
-            return $subm;
+            foreach($items->quiz_submissions as $item)
+            {
+                $item = $this->saveQuizSubmission($item);
+                if(count($items->quiz_submissions)>1)
+                {
+                    $arr[] = $item;
+                }
+                else
+                {
+                    return $item;
+                }
+                return $arr;
+            }
         }
         else
         {

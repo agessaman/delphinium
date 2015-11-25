@@ -586,52 +586,22 @@ class TestRoots extends ComponentBase
     }
     public function testQuizTakingWorkflow()
     {
-        $quizId = 621540;
-        $questionId = 10934834;
-        $canvasHelper = new CanvasHelper();
-        $dbHelper = new DbHelper();
+        $quizId = 623442;
+        $questionId = 10935033;
         
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
-        $studentId = $_SESSION['userID'];
-        
-        $quizSubmission = $dbHelper->getQuizSubmission($quizId, $studentId);
+        $quizSubmission = $this->roots->getQuizSubmission($quizId);
         if(is_null($quizSubmission))
-        {//try to get it from Canvas
-            $canvasHelper->getQuizSubmission($quizId);
-            $quizSubmission = $dbHelper->getQuizSubmission($quizId, $studentId);
-            if(is_null($quizSubmission))
-            {//it wasn't on canvas
-                //create a new submission
-                $canvasHelper->postQuizTakingSession($quizId);
-                $quizSubmission = $dbHelper->getQuizSubmission($quizId, $studentId);
-            }
-            
+        {//it wasn't on canvas or in the db -- create a new submission
+            $quizSubmission = $this->roots->postQuizTakingSession($quizId);
         }
-        
-        //post quiz
-        $res = $canvasHelper->postTurnInQuiz($quizId, $quizSubmission);
-        echo json_encode($res);
-        return;
-//        //get the quiz Object
-        $quizQuestion = $dbHelper->getQuizQuestion($quizId, $questionId);
-        if(is_null($quizQuestion))
-        {
-            $req = new QuizRequest(ActionType::GET, $quizId, false, true);
-            $this->roots->quizzes($req);
-            $quizQuestion = $dbHelper->getQuizQuestion($quizId, $questionId);
-        }
-        
         //get the question and see if it's answered
-        $isAnswered = $canvasHelper->isQuestionAnswered($quizId, $questionId, $quizSubmission->quiz_submission_id);
-        echo json_encode($isAnswered);
+        $isAnswered = $this->roots->isQuestionAnswered($quizId, $questionId, $quizSubmission->quiz_submission_id);
+        
         if($isAnswered){
             echo "was answered";//do something if the question has been answered
         }
         else
-        {
+        {//answer it. Still working on this
             echo "was not answered";
 //            $questionsWrap = array();
 //            $answer = new \stdClass();
@@ -656,6 +626,10 @@ class TestRoots extends ComponentBase
 //            $result =$canvasHelper->postAnswerQuestion($quizSubmission, $questionsWrap);
 //            echo json_encode($result);
         }
+        
+        //submit the quiz
+        $res = $this->roots->postTurnInQuiz($quizId, $quizSubmission);
+        echo json_encode($res);
     }
     
     

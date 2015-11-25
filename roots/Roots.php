@@ -26,10 +26,12 @@ use Delphinium\Roots\DB\DbHelper;
 class Roots
 {
     public $dbHelper;
+    public $canvasHelper;
     
     function __construct() 
     {
         $this->dbHelper = new DbHelper();
+        $this->canvasHelper = new CanvasHelper();
     }
     /*
      * Public Functions
@@ -904,4 +906,96 @@ class Roots
         }
     }
     
+    public function getQuizSubmission($quizId, $quizSubmissionId=null)
+    {
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $studentId = $_SESSION['userID'];
+        $quizSubmission = $this->dbHelper->getQuizSubmission($quizId, $studentId);
+        
+        if(is_null($quizSubmission))
+        {//try to get it from the LMS
+            $lms = strtoupper($_SESSION['lms']);
+            if(Lms::isValidValue($lms))
+            {
+                switch ($lms)
+                {
+                    case (Lms::CANVAS):
+                        $this->canvasHelper->getQuizSubmission($quizId,$quizSubmissionId);
+                        return $this->dbHelper->getQuizSubmission($quizId, $studentId);
+                }
+            }else
+            {
+               throw new \Exception("Invalid LMS");  
+            }
+        }
+        else
+        {
+            return $quizSubmission;
+        }
+    }
+    
+    public function postQuizTakingSession($quizId)
+    {
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $lms = strtoupper($_SESSION['lms']);
+        if(Lms::isValidValue($lms))
+        {
+            $studentId = $_SESSION['userID'];
+            switch ($lms)
+            {
+                case (Lms::CANVAS):
+                    $this->canvasHelper->postQuizTakingSession($quizId);
+                    return $this->dbHelper->getQuizSubmission($quizId, $studentId);
+            }
+        }else
+        {
+           throw new \Exception("Invalid LMS");  
+        }
+    }
+    
+    public function postTurnInQuiz($quizId, $quizSubmission)
+    {
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $lms = strtoupper($_SESSION['lms']);
+        if(Lms::isValidValue($lms))
+        {
+            switch ($lms)
+            {
+                case (Lms::CANVAS):
+                    return $this->canvasHelper->postTurnInQuiz($quizId, $quizSubmission);
+            }
+        }else
+        {
+           throw new \Exception("Invalid LMS");  
+        }
+    }
+    
+    public function isQuestionAnswered($quizId, $questionId, $quizSubmissionId)
+    {
+            if(!isset($_SESSION)) 
+            { 
+                session_start(); 
+            }
+            $lms = strtoupper($_SESSION['lms']);
+            if(Lms::isValidValue($lms))
+            {
+                switch ($lms)
+                {
+                    case (Lms::CANVAS):
+                        return $this->canvasHelper->isQuestionAnswered($quizId, $questionId, $quizSubmissionId);
+                }
+            }else
+            {
+               throw new \Exception("Invalid LMS");  
+            } 
+    }
 }
