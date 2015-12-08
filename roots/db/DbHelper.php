@@ -270,12 +270,21 @@ class DbHelper
         }
     }
     
-    public function getQuizQuestion($quizId, $quizQuestionId)
+    public function getQuizQuestion($quizId, $quizQuestionId=null)
     {   
-        return Quizquestion::where(array(
-            'quiz_id' => $quizId,
-            'question_id'=> $quizQuestionId
-        ))->first(); 
+        if(is_null($quizQuestionId))
+        {
+            return Quizquestion::where(array(
+                'quiz_id' => $quizId
+            ))->get();    
+        }
+        else
+        {
+            return Quizquestion::where(array(
+                'quiz_id' => $quizId,
+                'question_id'=> $quizQuestionId
+            ))->first();    
+        }
                 
     }
     /*

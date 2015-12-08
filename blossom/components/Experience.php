@@ -183,7 +183,7 @@ class Experience extends ComponentBase {
         }
 
         foreach ($this->submissions as $item) {
-            $score = $score + intval($item['score']);
+            $score = $score + floatval($item['score']);
         }
         return $score;
     }
@@ -209,7 +209,10 @@ class Experience extends ComponentBase {
                         ->where(array(
                             'id' => $experienceInstanceId
                         ))->first()->milestones;
-
+        $expInstance = ExperienceModel::find($experienceInstanceId);
+        $utcTimeZone = new DateTimeZone('UTC');
+        $endDateUTC = $expInstance->end_date->setTimezone($utcTimeZone);
+              
         $localMilestones = $milestonesDesc;
         
         //order submissions by date
@@ -227,7 +230,7 @@ class Experience extends ComponentBase {
         $carryingScore = 0;
         foreach ($this->submissions as $submission) {
 
-            $carryingScore = $carryingScore + intval($submission['score']);
+            $carryingScore = $carryingScore + floatval($submission['score']);
             
             foreach ($localMilestones as $key => $mile) {
 
@@ -237,7 +240,7 @@ class Experience extends ComponentBase {
                     $mileClearance->name = $mile->name;
                     $mileClearance->cleared = 1;
                     $mileClearance->cleared_at = $submission['submitted_at'];
-                    $mileClearance->bonusPenalty = $this->calculateBonusOrPenalty($mile->points, new DateTime($submission['submitted_at']));
+                    $mileClearance->bonusPenalty = $this->calculateBonusOrPenalty($mile->points, new DateTime($submission['submitted_at']), $endDateUTC, true);
                     $mileClearance->points = $mile->points;
                     $mileClearance->due_at = $this->calculateMilestoneDueDate($mile->points);
                     $milestoneInfo[] = $mileClearance;
@@ -265,7 +268,7 @@ class Experience extends ComponentBase {
             $mileClearance->name = $left['name'];
             $mileClearance->cleared = 0;
             $mileClearance->cleared_at = null;
-            $mileClearance->bonusPenalty = $this->calculateBonusOrPenalty($left['points'], new DateTime('now'));
+            $mileClearance->bonusPenalty = $this->calculateBonusOrPenalty($left['points'], new DateTime('now'), $endDateUTC, false);
             $mileClearance->points = $left['points'];
 
             $date = $this->calculateMilestoneDueDate($left['points']);
@@ -354,7 +357,12 @@ class Experience extends ComponentBase {
         return $localDate;
     }
 
-    private function calculateBonusOrPenalty($milestonePoints, $submittedAt) {
+    private function calculateBonusOrPenalty($milestonePoints, $submittedAt, $endExperienceDateUTC, $turnedIn) {
+    	if(intval($milestonePoints)===0)
+        {//If students complete their first assignment after the first milestone is due, even though the milestone is worth zero points,
+            //if will consider it late and will give them penalty points.
+            return 0;
+        }
         $secsTranspired = ceil($milestonePoints / $this->ptsPerSecond);
         $intervalSeconds = "PT" . $secsTranspired . "S";
         $sDate = clone($this->startDateUTC);
@@ -364,8 +372,20 @@ class Experience extends ComponentBase {
         if ($dueDate > $submittedAt) {//bonus
             $bonusSeconds = ($diffSeconds > $this->bonusSeconds) ? $this->bonusSeconds : $diffSeconds;
             return $bonusSeconds * $this->bonusPerSecond;
-        } else if ($dueDate < $submittedAt) {//bonus
+        } else if ($dueDate < $submittedAt) {//penalties
             $penaltySeconds = ($diffSeconds > $this->penaltySeconds) ? $this->penaltySeconds : $diffSeconds;
+            //For assignments that have not been turned in, late days after the last day of experience should not count.
+            //the penalties days should not go beyond the last day of experience, so it the due date for a milestone was one day before
+            //the last day of experience, then the max penalties days should be one day
+            if(!$turnedIn)
+            {
+                $secondsLate = "PT" . $penaltySeconds . "S";
+                $todayPlusDaysLate = $submittedAt->add(new \DateInterval($secondsLate));
+                if ($todayPlusDaysLate > $endExperienceDateUTC)
+                {
+                    $penaltySeconds = abs($todayPlusDaysLate->getTimestamp() - $endExperienceDateUTC->getTimestamp());
+                }
+            }
             return -($penaltySeconds * $this->penaltyPerSecond);
         } else {//neither
             return 0;

@@ -14,19 +14,19 @@
             <tbody>
             	<tr>
                     <th class='name td'>Experience Points</td>
-                    <td>{{totalPts}}</td>
+                    <td>{{totalPts|round(2, 'common')}}</td>
                 </tr>
                 <tr>
                     <th class='name td'>Bonus</td>
-                    <td>{{bonus}}</td>
+                    <td>{{bonus|round(2, 'common')}}</td>
                 </tr>
                 <tr>
                     <th class='name td'>Penalties</td>
-                    <td>{{penalties}}</td>
+                    <td>{{penalties|round(2, 'common')}}</td>
                 </tr>
                 <tr>
                     <th class='imp'>Total Points</td>
-                    <td class='imp'>{{totalPts + bonus + penalties}}</td>
+                    <td class='imp'>{{(totalPts + bonus + penalties)|round(2, 'common')}}</td>
                 </tr>
                 <tr>
                     <th class='imp'>Current Grade</td>

@@ -15,6 +15,7 @@ use \DateTime;
 use \DateTimeZone;
 use \DateInterval;
 use Carbon\Carbon;
+use Delphinium\Roots\Guzzle\GuzzleHelper;
 
 class Gradebook extends ComponentBase {
 
@@ -65,8 +66,9 @@ class Gradebook extends ComponentBase {
         $this->page['userRoles'] = $_POST["roles"];
         if (stristr($_POST["roles"], 'Learner')) {
             $bonusPenalties = $this->getBonusPenalties();
-            $this->page['bonus'] = $bonusPenalties === 0 ? 0 : round($bonusPenalties->bonus, 2);
-            $this->page['penalties'] = $bonusPenalties === 0 ? 0 : round($bonusPenalties->penalties, 2);
+            
+            $this->page['bonus'] = $bonusPenalties === 0 ? 0 : $bonusPenalties->bonus;
+            $this->page['penalties'] = $bonusPenalties === 0 ? 0 : $bonusPenalties->penalties;
 
             $exp = new ExperienceComponent();
             $pts = $exp->getUserPoints();
@@ -83,7 +85,8 @@ class Gradebook extends ComponentBase {
                 $standards = $this->roots->getGradingStandards();
                 $grading_scheme = $standards[0]->grading_scheme;
                 $grade = new GradeComponent();
-                $letterGrade = $grade->getLetterGrade($pts, $maxExperiencePts, $grading_scheme);
+                $totalPoints = $pts + $bonusPenalties->bonus+$bonusPenalties->penalties;
+                $letterGrade = $grade->getLetterGrade($totalPoints, $maxExperiencePts, $grading_scheme);
 
                 $this->page['letterGrade'] = $letterGrade;
             }
@@ -145,15 +148,16 @@ class Gradebook extends ComponentBase {
         return $result;
     }
 
-    private function getProfessorData() {
+    private function getProfessorData() {    
         $aggregateSubmissionScores = $this->aggregateSubmissionScores();
-
+        
+        
         $users = $this->roots->getStudentsInCourse();
         $this->page['users'] = json_encode($users);
         
         //comment these two lines 
-        $submissionData = $this->matchSubmissionsAndUsers($users, $aggregateSubmissionScores);
-        $this->studentData = $submissionData;
+	    // $submissionData = $this->matchSubmissionsAndUsers($users, $aggregateSubmissionScores);
+// 	    $this->studentData = $submissionData;
         
         $this->users = $users;
         
@@ -177,6 +181,7 @@ class Gradebook extends ComponentBase {
             $endDate = $instance->end_date->setTimezone($utcTimeZone);
 
             $expComponent = new ExperienceComponent();
+            
             $ptsPerSecond = $expComponent->getPtsPerSecond($stDate, $endDate, $instance->total_points);
 
             $milestoneData = array();
@@ -193,7 +198,7 @@ class Gradebook extends ComponentBase {
                 $milestoneData[] = $mile;
             }
             //fill in the rest of the days
-            $newArr = $this->fillInMissingDays($milestoneData);
+            $newArr = $this->fillInMissingDays($stDate, $milestoneData);
             //merge arrays and order by date
             $final = array_merge($newArr, $milestoneData);
 
@@ -268,8 +273,29 @@ class Gradebook extends ComponentBase {
         }
     }
 
-    public function fillInMissingDays($milestoneData) {
+    public function fillInMissingDays(DateTime $experienceStartDateUTC, $milestoneData) {
+        
+        //this is necessary if there's a gap between the startdate and the date the first milestone is due
+		$firstD = DateTime::createFromFormat(DateTime::ISO8601, $milestoneData[0]->date);
         $newArr = array();
+        $firstMilestoneDate = $firstD = DateTime::createFromFormat(DateTime::ISO8601, $milestoneData[0]->date);
+        $i= date_diff($experienceStartDateUTC, $firstMilestoneDate);
+        $d = intval($i->format('%R%a'));
+
+		$zeroMile = new \stdClass();
+        $zeroMile->points =0;
+        $zeroMile->date = $experienceStartDateUTC->format('c');
+        $newArr[] = $zeroMile;
+        
+        $interval = "P1D";
+        $dayBeforeMile = new \stdClass();
+        $dayBeforeMile->points =0;
+        $dayB = $firstD->sub(new DateInterval($interval));
+        $dayBeforeMile->date = $dayB->format('c');
+        $newArr[] = $dayBeforeMile;
+        
+
+                
         for ($i = 0; $i <= count($milestoneData) - 1; $i++) {
             if ($i < count($milestoneData) - 1) {
 
@@ -304,7 +330,7 @@ class Gradebook extends ComponentBase {
                     $points = $carryingScore;
                 }
 
-                $carryingScore = $carryingScore + intval($item->submission->score);
+                $carryingScore = $carryingScore + floatval($item->submission->score);
                 $dateObj = DateTime::createFromFormat(DateTime::ISO8601, $item->submission->submitted_at);
 
                 $chartItem = new \stdClass();
@@ -327,7 +353,6 @@ class Gradebook extends ComponentBase {
         }
         $result = $this->roots->submissions($req);
 
-
         $res = $this->orderSubmissionsByUsersAndDate($result);
 
         //set the results as a class variable
@@ -348,6 +373,8 @@ class Gradebook extends ComponentBase {
 
             if ($userId === 0) {//init variables
                 $student->id = $submission['user_id'];
+                $subm = new \stdClass();
+                $subm->user_id = $submission['user_id'];
             }
             $carryingScore = $carryingScore + $submission['score'];
             $item = new \stdClass();
@@ -355,14 +382,13 @@ class Gradebook extends ComponentBase {
             $item->points = $userId === 0 ? $submission['score'] : $carryingScore;
             $item->date = $submission['submitted_at'];
 
-
             if ($userId === 0 || $userId === $submission['user_id']) {//first loop or looping through same user               
                 //Add the current item to this user's item array
                 $studentItems[] = $item;
-                $subm = new \stdClass();
-                $subm->user_id = $submission['user_id'];
                 $userId = $submission['user_id'];
+                $subm->score = $carryingScore;
             } else {//we moved on to a new student
+            
                 $student->items = $studentItems;
                 //add the previous student to the master array
                 $masterArr[] = $student;
@@ -373,7 +399,7 @@ class Gradebook extends ComponentBase {
                 $studentItems = array(); //reset the items array               
                 $studentItems[] = $item;
                 //add the last item to the array 
-                $subm->score = $carryingScore;
+//                $subm->score = $carryingScore;
                 $scoresArr[] = $subm;
 
                 //and start a new one
@@ -384,9 +410,14 @@ class Gradebook extends ComponentBase {
             }
         }
 
+	//add the last student to the master array;
+	
+		$student->id = $userId;
+        $student->items = $studentItems;
+		$masterArr[] = $student;
         $this->page['submissions'] = json_encode($masterArr);
         //attach the last item we looped through
-        $subm->score = $carryingScore;
+//        $subm->score = $carryingScore;
         $scoresArr[] = $subm;
         return $scoresArr;
     }

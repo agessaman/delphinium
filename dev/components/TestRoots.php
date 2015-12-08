@@ -4,6 +4,7 @@ use Delphinium\Roots\UpdatableObjects\Module;
 use Delphinium\Roots\UpdatableObjects\ModuleItem;
 use Delphinium\Roots\Models\Assignment;
 use Delphinium\Roots\Models\ModuleItem as DbModuleItem;
+use Delphinium\Roots\Models\Quizquestion;
 use Delphinium\Roots\Roots;
 use Delphinium\Roots\Utils;
 use Delphinium\Roots\Requestobjects\SubmissionsRequest;
@@ -26,11 +27,14 @@ use Cms\Classes\ComponentManager;
 use \Delphinium\Blade\Classes\Rules\RuleBuilder;
 use \Delphinium\Blade\Classes\Rules\RuleGroup;
 use Delphinium\Roots\Guzzle\GuzzleHelper;
+use Delphinium\Blossom\Components\Grade;
+use Delphinium\Blossom\Components\Experience;
 
 class TestRoots extends ComponentBase
 {
     public $roots;
     public $canvasHelper;
+    public $dbHelper;
     public function componentDetails()
     {
         return [
@@ -43,8 +47,9 @@ class TestRoots extends ComponentBase
     {  
         $this->roots = new Roots();
         $this->canvasHelper = new CanvasHelper();
+        $this->dbHelper = new DbHelper();
 //        $this->refreshCache();
-//        $this->test();
+        $this->test();
 //        $this->testBasicModulesRequest();
 //        $this->testDeleteTag();
 //        $this->testAddingUpdatingTags();
@@ -80,7 +85,7 @@ class TestRoots extends ComponentBase
 //        $this->testGetQuizQuestions();
 //        $this->testGetAllQuizzes();
 //        $this->testGetPages();
-        $this->testQuizTakingWorkflow();
+//        $this->testQuizTakingWorkflow();
 //        $this->testIsQuestionAnswered();
 //        $this->testSubmitQuiz();
     }
@@ -586,14 +591,19 @@ class TestRoots extends ComponentBase
     }
     public function testQuizTakingWorkflow()
     {
-        $quizId = 623442;
-        $questionId = 10935033;
+        $quizId = 623912;
+        $questionId = 10944893;
         
         $quizSubmission = $this->roots->getQuizSubmission($quizId);
+        
         if(is_null($quizSubmission))
         {//it wasn't on canvas or in the db -- create a new submission
+            
+            echo "was null";
             $quizSubmission = $this->roots->postQuizTakingSession($quizId);
         }
+        
+        echo json_encode($quizSubmission);return;
         //get the question and see if it's answered
         $isAnswered = $this->roots->isQuestionAnswered($quizId, $questionId, $quizSubmission->quiz_submission_id);
         
@@ -602,10 +612,15 @@ class TestRoots extends ComponentBase
         }
         else
         {//answer it. Still working on this
-            echo "was not answered";
+//            echo "was not answered";
+//            $questionId =10896668;
+//            $quizId = 621504;
+//            $quizQuestion = $this->dbHelper->getQuizQuestion($quizId, $questionId);
+            $quizQuestion = $this->roots->getQuizQuestion($quizId, $questionId);
+            
 //            $questionsWrap = array();
 //            $answer = new \stdClass();
-//            $answer->id = $quizQuestion->question_id;
+//            $answer->id = $questionId;
 //            
 //            
 //  
@@ -623,13 +638,13 @@ class TestRoots extends ComponentBase
 //            $questionsWrap[] = $answer;
 //            //answer question
 //            
-//            $result =$canvasHelper->postAnswerQuestion($quizSubmission, $questionsWrap);
+//            $result =$this->canvasHelper->postAnswerQuestion($quizSubmission, $questionsWrap);
 //            echo json_encode($result);
         }
         
         //submit the quiz
-        $res = $this->roots->postTurnInQuiz($quizId, $quizSubmission);
-        echo json_encode($res);
+//        $res = $this->roots->postTurnInQuiz($quizId, $quizSubmission);
+//        echo json_encode($res);
     }
     
     
@@ -680,14 +695,27 @@ class TestRoots extends ComponentBase
     
     public function test()
     {
-        $quizId = 623422;
-        $questionId = 10897397;
-        $canvasHelper = new CanvasHelper();
-        $dbHelper = new DbHelper();
-        $res = $canvasHelper->postQuizTakingSession($quizId);
         
-        echo json_encode($res);
+        //TEST MAKING ASYNCHRONOUS REQUESTS TO API
+        $promise = $client->requestAsync('GET', 'http://httpbin.org/get');
+$promise->then(function ($response) {
+    echo 'Got a response! ' . $response->getStatusCode();
+});
+
+//https://uvu.instructure.com/api/v1/courses/381983/students/submissions?student_ids%5B%5D=483474&student_ids%5B%5D=944587&student_ids%5B%5D=1576866&student_ids%5B%5D=553940&student_ids%5B%5D=1241607&student_ids%5B%5D=1463096&student_ids%5B%5D=890679&student_ids%5B%5D=1529330&student_ids%5B%5D=488472&student_ids%5B%5D=771735&student_ids%5B%5D=547197&student_ids%5B%5D=539445&student_ids%5B%5D=741224&student_ids%5B%5D=554968&student_ids%5B%5D=1485016&student_ids%5B%5D=471788&student_ids%5B%5D=798500&student_ids%5B%5D=512347&student_ids%5B%5D=557699&student_ids%5B%5D=462755&student_ids%5B%5D=485519&student_ids%5B%5D=480907&student_ids%5B%5D=469426&student_ids%5B%5D=491649&student_ids%5B%5D=944587&student_ids%5B%5D=1576866&student_ids%5B%5D=553940&student_ids%5B%5D=1241607&student_ids%5B%5D=1463096&student_ids%5B%5D=890679&student_ids%5B%5D=1529330&student_ids%5B%5D=488472&student_ids%5B%5D=771735&student_ids%5B%5D=547197&student_ids%5B%5D=539445&student_ids%5B%5D=741224&student_ids%5B%5D=554968&student_ids%5B%5D=1485016&student_ids%5B%5D=471788&student_ids%5B%5D=798500&student_ids%5B%5D=512347&student_ids%5B%5D=557699&student_ids%5B%5D=462755&student_ids%5B%5D=485519&student_ids%5B%5D=480907&student_ids%5B%5D=469426&student_ids%5B%5D=491649&grouped=true&access_token=14~DQbVNTYt3E8djaiyUGckBdbPwAoGqHgIK5UYyIJBciFRikr38wSDXScgeqWGCShL&per_page=5000
+
+//        $quizId = 623422;
+//        $questionId = 10897397;
+//        $canvasHelper = new CanvasHelper();
+//        $dbHelper = new DbHelper();
+//        $res = $canvasHelper->postQuizTakingSession($quizId);
+//        
+//        echo json_encode($res);
             
+        
+        
+        
+        
 //        $canvasHelper->getQuizSubmissionsFromCanvas($quizId);
         
 //        $req = new ModulesRequest(ActionType::GET, 380206, null, true, true, null, null , false);

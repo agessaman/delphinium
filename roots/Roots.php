@@ -937,6 +937,39 @@ class Roots
         }
     }
     
+    public function getQuizQuestion($quizId, $question_id = null)
+    {
+        $quizQuestion = $this->dbHelper->getQuizQuestion($quizId, $question_id);
+        //if it wasn't on the DB, get it from the LMS
+        if(is_null($quizQuestion)||(get_class($quizQuestion)=="Illuminate\Database\Eloquent\Collection"&&$quizQuestion->isEmpty()))
+        {
+            //get the quiz and questions from the LMS
+            $req = new QuizRequest(ActionType::GET, $quizId, $fresh_data = true, true);
+            $this->quizzes($req);
+            return $this->dbHelper->getQuizQuestion($quizId);
+        }
+        else
+        {
+            return $quizQuestion;
+        }
+    }
+    private function getQuizQuestionsFromLms($quizId, $questionId = null)
+    {
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $lms = strtoupper($_SESSION['lms']);
+        if(Lms::isValidValue($lms))
+        {
+            switch ($lms)
+            {
+                case (Lms::CANVAS):
+                    $this->canvasHelper->getQuizQuestions($quizId);
+                    return $this->dbHelper->getQuizQuestion($quizId, $questionId);
+            }
+        }
+    }
     public function postQuizTakingSession($quizId)
     {
         if(!isset($_SESSION)) 

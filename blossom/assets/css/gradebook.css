@@ -133,13 +133,45 @@ a:hover
 }
 #chart{
 	display: inline-block;
+	float:left;
 }
 #chart path { 
     stroke: steelblue;
     stroke-width: 2;
     fill: none;
 }
-#selection{
-	width:250px;
+.multiselect {
+	width:180px;
 	height:250px;
+    border:solid 1px #c0c0c0;
+    overflow:auto;
+    text-align:left;
+}
+ 
+.multiselect label {
+    display:block;
+}
+ 
+.multiselect-on {
+    color:#ffffff;
+    background-color:#000099;
+}
+
+.labelSelectAll
+{
+	float:left;
+}
+.todayLine
+{
+	stroke:orange;
+}
+
+.bluePath
+{
+	opacity:0.5;
+}
+
+.cir
+{
+	opacity: 0.3;
 }

@@ -84,7 +84,7 @@ class RestfulApi extends Controller
         
         foreach($this->submissions as $item)
         {
-            $score = $score+intval($item['score']);
+            $score = $score+floatval($item['score']);
         }
         return $score;
     }

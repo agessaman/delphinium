@@ -155,13 +155,11 @@ class CanvasHelper
         $urlPieces[] = 'submissions';
         $urlArgs[]="access_token={$token}";
 
-        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
-       
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);  
         try
         {
             $response = GuzzleHelper::postData($url);
             $items = json_decode($response->getBody());
-            
             if(count($items->quiz_submissions)>0)
             {
                 return $this->saveQuizSubmission($items->quiz_submissions[0]);
@@ -971,6 +969,8 @@ class CanvasHelper
         {
             $urlArgs[]="grouped=true";
         }
+        
+//        $urlArgs[]="include[]=assignment";
         //Attach token
         $urlArgs[]="access_token={$token}&per_page=5000";
         

@@ -50,15 +50,16 @@ class Grade extends ComponentBase {
             $exComp = new ExperienceComponent();
             $exComp->initVariables($this->property('experienceInstance'));
             $points = $exComp->getUserPoints();
-            
+          
             $roots = new Roots();
             $standards = $roots->getGradingStandards();
-            $grading_scheme = $standards[0]->grading_scheme;
-            
-            $letterGrade = $this->getLetterGrade($points, $maxExperiencePts, $grading_scheme);
+            $grading_scheme = $standards[0]->grading_scheme;      
             $bonusPenaltiesObj = $exComp->calculateTotalBonusPenalties($this->property('experienceInstance'));
             $totalBonusPenalties = ($bonusPenaltiesObj->bonus)+($bonusPenaltiesObj->penalties);//penalties come with negative sign
-          
+            
+			$totalPoints = $points +$bonusPenaltiesObj->bonus + $bonusPenaltiesObj->penalties; 
+            $letterGrade = $this->getLetterGrade($totalPoints, $maxExperiencePts, $grading_scheme);
+         
             $this->page['XP'] = round($points,2);
             $this->page['gradeBonus'] = round($totalBonusPenalties,2);
             $this->page['letterGrade'] = $letterGrade;

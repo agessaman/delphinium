@@ -17,12 +17,22 @@
 </div>
 <div id="topContainer">
 	<div id="chart"></div>
-	<select multiple id="selection">
+	<div class="multiselect">
+		{% for item in users %}
+	    	<label><input class="checkboxMultiselect" type="checkbox" value='{{item.id}}'>{{item.short_name}}</label>
+	    {% endfor %}
+    </div>
+    <label class="labelSelectAll"><input class="deselectAll" type="checkbox" value='0'>Select/Deselect all</label>
+
+	<!-- 
+<select multiple id="selection">
 		{% for item in users %}
 			<option value='{{item.id}}'>{{item.short_name}}</option>
 			<div>{{item.id}}</div>	
 		{% endfor %}
 	</select>
+ -->
+
 </div>
 <div id="gridContainer" class="container">
 
@@ -34,6 +44,7 @@
     <table class='table table-condensed table-responsive table-bordered table-hover table-striped'>
         <thead>
             <tr>
+            	<th title="Number">No.</th>
                 <th title="Student's name">Name</th>
                 <th title="Points earned">Exp. Pts.</th>
                 <th title="Bonus">Bonus</th>
@@ -47,12 +58,13 @@
         <tbody>
             {% for item in studentData %}
             <tr>
+            	<td>{{ loop.index }}</td>
                 <td class="tdName"><a target="_blank" href="{{item.profile_url}}">{{ item.name }}</a></td>
-                <td>{{ item.score }}</td>
-                <td>{{ item.bonuses }}</td>
-                <td>{{ item.penalties }}</td>
-                <td>{{ item.totalBP }}</td>
-                <td>{{ item.total }}</td>
+                <td>{{ item.score |round(2, 'common')}}</td>
+                <td>{{ item.bonuses |round(2, 'common')}}</td>
+                <td>{{ item.penalties |round(2, 'common')}}</td>
+                <td>{{ item.totalBP |round(2, 'common')}}</td>
+                <td>{{ item.total |round(2, 'common')}}</td>
                 <td>{{ item.grade }}</td>
                 <td><button type="button" data-toggle="modal" data-target="#myModal"
                             data-request="onGetContent"

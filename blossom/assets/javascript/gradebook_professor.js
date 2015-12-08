@@ -1,12 +1,18 @@
 div = d3.select("body").append("div")
         .attr("class", "tooltip")
         .style("opacity", 0);
-        
-var selectedStudents = [];
-var margin = {top: 30, right: 20, bottom: 30, left: 50},
-width = 600 - margin.left - margin.right,
-        height = 270 - margin.top - margin.bottom;
 
+var selectedStudents = [];
+var monthNames = [
+        "Jan", "Feb", "Mar",
+        "Apr", "May", "Jun", "Jul",
+        "Aug", "Sep", "Oct",
+        "Nov", "Dec"
+    ];
+var margin = {top: 30, right: 20, bottom: 30, left: 50},
+width = 800 - margin.left - margin.right,
+        height = 270 - margin.top - margin.bottom;
+var allSelected = false;
 // Parse the date / time
 var parseDate = d3.time.format("%d-%b-%y").parse;
 
@@ -33,13 +39,9 @@ var g = svg.append("g")
                 "translate(" + margin.left + "," + margin.top + ")")
         .attr("id", "gChart");
 
-
-//add a line for each student
-// parseStudentData(submissions);
-
 // Get the data
-//console.log(chartData);
 data = parseDates(chartData);
+console.log(chartData);
 // Scale the range of the data
 x.domain(d3.extent(data, function (d) {
     return d.date;
@@ -47,37 +49,6 @@ x.domain(d3.extent(data, function (d) {
 y.domain([0, d3.max(data, function (d) {
         return d.points;
     })]);
-
-// add the red line chart
-addLine(data, "red", "red");
-// add circles for each milestone
-g.selectAll("dot")
-        .data(data.filter(function (d, i) {
-            if (i === 0) {
-                return d;
-            }
-            if (data[i].points != data[i - 1].points)
-            {
-                return d;
-            }
-        }))
-        .enter().append("circle")
-
-        .attr("r", 4)
-        .attr("cx", function (d) {
-            return x(d.date);
-        })
-        .attr("cy", function (d) {
-            return y(d.points);
-        })
-        .on("mouseover", function (d) {
-            addTooltip(d.points + " points due " + parseTimestamp(d.date));
-        })
-        .on("mouseout", function (d) {
-            removeTooltip();
-        });
-
-
 // Add the X Axis
 g.append("g")
         .attr("class", "x axis")
@@ -89,36 +60,39 @@ g.append("g")
         .attr("class", "y axis")
         .call(yAxis);
 
+// add the red line chart
+addLine(data, "red", "red");
+// add circles for each milestone
+addRedLineDots();
 
+//add a vertical rect denoting today
 var todayDate = new Date();
-    g.selectAll("scatter-dots")
-    	.data(today)
-        .enter()
-    	.append("svg:rect")
-            .attr("x", function (d) {
-                return x(Date.parse(d));
-            })
-            .attr("width", function (d) {
-                return (185);
-            })
-            .attr("y", function (d) {
-                return y(d);
-            })
-            .attr("height", function (d) {
-                return 0.5;
-            })
-            .attr("stroke-width", 0.5)
-            .attr("stroke", "lightgray")
-            .on("mouseover", function (d) {
-                addTooltip("Today: " + d + " points");
-            })
-            .on("mouseout", function (d) {
-                removeTooltip();
-            });
+var parsed = Date.parse(todayDate);
+g.append("svg:rect")
+        .attr("x", function (d) {
+            return x(parsed);
+        })
+        .attr("y", function (d) {
+            return 0;
+        })
+        .attr("height", function (d) {
+            return 210;
+        })
+        .attr("width", function (d) {
+            return 0.5;
+        })
+        .attr("stroke-width", 1.5)
+        .attr("class", "todayLine")
+        .on("mouseover", function (d) {
+            addTooltip(todayDate.toDateString());
+        })
+        .on("mouseout", function (d) {
+            removeTooltip();
+        });
+
 
 function addLine(data, strokeColor, id)
 {
-	console.log(data);
     // Define the line
     var valueline = d3.svg.line()
             .x(function (d) {
@@ -129,165 +103,258 @@ function addLine(data, strokeColor, id)
                 return y(d.points);
             });
 
-var filteredData = students.filter(function (d) {
-	var match = d.id === parseInt(id)
-            return match;
-        });
-var text = "User Id: "+id;
-        if(filteredData.length>0)
-        {
-        	text = filteredData[0].name;
-        }
+    var filteredData = students.filter(function (d) {
+        var match = d.id === parseInt(id)
+        return match;
+    });
+    var text = "User Id: " + id;
+    if (filteredData.length > 0)
+    {
+        text = filteredData[0].name;
+    }
 // Add the valueline path.
     g.append("path")
-            .attr("id", "path"+id)
-            .attr("class", "line")
+            .attr("id", "path" + id)
+            .attr("class", function (d)
+            {
+                if (id != "red")
+                {
+                    return "bluePath line";
+                }
+                else
+                {
+                    return "line";
+                }
+            })
             .attr("d", valueline(data))
             .style("stroke", strokeColor)
             .on("mouseover", function (d) {
-            	addTooltip(text);
-	        })
-    	    .on("mouseout", function (d) {
-        	    removeTooltip();
-	        });
-     
-     console.log(data.length);           
+                if (id != "red")
+                {
+                    addTooltip(text);
+                }
+            })
+            .on("mouseout", function (d) {
+                if (id != "red")
+                {
+                    removeTooltip();
+                }
+            });
+
     g.selectAll("dot")
-        .data(data.filter(function (d, i) {
-            if (i === 0) {
-                return d;
-            }
-            if (data[i].points != data[i - 1].points)
+            .data(data.filter(function (d, i) {
+                if (i === 0) {
+                    return d;
+                }
+                if((id != "red")&&(data[i].date != data[i - 1].date))
+                {
+                    return d;
+                }
+            }))
+            .enter().append("circle")
+            .attr("r", 2)
+            .attr("class", function (d)
             {
-                return d;
+                return "cir cir" + id;
+            })
+            .attr("fill", "steelblue")
+            .attr("cx", function (d) {
+                return x(d.date);
+            })
+            .attr("cy", function (d) {
+                return y(d.points);
+            })
+            .on("mouseover", function (d) {
+                if (id != "red")
+                {
+                    var date = new Date(d.date);
+                	var day = date.getDate();
+	                var monthIndex = date.getMonth();
+                	var time = formatAMPM(date);
+                    addTooltip(d.points + " pts earned on " + monthNames[monthIndex] + " " + day + " @ " + time);
+                }
+            })
+            .on("mouseout", function (d) {
+                if (id != "red")
+                {
+                    removeTooltip();
+                }
+            });
+
+    if (id != "red")
+    {
+        var paragraphs = g.selectAll(".cir" + id);
+        paragraphs[0].forEach(function (d, i) {
+            if (i === paragraphs[0].length - 1)
+            {
+                d.setAttribute("fill", "orange");
+                d.setAttribute("r", 4);
+                d.style.opacity = "0.9";
+				d.style.filter  = 'alpha(opacity=90)';//IE
             }
-        }))
-        .enter().append("circle")
-        
-        .attr("r", 2)
-        .attr("class",function(d)
-        {
-        	return "cir"+id;
         })
-        .attr("fill","steelblue")
-        .attr("cx", function (d) {
-            return x(d.date);
-        })
-        .attr("cy", function (d) {
-            return y(d.points);
-        })
-        .on("mouseover", function (d) {
-            addTooltip(d.points);
-        })
-        .on("mouseout", function (d) {
-            removeTooltip();
-        });
-        
-        if(id!="red")
-        {
-        
-        // var red = d3.select("#pathred");
-//         red.attr("stroke","blue");
-        	// var paragraphs = g.selectAll(".cir"+id);
-//         	
-//         	for(var k=0;k<=paragraphs[0].length-1;k++)
-//         	{
-//         		if(k===paragraphs[0].length-1)
-//         		{
-//         			paragraphs[0][k].attr("fill", "orange");
-//         		}
-//         	}
-//         	paragraphs.each(function(d,i)
-//         	{
-//         		var lastChild = this.lastChild;
-//         		if(this === lastChild)
-//         		{
-//         		    d3.select(this).attr("fill", "orange");
-//         		}
-// 
-// //         		var item = paragraphs[0][i+1];
-// //         		item.attr("fill", "orange");
-//         		
-//         	});
-// 			var lastParag  = paragraphs[0].pop();
-// 	        lastParag.attr("fill","orange");
-        }
+    }
 
 }
 
-d3.select("#selection").on("change", multipleChange);
-
-
-function multipleChange()
-{
-    var selection = this.selectedOptions;
-
-    var masterArr = [];
-    var newSelectedStudents = [];
-
-    //add each selected student
-    for (var k in selection)
+d3.select(".deselectAll").on("change", function () {
+    allSelected = !allSelected;
+    var checkboxes = d3.selectAll(".checkboxMultiselect");
+    checkboxes[0].forEach(function (d, i)
     {
-        var num = parseInt(selection[k].value);
-
-        if (!isNaN(num))
+        d.checked = allSelected;
+        var num = parseInt(d.value);
+        if (allSelected)
         {
-            newSelectedStudents.push(num);
+            checkedBox(num);
+            selectedStudents.push(num);
         }
         else
         {
-        	continue; 
+            uncheckedBox(num);
+            var index = selectedStudents.indexOf(num);
+            selectedStudents.splice(index, 1);
         }
+    });
+    if (allSelected)
+    {
 
-
-        var filteredData = submissions.filter(function (d) {
-            return d.id === parseInt(selection[k].value);
-        });
-
-        masterArr = masterArr.concat(filteredData);
+        d3.select("#pathred").remove();
+        d3.select(".cirred").remove();
+        addLine(data, "red", "red");
+        addRedLineDots();
     }
 
-    if (selectedStudents.length > 0)
-    {
-        for (var l in selectedStudents)
-        {
-            var index = newSelectedStudents.indexOf(selectedStudents[l]);
-            if (index < 0)
-            {
-                //remove the old lines that are not currently selected
-                d3.select("#path" + selectedStudents[l]).remove();
-                var selector = ".cir"+selectedStudents[l].toString();
-                d3.selectAll(selector).remove();
-            }
+})
+var selectedStudents = [];
+d3.selectAll(".checkboxMultiselect").on("change", function () {
+    var selected = this.value;
+    var checked = this.checked;
+    var num = parseInt(selected);
+    selectedStudents.push(num);
+    var masterArr = [];
+    var newSelectedStudents = [];
 
-        }
-    }
-    if (masterArr.length > 0)
+    //remove current selected line
+    if (!checked)
     {
-        for (var p in masterArr) {
-            if (selectedStudents.length > 0)
-            {
-                var index = selectedStudents.indexOf(parseInt(masterArr[p].id));
-                if (index ===-1)//don't add the path line if it's already on the page
-                { 
-            		var parsedData = parseDates(masterArr[p].items);
-            		addLine(parsedData, "steelblue", masterArr[p].id);
-                }
-            }
-            else
-            {//first time running the chart selectedStudents will be null;
-            	var parsedData = parseDates(masterArr[p].items);
-            	addLine(parsedData, "steelblue", masterArr[p].id);
-            }
-        }
-
-        selectedStudents = newSelectedStudents;//reset the array with all the students that were selected this time
+        uncheckedBox(num);
     }
     else
-    {
-        alert("The selection is invalid or the selected user has no submissions");
+    {//add line
+        if (!isNaN(num))
+        {
+            checkedBox(num);
+        }
+        else
+        {
+            alert("The selection is invalid or the selected user has no submissions");
+        }
+
+
+        if (selectedStudents.length >= 5)
+        {//if we have more than 5 students we need to redraw the line cause it will start getting hidden behind
+            //other lines.
+            d3.select("#pathred").remove();
+            d3.select(".cirred").remove();
+            addLine(data, "red", "red");
+            addRedLineDots();
+        }
     }
 
+
+});
+
+d3.select(".multiselect").on("keydown", function() {
+	var change = 0;
+	var key = d3.event.keyCode;
+    	if(key==39||key==40)
+    	{//down
+    		d3.event.preventDefault();
+    		change = 1;
+    	}
+    	else if ((key == 37)||(key==38))
+    	{//up
+    		d3.event.preventDefault();
+    		change = -1;
+    	}
+    	else
+    	{
+    		return;
+    	}
+	var success = false;
+	var oldIndex, newIndex;
+	var boxes = d3.selectAll(".checkboxMultiselect");
+	boxes[0].forEach(function (d, i) {
+		if(d.checked)
+		{
+			oldIndex = i;
+			var id = parseInt(d.value);
+			var index;
+			var studentArr = students.filter(function (d,k) {
+				if(d.id == id)
+				{
+					index = k;
+				}
+        		return d.id === id;
+		    });
+		    if(studentArr.length>0)
+		    {
+	    		if(students.length-1>=(index+change)&&(index+change)>0)
+    			{
+    				newIndex = index+change;
+	    			var newStudent = students[newIndex];
+	    			uncheckedBox(students[index].id);
+			    	checkedBox(newStudent.id);
+			    	success = true;	
+	    		}
+	    		else
+	    		{
+	    			if(change==1)
+	    			{		
+	    				newIndex = 0;
+		    			var newStudent = students[0];
+		    			uncheckedBox(students[index].id);
+				    	checkedBox(newStudent.id);
+				    	success = true;	
+	    			} else if(change==-1)
+	    			{
+	    				newIndex = students.length-1;
+		    			var newStudent = students[newIndex];
+		    			uncheckedBox(students[index].id);
+				    	checkedBox(newStudent.id);
+				    	success = true;	
+	    			}
+	    		}
+	    		// || (index+change)<0
+		    }
+			
+		}
+	});
+	if(success)
+	{//uncheck this item and check the one that was selected
+		boxes[0][oldIndex].checked = false;
+		boxes[0][newIndex].checked = true;
+	}
+});
+
+function uncheckedBox(id)
+{
+    d3.select("#path" + id).remove();
+    var selector = (".cir" + id).toString();
+    d3.selectAll(selector).remove();
+}
+
+function checkedBox(id)
+{
+    var masterArr = submissions.filter(function (d) {
+        return d.id === id;
+    });
+    if (masterArr.length > 0)
+    {
+        var parsedData = parseDates(masterArr[0].items);
+        addLine(parsedData, "steelblue", masterArr[0].id);
+    }
 }
 
 function parseDates(data)
@@ -295,9 +362,9 @@ function parseDates(data)
     data.forEach(function (d) {
 
         var newDate = Date.parse(d.date);
-        if(isNaN(newDate))//if the user has been selected before the dates have already been parsed. Trying to parse them again will throw an error
+        if (isNaN(newDate))//if the user has been selected before the dates have already been parsed. Trying to parse them again will throw an error
         {
-        	return;
+            return;
         }
         d.date = Date.parse(d.date);
 
@@ -344,4 +411,53 @@ function formatAMPM(date) {
     minutes = minutes < 10 ? '0' + minutes : minutes;
     var strTime = hours + ':' + minutes + ' ' + ampm;
     return strTime;
+}
+
+
+function addRedLineDots()
+{
+    g.selectAll("dot")
+            .data(data.filter(function (d, i) {
+                if (i === 0) {
+                    return d;
+                }
+                if (data[i].points != data[i - 1].points)
+                {
+                    return d;
+                }
+            }))
+            .enter().append("circle")
+
+            .attr("r", 2)
+            .attr("cx", function (d) {
+                return x(d.date);
+            })
+            .attr("cy", function (d) {
+                return y(d.points);
+            })
+            .on("mouseover", function (d) {
+                addTooltip(d.points + " points due " + parseTimestamp(d.date));
+            })
+            .on("mouseout", function (d) {
+                removeTooltip();
+            });
+}
+
+function checkboxFunctionality()
+{
+    var checkboxes = d3.selectAll(".checkboxMultiselect");
+    checkboxes.each(function () {
+        var checkbox = $(this);
+        // Highlight pre-selected checkboxes
+        if (checkbox.prop("checked"))
+            checkbox.parent().addClass("multiselect-on");
+
+        // Highlight checkboxes that the user selects
+        checkbox.click(function () {
+            if (checkbox.prop("checked"))
+                checkbox.parent().addClass("multiselect-on");
+            else
+                checkbox.parent().removeClass("multiselect-on");
+        });
+    });
 }

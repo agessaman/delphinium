@@ -35,9 +35,14 @@ class Dev extends ComponentBase
         $roots = new Roots();
         $course = $roots->getCourse();
         $account_id = $course->account_id;
-        $account = $roots->getAccount($account_id);
-        
-        $_SESSION['timezone'] = new \DateTimeZone($account->default_time_zone);
+        try
+        {   
+            $account = $roots->getAccount($account_id);
+
+            $_SESSION['timezone'] = new \DateTimeZone($account->default_time_zone);
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+
+        }
     }
     
    public function defineProperties()
