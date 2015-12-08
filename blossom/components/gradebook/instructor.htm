@@ -19,7 +19,7 @@
 	<div id="chart"></div>
 	<div class="multiselect">
 		{% for item in users %}
-	    	<label><input class="checkboxMultiselect" type="checkbox" value='{{item.id}}'>{{item.short_name}}</label>
+	    	<label><input class="checkboxMultiselect" type="checkbox" value='{{item.id}}'>{{item.name}}</label>
 	    {% endfor %}
     </div>
     <label class="labelSelectAll"><input class="deselectAll" type="checkbox" value='0'>Select/Deselect all</label>
