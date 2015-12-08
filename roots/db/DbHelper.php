@@ -11,6 +11,7 @@ use Delphinium\Roots\Models\Quiz;
 use Delphinium\Roots\Models\Quizquestion;
 use Delphinium\Roots\Models\QuizSubmission;
 use Delphinium\Roots\Models\AssignmentGroup;
+use Delphinium\Roots\Models\User;
 use Delphinium\Roots\Requestobjects\AssignmentsRequest;
 use Delphinium\Roots\Requestobjects\AssignmentGroupsRequest;
 use Delphinium\Roots\Requestobjects\ModulesRequest;
@@ -596,5 +597,15 @@ class DbHelper
         ))->first();
         
         return $quizSubmission;
+    }
+    
+    public function getUser($courseId, $userId)
+    {
+        $user = User::where(array(
+            'user_id' => $userId,
+            'course_id'=> $courseId
+        ))->first();
+        
+        return $user;
     }
 }

@@ -18,6 +18,7 @@ use Delphinium\Roots\Models\Quiz;
 use Delphinium\Roots\Models\Quizquestion;
 use Delphinium\Roots\Models\QuizSubmission;
 use Delphinium\Roots\Models\Discussion;
+use Delphinium\Roots\Models\User;
 use Delphinium\Roots\Requestobjects\SubmissionsRequest;
 use Delphinium\Roots\Requestobjects\ModulesRequest;
 use Delphinium\Roots\Requestobjects\AssignmentsRequest;
@@ -1081,7 +1082,7 @@ class CanvasHelper
     
     public function getStudentsInCourse()
     {
-    	return $this->simpleGet('students');
+    	$data = $this->simpleGet('students');
     }
     
     public function getUserEnrollments()
@@ -1684,5 +1685,15 @@ class CanvasHelper
         
         $response = GuzzleHelper::getAsset($url);
         return $response->getBody();
+    }
+    
+    private function processStudentsInCourse($data, $courseId)
+    {
+        foreach($data as $row)
+        {
+            $student = User::firstOrNew(array('user_id' => $row->id,'course_id' => $courseId));
+
+            return $student;
+        }
     }
 }

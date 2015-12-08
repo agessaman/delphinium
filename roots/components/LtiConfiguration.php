@@ -7,6 +7,7 @@ use Delphinium\Roots\Models\User;
 use Cms\Classes\ComponentBase;
 use Delphinium\Roots\Classes\Blti;
 use Delphinium\Roots\Roots;
+use Delphinium\Roots\DB\DbHelper;
 use Config;
 
 class LtiConfiguration extends ComponentBase {
@@ -76,6 +77,16 @@ class LtiConfiguration extends ComponentBase {
         //TODO: make sure this parameter below works with all other LMSs
         $_SESSION['lms'] = \Input::get('tool_consumer_info_product_family_code');
 
+        //to maintain the users table synchronized with Canvas, everytime a student comes in we'll check to make sure they're in the DB.
+        //If they're not, we will pull all the students from Canvas and refresh our users table.
+        $dbHelper = new DbHelper();
+        $user = $dbHelper->getUser($_SESSION['courseID'], $_SESSION['userID']);
+        if(is_null($user))
+        {//get all students from Canvas
+            $roots = new Roots();
+            $roots->getStudentsInCourse();
+        }
+        
         //check to see if user is an Instructor
         $rolesStr = \Input::get('roles');
         $consumerKey = $instanceFromDB['ConsumerKey'];
