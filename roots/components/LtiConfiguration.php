@@ -62,6 +62,7 @@ class LtiConfiguration extends ComponentBase {
 
     public function doBltiHandshake() {
         //first obtain the details of the LTI configuration they chose
+        $dbHelper = new DbHelper();
         $instanceFromDB = LtiConfigurations::find($this->property('ltiInstance'));
         $approver = $this->property('approver');
         $arr = $this->getApproverOptions();
@@ -78,16 +79,6 @@ class LtiConfiguration extends ComponentBase {
         //TODO: make sure this parameter below works with all other LMSs
         $_SESSION['lms'] = \Input::get('tool_consumer_info_product_family_code');
 
-        //to maintain the users table synchronized with Canvas, everytime a student comes in we'll check to make sure they're in the DB.
-        //If they're not, we will pull all the students from Canvas and refresh our users table.
-        $dbHelper = new DbHelper();
-        $user = $dbHelper->getUserInCourse($_SESSION['courseID'], $_SESSION['userID']);
-        if(is_null($user))
-        {//get all students from Canvas
-            $roots = new Roots();
-            $roots->getStudentsInCourse();
-        }
-        
         //check to see if user is an Instructor
         $rolesStr = \Input::get('roles');
         $consumerKey = $instanceFromDB['ConsumerKey'];
@@ -99,7 +90,6 @@ class LtiConfiguration extends ComponentBase {
         if ($context->valid) { // query DB to see if user has token, if yes, go to LTI.
             
             $userCheck = $dbHelper->getCourseApprover($_SESSION['courseID']);
-//            $userCheck = User::where('course_id', $_SESSION['courseID'])->first();
             if (!$userCheck) { //if no user is found, redirect to canvas permission page
                 if (stristr($rolesStr, $approverRole)) {
                     //As per my discussion with Jared, we will use the instructor's token only. This is the token that will be stored in the DB
@@ -123,7 +113,15 @@ class LtiConfiguration extends ComponentBase {
                 $account = $roots->getAccount($account_id);
 
                 $_SESSION['timezone'] = new \DateTimeZone($account->default_time_zone);
-                
+                //to maintain the users table synchronized with Canvas, everytime a student comes in we'll check to make sure they're in the DB.
+                //If they're not, we will pull all the students from Canvas and refresh our users table.
+                $dbHelper = new DbHelper();
+                $user = $dbHelper->getUserInCourse($_SESSION['courseID'], $_SESSION['userID']);
+                if(is_null($user))
+                {//get all students from Canvas
+                    $roots = new Roots();
+                    $roots->getStudentsInCourse();
+                }
             }
         } else {
             echo('There is a problem. Please notify your instructor');

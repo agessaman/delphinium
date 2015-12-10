@@ -723,10 +723,10 @@ class Roots
             {
                 case (Lms::CANVAS):
                     $canvasHelper = new CanvasHelper();
-                    return ($canvasHelper->getUser());
+                    return ($canvasHelper->getUser($userId));
                 default:
                     $canvasHelper = new CanvasHelper();
-                    return ($canvasHelper->getUser());
+                    return ($canvasHelper->getUser($userId));
             }
         }
         else

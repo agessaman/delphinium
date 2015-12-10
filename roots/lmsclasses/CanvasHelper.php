@@ -1094,7 +1094,7 @@ class CanvasHelper
         return $this->processStudentsInCourse($data, $courseId);
     }
     
-    public function getUser()
+    public function getUser($userId = null)
     {///api/v1/users/:id
         if(!isset($_SESSION)) 
         { 
@@ -1102,9 +1102,9 @@ class CanvasHelper
     	}
         $urlPieces= array();
         $domain = $_SESSION['domain'];
-        $userId = $_SESSION['userID'];
+        $user = !is_null($userId)?$userId:$_SESSION['userID'];
         
-        $urlPieces[]= "https://{$domain}/api/v1/users/{$userId}";
+        $urlPieces[]= "https://{$domain}/api/v1/users/{$user}";
         $token = \Crypt::decrypt($_SESSION['userToken']);
         $urlArgs = array();
         //Attach token
@@ -1114,9 +1114,8 @@ class CanvasHelper
         
         $response = GuzzleHelper::getAsset($url);
         $data = json_decode($response->getBody());
-        
-        $user = $this->saveUser($data[0]->id, $data[0]->name, $data[0]->sortable_name);
-        return $user;
+        $userObj = $this->saveUser($data->id, $data->name, $data->sortable_name);
+        return $userObj;
     }
     public function getUserEnrollments()
     {///api/v1/users/:user_id/enrollments

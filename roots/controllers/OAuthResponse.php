@@ -8,6 +8,7 @@ use Delphinium\Roots\Models\User;
 use Delphinium\Roots\Models\UserCourse;
 use Delphinium\Roots\Models\Role;
 use Delphinium\Roots\Roots;
+use Delphinium\Roots\DB\DbHelper;
 
 class OAuthResponse extends Controller {
 
@@ -43,7 +44,8 @@ class OAuthResponse extends Controller {
         $roots = new Roots();
         //when we get the user from the LMS it gets stored in the DB.
         $roots->getUser($userId);
-        $role = Role::where('role_name','=','Approver');
+        $dbHelper = new DbHelper();
+        $role = $dbHelper->getRole('Approver');
         
         $userCourse = UserCourse::firstOrNew(array('user_id' => $userId, 'course_id' => $courseId));
         $userCourse->user_id = $userId;

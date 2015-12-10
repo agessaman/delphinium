@@ -620,4 +620,9 @@ class DbHelper
         
         return $user;
     }
+    
+    public function getRole($role_name)
+    {
+        return Role::where('role_name','=',$role_name)->first();
+    }
 }
