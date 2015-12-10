@@ -11,7 +11,8 @@ use Delphinium\Roots\Models\Quiz;
 use Delphinium\Roots\Models\Quizquestion;
 use Delphinium\Roots\Models\QuizSubmission;
 use Delphinium\Roots\Models\AssignmentGroup;
-use Delphinium\Roots\Models\User;
+use Delphinium\Roots\Models\UserCourse;
+use Delphinium\Roots\Models\Role;
 use Delphinium\Roots\Requestobjects\AssignmentsRequest;
 use Delphinium\Roots\Requestobjects\AssignmentGroupsRequest;
 use Delphinium\Roots\Requestobjects\ModulesRequest;
@@ -599,10 +600,21 @@ class DbHelper
         return $quizSubmission;
     }
     
-    public function getUser($courseId, $userId)
+    public function getUserInCourse($courseId, $userId)
     {
-        $user = User::where(array(
+        $user = UserCourse::where(array(
             'user_id' => $userId,
+            'course_id'=> $courseId
+        ))->first();
+        
+        return $user;
+    }
+    
+    public function getCourseApprover($courseId)
+    {
+        $role = Role::where('role_name','=','Approver')->first();
+        $user = UserCourse::where(array(
+            'role' => $role->id,
             'course_id'=> $courseId
         ))->first();
         

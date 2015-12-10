@@ -19,6 +19,8 @@ use Delphinium\Roots\Models\Quizquestion;
 use Delphinium\Roots\Models\QuizSubmission;
 use Delphinium\Roots\Models\Discussion;
 use Delphinium\Roots\Models\User;
+use Delphinium\Roots\Models\UserCourse;
+use Delphinium\Roots\Models\Role;
 use Delphinium\Roots\Requestobjects\SubmissionsRequest;
 use Delphinium\Roots\Requestobjects\ModulesRequest;
 use Delphinium\Roots\Requestobjects\AssignmentsRequest;
@@ -1081,10 +1083,41 @@ class CanvasHelper
     }
     
     public function getStudentsInCourse()
-    {
-    	$data = $this->simpleGet('students');
+    {   
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $courseId = $_SESSION['courseID'];
+    	$data = json_decode($this->simpleGet('students'));
+        
+        return $this->processStudentsInCourse($data, $courseId);
     }
     
+    public function getUser()
+    {///api/v1/users/:id
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+    	}
+        $urlPieces= array();
+        $domain = $_SESSION['domain'];
+        $userId = $_SESSION['userID'];
+        
+        $urlPieces[]= "https://{$domain}/api/v1/users/{$userId}";
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $urlArgs = array();
+        //Attach token
+        $urlArgs[]="access_token={$token}";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+        
+        $response = GuzzleHelper::getAsset($url);
+        $data = json_decode($response->getBody());
+        
+        $user = $this->saveUser($data[0]->id, $data[0]->name, $data[0]->sortable_name);
+        return $user;
+    }
     public function getUserEnrollments()
     {///api/v1/users/:user_id/enrollments
         if(!isset($_SESSION)) 
@@ -1688,12 +1721,36 @@ class CanvasHelper
     }
     
     private function processStudentsInCourse($data, $courseId)
-    {
+    {   //first add them the User table
+        //then add them to the user_course table.
+        $arr = array();
+        $role = Role::where('role_name','=','Learner')->first();
+
         foreach($data as $row)
         {
-            $student = User::firstOrNew(array('user_id' => $row->id,'course_id' => $courseId));
-
-            return $student;
+            $this->saveUser($row->id, $row->name, $row->sortable_name);
+            
+            $userCourse = UserCourse::firstOrNew(array('user_id' => $row->id, 'course_id' => $courseId));
+            $userCourse->user_id = $row->id;
+            $userCourse->course_id = $courseId;
+            $userCourse->role = $role->id;
+            $userCourse->save();
+            
+            $arr[] = $userCourse;
         }
+        
+        return $arr;
+    }
+    
+    private function saveUser($userId, $name, $sortableName, $avatar = null)
+    {
+        $user = User::firstOrNew(array('user_id' => $userId));
+        $user->user_id = $userId;
+        $user->name = $name;
+        $user->sortable_name = $sortableName;
+        if(!is_null($avatar)){$user->avatar = $avatar;}
+        $user->save();
+        
+        return $user;
     }
 }

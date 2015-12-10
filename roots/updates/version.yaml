@@ -19,3 +19,9 @@
 1.0.4:
     - Added quiz submissions
     - create_roots_quiz_submissions_table.php
+1.0.5:
+    - Added migration for users table
+    - create_roots_roles_table.php
+    - seed_roots_roles_table.php
+    - create_roots_users_course_table.php
+    - modify_users_table.php

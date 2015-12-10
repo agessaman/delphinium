@@ -12,9 +12,11 @@ class User extends Model
      * Validation
      */
     public $rules = [
-        'user_id' => 'required',
-        'course_id' => 'required'
+        'user_id' => 'required'
     ];
 
-
+/**
+     * @var array The attributes that are mass assignable.
+     */
+    protected $fillable =  array('*');
 }

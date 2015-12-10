@@ -5,6 +5,9 @@ namespace Delphinium\Roots\Controllers;
 use Illuminate\Routing\Controller;
 use Delphinium\Roots\Models\Developer as LtiConfigurations;
 use Delphinium\Roots\Models\User;
+use Delphinium\Roots\Models\UserCourse;
+use Delphinium\Roots\Models\Role;
+use Delphinium\Roots\Roots;
 
 class OAuthResponse extends Controller {
 
@@ -36,11 +39,19 @@ class OAuthResponse extends Controller {
         $courseId = $_SESSION['courseID'];
         $userId = $_SESSION['userID'];
 
-        $user = new User();
-        $user->user_id = $userId;
-        $user->course_id = $courseId;
-        $user->encrypted_token = $encryptedToken;
-        $user->save();
+        //make sure we have the user stored in the user table and in the userCourse table.
+        $roots = new Roots();
+        //when we get the user from the LMS it gets stored in the DB.
+        $roots->getUser($userId);
+        $role = Role::where('role_name','=','Approver');
+        
+        $userCourse = UserCourse::firstOrNew(array('user_id' => $userId, 'course_id' => $courseId));
+        $userCourse->user_id = $userId;
+        $userCourse->course_id = $courseId;
+        $userCourse->role = $role->id;
+        $userCourse->encrypted_token = $encryptedToken;
+        $userCourse->save();
+
 
         echo "App has been approved. Please reload this page";
     }

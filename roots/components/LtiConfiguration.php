@@ -4,6 +4,7 @@ namespace Delphinium\Roots\Components;
 
 use Delphinium\Roots\Models\Developer as LtiConfigurations;
 use Delphinium\Roots\Models\User;
+use Delphinium\Roots\Models\UserCourse;
 use Cms\Classes\ComponentBase;
 use Delphinium\Roots\Classes\Blti;
 use Delphinium\Roots\Roots;
@@ -80,7 +81,7 @@ class LtiConfiguration extends ComponentBase {
         //to maintain the users table synchronized with Canvas, everytime a student comes in we'll check to make sure they're in the DB.
         //If they're not, we will pull all the students from Canvas and refresh our users table.
         $dbHelper = new DbHelper();
-        $user = $dbHelper->getUser($_SESSION['courseID'], $_SESSION['userID']);
+        $user = $dbHelper->getUserInCourse($_SESSION['courseID'], $_SESSION['userID']);
         if(is_null($user))
         {//get all students from Canvas
             $roots = new Roots();
@@ -96,7 +97,9 @@ class LtiConfiguration extends ComponentBase {
         $context = new Blti($consumerKey, false, false);
 
         if ($context->valid) { // query DB to see if user has token, if yes, go to LTI.
-            $userCheck = User::where('course_id', $_SESSION['courseID'])->first();
+            
+            $userCheck = $dbHelper->getCourseApprover($_SESSION['courseID']);
+//            $userCheck = User::where('course_id', $_SESSION['courseID'])->first();
             if (!$userCheck) { //if no user is found, redirect to canvas permission page
                 if (stristr($rolesStr, $approverRole)) {
                     //As per my discussion with Jared, we will use the instructor's token only. This is the token that will be stored in the DB
