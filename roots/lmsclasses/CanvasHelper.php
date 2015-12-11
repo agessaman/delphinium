@@ -29,6 +29,8 @@ use Delphinium\Roots\Requestobjects\QuizRequest;
 use Delphinium\Roots\Updatableobjects\Module as UpdatableModule;
 use Delphinium\Roots\Updatableobjects\ModuleItem as UpdatableModuleItem;
 
+use GuzzleHttp\Client;
+
 class CanvasHelper
 {
     public $dbHelper;
@@ -901,6 +903,7 @@ class CanvasHelper
      */
     public function processSubmissionsRequest(SubmissionsRequest $request)
     {
+        $asynch = false;//this variable will determine whether we'll send the request asynchronously or not.
         if(!isset($_SESSION)) 
         { 
             session_start(); 
@@ -920,11 +923,70 @@ class CanvasHelper
         {//GET /api/v1/courses/:course_id/students/submissions
             $urlPieces[]="students/submissions";
             
+        
+            
+            
+            
+            
+            
+            
+            
+         //TOOD: delete these lines    
+        $token = "14~DQbVNTYt3E8djaiyUGckBdbPwAoGqHgIK5UYyIJBciFRikr38wSDXScgeqWGCShL";
+        $courseId = 381983;
+        $userId = $_SESSION['userID'];
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
             //STUDENT IDS
             //student_ids can be "All", or a list of actual studentIds
             if($request->getMultipleStudents() && $request->getAllStudents())
             {
-                $urlArgs[]="student_ids[]=all";
+                //if all students were requested, we will retrieve them by chunks so as to speed up the request
+                $allUsers = $this->dbHelper->getUsersInCourseWithRole($courseId, 'Learner');
+                $count = count($allUsers);
+                $asynch =!$count<=20;
+                $masterArr = array();
+                for($i=0;$i<=$count-1;$i++)
+                {
+                    
+                    $urlArgs[]="student_ids[]={$allUsers[$i]->user_id}";
+                    $result = fmod($i,20);
+                    if($result == 0 && $asynch)
+                    {//we'll send the request every 20 students
+                        
+                        if($request->getGrouped())
+                        {
+                            $urlArgs[]="grouped=true";
+                        }
+                        $urlArgs[]="access_token={$token}&per_page=5000";
+
+                        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+                        echo $url;       
+                        
+                        
+                        $client = new Client();
+                        $promise = $client->getAsync($url);
+                        $promise->then(function ($response) {
+                            echo "Got a response! at i={$i} and it's " . json_encode(json_decode($response->getBody()))."||||";
+                        });
+                        
+//                        $response = GuzzleHelper::makeRequest($request, $url);
+
+                        $masterArr[] =  $this->processCanvasSubmissionData(json_decode($response->getBody()), $request->getIncludeTags(), $request->getGrouped());
+                        $urlArgs = array();
+                    }
+
+                }
+                
+                
             }
             else if($request->getMultipleStudents()&&count($request->getStudentIds()>1))
             {
@@ -968,20 +1030,24 @@ class CanvasHelper
             }
 
         }
-        if($request->getGrouped())
+        
+        if(!$asynch)
         {
-            $urlArgs[]="grouped=true";
+            if($request->getGrouped())
+            {
+                $urlArgs[]="grouped=true";
+            }
+
+    //        $urlArgs[]="include[]=assignment";
+            //Attach token
+            $urlArgs[]="access_token={$token}&per_page=5000";
+
+            $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+     echo $url;       
+            $response = GuzzleHelper::makeRequest($request, $url);
+
+            return $this->processCanvasSubmissionData(json_decode($response->getBody()), $request->getIncludeTags(), $request->getGrouped());
         }
-        
-//        $urlArgs[]="include[]=assignment";
-        //Attach token
-        $urlArgs[]="access_token={$token}&per_page=5000";
-        
-        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
-        
-        $response = GuzzleHelper::makeRequest($request, $url);
-        
-        return $this->processCanvasSubmissionData(json_decode($response->getBody()), $request->getIncludeTags(), $request->getGrouped());
         
     }
     

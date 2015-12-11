@@ -610,6 +610,16 @@ class DbHelper
         return $user;
     }
     
+    public function getUsersInCourseWithRole($courseId, $role_name)
+    {
+        $role = $this->getRole($role_name);
+        $users = UserCourse::where(array(
+            'course_id'=> $courseId,
+            'role'=>$role->id
+        ))->get();
+        
+        return $users;
+    }
     public function getCourseApprover($courseId)
     {
         $role = Role::where('role_name','=','Approver')->first();
