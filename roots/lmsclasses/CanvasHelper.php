@@ -67,10 +67,9 @@ class CanvasHelper
         $urlArgs[]="access_token={$token}&per_page=5000";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs); 
-        $response = GuzzleHelper::makeRequest($request, $url);
+        $states = GuzzleHelper::makeRequest($request, $url);
 
         $moduleStateInfo = array();
-        $states = json_decode($response->getBody());
         
         foreach($states as $moduleRow)
         {
@@ -117,8 +116,7 @@ class CanvasHelper
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
         
-        $response = GuzzleHelper::getAsset($url);
-        $items = json_decode($response->getBody());
+        $items = GuzzleHelper::getAsset($url);
         $arr = array();
         if(count($items->quiz_submissions)>0)
         {
@@ -163,8 +161,7 @@ class CanvasHelper
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);  
         try
         {
-            $response = GuzzleHelper::postData($url);
-            $items = json_decode($response->getBody());
+            $items = GuzzleHelper::postData($url);
             if(count($items->quiz_submissions)>0)
             {
                 return $this->saveQuizSubmission($items->quiz_submissions[0]);
@@ -209,8 +206,7 @@ class CanvasHelper
         $urlArgs[]="access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
-        $response = GuzzleHelper::getAsset($url);
-        $items= json_decode($response->getBody());
+        $items = GuzzleHelper::getAsset($url);
         
         foreach($items->quiz_submission_questions as $submission)
         {
@@ -250,8 +246,7 @@ class CanvasHelper
        
         try
         {
-            $response = GuzzleHelper::postData($url);
-            $items = json_decode($response->getBody());
+            $items = GuzzleHelper::postData($url);
             
             if(count($items->quiz_submissions)>0)
             {
@@ -284,13 +279,12 @@ class CanvasHelper
     public function getQuizzes()
     {
         //process quiz
-        $res = $this->simpleGet('quizzes');
+        $quizzes = $this->simpleGet('quizzes');
         if(!isset($_SESSION))
         {
         session_start();
         }
         $courseId = $_SESSION['courseID'];
-        $quizzes = json_decode($res);
         $response = array();
         foreach($quizzes as $quiz)
         {
@@ -316,8 +310,7 @@ class CanvasHelper
         $urlArgs[]="access_token={$token}&per_page=5000";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
-        $response = GuzzleHelper::getAsset($url);
-        $questions = json_decode($response->getBody());
+        $questions = GuzzleHelper::getAsset($url);
 
         $response = array();
         foreach($questions as $question)
@@ -359,7 +352,7 @@ class CanvasHelper
         
         $response = GuzzleHelper::makeRequest($request, $url);
         
-        return $this->processCanvasModuleData(json_decode($response->getBody()), $courseId);
+        return $this->processCanvasModuleData($response, $courseId);
     }
     
     public function putModuleData(ModulesRequest $request)
@@ -410,7 +403,7 @@ class CanvasHelper
 
             $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs); 
 
-            $response = GuzzleHelper::makeRequest($request, $url);
+            $response = GuzzleHelper::makeRequest($request, $url, true);
 
             //update DB if request was successful
             if ($response->getStatusCode() ==="200")
@@ -471,7 +464,7 @@ class CanvasHelper
         try
         {
             //delete from Canvas
-            $response = GuzzleHelper::makeRequest($request, $url);
+            $response = GuzzleHelper::makeRequest($request, $url, true);
             if($response->getStatusCode() ==="200")
             {
                 $dbHelper = new DbHelper();
@@ -547,7 +540,7 @@ class CanvasHelper
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs); 
 //        echo "The URL is".$url."--";
         //return;
-        $response = GuzzleHelper::makeRequest($request, $url);
+        $response = GuzzleHelper::makeRequest($request, $url, true);
         
         //update DB if request was successful
         if ($response->getStatusCode() ==="200")
@@ -663,7 +656,7 @@ class CanvasHelper
 //        echo $url;
 //        return;
         $response = GuzzleHelper::makeRequest($request, $url);
-        return json_decode($response->getBody());
+        return $response;
     }
     
     public function updateAssignment(AssignmentsRequest $request)
@@ -742,7 +735,7 @@ class CanvasHelper
 //        echo $url;
 //        return;
         $response = GuzzleHelper::postData($url);
-        return json_decode($response->getBody());
+        return $response;
     }
     
     public function addExternalTool($externalTool)
@@ -765,7 +758,7 @@ class CanvasHelper
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
 //        echo $url;
         $response = GuzzleHelper::postData($url);
-        return json_decode($response->getBody());
+        return $response;
     }
     public function uploadFile(File $file)
     {
@@ -806,7 +799,7 @@ class CanvasHelper
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
 //        echo $url;
         $response = GuzzleHelper::postData($url);
-        return json_decode($response->getBody());
+        return $response;
     }
     
     /*
@@ -1038,16 +1031,12 @@ class CanvasHelper
                 $urlArgs[]="grouped=true";
             }
 
-    //        $urlArgs[]="include[]=assignment";
-            //Attach token
-            $urlArgs[]="access_token={$token}&per_page=5000";
+        $urlArgs[]="access_token={$token}&per_page=100";
+        
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+        $response = GuzzleHelper::recursiveGet($url);
+        return $this->processCanvasSubmissionData($response, $request->getIncludeTags(), $request->getGrouped());
 
-            $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
-     echo $url;       
-            $response = GuzzleHelper::makeRequest($request, $url);
-
-            return $this->processCanvasSubmissionData(json_decode($response->getBody()), $request->getIncludeTags(), $request->getGrouped());
-        }
         
     }
     
@@ -1081,7 +1070,7 @@ class CanvasHelper
 //        echo $url;
         $response = GuzzleHelper::makeRequest($request, $url);
 
-        return $this->processCanvasAssignmentData(json_decode($response->getBody()), $courseId, $singleRow);
+        return $this->processCanvasAssignmentData($response, $courseId, $singleRow);
         
     }
     
@@ -1111,7 +1100,7 @@ class CanvasHelper
         
         $response = GuzzleHelper::makeRequest($request, $url);
         
-        return $this->processCanvasAssignmentGroupsData(json_decode($response->getBody()), $courseId, $singleRow);
+        return $this->processCanvasAssignmentGroupsData($response, $courseId, $singleRow);
         
     }
     
@@ -1155,7 +1144,7 @@ class CanvasHelper
             session_start(); 
     	}
         $courseId = $_SESSION['courseID'];
-    	$data = json_decode($this->simpleGet('students'));
+    	$data = ($this->simpleGet('students'));
         
         return $this->processStudentsInCourse($data, $courseId);
     }
@@ -1178,8 +1167,7 @@ class CanvasHelper
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
         
-        $response = GuzzleHelper::getAsset($url);
-        $data = json_decode($response->getBody());
+        $data = GuzzleHelper::getAsset($url);
         $userObj = $this->saveUser($data->id, $data->name, $data->sortable_name);
         return $userObj;
     }
@@ -1225,7 +1213,7 @@ class CanvasHelper
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
         $response = GuzzleHelper::getAsset($url);
-        return json_decode($response->getBody());
+        return $response;
     }
     
     public function getAccount($accountId)
@@ -1246,7 +1234,7 @@ class CanvasHelper
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
         $response = GuzzleHelper::getAsset($url);
-        return $response->getBody();
+        return $response;
     }
     /*
      * MODULES
@@ -1782,7 +1770,7 @@ class CanvasHelper
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
         
         $response = GuzzleHelper::getAsset($url);
-        return $response->getBody();
+        return $response;
     }
     
     private function processStudentsInCourse($data, $courseId)

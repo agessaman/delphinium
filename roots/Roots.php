@@ -405,11 +405,11 @@ class Roots
             {
                 case (Lms::CANVAS):
                     $canvasHelper = new CanvasHelper();
-                    $files = json_decode($canvasHelper->getFiles());
+                    $files =($canvasHelper->getFiles());
                     break;
                 default:
                     $canvasHelper = new CanvasHelper();
-                    $files = json_decode($canvasHelper->getFiles());
+                    $files = ($canvasHelper->getFiles());
                     break;
             }
             
@@ -447,7 +447,7 @@ class Roots
             {
                 case (Lms::CANVAS):
                     $canvasHelper = new CanvasHelper();
-                    $pages = json_decode($canvasHelper->getPages());
+                    $pages = ($canvasHelper->getPages());
                     break;
                 default:
                     $canvasHelper = new CanvasHelper();
@@ -534,11 +534,11 @@ class Roots
             {
                 case (Lms::CANVAS):
                     $canvasHelper = new CanvasHelper();
-                    $tools =  json_decode($canvasHelper->getExternalTools());
+                    $tools =  ($canvasHelper->getExternalTools());
                     break;
                 default:
                     $canvasHelper = new CanvasHelper();
-                    $tools = json_decode($canvasHelper->getExternalTools());
+                    $tools = ($canvasHelper->getExternalTools());
                     break;
             }
             
@@ -576,7 +576,7 @@ class Roots
             {
                 case (Lms::CANVAS):
                     $canvasHelper = new CanvasHelper();
-                    $data = json_decode($canvasHelper->getAnalyticsAssignmentData());
+                    $data = ($canvasHelper->getAnalyticsAssignmentData());
                     if($includeTags)
                     {
                         $result = [];
@@ -591,7 +591,7 @@ class Roots
                     return $data;
                 default:
                     $canvasHelper = new CanvasHelper();
-                    $data = json_decode($canvasHelper->getAnalyticsAssignmentData());
+                    $data = ($canvasHelper->getAnalyticsAssignmentData());
                     if($includeTags)
                     {
                         $result = [];
@@ -624,7 +624,7 @@ class Roots
             {
                 case (Lms::CANVAS):
                     $canvasHelper = new CanvasHelper();
-                    $data = json_decode($canvasHelper->getAnalyticsStudentAssignmentData($userId));
+                    $data = ($canvasHelper->getAnalyticsStudentAssignmentData($userId));
                     if($includeTags)
                     {
                         $result = [];
@@ -639,7 +639,7 @@ class Roots
                     return $data;
                 default:
                     $canvasHelper = new CanvasHelper();
-                    $data = json_decode($canvasHelper->getAnalyticsStudentAssignmentData($userId));
+                    $data = ($canvasHelper->getAnalyticsStudentAssignmentData($userId));
                     if($includeTags)
                     {
                         $result = [];
@@ -673,10 +673,10 @@ class Roots
             {
                 case (Lms::CANVAS):
                     $canvasHelper = new CanvasHelper();
-                    return json_decode($canvasHelper->getUsersInCourse());
+                    return ($canvasHelper->getUsersInCourse());
                 default:
                     $canvasHelper = new CanvasHelper();
-                    return json_decode($canvasHelper->getUsersInCourse());
+                    return ($canvasHelper->getUsersInCourse());
             }
         }
         else
@@ -747,10 +747,10 @@ class Roots
             {
                 case (Lms::CANVAS):
                     $canvasHelper = new CanvasHelper();
-                    return json_decode($canvasHelper->getUserEnrollments());
+                    return ($canvasHelper->getUserEnrollments());
                 default:
                     $canvasHelper = new CanvasHelper();
-                    return json_decode($canvasHelper->getUserEnrollments());
+                    return ($canvasHelper->getUserEnrollments());
             }
         }
         else
@@ -772,10 +772,10 @@ class Roots
             {
                 case (Lms::CANVAS):
                     $canvasHelper = new CanvasHelper();
-                    return json_decode($canvasHelper->getGradingStandards());
+                    return ($canvasHelper->getGradingStandards());
                 default:
                     $canvasHelper = new CanvasHelper();
-                    return json_decode($canvasHelper->getGradingStandards());
+                    return ($canvasHelper->getGradingStandards());
             }
         }
         else
@@ -821,10 +821,10 @@ class Roots
             {
                 case (Lms::CANVAS):
                     $canvasHelper = new CanvasHelper();
-                    return json_decode($canvasHelper->getAccount($accountId));
+                    return ($canvasHelper->getAccount($accountId));
                 default:
                     $canvasHelper = new CanvasHelper();
-                    return json_decode($canvasHelper->getAccount($accountId));
+                    return ($canvasHelper->getAccount($accountId));
             }
         }
         else
