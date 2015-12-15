@@ -920,17 +920,7 @@ class CanvasHelper
             
             
             
-            
-            
-            
-            
-         //TOOD: delete these lines    
-        $token = "14~DQbVNTYt3E8djaiyUGckBdbPwAoGqHgIK5UYyIJBciFRikr38wSDXScgeqWGCShL";
-        $courseId = 381983;
-        $userId = $_SESSION['userID'];
-            
-            
-            
+        
             
             
             
@@ -1032,7 +1022,7 @@ class CanvasHelper
             }
 
         $urlArgs[]="access_token={$token}&per_page=100";
-        
+        }
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
         $response = GuzzleHelper::recursiveGet($url);
         return $this->processCanvasSubmissionData($response, $request->getIncludeTags(), $request->getGrouped());

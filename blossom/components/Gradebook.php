@@ -217,7 +217,6 @@ class Gradebook extends ComponentBase {
 
     public function getStudentChartData($studentId = null) {
 
-        echo $studentId;
         if (is_null($this->roots)) {
             $this->roots = new Roots();
         }
