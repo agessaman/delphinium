@@ -49,8 +49,8 @@ class TestRoots extends ComponentBase
         $this->canvasHelper = new CanvasHelper();
         $this->dbHelper = new DbHelper();
 //        $this->refreshCache();
-        $this->test();
-//        $this->testBasicModulesRequest();
+//        $this->test();
+        $this->testBasicModulesRequest();
 //        $this->testDeleteTag();
 //        $this->testAddingUpdatingTags();
 //        $this->testUpdatingModuleItem();
@@ -195,7 +195,7 @@ class TestRoots extends ComponentBase
     
     private function testDeletingModule()
     {
-        $moduleId = 457079;
+        $moduleId = 526591;
         $moduleItemId = null;
         $includeContentItems = false;
         $includeContentDetails = false;
@@ -695,7 +695,14 @@ class TestRoots extends ComponentBase
     
     public function test()
     {
-        echo json_encode($this->canvasHelper->getUser());
+        $userId = 671616;
+        $request = new SubmissionsRequest(ActionType::GET, array($userId), false, array(), true, false, true, false);
+        $submissions = $this->roots->submissions($request);
+        
+        echo json_encode($submissions);
+        
+        
+//        echo json_encode($this->canvasHelper->getUser());
 //        $content = $this->roots->getStudentsInCourse();
 //        echo json_encode($content);
         
