@@ -5,13 +5,21 @@ use GuzzleHttp\Client;
 
 class GuzzleHelper
 {
-    public static function makeRequest($request, $url)
+    public static function makeRequest($request, $url, $getRawResponse = false)
     {
+        
         $client = new Client();
         switch($request->getActionType())
         {
             case ActionType::GET:
-                $response = $client->get($url);
+                if($getRawResponse)
+                {
+                    return $client->get($url);
+                }
+                else
+                {
+                    $response = GuzzleHelper::getAsset($url);//$client->get($url);
+                }
                 break;
             case ActionType::DELETE:
                 $response = $client->delete($url);
@@ -23,21 +31,46 @@ class GuzzleHelper
                 $response = $client->post($url);
                 break;
             default:
-                $response = $client->get($url);
+                $response = GuzzleHelper::getAsset($url);//$client->get($url);
         }
         return $response;
+    }
+    
+    public static function recursiveGet($url)
+    {
+        $data = GuzzleHelper::getAsset($url);
+        $currentPage = 1;
+        $hasData = true; 
+        while($hasData)
+        {   
+            $currentPage = $currentPage + 1;
+            $newUrl = $url."&page={$currentPage}";
+            $next_data = (GuzzleHelper::getAsset($newUrl));
+            if(!empty($next_data))
+            {
+                $data = array_merge($data,$next_data);
+            }
+            else
+            {
+                $hasData = false;
+            }
+        }
+        return $data;
+        
     }
     
     public static function getAsset($url)
     {
         $client = new Client();
-        return $client->get($url);
+        $response = $client->get($url);
+        $data = json_decode($response->getBody());
+        return $data;
     }
-    
     public static function postData($url)
     {
         $client = new Client();
-        return $client->post($url);
+        $response =  $client->post($url);
+        return json_decode($response->getBody());
     }
     
     public static function postDataWithParams($url, $obj)
@@ -159,4 +192,5 @@ class GuzzleHelper
         $url = $urlStr.$urlParamsStr;
         return $url;
     }
+    
 }
