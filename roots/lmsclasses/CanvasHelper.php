@@ -904,15 +904,9 @@ class CanvasHelper
             session_start(); 
     	}
         $domain = $_SESSION['domain'];
-//        $token = \Crypt::decrypt($_SESSION['userToken']);
-//        $courseId = $_SESSION['courseID'];
-//        $userId = $_SESSION['userID'];
-        
-         //TODO: delete these lines    
-        $token = "14~DQbVNTYt3E8djaiyUGckBdbPwAoGqHgIK5UYyIJBciFRikr38wSDXScgeqWGCShL";
-        $courseId = 381983;
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $courseId = $_SESSION['courseID'];
         $userId = $_SESSION['userID'];
-            
         
         $urlPieces= array();
         $urlArgs = array();
@@ -964,6 +958,7 @@ class CanvasHelper
                 }
                 $urlArgs[]="access_token={$token}&per_page=100";
                 $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+                
                 $req =  new \GuzzleHttp\Psr7\Request('GET', $url);
                 $requests[] = $req;
                 
@@ -984,7 +979,7 @@ class CanvasHelper
 
                 // Force the pool of requests to complete.
                 $promise->wait();
-                return $this->processCanvasSubmissionData($response, $request->getIncludeTags(), $request->getGrouped());
+                return $this->processCanvasSubmissionData($returnData, $request->getIncludeTags(), $request->getGrouped());
                 
             }
             else if($request->getMultipleStudents()&&count($request->getStudentIds()>1))
