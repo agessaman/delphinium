@@ -602,7 +602,7 @@ class CanvasHelper
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
         $response = GuzzleHelper::postData($url);
-        return $response->getBody();
+        return $response;
     }
     
     public function addDiscussion(Discussion $discussion)
@@ -624,7 +624,7 @@ class CanvasHelper
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
         $response = GuzzleHelper::postData($url);
-        return $response->getBody();
+        return $response;
     }
     
     public function addAssignment(AssignmentsRequest $request)
@@ -783,7 +783,7 @@ class CanvasHelper
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
 //        echo $url;
         $response = GuzzleHelper::postData($url);
-        return $response->getBody();
+        return $response;
     }
     
     public function uploadFileStepTwo($params, $file, $upload_url)
@@ -1130,7 +1130,7 @@ class CanvasHelper
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
         $response = GuzzleHelper::getAsset($url);
-        return $response->getBody();
+        return $response;
     }
     
     public function getUsersInCourse()
@@ -1191,7 +1191,7 @@ class CanvasHelper
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
         
         $response = GuzzleHelper::getAsset($url);
-        return $response->getBody();
+        return $response;
     } 
         
     public function getGradingStandards()
