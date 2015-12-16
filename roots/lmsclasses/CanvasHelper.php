@@ -28,8 +28,10 @@ use Delphinium\Roots\Requestobjects\AssignmentGroupsRequest;
 use Delphinium\Roots\Requestobjects\QuizRequest;
 use Delphinium\Roots\Updatableobjects\Module as UpdatableModule;
 use Delphinium\Roots\Updatableobjects\ModuleItem as UpdatableModuleItem;
-
 use GuzzleHttp\Client;
+use Psr\Http\Message\ResponseInterface;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Pool;
 
 class CanvasHelper
 {
@@ -902,9 +904,15 @@ class CanvasHelper
             session_start(); 
     	}
         $domain = $_SESSION['domain'];
-        $token = \Crypt::decrypt($_SESSION['userToken']);
-        $courseId = $_SESSION['courseID'];
+//        $token = \Crypt::decrypt($_SESSION['userToken']);
+//        $courseId = $_SESSION['courseID'];
+//        $userId = $_SESSION['userID'];
+        
+         //TODO: delete these lines    
+        $token = "14~DQbVNTYt3E8djaiyUGckBdbPwAoGqHgIK5UYyIJBciFRikr38wSDXScgeqWGCShL";
+        $courseId = 381983;
         $userId = $_SESSION['userID'];
+            
         
         $urlPieces= array();
         $urlArgs = array();
@@ -915,19 +923,7 @@ class CanvasHelper
         if($request->getMultipleAssignments())
         {//GET /api/v1/courses/:course_id/students/submissions
             $urlPieces[]="students/submissions";
-            
         
-            
-            
-            
-        
-            
-            
-            
-            
-            
-            
-            
             //STUDENT IDS
             //student_ids can be "All", or a list of actual studentIds
             if($request->getMultipleStudents() && $request->getAllStudents())
@@ -937,38 +933,58 @@ class CanvasHelper
                 $count = count($allUsers);
                 $asynch =!$count<=20;
                 $masterArr = array();
+                
+                //this var will store al the requests we will make
+                $requests = array();
+
                 for($i=0;$i<=$count-1;$i++)
-                {
-                    
+                { 
                     $urlArgs[]="student_ids[]={$allUsers[$i]->user_id}";
                     $result = fmod($i,20);
-                    if($result == 0 && $asynch)
+                    if($result == 0 && $asynch && $i>0)
                     {//we'll send the request every 20 students
                         
                         if($request->getGrouped())
                         {
                             $urlArgs[]="grouped=true";
                         }
-                        $urlArgs[]="access_token={$token}&per_page=5000";
+                        $urlArgs[]="access_token={$token}&per_page=100";
 
                         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
-                        echo $url;       
-                        
-                        
-                        $client = new Client();
-                        $promise = $client->getAsync($url);
-                        $promise->then(function ($response) {
-                            echo "Got a response! at i={$i} and it's " . json_encode(json_decode($response->getBody()))."||||";
-                        });
-                        
-//                        $response = GuzzleHelper::makeRequest($request, $url);
-
-                        $masterArr[] =  $this->processCanvasSubmissionData(json_decode($response->getBody()), $request->getIncludeTags(), $request->getGrouped());
+                        $req =  new \GuzzleHttp\Psr7\Request('GET', $url);
+                        $requests[] = $req;
                         $urlArgs = array();
                     }
-
-                }
+                }//for
                 
+                //at the end we'll have requests left that need to be sent
+                if($request->getGrouped())
+                {
+                    $urlArgs[]="grouped=true";
+                }
+                $urlArgs[]="access_token={$token}&per_page=100";
+                $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+                $req =  new \GuzzleHttp\Psr7\Request('GET', $url);
+                $requests[] = $req;
+                
+                $client = new Client();
+                $returnData = array();
+                $pool = new Pool($client, $requests, [
+                    'concurrency' => count($requests),
+                    'fulfilled' => function ($response, $index) use (&$returnData) {
+                        $returnData = array_merge($returnData,json_decode($response->getBody()));
+                    },
+                    'rejected' => function ($reason, $index) {
+                        //TODO: figure out what to do here
+                    },
+                 ]);
+
+                // Initiate the transfers and create a promise
+                $promise = $pool->promise();
+
+                // Force the pool of requests to complete.
+                $promise->wait();
+                return $this->processCanvasSubmissionData($response, $request->getIncludeTags(), $request->getGrouped());
                 
             }
             else if($request->getMultipleStudents()&&count($request->getStudentIds()>1))
@@ -1021,12 +1037,12 @@ class CanvasHelper
                 $urlArgs[]="grouped=true";
             }
 
-        $urlArgs[]="access_token={$token}&per_page=100";
-        }
-        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
-        $response = GuzzleHelper::recursiveGet($url);
-        return $this->processCanvasSubmissionData($response, $request->getIncludeTags(), $request->getGrouped());
+            $urlArgs[]="access_token={$token}&per_page=100";
 
+            $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+            $response = GuzzleHelper::recursiveGet($url);
+            return $this->processCanvasSubmissionData($response, $request->getIncludeTags(), $request->getGrouped());
+        }
         
     }
     
