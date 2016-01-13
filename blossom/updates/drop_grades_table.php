@@ -11,7 +11,7 @@ class DropGradesTable extends Migration
         Schema::dropIfExists('delphinium_blossom_grades');
     }
 
-    public functio down()
+    public function down()
     {
         if ( !Schema::hasTable('delphinium_blossom_grades') )
         {
