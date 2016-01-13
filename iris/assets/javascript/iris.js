@@ -16,22 +16,22 @@ var b = {
 };
 
 //will detect all the component instances and call createChart for each of them
- $(window).load(function () {
+$(window).load(function () {
     for (element in window) {
         if (element.indexOf('delphinium_iris')===0) {
             totalCharts++;
             createChart(window[element]);
         }
     }
-    
+
     if(moduleStates===undefined)
     {
         var promise = $.get("getModuleStates");
         promise.then(function (data1, textStatus, jqXHR) {
-            processModuleStates(data1, textStatus, jqXHR, stateColors);
-        })
-        .fail(function (data2) {
-        });
+                processModuleStates(data1, textStatus, jqXHR, stateColors);
+            })
+            .fail(function (data2) {
+            });
     }
     else
     {
@@ -39,7 +39,7 @@ var b = {
     }
 
     getStudentSubmissions();
-        
+
 });
 
 function createChart(iris)
@@ -49,85 +49,85 @@ function createChart(iris)
 //todo: calculate how big each svg needs to be
 //get parent size
     var parent = $("#wrapper" + iris.filter).parent();
-    
+
     var width = parent.width(),
-            height = parent.height(),
-            radius = Math.min(width, height) / 2;
-    
+        height = parent.height(),
+        radius = Math.min(width, height) / 2;
+
     //if the parent did not specify a height and width, the chart will be 500x500
     if(width<1||height<1)
     {
         width = 500, height = 500, radius = Math.min(width, height) / 2;
     }
     var svg = d3.select("#wrapper" + iris.filter).append("svg")
-            .attr("id", "svg" + iris.filter)
-            .attr("width", width)
-            .attr("height", height)
-            .append("g")
-            .attr("transform", "translate(" + width / 2 + "," + height * .5 + ")");
+        .attr("id", "svg" + iris.filter)
+        .attr("width", width)
+        .attr("height", height)
+        .append("g")
+        .attr("transform", "translate(" + width / 2 + "," + height * .5 + ")");
 
     var partition = d3.layout.partition()
-            .sort(null)
-            .size([2 * Math.PI, radius])
-            .value(function (d) {
-                return 1;
-            });
+        .sort(null)
+        .size([2 * Math.PI, radius])
+        .value(function (d) {
+            return 1;
+        });
 
     var arc = d3.svg.arc()
-            .startAngle(function (d) {
-                return d.x;
-            })
-            .endAngle(function (d) {
-                return d.x + d.dx;
-            })
-            .innerRadius(function (d) {
-                return d.y;
-            })
-            .outerRadius(function (d) {
-                return d.y + d.dy;
-            });
+        .startAngle(function (d) {
+            return d.x;
+        })
+        .endAngle(function (d) {
+            return d.x + d.dx;
+        })
+        .innerRadius(function (d) {
+            return d.y;
+        })
+        .outerRadius(function (d) {
+            return d.y + d.dy;
+        });
 
     var path = svg.datum(graphData).selectAll("path")
-            .data(partition.nodes)
-            .enter().append("path")
-            .attr("id", function (d) {
-                return "path" + d.module_id;
-            })
-            .attr("class", function (d) {
-                return "path" + d.module_id;
-            })
-            .attr("d", arc)
-            .on("mouseenter", function (d) {
-                showTooltip(d);
-            })
-            .on("mousemove", function (d) {
-                followCursor();
-                highlightCurrentTree(d);
-            })
-            .on('mouseleave', function (d) {
-                resetTreeOpacity();
-                if (!$("#blocker").hasClass("show"))
-                {
-                    d3.select("#tooltip").attr("class", "hidden");
-                }
-            })
-            .on('click', function(d){
-                modalBoxShow(d);
-            })
-            .style("stroke", "#fff")
-            .style("fill", function (d) {
-                return "#8F8F8F";
-            })
-            .style("fill-rule", "evenodd")
-            .style("cursor", "pointer");
+        .data(partition.nodes)
+        .enter().append("path")
+        .attr("id", function (d) {
+            return "path" + d.module_id;
+        })
+        .attr("class", function (d) {
+            return "path" + d.module_id;
+        })
+        .attr("d", arc)
+        .on("mouseenter", function (d) {
+            showTooltip(d);
+        })
+        .on("mousemove", function (d) {
+            followCursor();
+            highlightCurrentTree(d);
+        })
+        .on('mouseleave', function (d) {
+            resetTreeOpacity();
+            if (!$("#blocker").hasClass("show"))
+            {
+                d3.select("#tooltip").attr("class", "hidden");
+            }
+        })
+        .on('click', function(d){
+            modalBoxShow(d);
+        })
+        .style("stroke", "#fff")
+        .style("fill", function (d) {
+            return "#8F8F8F";
+        })
+        .style("fill-rule", "evenodd")
+        .style("cursor", "pointer");
 
     d3.select("#stackImgClose")
-            .on("mouseenter", function (d) {
-                d3.select("#circle").classed("icon-circle-thin fa-stack-2x", true);
-            })
-            .on('mouseleave', function (d) {
-                d3.select("#circle").classed("icon-circle-thin fa-stack-2x", false);
-            });
+        .on("mouseenter", function (d) {
+            d3.select("#circle").classed("icon-circle-thin fa-stack-2x", true);
+        })
+        .on('mouseleave', function (d) {
+            d3.select("#circle").classed("icon-circle-thin fa-stack-2x", false);
+        });
 
 
     function showTooltip(d)
@@ -205,38 +205,38 @@ function createChart(iris)
                 hasPrereqs = true;
                 //check if the prereqs are completed; only show those that aren't
                 var ulPrereqs = d3.select("#ulPrerequisites").selectAll("li")
-                        .data(actualPrereqs)
-                        .enter()
-                        .append("li");
+                    .data(actualPrereqs)
+                    .enter()
+                    .append("li");
 
 
                 var prereqObjArr = [];
                 ulPrereqs.append("a")
-                        .text(function (prereqs)
-                        {
-                            //search for the module names
-                            var obj = rawData.filter(function (obj) {
+                    .text(function (prereqs)
+                    {
+                        //search for the module names
+                        var obj = rawData.filter(function (obj) {
 
-                                //add each prereq to an array
-                                if (obj.module_id === prereqs)
-                                {
-                                    prereqObjArr[obj.module_id] = obj;
-                                    return obj;
-                                }
-                            })[0];
-                            if (obj !== undefined)
+                            //add each prereq to an array
+                            if (obj.module_id === prereqs)
                             {
-                                if (obj.name.length >= 85)
-                                {
-                                    var subs = obj.name.substring(0, 85);
-                                    return subs += "...";
-                                }
-                                else
-                                {
-                                    return obj.name;
-                                }
+                                prereqObjArr[obj.module_id] = obj;
+                                return obj;
                             }
-                        });
+                        })[0];
+                        if (obj !== undefined)
+                        {
+                            if (obj.name.length >= 85)
+                            {
+                                var subs = obj.name.substring(0, 85);
+                                return subs += "...";
+                            }
+                            else
+                            {
+                                return obj.name;
+                            }
+                        }
+                    });
 
 
 //              Highlight prerequisite
@@ -244,22 +244,22 @@ function createChart(iris)
                 var prereqDoms = [];
 
                 ulPrereqs
-                .on("mouseenter", function (prereqs)
-                {
-                    prereqDoms = d3.selectAll(".path" + prereqs);
-                    originalColor = prereqDoms.style("fill");
-                    prereqDoms.style("fill", "#FF6600");
-                    d3.select("#tooltip")
+                    .on("mouseenter", function (prereqs)
+                    {
+                        prereqDoms = d3.selectAll(".path" + prereqs);
+                        originalColor = prereqDoms.style("fill");
+                        prereqDoms.style("fill", "#FF6600");
+                        d3.select("#tooltip")
                             .attr("class", "seeThroughOnly");
-                })
-                .on("mouseleave", function (prereqs)
-                {
-                    d3.select(this).style("color", "black");
-                    d3.select("#tooltip")
+                    })
+                    .on("mouseleave", function (prereqs)
+                    {
+                        d3.select(this).style("color", "black");
+                        d3.select("#tooltip")
                             .attr("class", "solid");
 
-                    prereqDoms.style("fill", originalColor);
-                });
+                        prereqDoms.style("fill", originalColor);
+                    });
             }
 
 
@@ -271,10 +271,10 @@ function createChart(iris)
 
         //Show the tooltip
         d3.select("#tooltip")
-                .attr("class", "transparent");
+            .attr("class", "transparent");
 
         d3.select("#divInnerTooltip")
-                .attr("class", "hideOverflow");
+            .attr("class", "hideOverflow");
 
         //reset scroll
         var div = document.getElementById("divInnerTooltip");
@@ -297,7 +297,7 @@ function createChart(iris)
                     tit = tit.substring(0, 64) + "...";
                 }
                 tooltip.select("#spTitle")
-                        .text(tit);
+                    .text(tit);
 
                 var optionalTags = false;
                 var requiredAssignments = [];
@@ -319,21 +319,29 @@ function createChart(iris)
 
                 if (optionalTags)
                 {
-                    var ob = [];
+                    var completedArr = [];
                     //only display optional tags if required content has been completed
                     for (var i = 0; i <= requiredAssignments.length - 1; i++)
                     {
+                        var currentAssignment = requiredAssignments[i];
                         //only display optional tags if required content has been completed
                         ob = accessibleSubmissData.filter(function (ob)
                         {
-                            if (ob.content_id === requiredAssignments[i.content_id])
+                            console.log(ob.content_id);
+                            console.log(currentAssignment.content_id);
+                            if (ob.content_id === currentAssignment.content_id)
                             {
                                 return ob;
                             }
                         });
+
+                        if(ob.length>0)
+                        {
+                            completedArr.push(ob);
+                        }
                     }
 
-                    if (ob.length !== requiredAssignments.length)
+                    if (completedArr.length !== requiredAssignments.length)
                     {
                         for (var j = 0; j <= optTagsArr.length - 1; j++)
                         {
@@ -341,7 +349,7 @@ function createChart(iris)
                             var cnt = parent.contents();
                             parent.replaceWith(cnt);
                             var optTag = $("#content" + optTagsArr[j].content_id + " #divOptionalAssig");
-                            optTag.html("You must finished the required assignments first");
+                            optTag.html("This assignment is locked until you complete the required content above");
 
                             optTag.parent().css("color", "gray");
                         }
@@ -350,7 +358,7 @@ function createChart(iris)
 
                 }
 
-                if (hasPrereqs)
+                if ((hasPrereqs) && (moduleStates !== undefined))//don't block links if the professor logs in
                 {
                     var links = $("#ulAssignments li a");
                     links.each(function (i) {
@@ -362,50 +370,50 @@ function createChart(iris)
                     });
                     $(".assignmentBox").css("background-color", "#F0F0F0");
                     $(".assignmentBox").hover(
-                            function () {
-                                $(this).css("border", "1px solid #D0D0D0");
-                            });
+                        function () {
+                            $(this).css("border", "1px solid #D0D0D0");
+                        });
 
                 }
 
                 var optDiv = $("#divOptionalAssignments");
                 optionalTags ? optDiv.attr("class", "visible") : optDiv.attr("class", "hidden");
             }
-            
+
         }
 
         return true;
     }
 
-    
+
     function highlightPrerequisite(liSelect, prereqId)
     {
         var originalColors = [];
         var prereqDoms;
 
         liSelect
-        .on("mouseenter", function (d)
-        {
-            prereqDoms = d3.select(".path" + prereqId)
-            .each(function(d){
-                originalColors[prereqId] = d.style("fill");
-                d.style("fill", "#FF6600");
-            });
-            
-            d3.select("#tooltip")
-            .attr("class", "seeThroughOnly");
-        })
-        .on("mouseleave", function (d)
-        {
-            d3.select(this).style("color", "black");
-            d3.select("#tooltip")
-                    .attr("class", "solid");
-            for(var i=0;i<=prereqDoms.length-1;i++)
+            .on("mouseenter", function (d)
             {
-                console.log(prereqDoms[i]);
+                prereqDoms = d3.select(".path" + prereqId)
+                    .each(function(d){
+                        originalColors[prereqId] = d.style("fill");
+                        d.style("fill", "#FF6600");
+                    });
+
+                d3.select("#tooltip")
+                    .attr("class", "seeThroughOnly");
+            })
+            .on("mouseleave", function (d)
+            {
+                d3.select(this).style("color", "black");
+                d3.select("#tooltip")
+                    .attr("class", "solid");
+                for(var i=0;i<=prereqDoms.length-1;i++)
+                {
+                    console.log(prereqDoms[i]);
 //                originalColors[prereqDoms[i].]
-            }
-        });
+                }
+            });
     }
 
 
@@ -487,19 +495,19 @@ function createChart(iris)
         {
             markup = "";
             markup += "<li class='assignmentLi'>" +
-                    "<a href='" + dd.html_url + "' target='_blank'>" +
-                    "<div class='assignmentBox' id='content" + dd.content_id + "'>" +
-                    "<div class='divLeft'>" +
-                    "<span class='" + icon + "'></span><span id='spanAName'>" + dd.title + "</span>" +
-                    "</div>" +
-                    "<div class='divRight'>" +
-                    "<span id='spanAStatus' class='fa icon-check'></span>" +
-                    "<span id='divStatusDesc'>Complete</span>" +
-                    "<div class='divPoints'>Score:" + ob["score"] + "/" + dd.content[0].points_possible + "</div>" +
-                    "</div>" +
-                    "</div>" +
-                    "</a>" +
-                    "</li>";
+                "<a href='" + dd.html_url + "' target='_blank'>" +
+                "<div class='assignmentBox' id='content" + dd.content_id + "'>" +
+                "<div class='divLeft'>" +
+                "<span class='" + icon + "'></span><span id='spanAName'>" + dd.title + "</span>" +
+                "</div>" +
+                "<div class='divRight'>" +
+                "<span id='spanAStatus' class='fa icon-check'></span>" +
+                "<span id='divStatusDesc'>Complete</span>" +
+                "<div class='divPoints'>Score:" + ob["score"] + "/" + dd.content[0].points_possible + "</div>" +
+                "</div>" +
+                "</div>" +
+                "</a>" +
+                "</li>";
         }
         else
         {
@@ -507,43 +515,41 @@ function createChart(iris)
             {
                 markup = "";
                 markup += "<li class='assignmentLi subheaderLi'>" +
-                        "<a href='" + dd.html_url + "' target='_blank'>" +
-                        "<div class='subheaderBox' id='content" + dd.content_id + "'>" +
-                        "<div class='divSubheader'>" +
-                        "<h5>" + dd.title + "</h5>" +
-                        "</div>" +
-                        "</div>" +
-                        "</a>" +
-                        "</li>";
+                    "<div class='subheaderBox' id='content" + dd.content_id + "'>" +
+                    "<div class='divSubheader'>" +
+                    "<h5>" + dd.title + "</h5>" +
+                    "</div>" +
+                    "</div>" +
+                    "</li>";
             }
             else if ((dd.type === "Assigment") || (dd.type === "Quiz") || (dd.type === "Discussion"))
             {
                 markup = "";
                 markup += "<li class='assignmentLi'>" +
-                        "<a href='" + dd.html_url + "' target='_blank'>" +
-                        "<div class='assignmentBox' id='content" + dd.content_id + "'>" +
-                        "<div class='divLeft'>" +
-                        "<span class='" + icon + "'></span><span id='spanAName'>" + dd.title + "</span><div id='divOptionalAssig'></div>" +
-                        "</div>" +
-                        "<div class='divRight'>" +
-                        "<div class='divPoints'>--/" + dd.content[0].points_possible + " pts</div>" +
-                        "</div>" +
-                        "</div>" +
-                        "</a>" +
-                        "</li>";
+                    "<a href='" + dd.html_url + "' target='_blank'>" +
+                    "<div class='assignmentBox' id='content" + dd.content_id + "'>" +
+                    "<div class='divLeft'>" +
+                    "<span class='" + icon + "'></span><span id='spanAName'>" + dd.title + "</span><div id='divOptionalAssig'></div>" +
+                    "</div>" +
+                    "<div class='divRight'>" +
+                    "<div class='divPoints'>--/" + dd.content[0].points_possible + " pts</div>" +
+                    "</div>" +
+                    "</div>" +
+                    "</a>" +
+                    "</li>";
             }
             else
             {
                 markup = "";
                 markup += "<li class='assignmentLi'>" +
-                        "<a href='" + dd.html_url + "' target='_blank'>" +
-                        "<div class='assignmentBox' id='content" + dd.content_id + "'>" +
-                        "<div class='divLeft'>" +
-                        "<span class='" + icon + "'></span><span id='spanAName'>" + dd.title + "</span><div id='divOptionalAssig'></div>" +
-                        "</div>" +
-                        "</div>" +
-                        "</a>" +
-                        "</li>";
+                    "<a href='" + dd.html_url + "' target='_blank'>" +
+                    "<div class='assignmentBox' id='content" + dd.content_id + "'>" +
+                    "<div class='divLeft'>" +
+                    "<span class='" + icon + "'></span><span id='spanAName'>" + dd.title + "</span><div id='divOptionalAssig'></div>" +
+                    "</div>" +
+                    "</div>" +
+                    "</a>" +
+                    "</li>";
             }
 
 
@@ -559,7 +565,7 @@ function createChart(iris)
         return optional;
     }
     /***************************************** tooltip to follow mouse on each movement ****************************************/
-    function followCursor() 
+    function followCursor()
     {
         var tooltip = d3.select("#tooltip");
         //find width and height of tooltip and of the document.
@@ -569,16 +575,16 @@ function createChart(iris)
         var body = document.body,
             html = document.documentElement;
 
-        var height = Math.max( body.scrollHeight, body.offsetHeight, 
-                               html.clientHeight, html.scrollHeight, html.offsetHeight );
+        var height = Math.max( body.scrollHeight, body.offsetHeight,
+            html.clientHeight, html.scrollHeight, html.offsetHeight );
 //        var visibleHeight = html.clientHeight;
 //        var yOffset = window.pageYOffset;
         var docWidth = parseInt(window.innerWidth||document.documentElement.clientWidth||document.body.clientWidth||0) - 30; ///-30 to account for the right scrolling bar
         var docHeight = parseInt(height);
 
-        var x = parseInt((d3.mouse(body)[0]) + 20); 
+        var x = parseInt((d3.mouse(body)[0]) + 20);
         var y = parseInt((d3.mouse(body)[1]) + 20);
-         
+
         //when running into the right frame
         //only do this if the entire document width isn't smaller than the tooltip width
         if ((x + tipWidth) > docWidth)
@@ -588,7 +594,7 @@ function createChart(iris)
 
         if (docHeight > tipHeight)
         {//when running into the bottom frame
-        //only do this if the entire document height isn't smaller than the tooltip height
+            //only do this if the entire document height isn't smaller than the tooltip height
             var visibleHeight = html.clientHeight;
             var avaHeight = visibleHeight - y;
             if ((avaHeight) < (tipHeight / 2))
@@ -612,14 +618,14 @@ function createChart(iris)
 
         // Fade all the segments.
         d3.selectAll("path")
-                .style("opacity", 0.3);
+            .style("opacity", 0.3);
 
         // Then highlight only those that are an ancestor of the current segment.
         svg.selectAll("path")
-                .filter(function (node) {
-                    return (sequenceArray.indexOf(node) >= 0);
-                })
-                .style("opacity", 1);
+            .filter(function (node) {
+                return (sequenceArray.indexOf(node) >= 0);
+            })
+            .style("opacity", 1);
 
         return true;
     }
@@ -632,15 +638,15 @@ function createChart(iris)
         d3.selectAll("path").on("mouseover", null);
 
         d3.selectAll("path")
-                .style("opacity", 1)
-                .on("mouseover", highlightCurrentTree);
+            .style("opacity", 1)
+            .on("mouseover", highlightCurrentTree);
 
         return true;
     }
 
     /***************************************** Get Ancestors ****************************************/
 // Given a node in a partition layout, return an array of all of its ancestor
-// nodes, highest first, 
+// nodes, highest first,
     function getAncestors(node) {
         var path = [];
         var current = node;
@@ -653,8 +659,8 @@ function createChart(iris)
         return path;
     }
 
-    
-    function breadcrumbPoints(d, i) 
+
+    function breadcrumbPoints(d, i)
     {
         //b.w = (d.name.length*10);
         var points = [];
@@ -668,8 +674,8 @@ function createChart(iris)
         }
         return points.join(" ");
     }
-    
-    function breadCrumbFill(node) 
+
+    function breadCrumbFill(node)
     {
         var path = [];
         var current = node;
@@ -678,60 +684,60 @@ function createChart(iris)
             current = current.parent;
         }
         var g = d3.select("#trail")
-                .selectAll("g")
-                .data(path, function (d) {
-                    return d.name + d.depth;
-                });
+            .selectAll("g")
+            .data(path, function (d) {
+                return d.name + d.depth;
+            });
 
         // Add breadcrumb and label for entering nodes.
         var entering = g.enter().append("svg:g");
 
         entering.append("svg:polygon")
-                .attr("points", breadcrumbPoints)
+            .attr("points", breadcrumbPoints)
 
-                .style("fill", function (d) {
-                    if (moduleStates !== undefined)
+            .style("fill", function (d) {
+                if (moduleStates !== undefined)
+                {
+                    var ob = moduleStates.filter(function (ob)
                     {
-                        var ob = moduleStates.filter(function (ob)
+                        var id = parseInt(d.module_id);
+                        if (ob.module_id === id)
                         {
-                            var id = parseInt(d.module_id);
-                            if (ob.module_id === id)
-                            {
-                                return ob;
-                            }
-                        })[0];
+                            return ob;
+                        }
+                    })[0];
 
-                        var newColor;
-                        ob !== undefined ? newColor = stateColors[ob.state] : newColor = "#8F8F8F";
-                        return newColor;
+                    var newColor;
+                    ob !== undefined ? newColor = stateColors[ob.state] : newColor = "#8F8F8F";
+                    return newColor;
 
-                    }
-                    else
-                    {
+                }
+                else
+                {
 
-                        return "#8F8F8F";
-                    }
-                })
-                .style("stroke", "white");
+                    return "#8F8F8F";
+                }
+            })
+            .style("stroke", "white");
 
         //make the current polygon a different color
         //var lastPolygon = d3.select(d3.selectAll("polygon")[0].pop());
         //lastPolygon.style("fill","#fff")
 
         entering.append("svg:text")
-                .attr("x", (b.w + b.t) / 2)
-                .attr("y", b.h / 2)
-                .attr("dy", "0.35em")
-                .attr("text-anchor", "middle")
-                .text(function (d) {
+            .attr("x", (b.w + b.t) / 2)
+            .attr("y", b.h / 2)
+            .attr("dy", "0.35em")
+            .attr("text-anchor", "middle")
+            .text(function (d) {
 
-                    var name = d.name;
-                    if (name.length > 22)
-                    {
-                        name = name.substring(0, 19) + "...";
-                    }
-                    return name;
-                });
+                var name = d.name;
+                if (name.length > 22)
+                {
+                    name = name.substring(0, 19) + "...";
+                }
+                return name;
+            });
         // Set position for entering and updating nodes.
         g.attr("transform", function (d, i) {
             return "translate(" + i * (b.w + b.s) + ", 0)";
@@ -742,8 +748,8 @@ function createChart(iris)
 
         // Make the breadcrumb trail visible, if it's hidden.
         d3.select("#trail")
-                .style("visibility", "")
-                .style("overflow", "visible");
+            .style("visibility", "")
+            .style("overflow", "visible");
         return true;
     }
 
@@ -760,7 +766,7 @@ function resetTooltipContent()
     var prereqs = d3.select("#ulPrerequisites");
     prereqs.selectAll("*").remove();
     $("#tooltipDesc").html("");
-    
+
     return true;
 }
 
@@ -773,8 +779,8 @@ function processModuleStates(states,textStatus, jqXHR, stateColors)
         d = states[i];
         d3.selectAll(".path" + d.module_id)
             .style("fill", function (e) {
-            return stateColors[d.state];
-        });
+                return stateColors[d.state];
+            });
     }
 }
 
@@ -842,8 +848,11 @@ function hideModalPopup(content)
 }
 function modalBoxShow(content) {
     //IF THE BOX WAS SORT OF HIDDEN BEFORE, HERE WE NEED TO SLIDE IT UP SO ALL THE CONTENT IS VISIBLE.
-    var slideTooltip = false;
+    var animateY = false;
+    var animateX = false;
 
+    var scrollTop = $(window).scrollTop();
+    var scrollLeft = $(window).scrollLeft();
 
     var docWidth = parseInt(window.innerWidth);
     var docHeight = parseInt(window.innerHeight);
@@ -853,13 +862,15 @@ function modalBoxShow(content) {
     var tipHeight = parseInt(tooltip.height(), 10);
 
     //Get x/y values for the tooltip
-    var x = tooltip.offset().left;
-    var y = tooltip.offset().top;
+//     var x = tooltip.offset().left;
+    var x = tooltip.offset().left-scrollLeft;
+//     var y = tooltip.offset().top;
+    var y = tooltip.offset().top-scrollTop;
 
     var avaWidth = docWidth - x;
     if (avaWidth < tipWidth)
     {//slide it left by
-        slideTooltip = true;
+        animateX = true;
         x = tipWidth - avaWidth;
 
     }
@@ -867,20 +878,26 @@ function modalBoxShow(content) {
     var avaHeight = docHeight - y;
     if (avaHeight < tipHeight)
     {
-        slideTooltip = true;
-        y = y-(tipHeight-avaHeight)-20;//give it a little extra room when it slides up
+        animateY = true;
+        y = scrollTop + y-(tipHeight-avaHeight)-20;//give it a little extra room when it slides up
     }
 
-    if (slideTooltip)
+    if (animateY)
     {
         $("#tooltip").animate({
-            left: x,
             top: y
         }, 300);
     }
 
+    if (animateX)
+    {
+        $("#tooltip").animate({
+            left: x
+        }, 300);
+    }
+
     d3.select("#divInnerTooltip")
-            .attr("class", "showOverflow");
+        .attr("class", "showOverflow");
 
 
     //add click event to close button of modal popup
@@ -893,13 +910,13 @@ function modalBoxShow(content) {
 
 
     d3.select("#tooltip")
-            .attr("class", "solid");
+        .attr("class", "solid");
 
     //blocker
     d3.select("#blocker").attr("class", "show")
-            .on("click", function () {
-                hideModalPopup();
-            });
+        .on("click", function () {
+            hideModalPopup();
+        });
 
     //reset scroll
     var div = document.getElementById("divInnerTooltip");

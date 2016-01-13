@@ -23,5 +23,17 @@
 }
 
 .grade_table{
-    color:#707070;
+	color:#707070;
+}
+
+.table-gradingScheme
+{
+	font-size:12px;
+	margin-bottom:0 !important;
+}
+.table-gradingScheme tbody tr td{
+	padding:0px 0px 0px 6px
+}
+.table-gradingScheme thead tr th{
+	padding: 0 5px !important;
 }

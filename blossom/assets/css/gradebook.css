@@ -9,16 +9,16 @@
 
 .tooltip
 {
-    position: absolute;	
-    max-width: 400px;			
+    position: absolute;
+    max-width: 400px;
     width: auto;
-    height: auto;					
-    padding: 3px;				
-    font: 12px sans-serif;		
-    background: lightsteelblue;	
-    border: 0px;		
-    border-radius: 8px;			
-    pointer-events: none;			
+    height: auto;
+    padding: 3px;
+    font: 12px sans-serif;
+    background: lightsteelblue;
+    border: 0px;
+    border-radius: 8px;
+    pointer-events: none;
 }
 a{
     color:dimgray !important;
@@ -32,39 +32,42 @@ a:hover
 
 .table
 {
-	font-size:13px;
+    font-size:13px;
 }
 .table caption
 {
-	font-size:15px;
-	font-weight:bold;
-	color:black;
+    font-size:15px;
+    font-weight:bold;
+    color:black;
 }
 
 .imp
 {
-	color:black !important;
-	font-weight: bold !important;
+    color:black !important;
+    font-weight: bold !important;
 }
 .table th
 {
-	color:#3A2A30 !important;
-	padding:10px !important
+    color:#3A2A30 !important;
+    padding:10px !important
 }
 .table th:first-child
 {
-	padding-left:10px;
+    padding-left:10px;
 }
 .table th:nth-child(2)
 {
-	text-align: center;
+    text-align: center;
 }
 .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
-  background-color: #ebf1ff;
+    background-color: #ebf1ff;
 }
 .gradebook
 {
-	padding:15px;
+    padding:0 15px 0 15px;
+}
+.gradebook.top{
+    padding-top: 15px;
 }
 .done
 {
@@ -73,19 +76,19 @@ a:hover
 
 .boxplot
 {
-	width:35%;    
+    width:35%;
 }
 .score
 {
-	width:8%;
-	padding-left:10px !important;
-	text-align: right;
+    width:8%;
+    padding-left:10px !important;
+    text-align: right;
 }
 .name
 {
-	width:65%;
-	padding-left:10px !important;
-	text-align:left;
+    width:65%;
+    padding-left:10px !important;
+    text-align:left;
 }
 .whisker
 {
@@ -103,24 +106,25 @@ a:hover
 }
 #topContainer
 {
-	text-align:center;
+    text-align:center;
+    margin:auto;
 }
 #gridContainer
 {
-	margin-top:40px;
-	width:900px !important;
+    margin-top:50px;
+    width:900px !important;
 }
 .container th:after {
-	margin-right:5px;
+    margin-right:5px;
 }
 
 .container th:before {
-	margin-right:5px;
+    margin-right:5px;
 }
 .tdName
 {
-	width:20%;
-	padding-left:10px !important;
+    width:20%;
+    padding-left:10px !important;
 }
 
 /*styles for the professor line graph*/
@@ -132,46 +136,64 @@ a:hover
     shape-rendering: crispEdges;
 }
 #chart{
-	display: inline-block;
-	float:left;
+    display: inline-block;
+    float:left;
 }
-#chart path { 
+#chart path {
     stroke: steelblue;
     stroke-width: 2;
     fill: none;
 }
 .multiselect {
-	width:180px;
-	height:250px;
+    width:180px;
+    height:370px;
     border:solid 1px #c0c0c0;
     overflow:auto;
     text-align:left;
 }
- 
+
 .multiselect label {
     display:block;
 }
- 
+
 .multiselect-on {
     color:#ffffff;
     background-color:#000099;
 }
 
+.checkboxmultiselect
+{
+    margin:0 3px !important;
+}
 .labelSelectAll
 {
-	float:left;
+    float:left;
 }
 .todayLine
 {
-	stroke:orange;
+    stroke:orange;
 }
 
 .bluePath
 {
-	opacity:0.5;
+    opacity:0.5;
 }
 
 .cir
 {
-	opacity: 0.3;
+    opacity: 0.3;
+}
+
+
+.table-gradingScheme
+{
+    font-size:12px;
+    margin-bottom:0 !important;
+}
+.table-gradingScheme tbody tr td{
+    padding:0px 0px 0px 6px
+}
+.table-gradingScheme thead tr th{
+    padding: 0 5px !important;
+    text-align:left !important;
 }

@@ -1,20 +1,20 @@
 <div data-control="toolbar">
     <div class="btn-group">
-    	
+
         <a href="<?= Backend::url('delphinium/blossom/Experience/create') ?>" class="btn btn-primary oc-icon-plus">New Experience Instance</a>
         <button
-            class="btn btn-default oc-icon-trash-o"
-            disabled="disabled"
-            onclick="$(this).data('request-data', {
-                checked: $('.control-list').listWidget('getChecked')
-            })"
-            data-request="onDelete"
-            data-request-confirm="Are you sure?"
-            data-trigger-type="enable"
-            data-trigger=".control-list input[type=checkbox]"
-            data-trigger-condition="checked"
-            data-stripe-load-indicator>
-            Remove
+                class="btn btn-default oc-icon-trash-o"
+                disabled="disabled"
+                onclick="$(this).data('request-data', {
+            checked: $('.control-list').listWidget('getChecked')
+        })"
+                data-request="onDelete"
+                data-request-confirm="Are you sure you want to delete the selected item(s)?"
+                data-trigger-action="enable"
+                data-trigger=".control-list input[type=checkbox]"
+                data-trigger-condition="checked"
+                data-request-success="$(this).prop('disabled', true)"
+                data-stripe-load-indicator>
         </button>
     </div>
 </div>

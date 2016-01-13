@@ -116,7 +116,6 @@ class Experience extends ComponentBase {
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/experience.js");
             $this->addCss("/plugins/delphinium/blossom/assets/css/experience.css");
             $this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
-            $this->addCss("/plugins/delphinium/blossom/assets/css/font-awesome.min.css");
 
             $this->roots = new Roots();
             $instance = ExperienceModel::find($this->property('Instance'));
@@ -135,7 +134,7 @@ class Experience extends ComponentBase {
             $this->bonusSeconds = $instance->bonus_days * 24 * 60 * 60;
             $this->bonusPerSecond = $instance->bonus_per_day / 24 / 60 / 60;
 
-			$this->page['bonusDays'] = $instance->bonus_days;
+            $this->page['bonusDays'] = $instance->bonus_days;
             $this->page['maxBonus'] = $this->bonusSeconds * $this->bonusPerSecond;
             //set page variables
             $this->page['instanceId'] = $instance->id;
@@ -145,15 +144,14 @@ class Experience extends ComponentBase {
             $this->page['experienceAnimate'] = $instance->animate;
             $this->page['redLine'] = $this->getRedLinePoints($this->property('Instance'));
         } catch (\GuzzleHttp\Exception\ClientException $e) {
-            echo "You must be a student to use this app, or go into 'Student View'. "
-            . "Also, make sure that an Instructor has approved this application";
+            echo "In order for experience to work properly you must be a student, or go into 'Student View'";
             return;
         }
     }
 
     public function getRedLinePoints($experienceInstanceId) {//only deal with UTC dates. The model will return the date in the user's timezone, but we'll convert it to UTC
         $instance = ExperienceModel::find($experienceInstanceId);
-        
+
         $utcTimeZone = new DateTimeZone('UTC');
         $now = new DateTime('now', $utcTimeZone);
         $startDateUTC = $instance->start_date->setTimezone($utcTimeZone);
@@ -161,6 +159,11 @@ class Experience extends ComponentBase {
         $currentSeconds = abs($now->getTimestamp() - $startDateUTC->getTimestamp());
 
         $this->ptsPerSecond = $this->getPtsPerSecond($startDateUTC, $endDateUTC, $instance->total_points);
+
+        if($startDateUTC > $now)
+        {
+            return 0;
+        }
         return floor($this->ptsPerSecond * $currentSeconds);
     }
 
@@ -200,21 +203,104 @@ class Experience extends ComponentBase {
         return $analytics;
     }
 
-    public function getMilestoneClearanceInfo($experienceInstanceId, $userId = null) {
-        $this->initVariables($experienceInstanceId, $userId);
+    // We are overloading some classes because we need to optimize the code by doing some sort of dependency injection.
+    public function getMilestoneClearanceInfoNew($experienceInstanceId, $ptsPerSecond, $stDateUTC, $bonusPerSecond, $bonusSeconds,
+                                                 $penaltyPerSecond, $penaltySeconds, $userSubmissions)
+    {
         $milestonesDesc = ExperienceModel::with(array('milestones' =>
-                            function($query) {
-                                $query->orderBy('points', 'DESC');
-                            }))
-                        ->where(array(
-                            'id' => $experienceInstanceId
-                        ))->first()->milestones;
+            function($query) {
+                $query->orderBy('points', 'DESC');
+            }))
+            ->where(array(
+                'id' => $experienceInstanceId
+            ))->first()->milestones;
         $expInstance = ExperienceModel::find($experienceInstanceId);
         $utcTimeZone = new DateTimeZone('UTC');
         $endDateUTC = $expInstance->end_date->setTimezone($utcTimeZone);
-              
+
         $localMilestones = $milestonesDesc;
-        
+
+        //order submissions by date
+        usort($userSubmissions, function($a, $b) {
+            $ad = new DateTime($a['submitted_at']);
+            $bd = new DateTime($b['submitted_at']);
+
+            if ($ad == $bd) {
+                return 0;
+            }
+
+            return $ad > $bd ? 1 : -1;
+        });
+        $milestoneInfo = array();
+        $carryingScore = 0;
+        foreach ($userSubmissions as $submission) {
+            $carryingScore = $carryingScore + floatval($submission['score']);
+            foreach ($localMilestones as $key => $mile) {
+
+                if ($carryingScore >= $mile->points) {//milestone cleared
+                    $mileClearance = new \stdClass();
+                    $mileClearance->milestone_id = $mile->id;
+                    $mileClearance->name = $mile->name;
+                    $mileClearance->cleared = 1;
+                    $mileClearance->cleared_at = $submission['submitted_at'];
+                    // $mileClearance->bonusPenalty = $this->calculateBonusOrPenalty($mile->points, new DateTime($submission['submitted_at']), $endDateUTC, true);
+                    $mileClearance->bonusPenalty = $this->calculateBonusOrPenaltyNew($mile->points, new DateTime($submission['submitted_at']), $endDateUTC, true,
+                        $ptsPerSecond, $stDateUTC, $bonusSeconds, $bonusPerSecond, $penaltySeconds, $penaltyPerSecond);
+                    $mileClearance->points = $mile->points;
+                    // $mileClearance->due_at = $this->calculateMilestoneDueDate($mile->points);
+                    $mileClearance->due_at = $this->calculateMilestoneDueDateNew($mile->points, $ptsPerSecond, $stDateUTC);
+                    $milestoneInfo[] = $mileClearance;
+                    unset($localMilestones[$key]);
+                }
+            }
+        }
+
+        //sort the remaining milestones by points asc
+        $mileArray = $milestonesDesc->toArray();
+        usort($mileArray, function($a, $b) {
+            $ad = $a['points'];
+            $bd = $b['points'];
+
+            if ($ad == $bd) {
+                return 0;
+            }
+
+            return $ad > $bd ? 1 : -1;
+        });
+
+        foreach ($mileArray as $left) {//for the milestones that were left
+            $mileClearance = new \stdClass();
+            $mileClearance->milestone_id = $left['id'];
+            $mileClearance->name = $left['name'];
+            $mileClearance->cleared = 0;
+            $mileClearance->cleared_at = null;
+            // $mileClearance->bonusPenalty = $this->calculateBonusOrPenalty($left['points'], new DateTime('now'), $endDateUTC, false);
+            $mileClearance->bonusPenalty = $this->calculateBonusOrPenaltyNew($left['points'], new DateTime('now'), $endDateUTC, false,
+                $ptsPerSecond, $stDateUTC, $bonusSeconds, $bonusPerSecond, $penaltySeconds, $penaltyPerSecond);
+            $mileClearance->points = $left['points'];
+
+            // $date = $this->calculateMilestoneDueDate($left['points']);
+            $mileClearance->due_at = $this->calculateMilestoneDueDateNew($left['points'], $ptsPerSecond, $stDateUTC);
+            $milestoneInfo[] = $mileClearance;
+        }
+        return $milestoneInfo;
+
+    }
+    public function getMilestoneClearanceInfo($experienceInstanceId, $userId = null) {
+        $this->initVariables($experienceInstanceId, $userId);
+        $milestonesDesc = ExperienceModel::with(array('milestones' =>
+            function($query) {
+                $query->orderBy('points', 'DESC');
+            }))
+            ->where(array(
+                'id' => $experienceInstanceId
+            ))->first()->milestones;
+        $expInstance = ExperienceModel::find($experienceInstanceId);
+        $utcTimeZone = new DateTimeZone('UTC');
+        $endDateUTC = $expInstance->end_date->setTimezone($utcTimeZone);
+
+        $localMilestones = $milestonesDesc;
+
         //order submissions by date
         usort($this->submissions, function($a, $b) {
             $ad = new DateTime($a['submitted_at']);
@@ -231,7 +317,7 @@ class Experience extends ComponentBase {
         foreach ($this->submissions as $submission) {
 
             $carryingScore = $carryingScore + floatval($submission['score']);
-            
+
             foreach ($localMilestones as $key => $mile) {
 
                 if ($carryingScore >= $mile->points) {//milestone cleared
@@ -279,10 +365,32 @@ class Experience extends ComponentBase {
         return $milestoneInfo;
     }
 
+    // We are overloading some classes because we need to optimize the code by doing some sort of dependency injection.
     public function calculateTotalBonusPenalties($experienceInstanceId, $userId = null) {
-    
+
         $mileClearance = $this->getMilestoneClearanceInfo($experienceInstanceId, $userId);
 
+        $obj = new \stdClass();
+        $obj->bonus = 0;
+        $obj->penalties = 0;
+
+        foreach ($mileClearance as $item) {
+            if (($item->cleared)) {
+                if ($item->bonusPenalty > 0) {
+                    $obj->bonus = $obj->bonus + $item->bonusPenalty;
+                } else {
+                    $obj->penalties = $obj->penalties + $item->bonusPenalty;
+                }
+            }
+        }
+        return $obj;
+    }
+
+    public function calculateTotalBonusPenaltiesNew($experienceInstanceId, $userSubmissions, $ptsPerSecond, $stDateUTC, $bonusPerSecond, $bonusSeconds,
+                                                    $penaltyPerSecond, $penaltySeconds)
+    {
+        $mileClearance = $this->getMilestoneClearanceInfoNew($experienceInstanceId, $ptsPerSecond, $stDateUTC, $bonusPerSecond, $bonusSeconds,
+            $penaltyPerSecond, $penaltySeconds, $userSubmissions);
         $obj = new \stdClass();
         $obj->bonus = 0;
         $obj->penalties = 0;
@@ -319,8 +427,8 @@ class Experience extends ComponentBase {
         }
     }
 
-    private function getSubmissions($userId = null) {
-    
+    public function getSubmissions($userId = null) {
+
         if (is_null($userId)) {
             if (!isset($_SESSION)) {
                 session_start();
@@ -328,11 +436,19 @@ class Experience extends ComponentBase {
 
             $userId = $_SESSION['userID'];
         }
-        
+
         $roots = new Roots();
         $request = new SubmissionsRequest(ActionType::GET, array($userId), false, array(), true, false, true, false);
-        $submissions = $roots->submissions($request);
-        return $submissions;
+
+
+        try
+        {
+            $submissions = $roots->submissions($request);
+            return $submissions;
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            return[];
+        }
+
     }
 
     private function calculateRedLine(DateTime $startDateUTC, DateTime $endDateUTC, $totalPoints) {//-Red line = current day (in points)
@@ -344,6 +460,7 @@ class Experience extends ComponentBase {
         return floor($ptsPerSecond * $currentSeconds);
     }
 
+    // We are overloading some classes because we need to optimize the code by doing some sort of dependency injection.
     private function calculateMilestoneDueDate($milestonePoints) {
         $secsTranspired = ceil($milestonePoints / $this->ptsPerSecond);
         $intervalSeconds = "PT" . $secsTranspired . "S";
@@ -357,8 +474,23 @@ class Experience extends ComponentBase {
         return $localDate;
     }
 
+    private function calculateMilestoneDueDateNew($milestonePoints, $ptsPerSecond, $startDateUTC)
+    {
+        $secsTranspired = ceil($milestonePoints / $ptsPerSecond);
+        $intervalSeconds = "PT" . $secsTranspired . "S";
+
+        $sDate = clone($startDateUTC);
+        $dueDate = $sDate->add(new \DateInterval($intervalSeconds));
+
+        //set to user's timezone
+        $localDate = Utils::setLocalTimezone($dueDate);
+
+        return $localDate;
+    }
+
+    // We are overloading some classes because we need to optimize the code by doing some sort of dependency injection.
     private function calculateBonusOrPenalty($milestonePoints, $submittedAt, $endExperienceDateUTC, $turnedIn) {
-    	if(intval($milestonePoints)===0)
+        if(intval($milestonePoints)===0)
         {//If students complete their first assignment after the first milestone is due, even though the milestone is worth zero points,
             //if will consider it late and will give them penalty points.
             return 0;
@@ -392,6 +524,42 @@ class Experience extends ComponentBase {
         }
     }
 
+    private function calculateBonusOrPenaltyNew($milestonePoints, $submittedAt, $endExperienceDateUTC, $turnedIn, $ptsPerSecond,
+                                                $startDateUTC, $inBonusSeconds, $inBonusPerSecond, $inPenaltySeconds, $inPenaltyPerSecond)
+    {
+        if(intval($milestonePoints)===0)
+        {//If students complete their first assignment after the first milestone is due, even though the milestone is worth zero points,
+            //if will consider it late and will give them penalty points.
+            return 0;
+        }
+        $secsTranspired = ceil($milestonePoints / $ptsPerSecond);
+        $intervalSeconds = "PT" . $secsTranspired . "S";
+        $sDate = clone($startDateUTC);
+        $dueDate = $sDate->add(new \DateInterval($intervalSeconds));
+        $diffSeconds = abs($dueDate->getTimestamp() - $submittedAt->getTimestamp());
+
+        if ($dueDate > $submittedAt) {//bonus
+            $bonusSeconds = ($diffSeconds > $inBonusSeconds) ? $inBonusSeconds : $diffSeconds;
+            return $bonusSeconds * $inBonusPerSecond;
+        } else if ($dueDate < $submittedAt) {//penalties
+            $penaltySeconds = ($diffSeconds > $inPenaltySeconds) ? $inPenaltySeconds : $diffSeconds;
+            //For assignments that have not been turned in, late days after the last day of experience should not count.
+            //the penalties days should not go beyond the last day of experience, so it the due date for a milestone was one day before
+            //the last day of experience, then the max penalties days should be one day
+            if(!$turnedIn)
+            {
+                $secondsLate = "PT" . $penaltySeconds . "S";
+                $todayPlusDaysLate = $submittedAt->add(new \DateInterval($secondsLate));
+                if ($todayPlusDaysLate > $endExperienceDateUTC)
+                {
+                    $penaltySeconds = abs($todayPlusDaysLate->getTimestamp() - $endExperienceDateUTC->getTimestamp());
+                }
+            }
+            return -($penaltySeconds * $inPenaltyPerSecond);
+        } else {//neither
+            return 0;
+        }
+    }
     public function getPtsPerSecond(DateTime $UTCstartDate, DateTime $UTCendDate, $totalPoints) {
         $intervalSeconds = abs($UTCstartDate->getTimestamp() - $UTCendDate->getTimestamp());
         return $totalPoints / $intervalSeconds;

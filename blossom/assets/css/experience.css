@@ -11,19 +11,19 @@
 }
 
 .main text {
-    font: 10px sans-serif;	
+    font: 10px sans-serif;
 }
 
 circle {
     fill: steelblue;
 }
 .dot{
-    opacity: 0.2; 
-    stroke:none !important;  
+    opacity: 0.2;
+    stroke:none !important;
 }
 
 .gradedot{
-    fill: #FD994C; 
+    fill: #FD994C;
     stroke:black;
     z-index:1000;
 }
@@ -33,18 +33,18 @@ circle {
     padding:10px
 }
 
-div.tooltip {	
-    position: absolute;			
+div.tooltip {
+    position: absolute;
     text-align: center;
-    max-width: 400px;			
+    max-width: 400px;
     width: auto;
-    height: auto;					
-    padding: 3px;				
-    font: 12px sans-serif;		
-    background: lightsteelblue;	
-    border: 0px;		
-    border-radius: 8px;			
-    pointer-events: none;			
+    height: auto;
+    padding: 3px;
+    font: 12px sans-serif;
+    background: lightsteelblue;
+    border: 0px;
+    border-radius: 8px;
+    pointer-events: none;
 }
 
 .bonusPenalty
@@ -61,4 +61,8 @@ div.tooltip {
 {
     font-size:12px;
     margin-left:3px;
+}
+#redLine
+{
+    z-index:1000;
 }

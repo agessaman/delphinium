@@ -11,6 +11,7 @@ class UserCourse extends Model
 
     public $table = 'delphinium_roots_users_course';
 
+    protected $primaryKey = 'id';
     /*
      * Validation
      */
@@ -20,12 +21,12 @@ class UserCourse extends Model
         'role' => 'required'
     ];
 
-    
+
     /**
      * @var array Relations
      */
     public $belongsTo = [
-        'user' => ['Delphinium\Roots\Models\User', 'table' => 'delphinium_roots_users']
+        'user' => ['Delphinium\Roots\Models\User', 'table' => 'delphinium_roots_users', 'foreignKey'=>'user_id']
     ];
 
     /**

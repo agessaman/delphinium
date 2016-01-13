@@ -11,7 +11,7 @@ use Delphinium\Blossom\Components\Gradebook as GradebookComponent;
 use \DateTime;
 use DateTimeZone;
 
-class RestfulApi extends Controller 
+class RestfulApi extends Controller
 {
     private $roots;
     private $instance;
@@ -23,19 +23,25 @@ class RestfulApi extends Controller
     private $bonusSeconds;
     private $penaltyPerSecond;
     private $penaltySeconds;
-    
+
     public function getMilestoneClearanceInfo()
     {
-        $this->submissions = $this->getSubmissions();
-        $instanceId = \Input::get('experienceInstanceId');
-        
-        $expController = new ExperienceController();
-        $milestoneInfo = $expController->getMilestoneClearanceInfo($instanceId);
-        
-        return $milestoneInfo;
+
+        try{
+            $this->submissions = $this->getSubmissions();
+            $instanceId = \Input::get('experienceInstanceId');
+
+            $expController = new ExperienceController();
+            $milestoneInfo = $expController->getMilestoneClearanceInfo($instanceId);
+
+            return $milestoneInfo;
+
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            return[];
+        }
     }
-    
-    
+
+
     public function getStudentsScores()
     {
         if(is_null($this->roots))
@@ -44,7 +50,7 @@ class RestfulApi extends Controller
         }
         $req = new SubmissionsRequest(ActionType::GET, array(), true, array(), true, true, true, false, true);
         $res = $this->roots->submissions($req);
-        
+
         $scores = array();
         $score = 0;
         $userId = 0;
@@ -71,9 +77,9 @@ class RestfulApi extends Controller
             }
         }
         return $scores;
-    
+
     }
-    
+
     private function getUserPoints()
     {
         $score =0;
@@ -81,14 +87,14 @@ class RestfulApi extends Controller
         {
             $this->submissions = $this->getSubmissions();
         }
-        
+
         foreach($this->submissions as $item)
         {
             $score = $score+floatval($item['score']);
         }
         return $score;
     }
-    
+
     private function getSubmissions()
     {
         if (!isset($_SESSION)) {
@@ -101,16 +107,16 @@ class RestfulApi extends Controller
         $submissions =  $this->roots->submissions($request);
         return $submissions;
     }
-    
+
     private function calculateBonusOrPenalty($milestonePoints, $submittedAt)//submittedAt will also be in UTC
     {
         $secsTranspired = ceil($milestonePoints/$this->ptsPerSecond);
         $intervalSeconds = "PT".$secsTranspired."S";
         $sDate = clone($this->startDate);//this start date is in UTC
-        
+
         $dueDate = $sDate->add(new \DateInterval($intervalSeconds));
         $diffSeconds = abs($dueDate->getTimestamp() - $submittedAt->getTimestamp());
-        
+
         if($dueDate>$submittedAt)
         {//bonus
             $bonusSeconds = ($diffSeconds>$this->bonusSeconds) ? $this->bonusSeconds : $diffSeconds;
@@ -121,54 +127,54 @@ class RestfulApi extends Controller
             $penaltySeconds = ($diffSeconds>$this->penaltySeconds)? $this->penaltySeconds: $diffSeconds;
             return -($penaltySeconds * $this->penaltyPerSecond);
         }
-        else    
+        else
         {//neither
             return 0;
         }
     }
-    
+
     private function calculateMilestoneDueDate($milestonePoints)
     {
         $secsTranspired = ceil($milestonePoints/$this->ptsPerSecond);
         $intervalSeconds = "PT".$secsTranspired."S";
-        
+
         $sDate = clone($this->startDate);
         $dueDate = $sDate->add(new \DateInterval($intervalSeconds));
-        
+
         return $dueDate;//this is in UTC!
     }
-    
+
     public function getPtsPerSecond(DateTime $startDate, DateTime $endDate, $totalPoints)
     {
         $intervalSeconds = abs($startDate->getTimestamp() - $endDate->getTimestamp());
         return $totalPoints/$intervalSeconds;
     }
-    
+
     public function getStudentGradebookData()
     {
-    	$gradebook = new GradebookComponent();
-    	return $gradebook->getStudentData(true);
+        $gradebook = new GradebookComponent();
+        return $gradebook->getStudentData(true);
     }
-    
+
     public function getGradeData()
     {
-    	$gradebook = new GradebookComponent();
-    	$bonusPenalties = $gradebook->getBonusPenalties();
+        $gradebook = new GradebookComponent();
+        $bonusPenalties = $gradebook->getBonusPenalties();
     }
-    
+
     public function getTotalUserPoints()
     {
-    	$exp = new ExperienceComponent();
+        $exp = new ExperienceComponent();
         $pts = $exp->getUserPoints();
     }
-    
-    
+
+
     public function getStudentChartData()
     {
-    	$studentId = (!is_null(\Input::get('studentId')))?\Input::get('studentId'):null;
-    	
+        $studentId = (!is_null(\Input::get('studentId')))?\Input::get('studentId'):null;
+
         $gradebook = new GradebookComponent();
         return $gradebook->getStudentChartData($studentId);
     }
-    
+
 }

@@ -50,8 +50,8 @@ class Bonus extends ComponentBase {
 
 
     public function onRun() {
-    	try
-    	{
+        try
+        {
             $experienceInstance = ExperienceModel::find($this->property('Experience'));
 
             //don't multiply by zero!
@@ -61,8 +61,8 @@ class Bonus extends ComponentBase {
             $this->page['minBonus'] = -$experienceInstance->penalty_days * $experienceInstance->penalty_per_day * $milestoneNum;
             $size = $this->property('Size');
             $this->page['bonusSize'] = $size;
-            
-            
+
+
             $bonusPenalties = $this->getBonusPenalties();
 
             $this->page['totalBonus'] = $bonusPenalties === 0 ? 0 : round($bonusPenalties->bonus, 2);
@@ -72,7 +72,6 @@ class Bonus extends ComponentBase {
             $this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
         }
         catch (\GuzzleHttp\Exception\ClientException $e) {
-            echo "You must be a student to use the Bonus component";
             return;
         }
     }

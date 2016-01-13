@@ -7,7 +7,7 @@ class GuzzleHelper
 {
     public static function makeRequest($request, $url, $getRawResponse = false)
     {
-        
+
         $client = new Client();
         switch($request->getActionType())
         {
@@ -35,14 +35,14 @@ class GuzzleHelper
         }
         return $response;
     }
-    
+
     public static function recursiveGet($url)
     {
         $data = GuzzleHelper::getAsset($url);
         $currentPage = 1;
-        $hasData = true; 
+        $hasData = true;
         while($hasData)
-        {   
+        {
             $currentPage = $currentPage + 1;
             $newUrl = $url."&page={$currentPage}";
             $next_data = (GuzzleHelper::getAsset($newUrl));
@@ -56,15 +56,20 @@ class GuzzleHelper
             }
         }
         return $data;
-        
+
     }
-    
+
     public static function getAsset($url)
     {
         $client = new Client();
+//         try {
         $response = $client->get($url);
+
         $data = json_decode($response->getBody());
         return $data;
+        // } catch (\GuzzleHttp\Exception\ClientException $e) {
+//             return [];
+//         }
     }
     public static function postData($url)
     {
@@ -72,26 +77,26 @@ class GuzzleHelper
         $response =  $client->post($url);
         return json_decode($response->getBody());
     }
-    
+
     public static function postDataWithParams($url, $obj)
     {
         $client = new Client();
         $response = $client->post($url,[
-              'json' => json_encode($obj)
-           ]);
-        
-        
+            'json' => json_encode($obj)
+        ]);
+
+
 //        $response = $client->post($url, array(
 //            'headers' => array('Content-type' => 'application/json'),
 //            'body' => json_encode($paramArray)
 //        ));
-        
-        
-        
+
+
+
 //        $obj->attempt = $attempt;
 //        $obj->validation_token = $quizSubmission->validation_token;
 //        $obj->quiz_questions = ($questions);
-        
+
 //        this doesn't work
 //        $response = $client->request('POST', $url, [
 //            'json' => [
@@ -103,20 +108,20 @@ class GuzzleHelper
 //            ]
 //        ]);
 //        echo json_encode($response->getBody());
-        
+
         //this gives 403
 //        $response = $client->post($url, ['json' => json_encode($paramArray)]);
-        
-        
+
+
         //this gves 403
 //        $request = $client->post($url,($paramArray->toArray()));
 //        $request->setBody(json_encode($paramArray)); #set body!
 //        $response = $request->send();
-//        
+//
 //        echo json_encode($request);
 //        $json = json_encode($paramArray);
 //        $response = $client->request('POST', $url, ['json' => $json]);
-        
+
 //        $response =$client->post($url,[
 //        'body' => array(
 //             json_encode($paramArray)
@@ -156,9 +161,9 @@ class GuzzleHelper
 //        $result = $client->send($request);
 //        echo json_encode($result);
 //        return $result;
-      
+
     }
-            
+
     public static function constructUrl($urlPieces, $urlArgs = null)
     {
         $urlStr = "";
@@ -175,7 +180,7 @@ class GuzzleHelper
                 $urlStr.= $urlPieces[$i]."/";
             }
         }
-        
+
         if($urlArgs)
         {
             $urlParamsStr = "";
@@ -188,9 +193,9 @@ class GuzzleHelper
                 }
             }
         }
-     
+
         $url = $urlStr.$urlParamsStr;
         return $url;
     }
-    
+
 }

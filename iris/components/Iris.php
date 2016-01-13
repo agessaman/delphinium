@@ -21,7 +21,6 @@ class Iris extends ComponentBase
         $this->addJs("/plugins/delphinium/iris/assets/javascript/jquery.min.js");
         $this->addJs("/plugins/delphinium/iris/assets/javascript/d3.v3.min.js");
         $this->addJs("/plugins/delphinium/iris/assets/javascript/iris.js");
-        $this->addCss("/themes/demo/assets/vendor/font-awesome/css/font-awesome.css");
         $this->addCss("/plugins/delphinium/iris/assets/css/main.css");
         
     }

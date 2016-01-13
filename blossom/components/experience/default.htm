@@ -1,31 +1,33 @@
 <script>
-    var instanceId = {{instanceId}};
-    var experienceXP = {{experienceXP}};
-    var experienceGrade = "{{experienceGrade}}";
-    var experienceAnimate = {{experienceAnimate}};
-    var maxXP = {{maxXP}};
-    var experienceSize = '{{experienceSize}}';
-    var maxBonus = {{maxBonus}};
-    var redLine = {{redLine}};
-    var bonusDays = {{bonusDays}}
+	var instanceId = {{instanceId}};
+	var experienceXP = {{experienceXP}};
+	//     var experienceXP = 0;
+	var experienceGrade = "{{experienceGrade}}";
+	var experienceAnimate = {{experienceAnimate}};
+	var maxXP = {{maxXP}};
+	var experienceSize = '{{experienceSize}}';
+	var maxBonus = {{maxBonus}};
+	var redLine = {{redLine}};
+	//     var redLine = 0;
+	var bonusDays = {{bonusDays}}
 </script>
 <svg width= "225" height="520" id = "experienceSVG">
 	<g id = "experienceView">
 		<g id = "experienceAxis"></g>
 		<g id = "bpAxis"></g>
-                <g fill="white" stroke="lightgray">
-                    <path d ="  	M 50,35 
+		<g fill="white" stroke="lightgray">
+			<path d ="  	M 50,35
 						L 50,400
-						A 50 50, 0, 1, 0, 100 400
+						A 52 52, 0, 1, 0, 100 400
 						L 100,35
 						A 25 25, 0, 0, 0, 50 35"
-						stroke-width="0.5"/>
-                </g>
-		
+				  stroke-width="0.5"/>
+		</g>
+
 		<clipPath id="experienceClipPath">
-			<path d ="  M 50,35 
+			<path d ="  M 50,35
 						L 50,400
-						A 50 50, 0, 1, 0, 100 400
+						A 52 52, 0, 1, 0, 100 400
 						L 100,35
 						A 25 25, 0, 0, 0, 50 35" />
 		</clipPath>
@@ -33,11 +35,11 @@
 		<rect  id = "eBonusRect" width="150" height="0" style=" fill:none; clip-path: url(#experienceClipPath); "/>
 		<rect  id = "ePenaltiesRect" width="150" height="0" style=" fill:none; clip-path: url(#experienceClipPath); "/>
 		<rect  id = "redLine" width="150" height="0" style=" fill:none; clip-path: url(#experienceClipPath); "/>
-		<path d ="  	M 50,35 
+		<path d ="  	M 50,35
 						L 50,400
-						A 50 50, 0, 1, 0, 100 400
+						A 52 52, 0, 1, 0, 100 400
 						L 100,35
 						A 25 25, 0, 0, 0, 50 35"
-						fill="none" stroke = "lightgray" stroke-width = "1" />
+			  fill="none" stroke = "lightgray" stroke-width = "1" />
 	</g>
 </svg>

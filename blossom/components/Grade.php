@@ -24,7 +24,7 @@ class Grade extends ComponentBase {
             'experienceInstance' => [
                 'title' => 'Experience instance',
                 'description' => 'Select the experience instance. If one is provided, the grade calculation will include bonus and '
-                . 'penalties. If none are available the grade will be pulled from Canvas',
+                    . 'penalties. If none are available the grade will be pulled from Canvas',
                 'type' => 'dropdown',
             ],
             'size' => [
@@ -39,27 +39,28 @@ class Grade extends ComponentBase {
         ];
     }
 
-    public function onRun() 
+    public function onRun()
     {
         if(!is_null($this->property('experienceInstance')))
         {
             $instance = ExperienceModel::find($this->property('experienceInstance'));
             $maxExperiencePts = $instance->total_points;
-            
-            
+
+
             $exComp = new ExperienceComponent();
             $exComp->initVariables($this->property('experienceInstance'));
             $points = $exComp->getUserPoints();
-          
+
             $roots = new Roots();
             $standards = $roots->getGradingStandards();
-            $grading_scheme = $standards[0]->grading_scheme;      
+            $grading_scheme = $standards[0]->grading_scheme;
+            $this->page['grading_scheme'] = json_encode($grading_scheme);
             $bonusPenaltiesObj = $exComp->calculateTotalBonusPenalties($this->property('experienceInstance'));
             $totalBonusPenalties = ($bonusPenaltiesObj->bonus)+($bonusPenaltiesObj->penalties);//penalties come with negative sign
-            
-			$totalPoints = $points +$bonusPenaltiesObj->bonus + $bonusPenaltiesObj->penalties; 
+
+            $totalPoints = $points +$bonusPenaltiesObj->bonus + $bonusPenaltiesObj->penalties;
             $letterGrade = $this->getLetterGrade($totalPoints, $maxExperiencePts, $grading_scheme);
-         
+
             $this->page['XP'] = round($points,2);
             $this->page['gradeBonus'] = round($totalBonusPenalties,2);
             $this->page['letterGrade'] = $letterGrade;
@@ -70,11 +71,11 @@ class Grade extends ComponentBase {
             $this->page['gradeBonus'] = 0;
             $this->page['letterGrade'] = "F";
         }
-        
+
         //todo: get the bonus, etc from blade, not from experience
         $size = $this->property('size');
         $this->page['gradeSize'] = $size;
-        
+
         $this->addJs("/plugins/delphinium/blossom/assets/javascript/grade.js");
         $this->addCss("/plugins/delphinium/blossom/assets/css/animate.css");
         $this->addCss("/plugins/delphinium/blossom/assets/css/grade.css");
@@ -99,7 +100,7 @@ class Grade extends ComponentBase {
             return $array_dropdown;
         }
     }
-    
+
     public function getLetterGrade($studentPoints, $maxPoints, $gradingScheme) {
         if ($maxPoints === 0) {
             return "F";
