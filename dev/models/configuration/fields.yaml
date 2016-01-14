@@ -33,3 +33,8 @@ fields:
         label: Lms
         span: auto
         comment: Enter the lms for which you want to use dev mode
+
+    Timezone:
+        label: Timezone
+        span: auto
+        comment: Enter the timezone

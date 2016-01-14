@@ -29,4 +29,7 @@ columns:
         
     Lms:
         label: LMS
+
+    Timezone:
+      label: Timezone
         

@@ -1,3 +1,6 @@
 1.0.1: 
     - First version of Dev
     - create_dev_configuration_table.php
+1.0.2:
+    - Modify dev table
+    - modify_dev_configuration_table.php
