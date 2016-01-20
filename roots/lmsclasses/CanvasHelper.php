@@ -142,9 +142,55 @@ class CanvasHelper
     }
 
     public function postAnswerQuestion($quizSubmission, $questionsWrap)
-    {
+    {//POST /api/v1/quiz_submissions/:quiz_submission_id/questions
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
+        $domain = $_SESSION['domain'];
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+
+        $urlPieces= array();
+        $urlPieces[]= "https://{$domain}/api/v1/quiz_submissions/{$quizSubmission->quiz_submission_id}/questions";
+        $urlArgs[]="access_token={$token}";
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+//        $items = GuzzleHelper::postDataWithParams($url, $questionsWrap);
+//
+
+
+//        {
+//            "attempt": 1,
+//  "validation_token": "YOUR_VALIDATION_TOKEN",
+//  "access_code": null,
+//  "quiz_questions": [{
+//            "id": "1",
+//    "answer": "Hello World!"
+//  }, {
+//            "id": "2",
+//    "answer": 42.0
+//  }]
+//}
+        $client = new Client();
+       $items =  $client->post($url, [
+                'attempt' => $questionsWrap->attempt,
+                'validation_token' => 'd8df890b7f282d45649ccc6e4d475daada0c44d2b1a00bcbdf6d9bb069ea3ac1',
+                'quiz_questions' => $questionsWrap->quiz_questions
+
+        ]);//$response = $client->request('PUT', $url, ['json' => json_encode($obj)]);
+
+        echo json_encode($items);return;
+        if(count($items->quiz_submissions)>0)
+        {
+            return $this->saveQuizSubmission($items->quiz_submissions[0]);
+        }
+        else
+        {
+            $action = "start a quiz taking session";
+            $exception = new InvalidRequestException($action, "unknown error", 400);
+        }
 
     }
+
     public function postQuizTakingSession($quizId)
     {///ap i/v1/courses/:course_id/quizzes/:quiz_id/submissions
         $urlPieces= $this->initUrl();
@@ -935,7 +981,7 @@ class CanvasHelper
                     $urlArgs[]="student_ids[]={$allUsers[$i]->user_id}";
                     $result = fmod($i,10);
                     if($result == 0 && $asynch && $i>0)
-                    {//we'll send the request every 20 students
+                    {//we'll send the request every 10 students
 
                         if($request->getGrouped())
                         {

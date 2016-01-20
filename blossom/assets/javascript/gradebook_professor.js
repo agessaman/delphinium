@@ -1,3 +1,39 @@
+var submissions = [];
+var bottomExperienceScores=[];
+
+//GET DATA FOR THE TOP CHART
+var promise = $.get("gradebook/getAllStudentSubmissions");
+promise.then(function (data1, textStatus, jqXHR) {
+        console.log(data1);
+        submissions = data1;
+        var inputs = document.getElementsByClassName('checkboxMultiselect');
+        for(var i = 0; i < inputs.length; i++) {
+            inputs[i].disabled = false;
+        }
+        d3.selectAll(".nameLabel").style("color","black");
+        d3.select(".spinnerDiv").style("display","none");
+        d3.select("#chart").style("opacity","1");
+        d3.select("#topRight").style("opacity","1");
+    })
+    .fail(function (data2) {
+        console.log("Unable to retrieve student submissions");
+    });
+
+console.log(students);
+callStudentsMilestoneInfo(students);
+
+//GET DATA FOR BOTTOM TABLE
+// var secondPromise = $.get("gradebook/getBottomTableData",{experienceInstanceId:experienceInstanceId});
+// secondPromise.then(function (data, textStatus, jqXHR) {
+// d3.select(".bottomSpinnerDiv").style("display","none");
+// console.log(data);
+// buildTable(data);
+// })
+// .fail(function (data2) {
+// console.log("Unable to retrieve bottom chart data.");
+// });
+
+
 div = d3.select("body").append("div")
     .attr("class", "tooltip")
     .style("opacity", 0);
@@ -26,7 +62,7 @@ var xAxis = d3.svg.axis().scale(x)
     .orient("bottom").ticks(6);
 
 var yAxis = d3.svg.axis().scale(y)
-    .orient("left").ticks(5);
+    .orient("left").ticks(10);
 
 // Adds the svg canvas
 var svg = d3.select("#chart")
@@ -459,4 +495,98 @@ function checkboxFunctionality()
                 checkbox.parent().removeClass("multiselect-on");
         });
     });
+}
+
+function buildTable(data)
+{
+
+    var tr = d3.select("#tableBody")
+        .selectAll('tr').remove();//Because of the complexity of updating a table, we'll remove the nodes and add them again
+    tr = d3.select("#tableBody")
+        .selectAll('tr').data(data);
+
+    tr.enter()
+        .append('tr')
+        .append('td')
+        .attr('class', 'title')
+        .html(function(m, i) { return i+1; });
+
+    tr.append('td')
+        .attr('class', 'tdName')
+        .append("a")
+        .attr("href", function(m){ return m.profile_url;})
+        .attr("target", "_blank")
+        .html(function(m) { return m.name; });
+
+    tr.append('td')
+        .attr('class', 'title')
+        .html(function(m) { return d3.round(m.score, 2); });
+
+    tr.append('td')
+        .attr('class', 'title')
+        .html(function(m) { return d3.round(m.bonuses,2); });
+
+    tr.append('td')
+        .attr('class', 'title')
+        .html(function(m) { return d3.round(m.penalties,2); });
+
+    tr.append('td')
+        .attr('class', 'title')
+        .html(function(m) { return d3.round(m.totalBP,2); });
+
+    tr.append('td')
+        .attr('class', 'title')
+        .html(function(m) { return d3.round(m.total,2); });
+
+    tr.append('td')
+        .attr('class', 'title')
+        .html(function(m) { return m.grade; });
+
+    tr.append('td')
+        .append("input")
+        .attr("type","button")
+        .attr("value","Details");
+}
+
+function callStudentsMilestoneInfo(studentsArr)
+{
+    var idsArr =[];
+    for(var i=0;i<=studentsArr.length-1;i++)
+    {
+        var currentStudent = studentsArr[i];
+        idsArr.push(currentStudent.user_id);
+        if((i!=0)&&(i%10==0))
+        {//we'll send requests every 10 students.
+
+            var secondPromise = $.get("gradebook/getSetOfUsersMilestoneInfo",{experienceInstanceId:experienceInstanceId, userIds:(idsArr)});
+            secondPromise.then(function (data, textStatus, jqXHR) {
+                    d3.select(".bottomSpinnerDiv").style("display","none");
+                    console.log(data);
+                    bottomExperienceScores = bottomExperienceScores.concat(data);//append the new data to the old
+                    buildTable(bottomExperienceScores);
+                })
+                .fail(function (data2) {
+                    console.log("Unable to retrieve bottom chart data.");
+                });
+
+            var idsArr =[];//initialize the array again.
+        }
+
+    }
+
+    //send a last request with the remaining IDS
+    if(idsArr.length>0)
+    {
+
+        var secondPromise = $.get("gradebook/getSetOfUsersMilestoneInfo",{experienceInstanceId:experienceInstanceId, userIds:(idsArr)});
+        secondPromise.then(function (data, textStatus, jqXHR) {
+                d3.select(".bottomSpinnerDiv").style("display","none");
+                console.log(data);
+                bottomExperienceScores = bottomExperienceScores.concat(data);//append the new data to the old
+                buildTable(bottomExperienceScores);
+            })
+            .fail(function (data2) {
+                console.log("Unable to retrieve bottom chart data.");
+            });
+    }
 }

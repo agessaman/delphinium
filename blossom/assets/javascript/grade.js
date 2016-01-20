@@ -5,7 +5,9 @@ $(document).ready(function(){
 	scaleGrade();
 
 	$( "#iGradeTooltip" ).mouseenter(function(event) {
-			var str = "<table class='table table-condensed table-gradingScheme'><thead> <tr> <th>Value</th> <th>Letter Grade</th></tr> </thead> <tbody> ";
+
+			console.log(gradingScheme);
+			var str = "<table class='table table-condensed table-gradingScheme'><thead> <tr> <th>Points</th> <th>Letter Grade</th></tr> </thead> <tbody> ";
 			for(var i=0;i<=gradingScheme.length-1;i++)
 			{
 				var item = gradingScheme[i];

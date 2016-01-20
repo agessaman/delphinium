@@ -80,10 +80,22 @@ class GuzzleHelper
 
     public static function postDataWithParams($url, $obj)
     {
+
         $client = new Client();
-        $response = $client->post($url,[
-            'json' => json_encode($obj)
-        ]);
+        $response = $client->request('PUT', $url, ['json' => json_encode($obj)]);
+
+//        $client = new Client();
+//        $response = $client->request('POST', $url, $obj);
+//
+//        return $response;
+
+
+
+
+//        $client = new Client();
+//        $response = $client->post($url,[
+//            'json' => json_encode($obj)
+//        ]);
 
 
 //        $response = $client->post($url, array(

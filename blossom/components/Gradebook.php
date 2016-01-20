@@ -11,6 +11,7 @@ use Delphinium\Roots\Utils;
 use Delphinium\Roots\Requestobjects\AssignmentGroupsRequest;
 use Delphinium\Roots\Requestobjects\SubmissionsRequest;
 use Delphinium\Roots\Enums\ActionType;
+use Delphinium\Roots\DB\DbHelper;
 use \DateTime;
 use \DateTimeZone;
 use \DateInterval;
@@ -63,9 +64,15 @@ class Gradebook extends ComponentBase {
         $this->addCss("/plugins/delphinium/blossom/assets/css/gradebook.css");
         $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
         $this->addJs("/plugins/delphinium/blossom/assets/javascript/gradebook_student.js");
+        $this->page['experienceInstanceId'] = $this->property('experienceInstance');
 
         $this->page['userRoles'] = $_POST["roles"];
         if (stristr($_POST["roles"], 'Learner')) {
+            if (!isset($_SESSION))
+            {
+                session_start();
+            }
+            // $_SESSION['userID'] = 1230622;
 
             $bonusPenalties = $this->getBonusPenalties();
 
@@ -86,10 +93,16 @@ class Gradebook extends ComponentBase {
                 }
                 $standards = $this->roots->getGradingStandards();
                 $grading_scheme = $standards[0]->grading_scheme;
-                $this->page['grading_scheme'] = json_encode($grading_scheme);
+
                 $grade = new GradeComponent();
                 $totalPoints = $pts + $bonusPenalties->bonus+$bonusPenalties->penalties;
                 $letterGrade = $grade->getLetterGrade($totalPoints, $maxExperiencePts, $grading_scheme);
+                //modify grading scheme for display to users
+                foreach($grading_scheme as $grade)
+                {
+                    $grade->value = $grade->value * $maxExperiencePts;
+                }
+                $this->page['grading_scheme'] = json_encode($grading_scheme);
 
                 $this->page['letterGrade'] = $letterGrade;
             }
@@ -153,7 +166,7 @@ class Gradebook extends ComponentBase {
 
     private function getProfessorData() {
 
-        $aggregateSubmissionScores = $this->aggregateSubmissionScores();
+        // $aggregateSubmissionScores = $this->aggregateSubmissionScores();
 
         $users = $this->roots->getStudentsInCourse();
         $userMasterArr= array();
@@ -162,10 +175,11 @@ class Gradebook extends ComponentBase {
             $userMasterArr[] = $userCourse->user;
         }
         $this->page['users'] = json_encode($userMasterArr);
-// 		//comment these two lines
-        $submissionData = $this->matchSubmissionsAndUsers($users, $aggregateSubmissionScores);
-        $this->studentData = $submissionData;
         $this->users = $userMasterArr;
+
+        //comment these two lines
+        // $submissionData = $this->matchSubmissionsAndUsers($users, $aggregateSubmissionScores);
+        // $this->studentData = $submissionData;
         // chart data
         $this->page['chartData'] = json_encode($this->getRedLineData());
         $experience = new ExperienceComponent();
@@ -230,12 +244,7 @@ class Gradebook extends ComponentBase {
             $masterArr = array();
             $users = $this->roots->getUsersInCourse();
 
-//             $i = 0;
             foreach ($users as $user) {
-                if ($i === 3) {
-                    return $masterArr;
-                }
-                $i++;
                 try {
                     $userAnalytics = $this->roots->getAnalyticsStudentAssignmentData(false, $user->id);
 
@@ -360,7 +369,6 @@ class Gradebook extends ComponentBase {
 
         // $res = $this->orderSubmissionsByDate($result);
         $res = $this->orderSubmissionsByUsersAndDate($result);
-
         //set the results as a class variable
         $this->submissions = $res;
         //aggregate the scores
@@ -378,6 +386,7 @@ class Gradebook extends ComponentBase {
             }
 
             if ($userId === 0) {//init variables
+
                 $student->id = $submission['user_id'];
                 $subm = new \stdClass();
                 $subm->user_id = $submission['user_id'];
@@ -389,6 +398,7 @@ class Gradebook extends ComponentBase {
             $item->date = $submission['submitted_at'];
 
             if ($userId === 0 || $userId === $submission['user_id']) {//first loop or looping through same user
+
                 //Add the current item to this user's item array
                 $studentItems[] = $item;
                 $userId = $submission['user_id'];
@@ -419,7 +429,6 @@ class Gradebook extends ComponentBase {
         //add the last student to the master array;
         if(count($res)>0)
         {
-
             $student->id = $userId;
             $student->items = $studentItems;
             $masterArr[] = $student;
@@ -427,30 +436,206 @@ class Gradebook extends ComponentBase {
         }
 
         $this->page['submissions'] = json_encode($masterArr);
-        return $scoresArr;
+        // return $scoresArr;
+        return $masterArr;
     }
 
-//     private function orderSubmissionsByUsersAndDate($arr) {
-//
-//     echo json_encode($arr)."---";
-//     	usort($arr, function($a, $b) {
-//     		return $a['submitted_at'] - $b['submitted_at'];
-// 		});
-// 	echo json_encode($arr)."---";
-//
-// 	return $arr;
-//     }
-
-    private function orderSubmissionsByDate($arr)
+    public function getAllUserClearedMilestoneData($experienceInstanceId)
     {
-        usort($arr, function($a, $b) {
-            if ($a['submitted_at'] == $b['submitted_at']) {
+        //init experience variables
+        $experienceInstance = ExperienceModel::find($experienceInstanceId);
+        $maxExperiencePts = $experienceInstance->total_points;
+
+        $utcTimeZone = new DateTimeZone('UTC');
+        $stDate = $experienceInstance->start_date->setTimezone($utcTimeZone);
+        $endDate = $experienceInstance->end_date->setTimezone($utcTimeZone);
+        $expComponent = new ExperienceComponent();
+        $ptsPerSecond = $expComponent->getPtsPerSecond($stDate, $endDate, $experienceInstance->total_points);
+        $bonusPerSecond = $experienceInstance->bonus_per_day / 24 / 60 / 60;
+        $bonusSeconds = $experienceInstance->bonus_days * 24 * 60 * 60;
+        $penaltyPerSecond = $experienceInstance->penalty_per_day / 24 / 60 / 60;
+        $penaltySeconds = $experienceInstance->penalty_days * 24 * 60 * 60;
+
+        //get milestones
+        $expComponent = new ExperienceComponent();
+        $milestonesOrderedByPointsDesc = $expComponent->getMilestonesOrderedByPointsDesc($experienceInstanceId);
+
+        //get grading standards
+        if (is_null($this->roots)) {
+            $this->roots = new Roots();
+        }
+        $standards = $this->roots->getGradingStandards();
+        $grading_scheme = $standards[0]->grading_scheme;
+
+        //get all students in course
+        $users = $this->roots->getStudentsInCourse();
+        $userMasterArr= array();
+
+
+        foreach($users as $userCourse)
+        {
+            $userObj = $this->getUserMilestoneInfo($userCourse->user, $milestonesOrderedByPointsDesc, $ptsPerSecond, $stDate, $endDate, $bonusPerSecond, $bonusSeconds,
+                $penaltyPerSecond, $penaltySeconds, $maxExperiencePts, $grading_scheme);
+            $userMasterArr[] = $userObj;
+        }
+
+        return $userMasterArr;
+
+    }
+
+    public function getSetOfUsersMilestoneInfo($experienceInstanceId, $userIds)
+    {
+        //init experience variables
+        $experienceInstance = ExperienceModel::find($experienceInstanceId);
+        $maxExperiencePts = $experienceInstance->total_points;
+
+        $utcTimeZone = new DateTimeZone('UTC');
+        $stDate = $experienceInstance->start_date->setTimezone($utcTimeZone);
+        $endDate = $experienceInstance->end_date->setTimezone($utcTimeZone);
+        $expComponent = new ExperienceComponent();
+        $ptsPerSecond = $expComponent->getPtsPerSecond($stDate, $endDate, $experienceInstance->total_points);
+        $bonusPerSecond = $experienceInstance->bonus_per_day / 24 / 60 / 60;
+        $bonusSeconds = $experienceInstance->bonus_days * 24 * 60 * 60;
+        $penaltyPerSecond = $experienceInstance->penalty_per_day / 24 / 60 / 60;
+        $penaltySeconds = $experienceInstance->penalty_days * 24 * 60 * 60;
+
+        //get milestones
+        $expComponent = new ExperienceComponent();
+        $milestonesOrderedByPointsDesc = $expComponent->getMilestonesOrderedByPointsDesc($experienceInstanceId);
+
+        //get grading standards
+        if (is_null($this->roots)) {
+            $this->roots = new Roots();
+        }
+        $standards = $this->roots->getGradingStandards();
+        $grading_scheme = $standards[0]->grading_scheme;
+
+        //get all students in course
+        $dbHelper = new DbHelper();
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+        $courseId = $_SESSION['courseID'];
+        $users = $dbHelper->getUsersInCourseWithRole($courseId, 'Learner');
+
+        $filteredUsers = array();
+        foreach($userIds as $userId)
+        {
+            $res = array_values(array_filter($users->toArray(), function($elem) use($userId) {
+                return intval($elem['user']['user_id']) === intval($userId);
+            }));
+            $filteredUsers = array_merge($filteredUsers,$res);
+        }
+
+        $masterArr=array();
+        foreach($filteredUsers as $user)
+        {
+            $item = $this->getUserMilestoneInfo($user['user'], $milestonesOrderedByPointsDesc, $ptsPerSecond, $stDate, $endDate, $bonusPerSecond, $bonusSeconds,
+                $penaltyPerSecond, $penaltySeconds, $maxExperiencePts, $grading_scheme);
+            $masterArr[] = $item;
+        }
+        return $masterArr;
+    }
+
+    private function getUserMilestoneInfo($user,$milestonesOrderedByPointsDesc, $ptsPerSecond, $stDate, $endDate, $bonusPerSecond, $bonusSeconds,
+                                          $penaltyPerSecond, $penaltySeconds, $maxExperiencePts, $grading_scheme)
+    {
+        //get User submissions
+        $studentIds = array($user['user_id']);
+        $assignmentIds = array();
+        $multipleStudents = false;
+        $multipleAssignments = true;
+        $allStudents = false;
+        $allAssignments = true;
+
+        //can have the student Id param null if multipleUsers is set to false (we'll only get the current user's submissions)
+        $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents,
+            $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
+        if (is_null($this->roots)) {
+            $this->roots = new Roots();
+        }
+        $userSubmissions = $this->roots->submissions($req);
+
+        //sort submissions by date
+        usort($userSubmissions, function($a, $b) {
+            if ((!is_null($a['submitted_at']))||(isset($a['submitted_at'])) && (!is_null($a['submitted_at'])) &&(isset($b['submitted_at']))) {
+                $adate = new DateTime($a['submitted_at']);
+                $bdate = new DateTime($b['submitted_at']);
+                $ad = $adate->getTimestamp();
+                $bd = $bdate->getTimestamp();
+                if ($ad == $bd) {
+                    return 0;
+                }
+                return $ad > $bd ? 1 : -1;
+            } else {
                 return 0;
             }
-            return $a['submitted_at'] > $b['submitted_at'] ? 1 : -1;
+
         });
-        return $arr;
+
+
+        //calculate raw experience points
+        $carryingScore = 0.0;
+        $totalPoints = 0.0;
+        foreach($userSubmissions as $submission)
+        {
+            $carryingScore = $carryingScore+floatval($submission['score']);
+        }
+
+        //get milestone clearance info
+        $expComponent = new ExperienceComponent();
+        $userMilestoneInfo =  $expComponent->userClearedMilestones($milestonesOrderedByPointsDesc, $userSubmissions, $ptsPerSecond, $stDate, $endDate, $bonusPerSecond, $bonusSeconds,
+            $penaltyPerSecond, $penaltySeconds);
+
+
+        // echo json_encode($userMilestoneInfo);return;
+        $userObj = new \stdClass();
+        $userObj->id = $user['user_id'];
+        $userObj->name = $user['name'];
+        //add link to user profile
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+        $domain = $_SESSION['domain'];
+        $courseId = $_SESSION['courseID'];
+        $userObj->profile_url = "https://{$domain}/courses/{$courseId}/users/{$user['user_id']}";
+
+        //calculate total bonus and penalties
+        $obj = new \stdClass();
+        $obj->bonus = 0;
+        $obj->penalties = 0;
+
+        foreach ($userMilestoneInfo as $item) {
+            if (($item->cleared)) {
+                if ($item->bonusPenalty > 0) {
+                    $obj->bonus = $obj->bonus + $item->bonusPenalty;
+                } else {
+                    $obj->penalties = $obj->penalties + $item->bonusPenalty;
+                }
+            }
+        }
+        $userObj->bonuses = $obj->bonus;
+        $userObj->penalties = $obj->penalties;
+        $userObj->totalBP = $obj->bonus-$obj->penalties;
+        $userObj->score = $carryingScore;
+        $totalPoints = $carryingScore + $obj->bonus + $obj->penalties;
+        $userObj->total = $totalPoints;
+
+        //get letter grade
+        $grade = new GradeComponent();
+        $userObj->grade = $grade->getLetterGrade($totalPoints, $maxExperiencePts, $grading_scheme);
+
+        return $userObj;
     }
+
+
+
+
+
+
+
+
+
 
     private function orderSubmissionsByUsersAndDate($arr) {
         $sorted = $this->array_orderby($arr, 'user_id', SORT_ASC, 'submitted_at', SORT_ASC);
@@ -481,7 +666,7 @@ class Gradebook extends ComponentBase {
         return ($submissionA['user_id'] - $submissionB['user_id']);
     }
 
-    private function matchSubmissionsAndUsers($users, $scores) {
+    public function matchSubmissionsAndUsers($users, $scores) {
 
         $allStudents = array();
         $standards = $this->roots->getGradingStandards();
@@ -489,7 +674,6 @@ class Gradebook extends ComponentBase {
         //get experience total points
         $experienceInstance = ExperienceModel::find($this->property('experienceInstance'));
         $maxExperiencePts = $experienceInstance->total_points;
-
 
         $utcTimeZone = new DateTimeZone('UTC');
         $stDate = $experienceInstance->start_date->setTimezone($utcTimeZone);
@@ -501,26 +685,22 @@ class Gradebook extends ComponentBase {
         $penaltyPerSecond = $experienceInstance->penalty_per_day / 24 / 60 / 60;
         $penaltySeconds = $experienceInstance->penalty_days * 24 * 60 * 60;
 
-
         foreach ($users as $user) {
             $submissionsArr = $this->findScoreByUserId($user->user_id, $scores);
 
             //this will weed out any TA's and other people in the course who aren't necessarily students
             try {
 
-                // echo "before getting bonus and penalties".json_encode(new \DateTime('now'))."|||";
                 $userSubmissions = $expComponent->getSubmissions($user->user_id);
+
                 $bonusPenalties = $this->getBonusPenaltiesNew($this->property('experienceInstance'), $userSubmissions, $ptsPerSecond, $stDate, $bonusPerSecond,
                     $bonusSeconds, $penaltyPerSecond, $penaltySeconds);
-
-                // echo "after getting bonus and penalties".json_encode(new \DateTime('now'))."|||";
 
                 // $bonusPenalties = $this->getBonusPenalties($user->user_id);
             } catch (\GuzzleHttp\Exception\ClientException $e) {
 
                 continue;
             }
-
             $bonus = $bonusPenalties->bonus;
             $penalty = $bonusPenalties->penalties;
             $totalPoints = 0;
@@ -572,7 +752,9 @@ class Gradebook extends ComponentBase {
         return $allStudents;
     }
 
-    private function findScoreByUserId($userId, $scores) {
+    private function findScoreByUserId($userId, $scoresComplex) {
+
+        // $scores = $scoresComplex['bottom'];
         if(count($scores)>0)
         {
             $filteredItems = array_values(array_filter($scores, function($elem) use($userId) {

@@ -10,6 +10,7 @@ use Delphinium\Roots\Classes\Blti;
 use Delphinium\Roots\Roots;
 use Delphinium\Roots\DB\DbHelper;
 use Config;
+use Carbon\Carbon;
 
 class LtiConfiguration extends ComponentBase {
 
@@ -67,7 +68,7 @@ class LtiConfiguration extends ComponentBase {
         $approver = $this->property('approver');
         $arr = $this->getApproverOptions();
         $approverRole = $arr[$approver];
-        
+
         if (!isset($_SESSION)) {
             session_start();
         }
@@ -88,7 +89,7 @@ class LtiConfiguration extends ComponentBase {
         $context = new Blti($consumerKey, false, false);
 
         if ($context->valid) { // query DB to see if user has token, if yes, go to LTI.
-            
+
             $userCheck = $dbHelper->getCourseApprover($_SESSION['courseID']);
             if (!$userCheck) { //if no user is found, redirect to canvas permission page
                 if (stristr($rolesStr, $approverRole)) {
@@ -104,23 +105,54 @@ class LtiConfiguration extends ComponentBase {
                     return;
                 }
             } else {
-                //set the professor's token 
+
+                //set the professor's token
                 $_SESSION['userToken'] = $userCheck->encrypted_token;
                 //get the timezone
                 $roots = new Roots();
                 $course = $roots->getCourse();
                 $account_id = $course->account_id;
                 $account = $roots->getAccount($account_id);
+                $courseId =$_SESSION['courseID'];
 
                 $_SESSION['timezone'] = new \DateTimeZone($account->default_time_zone);
                 //to maintain the users table synchronized with Canvas, everytime a student comes in we'll check to make sure they're in the DB.
                 //If they're not, we will pull all the students from Canvas and refresh our users table.
                 $dbHelper = new DbHelper();
-                $user = $dbHelper->getUserInCourse($_SESSION['courseID'], $_SESSION['userID']);
+                $user = $dbHelper->getUserInCourse($courseId, $_SESSION['userID']);
                 if(is_null($user))
                 {//get all students from Canvas
                     $roots = new Roots();
                     $roots->getStudentsInCourse();
+                }
+
+                //Also, every so often (every 12 hrs?) we will check to make sure that students who have dropped the class are deleted from the users_course table
+                //Failing to do so will make it so that when we request their submissions along with other students' submissions, the entire
+                // call returns with an Unauthorized error message
+                $approver = $dbHelper->getCourseApprover($courseId);
+                $now = Carbon::now();
+                $updatedDate = $approver->updated_at;
+
+                $diff = $updatedDate->diffInHours($now, false);
+                if($diff>24)
+                {
+                    $allStudentsDb = $dbHelper->getUsersInCourseWithRole($_SESSION['courseID'], 'Learner');
+                    $allStudentsFromCanvas = $roots->getStudentsInCourse();
+                    foreach($allStudentsDb as $dbStudent)
+                    {
+                        $filteredItems = array_values(array_filter($allStudentsFromCanvas, function($elem) use($dbStudent) {
+                            return intval($elem->user_id) === intval($dbStudent->user_id);
+                        }));
+
+                        if(count($filteredItems)<1)//meaning they are in our DB but they are not in Canvas anymore
+                        {
+                            $dbHelper->deleteUserFromRole($courseId, $dbStudent->user_id, 'Learner');
+                        }
+                    }
+
+                    //update the approver
+                    $approver->updated_at = $now;
+                    $approver->save();
                 }
             }
         } else {

@@ -177,4 +177,24 @@ class RestfulApi extends Controller
         return $gradebook->getStudentChartData($studentId);
     }
 
+    public function getAllStudentSubmissions()
+    {
+        $gradebook = new GradebookComponent();
+        return $gradebook->aggregateSubmissionScores();
+    }
+
+    public function getAllUserClearedMilestoneData()
+    {
+        $instanceId = \Input::get('experienceInstanceId');
+        $gradebook = new GradebookComponent();
+        return $gradebook->getAllUserClearedMilestoneData($instanceId);
+    }
+    public function getSetOfUsersMilestoneInfo()
+    {
+        $instanceId = \Input::get('experienceInstanceId');
+        $userIds = \Input::get('userIds');
+
+        $gradebook = new GradebookComponent();
+        return $gradebook->getSetOfUsersMilestoneInfo($instanceId, $userIds);
+    }
 }

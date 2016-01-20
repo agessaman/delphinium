@@ -28,34 +28,34 @@ class DbHelper
         $orderedModule = OrderedModule::where('module_id', '=', $moduleId)->where('course_id', '=',$courseId)->first();
         return $orderedModule;
     }
-    
+
     public function getTagsByContentId($content_id)
     {
         $content = Content::where('content_id', '=', $content_id)->first();
         return $content->tags;
     }
-    
+
     public function getModuleData(ModulesRequest $request)
     {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
         $courseId = $_SESSION['courseID'];
         if($request->getModuleId())
-        {   
+        {
             if($request->getModuleItemId())
             {
                 return ModuleItem::with('content')->where(array(
                     'module_id' => $request->getModuleId(),
                     'module_item_id'=> $request->getModuleItemId()
                 ))
-                ->orderBy('position', 'asc')
-                ->first();
+                    ->orderBy('position', 'asc')
+                    ->first();
             }
             else
             {
-                return Module::with(array('module_items' => 
+                return Module::with(array('module_items' =>
                     function($query) {
                         $query->orderBy('position', 'ASC');
                     },'module_items.content'))
@@ -67,44 +67,44 @@ class DbHelper
         }
         else
         {//if no moduleId was found they must want all the modules
-            
+
             $modules = Module::orderBy('parent_id', 'ASC')
-                    ->orderBy('order', 'ASC')
-                    ->with(array('module_items' => function($query) {
-                        $query->orderBy('position', 'ASC');
-                    },'module_items.content'))
-                    ->where(array(
-                        'course_id' => $courseId
-                    ))
-                    ->get();
-    
+                ->orderBy('order', 'ASC')
+                ->with(array('module_items' => function($query) {
+                    $query->orderBy('position', 'ASC');
+                },'module_items.content'))
+                ->where(array(
+                    'course_id' => $courseId
+                ))
+                ->get();
+
             return $modules;
         }
     }
-    
+
     public function getAssignmentData(AssignmentsRequest $request)
     {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
         $courseId = $_SESSION['courseID'];
-        
+
         $assignments;
         if($request->getAssignment_id())
         {//they want a specific assignment
             $assignments = Assignment::where(array(
-                    'assignment_id' => $request->getAssignment_id(),
-                    'course_id' => $courseId
-                ))->first();
+                'assignment_id' => $request->getAssignment_id(),
+                'course_id' => $courseId
+            ))->first();
         }
         else
         {//return all assignments
             $assignments = Assignment::where(array(
-                    'course_id' => $courseId
-                ))->get();
+                'course_id' => $courseId
+            ))->get();
         }
-        
+
         if(!$request->getIncludeTags())
         {
             if(!is_null($assignments))
@@ -131,73 +131,73 @@ class DbHelper
                 else
                 {
                     $result[] = $this->matchAssignmentWithTags($assignments);
-                } 
+                }
             }
             return $result;
         }
     }
-    
+
     public function getAssignmentGroupData(AssignmentGroupsRequest $request)
     {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
         $courseId = $_SESSION['courseID'];
         if($request->getAssignment_group_id())
         {
             if($request->getInclude_assignments())
             {
                 return AssignmentGroup::orderBy('position', 'ASC')
-                    ->with(array('assignments' => 
+                    ->with(array('assignments' =>
                         function($query) {
                             $query->orderBy('position', 'ASC');
                         }))
                     ->where(array(
-                    'assignment_group_id' => $request->getAssignment_group_id() 
-                   ))->first();
+                        'assignment_group_id' => $request->getAssignment_group_id()
+                    ))->first();
             }
             else
             {
                 return AssignmentGroup::orderBy('position', 'ASC')
-                        ->where(array(
-                    'assignment_group_id' => $request->getAssignment_group_id() 
-               ))->first();
+                    ->where(array(
+                        'assignment_group_id' => $request->getAssignment_group_id()
+                    ))->first();
             }
-            
+
         }
         else
         {
             if($request->getInclude_assignments())
             {
                 return AssignmentGroup::orderBy('position', 'ASC')
-                    ->with(array('assignments' => 
+                    ->with(array('assignments' =>
                         function($query) {
                             $query->orderBy('position', 'ASC');
                         }))
                     ->where(array(
-                     'course_id' => $courseId
-                ))->get();
+                        'course_id' => $courseId
+                    ))->get();
             }
             else
             {
                 return AssignmentGroup::orderBy('position', 'ASC')
-                        ->where(array(
-                     'course_id' => $courseId
-                ))->get();
+                    ->where(array(
+                        'course_id' => $courseId
+                    ))->get();
             }
         }
     }
-    
+
     public function getAvailableTags()
     {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
         $courseId = $_SESSION['courseID'];
         $tags = Tag::where(array('course_id' => $courseId))->first();
-        
+
         if((!is_null($tags))&&($tags->tags))
         {
             $possibleTags =  $tags->tags;
@@ -221,21 +221,21 @@ class DbHelper
             else
             {
                 return "Optional, Description";
-            } 
+            }
         }
         else
         {
             return "Optional, Description";
         }
-        
+
     }
-    
+
     public function getQuizzes(QuizRequest $request)
     {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
         $courseId = $_SESSION['courseID'];
         if($request->getId())
         {
@@ -244,15 +244,15 @@ class DbHelper
                 return Quiz::with('questions')->where(array(
                     'quiz_id' => $request->getId(),
                     'course_id'=> $courseId
-                ))->first(); 
-                
+                ))->first();
+
             }
             else
             {
                 return Quiz::where(array(
                     'quiz_id' => $request->getId(),
                     'course_id'=> $courseId
-                ))->first(); 
+                ))->first();
             }
         }
         else
@@ -264,30 +264,30 @@ class DbHelper
                 ))->get();
             }
             else
-            { 
+            {
                 return Quiz::where(array(
                     'course_id' => $courseId
                 ))->get();
             }
         }
     }
-    
+
     public function getQuizQuestion($quizId, $quizQuestionId=null)
-    {   
+    {
         if(is_null($quizQuestionId))
         {
             return Quizquestion::where(array(
                 'quiz_id' => $quizId
-            ))->get();    
+            ))->get();
         }
         else
         {
             return Quizquestion::where(array(
                 'quiz_id' => $quizId,
                 'question_id'=> $quizQuestionId
-            ))->first();    
+            ))->first();
         }
-                
+
     }
     /*
      * UPDATE
@@ -295,7 +295,7 @@ class DbHelper
     public function addTagsToContent($contentId, $newTagsStr, $courseId)
     {
         $content = Content::where('content_id', '=', $contentId)->first();
-            
+
         if(!is_null($content))//this could be due to the moduleItem not having an Id
         {
             $newTags = explode(', ', $newTagsStr);
@@ -311,7 +311,7 @@ class DbHelper
             return null;
         }
     }
-    
+
     public function addTagsToAssignment($assignment, $newTagsStr, $courseId)
     {
         if(!is_null($assignment->assignment_id))
@@ -340,11 +340,11 @@ class DbHelper
             return null;
         }
     }
-    
+
     public function updateContentTags($contentId, $newTagsStr, $courseId)
     {
         $content = Content::where('content_id', '=', $contentId)->first();
-            
+
         if(!is_null($content))//
         {
             $content->tags =$newTagsStr;
@@ -355,11 +355,11 @@ class DbHelper
             return $content->tags;
         }
     }
-    
+
     public function updateAssignmentTags($assignmentId, $newTagsStr, $courseId)
     {
         $assignment = Assignment::where('assignment_id', '=', $assignmentId)->where('course_id','=',$courseId)->first();
-            
+
         if(!is_null($assignment))//
         {
             $assignment->tags =$newTagsStr;
@@ -370,11 +370,11 @@ class DbHelper
             return $assignment->tags;
         }
     }
-    
+
     public function updateAvailableTags($courseId, $newTags)
     {
         $tags = Tag::firstOrNew(array('course_id' => $courseId));
-        
+
         $possibleTags =  $tags->tags;
         if(strlen($possibleTags)>0)
         {
@@ -383,67 +383,67 @@ class DbHelper
             $unique = array_unique($c);
             $tagString =implode(', ', $unique);
         }
-        else 
+        else
         {
             $tagString =implode(', ', $newTags);
         }
-        
+
         $tags->course_id = $courseId;
         $tags->tags = $tagString;
         $tags->save();
-        
+
     }
-    
+
     public function updateOrderedModule($module)
     {
         $orderedModule = OrderedModule::firstOrNew(
-                array(
-                    'course_id' => $module->course_id, 
-                    'module_id' => $module->module_id
-                )
+            array(
+                'course_id' => $module->course_id,
+                'module_id' => $module->module_id
+            )
         );
         $orderedModule->module_id = $module->module_id;
         $orderedModule->parent_id = $module->parent_id;
         $orderedModule->course_id = $module->course_id;
         $orderedModule->order = $module->order;
         $orderedModule->save();
-        
+
         $moduleDB = Module::where(array(
-            'module_id' => $module->module_id, 
+            'module_id' => $module->module_id,
             'course_id' => $module->course_id
         ))->first();
-        
+
         $moduleDB->parent_id = $module->parent_id;
         $moduleDB->order = $module->order;
         $moduleDB->save();
-        
+
         return $orderedModule;
     }
-    
-    
+
+
     /*
      * DELETE
      */
     public function deleteTag($contentId, $tag)
     {
         $content = Content::where('content_id', '=', $contentId)->first();
-        
+
         $currTagStr = $content->tags;
-        
+
         $current = explode(', ', $currTagStr);
-        
+
         $new = array();
         $new[] = $tag;
         $filtered = array_diff($current, $new);
-        
-        
+
+
         $tagString =implode(', ', $filtered);
-        
+
         $content->tags = $tagString;
         $content->save();
         return $content->tags;
     }
-    
+
     //These cascading delete methods exist because OctoberCMS doesn't support cascading delete yet. 
     //Inn https://github.com/octobercms/october/issues/419 it says that the bug has been fixed and the code commited, 
     //but I just downloaded the RC version of OctoberCMS and it doesn't include that fix (at least the cascading delete isn't
@@ -456,33 +456,33 @@ class DbHelper
         {
             $this->deleteAllContentByModuleItem($item->module_item_id);
         }
-        
+
         ModuleItem::where('module_id','=',$moduleId)->delete();
     }
-    
+
     public function deleteAllContentByModuleItem($moduleItemId)
     {
         Content::where('module_item_id','=', $moduleItemId)->delete();
     }
-    
+
     public function deleteModuleCascade($courseId, $moduleId)
     {
         $this->deleteAllModuleItemsByModuleIdCascade($moduleId);
-        
+
         Module::where('course_id', '=', $courseId)
-                ->where('module_id','=',$moduleId)->delete();
+            ->where('module_id','=',$moduleId)->delete();
     }
-    
+
     public function deleteModuleItemCascade($moduleId, $moduleItemId)
     {
         //delete the this module item's content
         $this->deleteAllContentByModuleItem($moduleItemId);
-        
+
         //delete the actual ModuleItem
         ModuleItem::where('module_item_id', '=', $moduleItemId)
-                        ->where('module_id','=',$moduleId)->delete();
+            ->where('module_id','=',$moduleId)->delete();
     }
-    
+
     public function qualityAssuranceModules($courseId, $currenModuleIdsArr)
     {
         $modules = Module::where('course_id','=',$courseId)->select('module_id')->get();
@@ -491,15 +491,15 @@ class DbHelper
         {
             $fromDBArr[] = $mod['module_id'];
         }
-        
+
         $toBeDeleted =array_diff($fromDBArr,$currenModuleIdsArr);
-        
+
         foreach($toBeDeleted as $module)
         {//TODO: verify cascading delete
             Module::where('course_id','=',$courseId)->where('module_id','=',  intval($module))->delete();
         }
     }
-    
+
     public function qualityAssuranceModuleItems($courseId, $moduleItemIds)
     {
         $modulesItems = ModuleItem::where('course_id','=',$courseId)->select('module_item_id')->get();
@@ -508,20 +508,20 @@ class DbHelper
         {
             $fromDBArr[] = $item['module_item_id'];
         }
-        
+
         $toBeDeleted =array_diff($fromDBArr,$moduleItemIds);
-        
+
         foreach($toBeDeleted as $module_item_id)
         {
             ModuleItem::where('course_id','=',$courseId)->where('module_item_id','=',  intval($module_item_id))->delete();
         }
     }
-    
+
     public function getAssignment($assignment_id)
     {
         return Assignment::where(array('assignment_id' => $assignment_id))->first();
     }
-    
+
     public function matchSubmissionWithTags(Submission $submission)
     {
         $assignment = Assignment::where(array('assignment_id' => $submission->assignment_id));
@@ -546,23 +546,23 @@ class DbHelper
             return $arr;
         }
     }
-    
+
     public function matchAssignmentWithTags(Assignment $assignment)
     {
         $content;
         if(!is_null($assignment->quiz_id))
         {//quiz_id will be equal to content_id from a module_item_id
             $content = Content::where(array(
-                    'content_id' => $assignment->quiz_id
-                ))->first();
+                'content_id' => $assignment->quiz_id
+            ))->first();
         }
         else
         {
             $content = Content::where(array(
-                    'content_id' => $assignment->assignment_id
-                ))->first();
+                'content_id' => $assignment->assignment_id
+            ))->first();
         }
-        
+
         $arr = $assignment->toArray();
         if(!is_null($content))
         {
@@ -574,12 +574,12 @@ class DbHelper
         }
         return $arr;
     }
-    
+
     public function getAssignmentTags($assignment_id)
     {
         $content = Content::where(array(
-                    'content_id' => $assignment_id
-                ))->first();
+            'content_id' => $assignment_id
+        ))->first();
         if(!is_null($content))
         {
             return $content->tags;
@@ -589,48 +589,74 @@ class DbHelper
             return "";
         }
     }
-    
+
     public function getQuizSubmission($quiz_id, $user_id)
     {
         $quizSubmission = QuizSubmission::where(array(
             'user_id' => $user_id,
             'quiz_id'=> $quiz_id
         ))->first();
-        
+
         return $quizSubmission;
     }
-    
+
     public function getUserInCourse($courseId, $userId)
     {
-        $user = UserCourse::where(array(
+        $user = UserCourse::with('user')->where(array(
             'user_id' => $userId,
             'course_id'=> $courseId
         ))->first();
-        
+
         return $user;
     }
-    
+
     public function getUsersInCourseWithRole($courseId, $role_name)
     {
         $role = $this->getRole($role_name);
-        $users = UserCourse::where(array(
+        $users = UserCourse::with('user')->where(array(
             'course_id'=> $courseId,
             'role'=>$role->id
         ))->get();
-        
+
+        return $users;
+    }
+
+    public function getCondensedUsersInCourseWithRole($courseId, $role_name)
+    {
+        $role = $this->getRole($role_name);
+        $users = UserCourse::with(array('user'=>function($query){
+            $query->select('user_id','name');
+        }))
+            ->where(array(
+                'course_id'=> $courseId,
+                'role'=>$role->id
+            ))->get(['user_id']);
+
         return $users;
     }
     public function getCourseApprover($courseId)
     {
         $role = Role::where('role_name','=','Approver')->first();
-        $user = UserCourse::where(array(
+        $user = UserCourse::with('user')->where(array(
             'role' => $role->id,
             'course_id'=> $courseId
         ))->first();
-        
+
         return $user;
     }
-    
+
+    public function deleteUserFromRole($courseId, $userId, $role_name)
+    {
+        $role = Role::where('role_name','=',$role_name)->first();
+        $user = UserCourse::where(array(
+            'role' => $role->id,
+            'course_id'=> $courseId,
+            'user_id' => $userId
+        ))->first();
+
+        $user->delete();
+    }
+
     public function getRole($role_name)
     {
         return Role::where('role_name','=',$role_name)->first();

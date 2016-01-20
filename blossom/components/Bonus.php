@@ -67,7 +67,7 @@ class Bonus extends ComponentBase {
 
             $this->page['totalBonus'] = $bonusPenalties === 0 ? 0 : round($bonusPenalties->bonus, 2);
             $this->page['totalPenalties'] = $bonusPenalties === 0 ? 0 : round($bonusPenalties->penalties, 2);
-            $this->page['role'] = $_POST['roles'];//'Learner'; //
+            $this->page['role'] ='Learner';// $_POST['roles'];// //
 
             $this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
         }

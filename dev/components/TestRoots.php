@@ -49,7 +49,7 @@ class TestRoots extends ComponentBase
         $this->canvasHelper = new CanvasHelper();
         $this->dbHelper = new DbHelper();
 //        $this->refreshCache();
-        $this->test();
+//        $this->test();
 //        $this->testBasicModulesRequest();
 //        $this->testDeleteTag();
 //        $this->testAddingUpdatingTags();
@@ -85,7 +85,7 @@ class TestRoots extends ComponentBase
 //        $this->testGetQuizQuestions();
 //        $this->testGetAllQuizzes();
 //        $this->testGetPages();
-//        $this->testQuizTakingWorkflow();
+        $this->testQuizTakingWorkflow();
 //        $this->testIsQuestionAnswered();
 //        $this->testSubmitQuiz();
     }
@@ -591,19 +591,18 @@ class TestRoots extends ComponentBase
     }
     public function testQuizTakingWorkflow()
     {
-        $quizId = 623912;
-        $questionId = 10944893;
+        $quizId = 655691;
+        $questionId = 11464509;
         
         $quizSubmission = $this->roots->getQuizSubmission($quizId);
-        
         if(is_null($quizSubmission))
         {//it wasn't on canvas or in the db -- create a new submission
             
-            echo "was null";
+            echo "was null. Started new quiz taking session";
             $quizSubmission = $this->roots->postQuizTakingSession($quizId);
         }
         
-        echo json_encode($quizSubmission);return;
+//        echo json_encode($quizSubmission);
         //get the question and see if it's answered
         $isAnswered = $this->roots->isQuestionAnswered($quizId, $questionId, $quizSubmission->quiz_submission_id);
         
@@ -613,16 +612,23 @@ class TestRoots extends ComponentBase
         else
         {//answer it. Still working on this
 //            echo "was not answered";
-//            $questionId =10896668;
-//            $quizId = 621504;
-//            $quizQuestion = $this->dbHelper->getQuizQuestion($quizId, $questionId);
-            $quizQuestion = $this->roots->getQuizQuestion($quizId, $questionId);
-            
-//            $questionsWrap = array();
-//            $answer = new \stdClass();
-//            $answer->id = $questionId;
-//            
-//            
+//            $quizQuestion = $this->roots->getQuizQuestion($quizId, $questionId);
+
+            $questionsWrap = new \stdClass();
+            $questionsWrap->attempt = $quizSubmission->attempt;
+            $questionsWrap->validation_token =  $quizSubmission->validation_token;
+
+            $quizQuestionsArr = array();
+
+            $answersArr = array();
+            $answer = new \stdClass();
+            $answer->id = $questionId;
+            $answer->answer = 'True';
+            $answersArr[] = $answer;
+
+            $questionsWrap->quiz_questions = $answersArr;
+//
+//            echo json_encode($questionsWrap);
 //  
 //              //the "answer" will vary between question types
 //            switch(strtolower($quizQuestion->type))
@@ -637,8 +643,11 @@ class TestRoots extends ComponentBase
 //
 //            $questionsWrap[] = $answer;
 //            //answer question
-//            
-//            $result =$this->canvasHelper->postAnswerQuestion($quizSubmission, $questionsWrap);
+//
+
+
+
+            $result =$this->canvasHelper->postAnswerQuestion($quizSubmission, $questionsWrap);
 //            echo json_encode($result);
         }
         
