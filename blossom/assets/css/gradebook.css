@@ -144,6 +144,17 @@ a:hover
     stroke-width: 2;
     fill: none;
 }
+.spinnerDiv
+{
+    width:400px;
+    height:800px;
+    position:absolute;
+    margin:auto;
+}
+.spinnerDiv icon{
+    text-align:center;
+    display:inline-block;
+}
 .multiselect {
     width:180px;
     height:370px;
@@ -164,6 +175,10 @@ a:hover
 .checkboxmultiselect
 {
     margin:0 3px !important;
+}
+.nameLabel
+{
+    color:gray;
 }
 .labelSelectAll
 {

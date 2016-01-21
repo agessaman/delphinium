@@ -938,7 +938,6 @@ class Roots
     	}
         $studentId = $_SESSION['userID'];
         $quizSubmission = $this->dbHelper->getQuizSubmission($quizId, $studentId);
-        
         if(is_null($quizSubmission))
         {//try to get it from the LMS
             $lms = strtoupper($_SESSION['lms']);

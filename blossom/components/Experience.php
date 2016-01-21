@@ -203,6 +203,76 @@ class Experience extends ComponentBase {
         return $analytics;
     }
 
+    public function getMilestonesOrderedByPointsDesc($experienceInstanceId)
+    {
+        $localMilestones = ExperienceModel::with(array('milestones' =>
+            function($query) {
+                $query->orderBy('points', 'DESC');
+            }))
+            ->where(array(
+                'id' => $experienceInstanceId
+            ))->first()->milestones;
+        $expInstance = ExperienceModel::find($experienceInstanceId);
+        $utcTimeZone = new DateTimeZone('UTC');
+        $endDateUTC = $expInstance->end_date->setTimezone($utcTimeZone);
+
+        return $localMilestones;
+
+    }
+
+    public function userClearedMilestones($localMilestonesOrderedByPointsDesc, $userSubmissionsOrderedByDate, $ptsPerSecond, $stDateUTC,$endDateUTC, $bonusPerSecond, $bonusSeconds,
+                                          $penaltyPerSecond, $penaltySeconds)
+    {
+        $milestoneInfo = array();
+        $carryingScore = 0;
+        foreach ($userSubmissionsOrderedByDate as $submission) {
+            $carryingScore = $carryingScore + floatval($submission['score']);
+            foreach ($localMilestonesOrderedByPointsDesc as $key => $mile) {
+
+                if ($carryingScore >= $mile->points) {//milestone cleared
+                    $mileClearance = new \stdClass();
+                    $mileClearance->milestone_id = $mile->id;
+                    $mileClearance->name = $mile->name;
+                    $mileClearance->cleared = 1;
+                    $mileClearance->cleared_at = $submission['submitted_at'];
+                    $mileClearance->bonusPenalty = $this->calculateBonusOrPenaltyNew($mile->points, new DateTime($submission['submitted_at']), $endDateUTC, true,
+                        $ptsPerSecond, $stDateUTC, $bonusSeconds, $bonusPerSecond, $penaltySeconds, $penaltyPerSecond);
+                    $mileClearance->points = $mile->points;
+                    $mileClearance->due_at = $this->calculateMilestoneDueDateNew($mile->points, $ptsPerSecond, $stDateUTC);
+                    $milestoneInfo[] = $mileClearance;
+                    unset($localMilestonesOrderedByPointsDesc[$key]);
+                }
+            }
+        }
+
+        //sort the remaining milestones by points asc
+        $mileArray = $localMilestonesOrderedByPointsDesc->toArray();
+        usort($mileArray, function($a, $b) {
+            $ad = $a['points'];
+            $bd = $b['points'];
+
+            if ($ad == $bd) {
+                return 0;
+            }
+
+            return $ad > $bd ? 1 : -1;
+        });
+
+        foreach ($mileArray as $left) {//for the milestones that were left
+            $mileClearance = new \stdClass();
+            $mileClearance->milestone_id = $left['id'];
+            $mileClearance->name = $left['name'];
+            $mileClearance->cleared = 0;
+            $mileClearance->cleared_at = null;
+            $mileClearance->bonusPenalty = $this->calculateBonusOrPenaltyNew($left['points'], new DateTime('now'), $endDateUTC, false,
+                $ptsPerSecond, $stDateUTC, $bonusSeconds, $bonusPerSecond, $penaltySeconds, $penaltyPerSecond);
+            $mileClearance->points = $left['points'];
+
+            $mileClearance->due_at = $this->calculateMilestoneDueDateNew($left['points'], $ptsPerSecond, $stDateUTC);
+            $milestoneInfo[] = $mileClearance;
+        }
+        return $milestoneInfo;
+    }
     // We are overloading some classes because we need to optimize the code by doing some sort of dependency injection.
     public function getMilestoneClearanceInfoNew($experienceInstanceId, $ptsPerSecond, $stDateUTC, $bonusPerSecond, $bonusSeconds,
                                                  $penaltyPerSecond, $penaltySeconds, $userSubmissions)
@@ -243,11 +313,9 @@ class Experience extends ComponentBase {
                     $mileClearance->name = $mile->name;
                     $mileClearance->cleared = 1;
                     $mileClearance->cleared_at = $submission['submitted_at'];
-                    // $mileClearance->bonusPenalty = $this->calculateBonusOrPenalty($mile->points, new DateTime($submission['submitted_at']), $endDateUTC, true);
                     $mileClearance->bonusPenalty = $this->calculateBonusOrPenaltyNew($mile->points, new DateTime($submission['submitted_at']), $endDateUTC, true,
                         $ptsPerSecond, $stDateUTC, $bonusSeconds, $bonusPerSecond, $penaltySeconds, $penaltyPerSecond);
                     $mileClearance->points = $mile->points;
-                    // $mileClearance->due_at = $this->calculateMilestoneDueDate($mile->points);
                     $mileClearance->due_at = $this->calculateMilestoneDueDateNew($mile->points, $ptsPerSecond, $stDateUTC);
                     $milestoneInfo[] = $mileClearance;
                     unset($localMilestones[$key]);
@@ -274,7 +342,6 @@ class Experience extends ComponentBase {
             $mileClearance->name = $left['name'];
             $mileClearance->cleared = 0;
             $mileClearance->cleared_at = null;
-            // $mileClearance->bonusPenalty = $this->calculateBonusOrPenalty($left['points'], new DateTime('now'), $endDateUTC, false);
             $mileClearance->bonusPenalty = $this->calculateBonusOrPenaltyNew($left['points'], new DateTime('now'), $endDateUTC, false,
                 $ptsPerSecond, $stDateUTC, $bonusSeconds, $bonusPerSecond, $penaltySeconds, $penaltyPerSecond);
             $mileClearance->points = $left['points'];
@@ -428,7 +495,6 @@ class Experience extends ComponentBase {
     }
 
     public function getSubmissions($userId = null) {
-
         if (is_null($userId)) {
             if (!isset($_SESSION)) {
                 session_start();

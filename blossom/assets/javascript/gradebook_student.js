@@ -5,7 +5,7 @@ $(document).ready(function(){
 
     d3.select("#iGradeTooltip").on("mouseover", function (d) {
 
-            var str = "<table class='table table-condensed table-gradingScheme'><thead> <tr> <th>Value</th> <th>Letter Grade</th></tr> </thead> <tbody> ";
+            var str = "<table class='table table-condensed table-gradingScheme'><thead> <tr> <th>Points</th> <th>Letter Grade</th></tr> </thead> <tbody> ";
             for(var i=0;i<=gradingScheme.length-1;i++)
             {
                 var item = gradingScheme[i];

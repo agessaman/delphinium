@@ -54,12 +54,19 @@ class Grade extends ComponentBase {
             $roots = new Roots();
             $standards = $roots->getGradingStandards();
             $grading_scheme = $standards[0]->grading_scheme;
-            $this->page['grading_scheme'] = json_encode($grading_scheme);
             $bonusPenaltiesObj = $exComp->calculateTotalBonusPenalties($this->property('experienceInstance'));
             $totalBonusPenalties = ($bonusPenaltiesObj->bonus)+($bonusPenaltiesObj->penalties);//penalties come with negative sign
 
             $totalPoints = $points +$bonusPenaltiesObj->bonus + $bonusPenaltiesObj->penalties;
             $letterGrade = $this->getLetterGrade($totalPoints, $maxExperiencePts, $grading_scheme);
+
+            //modify grading scheme for display to users
+            foreach($grading_scheme as $grade)
+            {
+                $grade->value = $grade->value * $maxExperiencePts;
+            }
+            $this->page['grading_scheme'] = json_encode($grading_scheme);
+
 
             $this->page['XP'] = round($points,2);
             $this->page['gradeBonus'] = round($totalBonusPenalties,2);
@@ -105,13 +112,9 @@ class Grade extends ComponentBase {
         if ($maxPoints === 0) {
             return "F";
         }
-        $percentage = $studentPoints / $maxPoints;
-
-        if ($percentage < 0) {
-            return "F";
-        }
         foreach ($gradingScheme as $grade) {
-            if ($percentage >= $grade->value) {
+            $newVal = $grade->value * $maxPoints;
+            if ($studentPoints >= $newVal) {
                 return $grade->name;
             }
         }
