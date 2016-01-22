@@ -54,6 +54,16 @@ If you followed the previous installation instructions, this will ensure you end
 
 Now you should be setup and correctly synced up.
 
+## Enabling development mode
+
+1. Go to The Canvas website (uvu.instructure.com). Go to the DEV_MGMT course and select “Guzzle” from the left menu. Click “Log in" when you get the message. Now from the left navigation menu select "Settings". In the new page select "Student View" from the right hand menu. Go back to the Guzzle page.
+2. Copy your userId, Token, and everything else you see on the page somewhere safe.
+3. Update your app with the latest code from GitHub.
+4. Run the following command from your cmd line: 
+* php artisan october:up
+5. In your backend app go to Greenhouse/Dev. Add a new Dev Configuration (enter your UserId, Token, CourseId, Domain, and  select “Enable for dev mode”). Save your changes
+6. Now in your development environment whenever you are going to request data from Roots you’ll need to drop the “dev/Dev” component in your page first.  To configure it just select the “Dev Configuration” you just created from the drop down. Then drop any other component you are going to be working on (this only applies for components that make data calls to Roots).
+7. 
 ## Troubleshooting
 
 **When I see the OctoberCMS demo page, the style is all messed up and there's a bunch of 404 errors.**
@@ -112,12 +122,3 @@ Then go to the plugins/october/drivers directory and run the following composer 
 
 You should now be able to run the test-roots component and other Roots functions.
 
-## Enabling development mode
-
-1. Go to The Canvas website (uvu.instructure.com). Go to the DEV_MGMT course and select “Guzzle” from the left menu. Click “Log in" when you get the message. Now from the left navigation menu select "Settings". In the new page select "Student View" from the right hand menu. Go back to the Guzzle page.
-2. Copy your userId, Token, and everything else you see on the page somewhere safe.
-3. Update your app with the latest code from GitHub.
-4. Run the following command from your cmd line: 
-* php artisan october:up
-5. In your backend app go to Greenhouse/Dev. Add a new Dev Configuration (enter your UserId, Token, CourseId, Domain, and  select “Enable for dev mode”). Save your changes
-6. Now in your development environment whenever you are going to request data from Roots you’ll need to drop the “dev/Dev” component in your page first.  To configure it just select the “Dev Configuration” you just created from the drop down. Then drop any other component you are going to be working on (this only applies for components that make data calls to Roots).
