@@ -32,6 +32,9 @@
     cd /path/to/delphinium
     php artisan october:up
     ```
+    
+    
+9. OctoberCMS moved its guzzle vendor folder (as well as all other vendor files) to a new plugin. You will need to add the October.Drivers plugin in order for Roots to work. In order to do this go to the backend-->Settings-->Updates and click on "Install Plugins". In the search box type "October.Drivers" and install the plugin.
 
 Congratulations! Your app should be up and running.
 
@@ -86,6 +89,9 @@ Run `php artisan october:up`. This will create the table you are missing in your
 `Class 'GuzzleHttp\Client' not found`
 
 You need to go to the octoberCms backend and install the plugin October.Drivers
+##### When I add a new component to a page nothing works!
+Most of the components depend on a series of javascript libraries. In order for everything to work you must add a layout to the page where you're dropping the component. This layout is found [here]: (https://raw.githubusercontent.com/ProjectDelphinium/minimized_layout/master/minimal.htm)
+Follow the readme.md on that repo to know where you need to add this layout.
 
 ## Enabling development mode
 
@@ -96,4 +102,3 @@ You need to go to the octoberCms backend and install the plugin October.Drivers
 * php artisan october:up
 5. In your backend app go to Greenhouse/Dev. Add a new Dev Configuration (enter your UserId, Token, CourseId, Domain, and  select “Enable for dev mode”). Save your changes
 6. Now in your development environment whenever you are going to request data from Roots you’ll need to drop the “dev/Dev” component in your page first.  To configure it just select the “Dev Configuration” you just created from the drop down. Then drop any other component you are going to be working on (this only applies for components that make data calls to Roots).
-7. OctoberCMS moved its guzzle vendor folder (as well as all other vendor files) to a new plugin. You will need to add the October.Drivers plugin in order for Roots to work.
