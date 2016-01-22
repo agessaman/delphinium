@@ -49,7 +49,8 @@ Congratulations! Your app should be up and running.
 * php artisan october:up
 5. In your backend app go to Greenhouse/Dev. Add a new Dev Configuration (enter your UserId, Token, CourseId, Domain, and  select “Enable for dev mode”). Save your changes
 6. Now in your development environment whenever you are going to request data from Roots you’ll need to drop the “dev/Dev” component in your page first.  To configure it just select the “Dev Configuration” you just created from the drop down. Then drop any other component you are going to be working on (this only applies for components that make data calls to Roots).
-7. 
+ 
+
 ## Troubleshooting
 
 **When I see the OctoberCMS demo page, the style is all messed up and there's a bunch of 404 errors.**
