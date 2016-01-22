@@ -91,9 +91,26 @@ Run `php artisan october:up`. This will create the table you are missing in your
 `Class 'GuzzleHttp\Client' not found`
 
 You need to go to the octoberCms backend and install the plugin October.Drivers
+
 ##### When I add a new component to a page nothing works!
 Most of the components depend on a series of javascript libraries. In order for everything to work you must add a layout to the page where you're dropping the component. This layout is found [here] (https://raw.githubusercontent.com/ProjectDelphinium/minimized_layout/master/minimal.htm).
 Follow the readme.md on [this] (https://github.com/ProjectDelphinium/minimized_layout) repo to know where you need to add this layout.
+
+##### When I add the test-roots component or try running certain Roots functions I get an error:
+`Class 'GuzzleHttp\Psr7\Request' not found`
+October.Drivers comes with an older version of Guzzle than the one we need. To fix this error find the composer.json file inside delphinium/plugins/october/drivers and change the 
+
+`guzzlehttp/guzzle": "XXX"`
+
+to
+
+`guzzlehttp/guzzle": "~6.0"`
+
+Then, if you haven't installed composer, go ahead and [instsall](https://getcomposer.org/doc/00-intro.md) it.
+Then go to the plugins/october/drivers direcotry and run the following composer command:
+`composer update`
+
+You should now be able to run the test-roots component and other Roots functions.
 
 ## Enabling development mode
 
