@@ -40,20 +40,6 @@
 
 Congratulations! Your app should be up and running.
 
-## Migration From Previous Instructions
-
-If you followed the previous installation instructions, this will ensure you end up with the repository in the correct place.
-
-  1. Delete `/path/to/delphinium/.git`
-  2. Go to `/path/to/delphinium/plugins` and clone the repository
-
-  ```bash
-  cd /path/to/delphinium/plugins
-  git clone https://github.com/ProjectDelphinium/delphinium.git
-  ```
-
-Now you should be setup and correctly synced up.
-
 ## Enabling development mode
 
 1. Go to The Canvas website (uvu.instructure.com). Go to the DEV_MGMT course and select “Guzzle” from the left menu. Click “Log in" when you get the message. Now from the left navigation menu select "Settings". In the new page select "Student View" from the right hand menu. Go back to the Guzzle page.
