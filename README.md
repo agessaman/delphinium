@@ -34,7 +34,7 @@
     ```
     
     
-9. OctoberCMS moved its guzzle vendor folder (as well as all other vendor files) to a new plugin. You will need to add the October.Drivers plugin in order for Roots to work. In order to do this go to the backend-->Settings-->Updates and click on "Install Plugins". In the search box type "October.Drivers" and install the plugin.
+  9. OctoberCMS moved its guzzle vendor folder (as well as all other vendor files) to a new plugin. You will need to add the October.Drivers plugin in order for Roots to work. In order to do this go to the backend-->Settings-->Updates and click on "Install Plugins". In the search box type "October.Drivers" and install the plugin.
 
 Congratulations! Your app should be up and running.
 
@@ -90,7 +90,7 @@ Run `php artisan october:up`. This will create the table you are missing in your
 
 You need to go to the octoberCms backend and install the plugin October.Drivers
 ##### When I add a new component to a page nothing works!
-Most of the components depend on a series of javascript libraries. In order for everything to work you must add a layout to the page where you're dropping the component. This layout is found [here]: (https://raw.githubusercontent.com/ProjectDelphinium/minimized_layout/master/minimal.htm)
+Most of the components depend on a series of javascript libraries. In order for everything to work you must add a layout to the page where you're dropping the component. This layout is found [here] (https://raw.githubusercontent.com/ProjectDelphinium/minimized_layout/master/minimal.htm).
 Follow the readme.md on that repo to know where you need to add this layout.
 
 ## Enabling development mode
