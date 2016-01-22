@@ -100,15 +100,15 @@ Follow the readme.md on [this] (https://github.com/ProjectDelphinium/minimized_l
 `Class 'GuzzleHttp\Psr7\Request' not found`
 October.Drivers comes with an older version of Guzzle than the one we need. To fix this error find the composer.json file inside delphinium/plugins/october/drivers and change this line 
 
-```guzzlehttp/guzzle": "XXX"`
+`guzzlehttp/guzzle": "XXX"`
 
 to this
 
-```guzzlehttp/guzzle": "~6.0"`
+``uzzlehttp/guzzle": "~6.0"`
 
 Then, if you haven't installed composer, go ahead and [install](https://getcomposer.org/doc/00-intro.md) it.
 Then go to the plugins/october/drivers directory and run the following composer command:
-```composer update`
+`composer update`
 
 You should now be able to run the test-roots component and other Roots functions.
 
