@@ -101,7 +101,7 @@ October.Drivers comes with an older version of Guzzle than the one we need. To f
 
 to this
 
-``uzzlehttp/guzzle": "~6.0"`
+`guzzlehttp/guzzle": "~6.0"`
 
 Then, if you haven't installed composer, go ahead and [install](https://getcomposer.org/doc/00-intro.md) it.
 Then go to the plugins/october/drivers directory and run the following composer command:
