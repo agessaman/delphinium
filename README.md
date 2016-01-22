@@ -91,7 +91,7 @@ Run `php artisan october:up`. This will create the table you are missing in your
 You need to go to the octoberCms backend and install the plugin October.Drivers
 ##### When I add a new component to a page nothing works!
 Most of the components depend on a series of javascript libraries. In order for everything to work you must add a layout to the page where you're dropping the component. This layout is found [here] (https://raw.githubusercontent.com/ProjectDelphinium/minimized_layout/master/minimal.htm).
-Follow the readme.md on that repo to know where you need to add this layout.
+Follow the readme.md on [this] (https://github.com/ProjectDelphinium/minimized_layout) repo to know where you need to add this layout.
 
 ## Enabling development mode
 
