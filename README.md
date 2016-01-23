@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-  1. Install a *AMP stack
+  1. If you are setting up a localhost development environment install a *AMP stack on your computer, otherwise have a server with an *AMP stack installed
 * Mac: [MAMP](http://www.mamp.info/en/downloads/)
 * Windows: [WAMP](http://www.wampserver.com/en/) or [XAMPP](https://www.apachefriends.org/download.html)
 * Linux: Follow [this guide](https://www.digitalocean.com/community/tutorials/how-to-install-linux-apache-mysql-php-lamp-stack-on-ubuntu)
