@@ -8,19 +8,19 @@ use Delphinium\Roots\Roots;
 class Dev extends ComponentBase
 {
 // 	public $chartName;
-	
-	public function componentDetails()
+
+    public function componentDetails()
     {
         return [
             'name'        => 'Dev Component',
             'description' => 'If added to a page it will enable dev mode for Delphinium'
         ];
     }
-    
+
     public function onRun()
-    {	
-    	$config = Configuration::find($this->property('devConfig'));
-		
+    {
+        $config = Configuration::find($this->property('devConfig'));
+
         if (!isset($_SESSION)) {
             session_start();
         }
@@ -30,13 +30,29 @@ class Dev extends ComponentBase
         $_SESSION['courseID'] = $config->Course_id;
         $_SESSION['domain'] = $config->Domain;
         $_SESSION['lms'] = $config->Lms;
+
+        //get the roles
+        $roleStr = \Input::get('roles');
+        if(stristr($roleStr,'Learner'))
+        {
+            $_SESSION['roles'] = $roleStr;
+        }
+        else
+        {
+            $parts = explode("lis/", $roleStr);
+            if(count($parts)>=2)
+            {
+                $_SESSION['roles'] = ($parts[1]);
+            }
+        }
+
         $_SESSION['timezone'] = new \DateTimeZone($config->Timezone);
         //get the timezone
         $roots = new Roots();
         $course = $roots->getCourse();
         $account_id = $course->account_id;
         try
-        {   
+        {
             $account = $roots->getAccount($account_id);
 
             $_SESSION['timezone'] = new \DateTimeZone($account->default_time_zone);
@@ -44,21 +60,21 @@ class Dev extends ComponentBase
 
         }
     }
-    
-   public function defineProperties()
+
+    public function defineProperties()
     {
-    	return [
-        	'devConfig' => [
-            	 'title'             => 'Dev Configuration',
-             	'description'       => 'Select the development configuration',
-             	'type'              => 'dropdown',
-        	]
-    	];
+        return [
+            'devConfig' => [
+                'title'             => 'Dev Configuration',
+                'description'       => 'Select the development configuration',
+                'type'              => 'dropdown',
+            ]
+        ];
     }
-    
+
     public function getDevConfigOptions()
     {
-    	$instances = Configuration::where("Enabled","=","1")->get();
+        $instances = Configuration::where("Enabled","=","1")->get();
 
         $array_dropdown = ['0'=>'- select dev Config - '];
 

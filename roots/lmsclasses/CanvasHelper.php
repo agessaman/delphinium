@@ -294,7 +294,6 @@ class CanvasHelper
         try
         {
             $items = GuzzleHelper::postData($url);
-
             if(count($items->quiz_submissions)>0)
             {
                 return $this->saveQuizSubmission($items->quiz_submissions[0]);
@@ -323,8 +322,45 @@ class CanvasHelper
         }
 
     }
+
+    public function updateStudentQuizScore($quizId, $quizSubmission, $newQuizScore)
+    {/// PUT api/v1/courses/:course_id/quizzes/:quiz_id/submissions/:id
+        $urlPieces= $this->initUrl();
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $urlArgs = array();
+        $urlPieces[] = 'quizzes';
+        $urlPieces[] = $quizId;
+        $urlPieces[] = 'submissions';
+        $urlPieces[] = $quizSubmission->quiz_submission_id;
+
+        $options = [
+            "attempt"=> $quizSubmission->attempt,
+            "fudge_points"=> 1,
+            "questions"=> [
+                        "11472511"=> [
+                            "score"=> 2.5,
+                            "comment"=> "test."
+                          ]
+            ]
+        ];
+//        $options =[
+//            'quiz_submissions'  => [
+//                'attempt' => $quizSubmission->attempt,
+//                'fudge_points' => $newQuizScore
+//            ]];
+        $urlArgs[]="access_token={$token}";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+        $updated = GuzzleHelper::putData($url, $options);
+        return $updated;
+    }
+
     public function getQuizzes()
-    {
+    {///api/v1/courses/:course_id/quizzes
         //process quiz
         $quizzes = $this->simpleGet('quizzes');
         if(!isset($_SESSION))

@@ -50,7 +50,7 @@ class TestRoots extends ComponentBase
         $this->dbHelper = new DbHelper();
 //        $this->refreshCache();
 //        $this->test();
-//        $this->testBasicModulesRequest();
+        $this->testBasicModulesRequest();
 //        $this->testDeleteTag();
 //        $this->testAddingUpdatingTags();
 //        $this->testUpdatingModuleItem();
@@ -85,7 +85,7 @@ class TestRoots extends ComponentBase
 //        $this->testGetQuizQuestions();
 //        $this->testGetAllQuizzes();
 //        $this->testGetPages();
-        $this->testQuizTakingWorkflow();
+//        $this->testQuizTakingWorkflow();
 //        $this->testIsQuestionAnswered();
 //        $this->testSubmitQuiz();
     }
@@ -556,13 +556,12 @@ class TestRoots extends ComponentBase
     
     public function testGetAllQuizzes()
     {
-//        $req = new QuizRequest(ActionType::GET, null, $fresh_data = false, true);
         $req = new QuizRequest(ActionType::GET, null, $fresh_data = true, true);
         echo json_encode($this->roots->quizzes($req));
     }
     public function testGetQuiz()
     {   
-        $req = new QuizRequest(ActionType::GET, 464878, $fresh_data = true, true);
+        $req = new QuizRequest(ActionType::GET, 623912, $fresh_data = true, true);
         $result = $this->roots->quizzes($req);
         echo json_encode($result);
     }
@@ -573,7 +572,7 @@ class TestRoots extends ComponentBase
     
     public function testGetQuizQuestions()
     {
-        $req = new QuizRequest(ActionType::GET, 621540, false, true);
+        $req = new QuizRequest(ActionType::GET, 623912, false, true);
         $result = $this->roots->quizzes($req);
         
         echo json_encode($result);
@@ -591,10 +590,11 @@ class TestRoots extends ComponentBase
     }
     public function testQuizTakingWorkflow()
     {
-        $quizId = 655691;
-        $questionId = 11464509;
+        $quizId = 656063;
+        $questionId = 11472511;
         
         $quizSubmission = $this->roots->getQuizSubmission($quizId);
+
         if(is_null($quizSubmission))
         {//it wasn't on canvas or in the db -- create a new submission
             
@@ -605,51 +605,58 @@ class TestRoots extends ComponentBase
 //        echo json_encode($quizSubmission);
         //get the question and see if it's answered
         $isAnswered = $this->roots->isQuestionAnswered($quizId, $questionId, $quizSubmission->quiz_submission_id);
-        
-        if($isAnswered){
-            echo "was answered";//do something if the question has been answered
-        }
-        else
-        {//answer it. Still working on this
-//            echo "was not answered";
-//            $quizQuestion = $this->roots->getQuizQuestion($quizId, $questionId);
 
-            $questionsWrap = new \stdClass();
-            $questionsWrap->attempt = $quizSubmission->attempt;
-            $questionsWrap->validation_token =  $quizSubmission->validation_token;
 
-            $quizQuestionsArr = array();
-
-            $answersArr = array();
-            $answer = new \stdClass();
-            $answer->id = $questionId;
-            $answer->answer = 'True';
-            $answersArr[] = $answer;
-
-            $questionsWrap->quiz_questions = $answersArr;
+//        $canvas = new CanvasHelper();
+//        $result = $canvas->updateStudentQuizScore($quizId, $quizSubmission, 2);
 //
-//            echo json_encode($questionsWrap);
-//  
-//              //the "answer" will vary between question types
-//            switch(strtolower($quizQuestion->type))
-//            {
-//                case "text":
-//                    break;
-//                case "multiple_choice_question":
-//                    $answer->answer = 1;
-//                    break;
-//
-//            }
-//
-//            $questionsWrap[] = $answer;
-//            //answer question
-//
+//        echo json_encode($result);return;
 
 
-
-            $result =$this->canvasHelper->postAnswerQuestion($quizSubmission, $questionsWrap);
-//            echo json_encode($result);
-        }
+//        if($isAnswered){
+//            echo "was answered";//do something if the question has been answered
+//        }
+//        else
+//        {//answer it. Still working on this
+////            echo "was not answered";
+////            $quizQuestion = $this->roots->getQuizQuestion($quizId, $questionId);
+//
+//            $questionsWrap = new \stdClass();
+//            $questionsWrap->attempt = $quizSubmission->attempt;
+//            $questionsWrap->validation_token =  $quizSubmission->validation_token;
+//
+//            $quizQuestionsArr = array();
+//
+//            $answersArr = array();
+//            $answer = new \stdClass();
+//            $answer->id = $questionId;
+//            $answer->answer = 'True';
+//            $answersArr[] = $answer;
+//
+//            $questionsWrap->quiz_questions = $answersArr;
+////
+////            echo json_encode($questionsWrap);
+////
+////              //the "answer" will vary between question types
+////            switch(strtolower($quizQuestion->type))
+////            {
+////                case "text":
+////                    break;
+////                case "multiple_choice_question":
+////                    $answer->answer = 1;
+////                    break;
+////
+////            }
+////
+////            $questionsWrap[] = $answer;
+////            //answer question
+////
+//
+//
+//
+////            $result =$this->canvasHelper->postAnswerQuestion($quizSubmission, $questionsWrap);
+////            echo json_encode($result);
+//        }
         
         //submit the quiz
 //        $res = $this->roots->postTurnInQuiz($quizId, $quizSubmission);

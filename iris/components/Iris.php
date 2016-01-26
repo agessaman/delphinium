@@ -48,22 +48,27 @@ class Iris extends ComponentBase
         $moduleData = $roots->modules($req);
         
         $this->page['rawData'] = json_encode($moduleData);
+
         $modArr = $moduleData->toArray();
-        
         if($filter===$defaultNode)
         {///get all items     
             $finalData = $this->buildTree($modArr,1);
         }
         else
         {//filter by node
+
+            echo json_encode($filter);
             $filterObj = array_filter(
                 $modArr,
                 function ($e) use ($filter) {
+                    echo json_encode($e['module_id'])."--";
                     return $e['module_id'] === $filter;
                 }
             );
             $obj = array_shift($filterObj);
             $finalData = $this->buildTree($modArr,$obj['parent_id'], $filter);
+
+
         }
     	$this->page['graphData'] = json_encode($finalData);
     }
@@ -115,6 +120,7 @@ class Iris extends ComponentBase
     }
     
     private function buildTree(array &$elements, $parentId = 1, $moduleFilter=null) {
+
         $branch = array();
         foreach ($elements as $key=>$module) {
             if($module['published'] == "1")//if not published don't include it
@@ -125,6 +131,8 @@ class Iris extends ComponentBase
                     continue;
                 }
                 if ($module['parent_id'] == $parentId) {
+
+                    echo "here";
                     $children = $this->buildTree($elements, $module['module_id']);
                     if ($children) {
                         $module['children'] = $children;

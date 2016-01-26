@@ -220,9 +220,10 @@ class Experience extends ComponentBase {
 
     }
 
-    public function userClearedMilestones($localMilestonesOrderedByPointsDesc, $userSubmissionsOrderedByDate, $ptsPerSecond, $stDateUTC,$endDateUTC, $bonusPerSecond, $bonusSeconds,
+    public function userClearedMilestones($milestonesOrderedByPointsDesc, $userSubmissionsOrderedByDate, $ptsPerSecond, $stDateUTC,$endDateUTC, $bonusPerSecond, $bonusSeconds,
                                           $penaltyPerSecond, $penaltySeconds)
     {
+        $localMilestonesOrderedByPointsDesc = clone $milestonesOrderedByPointsDesc;
         $milestoneInfo = array();
         $carryingScore = 0;
         foreach ($userSubmissionsOrderedByDate as $submission) {

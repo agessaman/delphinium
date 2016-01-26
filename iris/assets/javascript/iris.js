@@ -1,15 +1,15 @@
-
 //GLOBAL VARIABLES
 var rawSubmissionData;
 var accessibleSubmissData = new Array();
 var moduleStates;
+var newModuleStates=[];
 var submissionData;
 var irisObj;
 var totalCharts=0;
 
 //TODO: make colors configurable
-var stateColors = {locked: "#8F8F8F", unlocked: "#588238", started: "#3087B4", completed: "#143D55"};
-var backColors = {locked: "#DDDDDD", unlocked: "#588238", started: "#3087B4", completed: "#133D55"};
+var stateColors = {locked: "#8F8F8F", unlocked: "#588238", started: "#5eacd4", completed: "#143D55"};
+var backColors = {locked: "#DDDDDD", unlocked: "#588238", started: "#5eacd4", completed: "#133D55"};
 var breadCrumb = [['width'], ['points'], ['name'], ['path']];
 var b = {
     w: 94, h: 15, s: 2, t: 10
@@ -22,20 +22,6 @@ $(window).load(function () {
             totalCharts++;
             createChart(window[element]);
         }
-    }
-
-    if(moduleStates===undefined)
-    {
-        var promise = $.get("getModuleStates");
-        promise.then(function (data1, textStatus, jqXHR) {
-                processModuleStates(data1, textStatus, jqXHR, stateColors);
-            })
-            .fail(function (data2) {
-            });
-    }
-    else
-    {
-        processModuleStates(moduleStates,null, null, stateColors);
     }
 
     getStudentSubmissions();
@@ -137,9 +123,9 @@ function createChart(iris)
         //make the title bar the same color to represent the state
         var backColor = backColors['locked'];
 
-        if (moduleStates !== undefined)
+        if (newModuleStates !== undefined)
         {
-            var ob = moduleStates.filter(function (ob)
+            var ob = newModuleStates.filter(function (ob)
             {
                 var id = parseInt(d.module_id);
                 if (ob.module_id === id)
@@ -149,8 +135,8 @@ function createChart(iris)
             })[0];
 
             if (ob !== undefined) {
-                var newColor = stateColors[ob.state];
-                var backColor = backColors[ob.state];
+                var newColor = ob.color;
+                var backColor =ob.color;
                 d3.select(".titleBar").style("background-color", newColor);
 //            d3.select("#imgClose").style("color", newColor);
             }
@@ -186,7 +172,7 @@ function createChart(iris)
                     })[0];
                     if (obj !== undefined)
                     {
-                        return obj["state"] !== 'completed';
+                        return obj.state !== 'completed';
                     }
                     else//if the obj is undefined it means that the item that is a prerequisite is not published, so it's as if it were not a prereq
                     {//so we won't include it in the list of prerequisites
@@ -327,8 +313,6 @@ function createChart(iris)
                         //only display optional tags if required content has been completed
                         ob = accessibleSubmissData.filter(function (ob)
                         {
-                            console.log(ob.content_id);
-                            console.log(currentAssignment.content_id);
                             if (ob.content_id === currentAssignment.content_id)
                             {
                                 return ob;
@@ -408,11 +392,6 @@ function createChart(iris)
                 d3.select(this).style("color", "black");
                 d3.select("#tooltip")
                     .attr("class", "solid");
-                for(var i=0;i<=prereqDoms.length-1;i++)
-                {
-                    console.log(prereqDoms[i]);
-//                originalColors[prereqDoms[i].]
-                }
             });
     }
 
@@ -696,9 +675,9 @@ function createChart(iris)
             .attr("points", breadcrumbPoints)
 
             .style("fill", function (d) {
-                if (moduleStates !== undefined)
+                if (newModuleStates !== undefined)
                 {
-                    var ob = moduleStates.filter(function (ob)
+                    var ob = newModuleStates.filter(function (ob)
                     {
                         var id = parseInt(d.module_id);
                         if (ob.module_id === id)
@@ -708,7 +687,7 @@ function createChart(iris)
                     })[0];
 
                     var newColor;
-                    ob !== undefined ? newColor = stateColors[ob.state] : newColor = "#8F8F8F";
+                    ob !== undefined ? newColor = ob.color : newColor = "#8F8F8F";
                     return newColor;
 
                 }
@@ -772,18 +751,162 @@ function resetTooltipContent()
 
 function processModuleStates(states,textStatus, jqXHR, stateColors)
 {
-    moduleStates = states;
-    tempModData = graphData.children;
-    for (var i = 0; i <= states.length - 1; i++)
+    console.log(states);
+    console.log("then new");
+    for(var i=0;i<=rawData.length-1;i++)
     {
-        d = states[i];
-        d3.selectAll(".path" + d.module_id)
-            .style("fill", function (e) {
-                return stateColors[d.state];
-            });
+        var module = rawData[i];
+        var thisModuleState="";
+        var moduleColor="";
+        var percentageCleared = 0.0;
+        var items = module.module_items;
+        var submittedItems =[];
+        var path = d3.selectAll(".path" + module.module_id);
+        //if there are subheaders among the module items we will remove them, because we don't want to take those into account when determining
+        //the degree of completion for each module
+        var subheaders = items.filter(function (obj)
+        {
+            if(obj.type=="SubHeader")
+            {
+                return obj;
+            }
+            else if(obj.type=="File")
+            {
+                return obj;
+            }
+        });
+        if(subheaders.length>0)
+        {
+            for(var l=0;l<=subheaders.length-1;l++)
+            {
+                var index = items.indexOf(subheaders[l]);
+                if (index > -1) {
+                    items.splice(index, 1);
+                }
+            }
+        }
+
+        //if the module states say the module is locked then we'll display it as locked
+        var submittedItems = states.filter(function (obj)
+        {
+            if(obj.module_id == module.module_id)
+            {
+                return obj;
+            }
+        })[0];
+
+        if(submittedItems!=undefined && submittedItems.state =="locked")
+        {
+            thisModuleState = "locked";
+            path.style("fill", stateColors["locked"]);
+            moduleColor = stateColors["locked"];
+            var moduleStateItem ={module_id:parseInt(module.module_id), color:moduleColor, state: thisModuleState};
+            newModuleStates.push(moduleStateItem);
+            continue;
+        }
+
+        //if there are no module items then the module is considered to be complete
+        if(items.length<1)
+        {
+            percentageCleared = 100;
+
+        }
+        //if the item is not locked (meaning it's unlocked, in progres, or completed) we will analyze each module item in the module
+        //if they're all completed we will make it the darkest blue. If it's in progress we'll make the shade of blue relative to the
+        //degree of completion. If it is not locked but not started it will be green
+        for(var k=0;k<=items.length-1;k++)
+        {
+            var currentItem = items[k];
+            if(currentItem.completion_requirement=="")
+            {
+                var submission = getSubmissionForContent(currentItem.content_id);
+                if(submission!=undefined)
+                {
+                    percentageCleared = percentageCleared+ (100/items.length);
+                }
+                continue;
+            }
+            var completion_requirement = JSON.parse(currentItem.completion_requirement);
+            switch(completion_requirement.type)
+            {
+                case "must_submit":
+                    var submission = getSubmissionForContent(currentItem.content_id);
+                    if(submission!=undefined)
+                    {
+                        percentageCleared = percentageCleared+ (100/items.length);
+                    }
+                    break;
+                case "min_score":
+                    var minscore = completion_requirement.min_score;
+                    var cleared = minScoreAchieved(minscore, currentItem.content_id);
+                    if (cleared)
+                    {
+                        percentageCleared = percentageCleared+ (100/items.length);
+                    }
+                    break;
+                case "must_contribute":
+                    if(submittedItems!=undefined && submittedItems.state =="completed")
+                    {//if canvas said the module was complete it must be because the item was contributed to
+                        percentageCleared = percentageCleared+ (100/items.length);
+                    }
+                    break;
+                case "must_view":
+                    if(submittedItems!=undefined && submittedItems.state =="completed")
+                    {//if canvas said the module was complete it must be because the item was viewed
+                        percentageCleared = percentageCleared+ (100/items.length);
+                    }
+                    break;
+            }
+        }
+        if(percentageCleared==0.0)
+        {//unlocked and not started
+            thisModuleState = "unlocked";
+            path.style("fill", stateColors['unlocked']);
+            moduleColor = stateColors['unlocked'];
+        }
+        else if(percentageCleared<100)
+        {//in progress
+            var newColor = LightenDarkenColor(stateColors["started"], -percentageCleared);
+            thisModuleState = "in-progress";
+            path.style("fill", newColor);
+            moduleColor = newColor;
+        }
+        else
+        {//completed
+            thisModuleState = "completed";
+            path.style("fill", stateColors["completed"]);
+            moduleColor = stateColors['completed'];
+        }
+
+        var moduleStateItem ={module_id:parseInt(module.module_id), color:moduleColor, state: thisModuleState};
+        newModuleStates.push(moduleStateItem);
     }
+    console.log(newModuleStates);
 }
 
+function minScoreAchieved(minscore, content_id)
+{
+
+    var submittedItems = getSubmissionForContent(content_id);
+    if(submittedItems!=undefined && submittedItems.score>=minscore)
+    {
+        return true;
+    }
+    else{return false;}
+}
+
+function getSubmissionForContent(content_id)
+{
+    var submittedItems = accessibleSubmissData.filter(function (obj)
+    {
+        if(obj.content_id == content_id)
+        {
+            return obj;
+        }
+    })[0];
+
+    return submittedItems;
+}
 function getStudentSubmissions()
 {
     if(submissionData==undefined)
@@ -791,16 +914,52 @@ function getStudentSubmissions()
         var newPromise = $.get('getStudentSubmissions', {studentId: studentId, courseId: courseId});
         newPromise.then(function (data1) {
             showScores(data1);
+            submissionData = data1;
+            if(moduleStates!=undefined)
+            {
+                processModuleStates(moduleStates,null, null, stateColors);
+            }
+            else{
+                getModuleStates();
+            }
+
         }).fail(function (data2) {
         });
     }
     else
     {
         showScores(submissionData);
+        if(moduleStates!=undefined)
+        {
+            processModuleStates(moduleStates,null, null, stateColors);
+        }
+        else{
+            getModuleStates();
+        }
     }
+
+
+
+
 }
 
-
+function getModuleStates()
+{
+    if(moduleStates===undefined)
+    {
+        var promise = $.get("getModuleStates");
+        promise.then(function (data1, textStatus, jqXHR) {
+                moduleStates = data1;
+                processModuleStates(data1, textStatus, jqXHR, stateColors);
+            })
+            .fail(function (data2) {
+            });
+    }
+    else
+    {
+        processModuleStates(moduleStates,null, null, stateColors);
+    }
+}
 function showScores(data)
 {//accessibleSubmissionData will be submission_type, content_id, grade
     var rawSubmissionData = data;
@@ -808,6 +967,10 @@ function showScores(data)
     for (var i = 0; i <= data.length - 1; i++)
     {
         d = data[i];
+        if(d.submitted_at===null)
+        {
+            continue;
+        }
         var item = new Object();
         item['submission_type'] = d["submission_type"];
         //check that the assignment is a quiz
@@ -924,3 +1087,30 @@ function modalBoxShow(content) {
     div.scrollLeft = 0;
     return true;
 }//function
+
+
+function LightenDarkenColor(col, amt) {
+
+    var usePound = false;
+
+    if (col[0] == "#") {
+        col = col.slice(1);
+        usePound = true;
+    }
+    var num = parseInt(col,16);
+    var r = (num >> 16) + amt;
+    if (r > 255) r = 255;
+    else if  (r < 0) r = 0;
+
+    var b = ((num >> 8) & 0x00FF) + amt;
+    if (b > 255) b = 255;
+    else if  (b < 0) b = 0;
+
+    var g = (num & 0x0000FF) + amt;
+    if (g > 255) g = 255;
+    else if (g < 0) g = 0;
+
+    var newColor =  (usePound?"#":"") + String("000000" + (g | (b << 8) | (r << 16)).toString(16)).slice(-6);
+    return newColor;
+
+}

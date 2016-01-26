@@ -59,6 +59,8 @@ class Gradebook extends ComponentBase {
     public function onRender() {
 
         $this->roots = new Roots();
+        $standards = $this->roots->getGradingStandards();
+        $grading_scheme = $standards[0]->grading_scheme;
 
         $this->addCss("/plugins/delphinium/blossom/assets/css/bootstrap.min.css");
         $this->addCss("/plugins/delphinium/blossom/assets/css/gradebook.css");
@@ -67,6 +69,12 @@ class Gradebook extends ComponentBase {
         $this->page['experienceInstanceId'] = $this->property('experienceInstance');
 
         $this->page['userRoles'] = $_POST["roles"];
+
+        if (!is_null($this->property('experienceInstance'))) {
+            $instance = ExperienceModel::find($this->property('experienceInstance'));
+            $maxExperiencePts = $instance->total_points;
+
+        }
         if (stristr($_POST["roles"], 'Learner')) {
             if (!isset($_SESSION))
             {
@@ -88,21 +96,9 @@ class Gradebook extends ComponentBase {
                 $instance = ExperienceModel::find($this->property('experienceInstance'));
                 $maxExperiencePts = $instance->total_points;
 
-                if (is_null($this->roots)) {
-                    $this->roots = new Roots();
-                }
-                $standards = $this->roots->getGradingStandards();
-                $grading_scheme = $standards[0]->grading_scheme;
-
                 $grade = new GradeComponent();
                 $totalPoints = $pts + $bonusPenalties->bonus+$bonusPenalties->penalties;
                 $letterGrade = $grade->getLetterGrade($totalPoints, $maxExperiencePts, $grading_scheme);
-                //modify grading scheme for display to users
-                foreach($grading_scheme as $grade)
-                {
-                    $grade->value = $grade->value * $maxExperiencePts;
-                }
-                $this->page['grading_scheme'] = json_encode($grading_scheme);
 
                 $this->page['letterGrade'] = $letterGrade;
             }
@@ -111,19 +107,30 @@ class Gradebook extends ComponentBase {
             $this->getProfessorData();
             $this->addCss("/plugins/delphinium/blossom/assets/css/light-js-table-sorter.css");
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/gradebook_professor.js");
+            $this->addJs("/plugins/delphinium/blossom/assets/javascript/boxplot_d3.js");
         }
+
+
+        //modify grading scheme for display to users
+        foreach($grading_scheme as $grade)
+        {
+            $grade->value = $grade->value * $maxExperiencePts;
+        }
+        $this->page['grading_scheme'] = json_encode($grading_scheme);
+
+
     }
 
     function onGetContent() {
         return ['#modalContent' => 'This content will be pushed to the modalContent element'];
     }
 
-    public function getStudentData($freshData = false) {
+    public function getStudentData($freshData = false, $studentId = null) {
         if ($this->roots === null) {
             $this->roots = new Roots();
         }
         //GET ANALYTICS STUDENT DATA
-        $analytics = $this->roots->getAnalyticsStudentAssignmentData(false);
+        $analytics = $this->roots->getAnalyticsStudentAssignmentData(false, $studentId);
         //GET CLASS-WIDE ANALYTICS DATA
         $generalAnalytics = $this->roots->getAnalyticsAssignmentData(false);
         //GET ASSIGNMENT GROUPS
@@ -366,6 +373,7 @@ class Gradebook extends ComponentBase {
             $this->roots = new Roots();
         }
         $result = $this->roots->submissions($req);
+// echo json_encode($result);
 
         // $res = $this->orderSubmissionsByDate($result);
         $res = $this->orderSubmissionsByUsersAndDate($result);

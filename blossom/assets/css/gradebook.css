@@ -111,7 +111,7 @@ a:hover
 }
 #gridContainer
 {
-    margin-top:50px;
+    margin-top:70px;
     width:900px !important;
 }
 .container th:after {
@@ -154,6 +154,10 @@ a:hover
 .spinnerDiv icon{
     text-align:center;
     display:inline-block;
+}
+#spinner
+{
+    text-align:center;
 }
 .multiselect {
     width:180px;

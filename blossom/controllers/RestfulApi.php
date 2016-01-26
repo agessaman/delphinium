@@ -152,8 +152,9 @@ class RestfulApi extends Controller
 
     public function getStudentGradebookData()
     {
+        $studentId = (!is_null(\Input::get('studentId')))?\Input::get('studentId'):null;
         $gradebook = new GradebookComponent();
-        return $gradebook->getStudentData(true);
+        return $gradebook->getStudentData(true, $studentId);
     }
 
     public function getGradeData()
