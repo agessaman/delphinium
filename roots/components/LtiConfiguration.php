@@ -1,147 +1,187 @@
-<?php namespace Delphinium\Iris\Components;
+<?php
 
-use Delphinium\Stem\Models\Home as IrisCharts;
-use Delphinium\Roots\Roots;
-use Delphinium\Roots\RequestObjects\ModulesRequest;
-use Delphinium\Roots\Enums\ActionType;
+namespace Delphinium\Roots\Components;
+
+use Delphinium\Roots\Models\Developer as LtiConfigurations;
+use Delphinium\Roots\Models\User;
+use Delphinium\Roots\Models\UserCourse;
 use Cms\Classes\ComponentBase;
+use Delphinium\Roots\Classes\Blti;
+use Delphinium\Roots\Roots;
+use Delphinium\Roots\DB\DbHelper;
+use Config;
+use Carbon\Carbon;
 
-class Iris extends ComponentBase
-{
-    public function componentDetails()
-    {
+class LtiConfiguration extends ComponentBase {
+
+    public function componentDetails() {
         return [
-            'name'        => 'Iris Chart',
-            'description' => 'This chart displays a course\'s modules and the student\'s progress in them'
+            'name' => 'LTI Configuration Component',
+            'description' => 'Handles the LTI Configuration required for communicating with Canvas'
         ];
     }
 
-    public function onRun()
-    {
-        $this->addJs("/plugins/delphinium/iris/assets/javascript/jquery.min.js");
-        $this->addJs("/plugins/delphinium/iris/assets/javascript/d3.v3.min.js");
-        $this->addJs("/plugins/delphinium/iris/assets/javascript/iris.js");
-        $this->addCss("/plugins/delphinium/iris/assets/css/main.css");
-
-    }
-    public function onRender()
-    {
-        if(!isset($_SESSION))
-        {
-            session_start();
-        }
-
-        $courseId = $_SESSION['courseID'];
-        $this->page['courseId'] = $courseId;
-        $this->page['userId'] = $_SESSION['userID'];
-
-        //Filter by parent node if it has been configured
-        $defaultNode = 1;
-        $filter = $this->property('filter',$defaultNode);
-        $this->page['filter'] = $filter;
-        $finalData;
-
-        $freshData = false;
-        $req = new ModulesRequest(ActionType::GET, null, null, true, true, null, null , $freshData);
-
-        $roots = new Roots();
-        $moduleData = $roots->modules($req);
-
-        $this->page['rawData'] = json_encode($moduleData);
-        $modArr = $moduleData->toArray();
-
-        if($filter===$defaultNode)
-        {///get all items
-            $finalData = $this->buildTree($modArr,1);
-        }
-        else
-        {//filter by node
-            $filterObj = array_filter(
-                $modArr,
-                function ($e) use ($filter) {
-                    return $e['module_id'] === $filter;
-                }
-            );
-            $obj = array_shift($filterObj);
-            $finalData = $this->buildTree($modArr,$obj['parent_id'], $filter);
-        }
-        $this->page['graphData'] = json_encode($finalData);
+    public function onRun() {
+        $this->doBltiHandshake();
     }
 
-    public function defineProperties()
-    {
+    public function defineProperties() {
         return [
-            'filter' => [
-                'title'   => 'Filter',
-                'description' => 'Display only this module and its children in Iris',
-                'placeholder' => 'Select a parent node',
-                'type'    => 'dropdown'
+            'ltiInstance' => [
+                'title' => 'LTI Instance',
+                'description' => 'Select the LTI configuration instance to use for connecting to Canvas',
+                'type' => 'dropdown',
+            ],
+            'approver' => [
+                'title' => 'Approver',
+                'description' => 'The approver must have the right permissions to access the data needed for this component',
+                'type' => 'dropdown',
+                'default' => 'Instructor',
             ]
         ];
     }
 
-    public function getFilterOptions()
-    {
-        $req = new ModulesRequest(ActionType::GET, null, null, true,
-            true, null, null , false);
-        $roots = new Roots();
-        $moduleData = $roots->modules($req);
-        $arr = $moduleData->toArray();
+    public function getLtiInstanceOptions() {
+        $instances = LtiConfigurations::all();
+        $array_dropdown = ['0' => '- select an LTI configuration - '];
 
-        $tree = $this->buildTree($arr, 1);
-        $dash = "";
-        $result = array();
-        $result[$tree[0]['module_id']] = "({$tree[0]['name']})";
-
-        foreach($tree as $item)
-        {
-            $this->recursion($item['children'], $dash, $result);
+        foreach ($instances as $instance) {
+            $array_dropdown[$instance->id] = $instance->Name;
         }
-        return $result;
+
+        return $array_dropdown;
     }
 
+    public function getApproverOptions() {
+        $arr = array(
+            "0" => "Instructor",
+            "1" => "Administrator",
+            "2" => "Student"
+        );
+        return $arr;
+    }
 
-    private function recursion($children, &$dash, &$res)
-    {
-        foreach($children as $item)
+    public function doBltiHandshake() {
+        //first obtain the details of the LTI configuration they chose
+        $dbHelper = new DbHelper();
+        $instanceFromDB = LtiConfigurations::find($this->property('ltiInstance'));
+        $approver = $this->property('approver');
+        $arr = $this->getApproverOptions();
+        $approverRole = $arr[$approver];
+
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+
+        $_SESSION['baseUrl'] = Config::get('app.url', 'backend');
+        $_SESSION['courseID'] = \Input::get('custom_canvas_course_id');
+        $_SESSION['userID'] = \Input::get('custom_canvas_user_id');
+        $_SESSION['domain'] = \Input::get('custom_canvas_api_domain');
+        //get the roles
+        $roleStr = \Input::get('roles');
+        if(stristr($roleStr,'Learner'))
         {
-            $res[$item['module_id']] = $dash." ".$item['name'];
-            if(sizeof($item['children'])>=1)
+            $_SESSION['roles'] = $roleStr;
+        }
+        else
+        {
+            $parts = explode("lis/", $roleStr);
+            if(count($parts)>=2)
             {
-                $newDash = $dash."-";
-                $this->recursion($item['children'], $newDash, $res);
+                $_SESSION['roles'] = ($parts[1]);
             }
         }
-    }
+        //TODO: make sure this parameter below works with all other LMSs
+        $_SESSION['lms'] = \Input::get('tool_consumer_info_product_family_code');
 
-    private function buildTree(array &$elements, $parentId = 1, $moduleFilter=null) {
-        $branch = array();
-        foreach ($elements as $key=>$module) {
-            if($module['published'] == "1")//if not published don't include it
-            {
-                if(!is_null($moduleFilter)&&($module['module_id']!=$moduleFilter))
-                {//if we have a filter and this module doesn't match the filter, skip the item
-                    unset($elements[$module['module_id']]);
-                    continue;
+        //check to see if user is an Instructor
+        $rolesStr = \Input::get('roles');
+        $consumerKey = $instanceFromDB['ConsumerKey'];
+        $clientId = $instanceFromDB['DeveloperId'];
+
+        //Check to see if the lti handshake passes
+        $context = new Blti($consumerKey, false, false);
+
+        if ($context->valid) { // query DB to see if user has token, if yes, go to LTI.
+
+            $userCheck = $dbHelper->getCourseApprover($_SESSION['courseID']);
+            if (!$userCheck) { //if no user is found, redirect to canvas permission page
+                if (stristr($rolesStr, $approverRole)) {
+                    //As per my discussion with Jared, we will use the instructor's token only. This is the token that will be stored in the DB
+                    //and the one that will be used to make all requests. We will NOT store student's tokens.
+                    //TODO: take this redirectUri out into some parameter somewhere...
+                    $redirectUri = "{$_SESSION['baseUrl']}saveUserInfo?lti={$this->property('ltiInstance')}";
+                    $url = "https://{$_SESSION['domain']}/login/oauth2/auth?client_id={$clientId}&response_type=code&redirect_uri={$redirectUri}";
+
+                    $this->redirect($url);
+                } else {
+                    echo ("A(n) {$approverRole} must authorize this course. Please contact your instructor.");
+                    return;
                 }
-                if ($module['parent_id'] == $parentId) {
-                    $children = $this->buildTree($elements, $module['module_id']);
-                    if ($children) {
-                        $module['children'] = $children;
-                    }
-                    else
+            } else {
+
+                //set the professor's token
+                $_SESSION['userToken'] = $userCheck->encrypted_token;
+                //get the timezone
+                $roots = new Roots();
+                $course = $roots->getCourse();
+                $account_id = $course->account_id;
+                $account = $roots->getAccount($account_id);
+                $courseId =$_SESSION['courseID'];
+
+                $_SESSION['timezone'] = new \DateTimeZone($account->default_time_zone);
+                //to maintain the users table synchronized with Canvas, everytime a student comes in we'll check to make sure they're in the DB.
+                //If they're not, we will pull all the students from Canvas and refresh our users table.
+                $dbHelper = new DbHelper();
+                $user = $dbHelper->getUserInCourse($courseId, $_SESSION['userID']);
+                if(is_null($user))
+                {//get all students from Canvas
+                    $roots = new Roots();
+                    $roots->getStudentsInCourse();
+                }
+
+                //Also, every so often (every 12 hrs?) we will check to make sure that students who have dropped the class are deleted from the users_course table
+                //Failing to do so will make it so that when we request their submissions along with other students' submissions, the entire
+                // call returns with an Unauthorized error message
+                $approver = $dbHelper->getCourseApprover($courseId);
+                $now = Carbon::now();
+                $updatedDate = $approver->updated_at;
+
+                $diff = $updatedDate->diffInHours($now, false);
+                if($diff>24)
+                {
+                    $allStudentsDb = $dbHelper->getUsersInCourseWithRole($_SESSION['courseID'], 'Learner');
+                    $allStudentsFromCanvas = $roots->getStudentsInCourse();
+                    foreach($allStudentsDb as $dbStudent)
                     {
-                        $module['children'] = array();
+                        $filteredItems = array_values(array_filter($allStudentsFromCanvas, function($elem) use($dbStudent) {
+                            return intval($elem->user_id) === intval($dbStudent->user_id);
+                        }));
+
+                        if(count($filteredItems)<1)//meaning they are in our DB but they are not in Canvas anymore
+                        {
+                            $dbHelper->deleteUserFromRole($courseId, $dbStudent->user_id, 'Learner');
+                        }
                     }
-                    $branch[] = $module;
-                    unset($elements[$module['module_id']]);
+
+                    //update the approver
+                    $approver->updated_at = $now;
+                    $approver->save();
                 }
             }
+        } else {
+            echo('There is a problem. Please notify your instructor');
         }
-
-        return $branch;
     }
 
-
+    function redirect($url) {
+        echo '<script type="text/javascript">';
+        echo 'window.location.href="' . $url . '";';
+        echo '</script>';
+        echo '<noscript>';
+        echo '<meta http-equiv="refresh" content="0;url=' . $url . '" />';
+        echo '</noscript>';
+        exit;
+    }
 
 }
