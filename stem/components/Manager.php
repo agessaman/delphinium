@@ -17,37 +17,58 @@ class Manager extends ComponentBase
             'description' => 'Module Manager'
         ];
     }
-    
-    public function onRun()
-    {   
-        $this->addJs("/plugins/delphinium/stem/assets/javascript/angular.min.js");
-        $this->addJs("/plugins/delphinium/stem/assets/javascript/angular-ui-tree.js");
-//        $this->addJs("/plugins/delphinium/stem/assets/javascript/bodyCtrl.js");
-//        $this->addJs("/plugins/delphinium/stem/assets/javascript/alertService.js");
-        $this->addJs("/plugins/delphinium/stem/assets/javascript/tree.js");
-        $this->addJs('/plugins/delphinium/stem/assets/javascript/xeditable.min.js');
-        $this->addJs('/plugins/delphinium/stem/assets/javascript/ui-bootstrap-tpls-0.12.1.min.js');
-        $this->addJs("/plugins/delphinium/stem/assets/javascript/jobid.modal.controller.js");
-        $this->addJs("/plugins/delphinium/stem/assets/javascript/itemModal.controller.js");
-        $this->addJs("/plugins/delphinium/stem/assets/javascript/addItemController.js");
-        $this->addJs("/plugins/delphinium/stem/assets/javascript/moduleModal.js");
 
-        $this->addCss('/plugins/delphinium/stem/assets/css/module-tree.css');
-        $this->addCss('/plugins/delphinium/stem/assets/css/bootstrap.min.css');
-        $this->addCss('/plugins/delphinium/stem/assets/css/xeditable.css');
-        $this->addCss('/plugins/delphinium/stem/assets/css/angular-ui-tree.min.css');
-        $this->addCss('/plugins/delphinium/stem/assets/css/font-awesome.css');
-        
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
-        $this->page['courseId'] = $_SESSION['courseID'];
-        $this->page['lmsUrl'] =  json_encode($this->getLmsUrl());
-        $this->prepareData(false);
+    public function onRun()
+    {
+        try
+        {
+            $this->addJs("/plugins/delphinium/stem/assets/javascript/angular.min.js");
+            $this->addJs("/plugins/delphinium/stem/assets/javascript/angular-ui-tree.js");
+            //        $this->addJs("/plugins/delphinium/stem/assets/javascript/bodyCtrl.js");
+            //        $this->addJs("/plugins/delphinium/stem/assets/javascript/alertService.js");
+            $this->addJs("/plugins/delphinium/stem/assets/javascript/tree.js");
+            $this->addJs('/plugins/delphinium/stem/assets/javascript/xeditable.min.js');
+            $this->addJs('/plugins/delphinium/stem/assets/javascript/ui-bootstrap-tpls-0.12.1.min.js');
+            $this->addJs("/plugins/delphinium/stem/assets/javascript/jobid.modal.controller.js");
+            $this->addJs("/plugins/delphinium/stem/assets/javascript/itemModal.controller.js");
+            $this->addJs("/plugins/delphinium/stem/assets/javascript/addItemController.js");
+            $this->addJs("/plugins/delphinium/stem/assets/javascript/moduleModal.js");
+
+            $this->addCss('/plugins/delphinium/stem/assets/css/module-tree.css');
+            $this->addCss('/plugins/delphinium/stem/assets/css/bootstrap.min.css');
+            $this->addCss('/plugins/delphinium/stem/assets/css/xeditable.css');
+            $this->addCss('/plugins/delphinium/stem/assets/css/angular-ui-tree.min.css');
+            $this->addCss('/plugins/delphinium/stem/assets/css/font-awesome.css');
+
+            if(!isset($_SESSION))
+            {
+                session_start();
+            }
+            $this->page['courseId'] = $_SESSION['courseID'];
+            $this->page['lmsUrl'] =  json_encode($this->getLmsUrl());
+            $this->prepareData(false);
+
+        }catch (\GuzzleHttp\Exception\ClientException $e) {
+            return;
+        }
+        catch(Delphinium\Roots\Exceptions\NonLtiException $e)
+        {
+            if($e->getCode()==584)
+            {
+                return \Response::make($this->controller->run('nonlti'), 500);
+            }
+        }
+        catch(\Exception $e)
+        {
+            if($e->getMessage()=='Invalid LMS')
+            {
+                return \Response::make($this->controller->run('nonlti'), 500);
+            }
+            return \Response::make($this->controller->run('error'), 500);
+        }
     }
-    
-    
+
+
     public function prepareData($freshData)
     {
         $roots = new Roots();
@@ -64,19 +85,19 @@ class Manager extends ComponentBase
             $tags = [];
         }
         $this->page['avTags'] = json_encode($tags);
-        
+
         $completionReqs = $roots->getCompletionRequirementTypes();
         $result = array();
         $i=0;
         foreach($completionReqs as $type)
-        {   
+        {
             $item = new \stdClass();
-            
+
             $item->id = $i;
             $item->value=$type;
             $item->text = $this->getText($type);
             $result[] = $item;
-            
+
             $i++;
         }
         $this->page['completionRequirementTypes']= json_encode($result);
@@ -89,28 +110,28 @@ class Manager extends ComponentBase
         $includeContentItems = true;
         $module = null;
         $moduleItem = null;
-                
-        $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems, 
-                $includeContentDetails, $module, $moduleItem , $freshData);
-        
+
+        $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems,
+            $includeContentDetails, $module, $moduleItem , $freshData);
+
         $roots = new Roots();
         $moduleData = $roots->modules($req);
         $modArr = $moduleData->toArray();
-        
+
         $simpleModules = array();
         foreach($modArr as $item)
         {
             $mod = new \stdClass();
-            
+
             $mod->id = $item['module_id'];
             $mod->value=$item['name'];
             $simpleModules[] = $mod;
         }
         $this->page['rawData'] = json_encode($simpleModules);
-        
+
         $iris = new IrisClass();
         $result = $iris->buildTree($modArr);
-        
+
         $tempArray =array();
 
         if(count($result)<1) //there weren't any parent-child relationships
@@ -129,7 +150,7 @@ class Manager extends ComponentBase
                     break;
                 }
             }
-            
+
             $newArr = $this->unsetValue($modArr, $firstItem);//remove parent from array
             $firstParentId=$firstItem["module_id"];
             $i=0;
@@ -148,7 +169,7 @@ class Manager extends ComponentBase
             $firstItem["children"]=$final;
             $firstItem["order"]=0;
 
-            $tempArray[] = $firstItem;   
+            $tempArray[] = $firstItem;
         }
         else
         {
@@ -156,8 +177,8 @@ class Manager extends ComponentBase
         }
         return $tempArray;
     }
-    
-    
+
+
     private function unsetValue(array $array, $value, $strict = TRUE)
     {
         if(($key = array_search($value, $array, $strict)) !== FALSE) {
@@ -165,13 +186,13 @@ class Manager extends ComponentBase
         }
         return $array;
     }
-    
+
     private function getLmsUrl()
     {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
         $lms = strtoupper($_SESSION['lms']);
         if(Lms::isValidValue($lms))
         {
@@ -189,7 +210,7 @@ class Manager extends ComponentBase
                     return $url;
             }
         }
-        
+
     }
 
     private function getText($type)

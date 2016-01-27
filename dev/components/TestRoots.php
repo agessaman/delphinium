@@ -49,8 +49,8 @@ class TestRoots extends ComponentBase
         $this->canvasHelper = new CanvasHelper();
         $this->dbHelper = new DbHelper();
 //        $this->refreshCache();
-//        $this->test();
-        $this->testBasicModulesRequest();
+        $this->test();
+//        $this->testBasicModulesRequest();
 //        $this->testDeleteTag();
 //        $this->testAddingUpdatingTags();
 //        $this->testUpdatingModuleItem();
@@ -711,68 +711,6 @@ class TestRoots extends ComponentBase
     
     public function test()
     {
-        $req = new SubmissionsRequest(ActionType::GET, array(), true, array(), true, true, true, false, true);
-        $result = $this->roots->submissions($req);
-
-        
-//        echo json_encode($result);
-        
-//https://uvu.instructure.com/api/v1/courses/381983/students/submissions?student_ids%5B%5D=483474&student_ids%5B%5D=944587&student_ids%5B%5D=1576866&student_ids%5B%5D=553940&student_ids%5B%5D=1241607&student_ids%5B%5D=1463096&student_ids%5B%5D=890679&student_ids%5B%5D=1529330&student_ids%5B%5D=488472&student_ids%5B%5D=771735&student_ids%5B%5D=547197&student_ids%5B%5D=539445&student_ids%5B%5D=741224&student_ids%5B%5D=554968&student_ids%5B%5D=1485016&student_ids%5B%5D=471788&student_ids%5B%5D=798500&student_ids%5B%5D=512347&student_ids%5B%5D=557699&student_ids%5B%5D=462755&student_ids%5B%5D=485519&student_ids%5B%5D=480907&student_ids%5B%5D=469426&student_ids%5B%5D=491649&student_ids%5B%5D=944587&student_ids%5B%5D=1576866&student_ids%5B%5D=553940&student_ids%5B%5D=1241607&student_ids%5B%5D=1463096&student_ids%5B%5D=890679&student_ids%5B%5D=1529330&student_ids%5B%5D=488472&student_ids%5B%5D=771735&student_ids%5B%5D=547197&student_ids%5B%5D=539445&student_ids%5B%5D=741224&student_ids%5B%5D=554968&student_ids%5B%5D=1485016&student_ids%5B%5D=471788&student_ids%5B%5D=798500&student_ids%5B%5D=512347&student_ids%5B%5D=557699&student_ids%5B%5D=462755&student_ids%5B%5D=485519&student_ids%5B%5D=480907&student_ids%5B%5D=469426&student_ids%5B%5D=491649&grouped=true&access_token=14~DQbVNTYt3E8djaiyUGckBdbPwAoGqHgIK5UYyIJBciFRikr38wSDXScgeqWGCShL&per_page=5000
-
-//        $quizId = 623422;
-//        $questionId = 10897397;
-//        $canvasHelper = new CanvasHelper();
-//        $dbHelper = new DbHelper();
-//        $res = $canvasHelper->postQuizTakingSession($quizId);
-//        
-//        echo json_encode($res);
-            
-        
-        
-        
-        
-//        $canvasHelper->getQuizSubmissionsFromCanvas($quizId);
-        
-//        $req = new ModulesRequest(ActionType::GET, 380206, null, true, true, null, null , false);
-//        $db = new \Delphinium\Roots\DB\DbHelper();
-//        $res = $db->getModuleData($req);
-//        
-//        echo json_encode($res);
-        
-        
-        
-        
-        
-        
-        
-//        $this->convertDatesUTCLocal();
-//        $now = new DateTime(date("Y-m-d"));
-//        echo json_encode($now);
-//        
-//        
-//        
-//        $rb = new RuleBuilder;
-//
-//        $bonus_90 = $rb->create('current_user_submissions', 'submission',
-//        $rb['submission']['score']->greaterThan($rb['score_threshold']),
-//        [
-//            $rb['(bonus)']->assign($rb['(bonus)']->add($rb['points']))
-//        ]);
-//        
-//        $rb['(bonus)'] = 0;
-//        $rb['submission']['score'] = 0;
-//        $rb['score_threshold'] = 0;
-//        $rb['point'] = 0;
-//
-//        $rg = new RuleGroup('submissionstest');
-//        $rg->add($bonus_90);
-//        $rg->saveRules();
-        
-//        $manager = ComponentManager::instance();
-//       echo json_encode($manager->listComponents());
-        
-        
-
     }
     
 }

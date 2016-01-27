@@ -26,46 +26,68 @@ class Iris extends ComponentBase
     }
     public function onRender()
     {
-        if(!isset($_SESSION))
+        try
         {
-            session_start();
+            if(!isset($_SESSION))
+            {
+                session_start();
+            }
+
+            $courseId = $_SESSION['courseID'];
+            $this->page['courseId'] = $courseId;
+            $this->page['userId'] = $_SESSION['userID'];
+
+            //Filter by parent node if it has been configured
+            $defaultNode = 1;
+            $filter = $this->property('filter',$defaultNode);
+            $this->page['filter'] = $filter;
+            $finalData;
+
+            $freshData = false;
+            $req = new ModulesRequest(ActionType::GET, null, null, true, true, null, null , $freshData);
+
+            $roots = new Roots();
+            $moduleData = $roots->modules($req);
+
+            $this->page['rawData'] = json_encode($moduleData);
+            $modArr = $moduleData->toArray();
+
+            if($filter===$defaultNode)
+            {///get all items
+                $finalData = $this->buildTree($modArr,1);
+            }
+            else
+            {//filter by node
+                $filterObj = array_filter(
+                    $modArr,
+                    function ($e) use ($filter) {
+                        return $e['module_id'] === $filter;
+                    }
+                );
+                $obj = array_shift($filterObj);
+                $finalData = $this->buildTree($modArr,$obj['parent_id'], $filter);
+            }
+            $this->page['graphData'] = json_encode($finalData);
+
         }
-
-        $courseId = $_SESSION['courseID'];
-        $this->page['courseId'] = $courseId;
-        $this->page['userId'] = $_SESSION['userID'];
-
-        //Filter by parent node if it has been configured
-        $defaultNode = 1;
-        $filter = $this->property('filter',$defaultNode);
-        $this->page['filter'] = $filter;
-        $finalData;
-
-        $freshData = false;
-        $req = new ModulesRequest(ActionType::GET, null, null, true, true, null, null , $freshData);
-
-        $roots = new Roots();
-        $moduleData = $roots->modules($req);
-
-        $this->page['rawData'] = json_encode($moduleData);
-        $modArr = $moduleData->toArray();
-
-        if($filter===$defaultNode)
-        {///get all items
-            $finalData = $this->buildTree($modArr,1);
+        catch (\GuzzleHttp\Exception\ClientException $e) {
+            return;
         }
-        else
-        {//filter by node
-            $filterObj = array_filter(
-                $modArr,
-                function ($e) use ($filter) {
-                    return $e['module_id'] === $filter;
-                }
-            );
-            $obj = array_shift($filterObj);
-            $finalData = $this->buildTree($modArr,$obj['parent_id'], $filter);
+        catch(Delphinium\Roots\Exceptions\NonLtiException $e)
+        {
+            if($e->getCode()==584)
+            {
+                return \Response::make($this->controller->run('nonlti'), 500);
+            }
         }
-        $this->page['graphData'] = json_encode($finalData);
+        catch(\Exception $e)
+        {
+            if($e->getMessage()=='Invalid LMS')
+            {
+                return \Response::make($this->controller->run('nonlti'), 500);
+            }
+            return \Response::make($this->controller->run('error'), 500);
+        }
     }
 
     public function defineProperties()

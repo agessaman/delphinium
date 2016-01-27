@@ -2,6 +2,7 @@
 
 
 use Delphinium\Roots\Models\Developers as LtiConfigurations;
+use Delphinium\Roots\Exceptions\NonLtiException;
 // Basic LTI Class that does the setup and provides utility
 // functions
 class Blti {
@@ -14,13 +15,13 @@ class Blti {
     public $row = false;
     public $context_id = false;  // Override context_id
 
-    function __construct($parm=false, $usesession=true, $doredirect=true) 
+    function __construct($parm=false, $usesession=true, $doredirect=true)
     {
 
         // If this request is not an LTI Launch, either
         // give up or try to retrieve the context from session
         if (! $this->is_basic_lti_request() ) {
-            if ( $usesession === false ) return;  
+            if ( $usesession === false ) return;
             if ( strlen(session_id()) > 0 ) {
                 $row = $_SESSION['_basiclti_lti_row'];
                 if ( isset($row) ) $this->row = $row;
@@ -51,23 +52,23 @@ class Blti {
         $secret = false;
         $row = false;
         if ( is_string($parm) ) {
-            $secret = $parm; 
-            
+            $secret = $parm;
+
         } else if ( ! is_array($parm) ) {
             $this->message = "Constructor requires a secret or database information.";
             return;
         } else {
-        //TODO: check if this eloquent query works
-        	$sql = LtiConfigurations::where($parm['key_column'] ? $parm['key_column'] : 'oauth_consumer_key',
-        		"'".($oauth_consumer_key)."'")->first();
-        			
+            //TODO: check if this eloquent query works
+            $sql = LtiConfigurations::where($parm['key_column'] ? $parm['key_column'] : 'oauth_consumer_key',
+                "'".($oauth_consumer_key)."'")->first();
+
             /*$sql = 'SELECT * FROM '.$parm['table'].' WHERE '.
                 ($parm['key_column'] ? $parm['key_column'] : 'oauth_consumer_key').
                 '='.
                 "'".mysql_real_escape_string($oauth_consumer_key)."'";
                 */
-                
-                //TODO- change this to Eloquent ORM
+
+            //TODO- change this to Eloquent ORM
             $result = mysql_query($sql);
             $num_rows = mysql_num_rows($result);
             if ( $num_rows != 1 ) {
@@ -99,7 +100,7 @@ class Blti {
         $request = OAuthRequest::from_request();
         $this->basestring = $request->get_signature_base_string();
         try {
-        
+
             $server->verify_request($request);
             $this->valid = true;
         } catch (Exception $e) {
@@ -123,36 +124,41 @@ class Blti {
 
         $this->info = $newinfo;
         if ( $usesession == true and strlen(session_id()) > 0 ) {
-             $_SESSION['_basic_lti_context'] = $this->info;
-             unset($_SESSION['_basiclti_lti_row']);
-             unset($_SESSION['_basiclti_lti_context_id']);
-             if ( $this->row ) $_SESSION['_basiclti_lti_row'] = $this->row;
-             if ( $this->context_id ) $_SESSION['_basiclti_lti_context_id'] = $this->context_id;
+            $_SESSION['_basic_lti_context'] = $this->info;
+            unset($_SESSION['_basiclti_lti_row']);
+            unset($_SESSION['_basiclti_lti_context_id']);
+            if ( $this->row ) $_SESSION['_basiclti_lti_row'] = $this->row;
+            if ( $this->context_id ) $_SESSION['_basiclti_lti_context_id'] = $this->context_id;
         }
 
         if ( $this->valid && $doredirect ) {
             $this->redirect();
             $this->complete = true;
         }
-        
+
     }
 
-	// Returns true if this is a Basic LTI message
-	// with minimum values to meet the protocol
-	function is_basic_lti_request() {
-   		$good_message_type = $_REQUEST["lti_message_type"] == "basic-lti-launch-request";
-   		$good_lti_version = $_REQUEST["lti_version"] == "LTI-1p0";
-   		$resource_link_id = $_REQUEST["resource_link_id"];
-   		if ($good_message_type and $good_lti_version and isset($resource_link_id) ) return(true);
-   		return false;
-	}
+    // Returns true if this is a Basic LTI message
+    // with minimum values to meet the protocol
+    function is_basic_lti_request() {
+
+        if(!isset($_REQUEST["lti_message_type"]))
+        {
+            throw new NonLtiException('Nonlti');
+        }
+        $good_message_type = $_REQUEST["lti_message_type"] == "basic-lti-launch-request";
+        $good_lti_version = $_REQUEST["lti_version"] == "LTI-1p0";
+        $resource_link_id = $_REQUEST["resource_link_id"];
+        if ($good_message_type and $good_lti_version and isset($resource_link_id) ) return(true);
+        return false;
+    }
 
     function addSession($location) {
         if ( ini_get('session.use_cookies') == 0 ) {
             if ( strpos($location,'?') > 0 ) {
-               $location = $location . '&';
+                $location = $location . '&';
             } else {
-               $location = $location . '?';
+                $location = $location . '?';
             }
             $location = $location . session_name() . '=' . session_id();
         }
@@ -186,7 +192,7 @@ class Blti {
         if ( strlen($familyname) > 0 ) return $familyname;
         return $this->getUserName();
     }
-  
+
     function getUserName() {
         $givenname = $this->info['lis_person_name_given'];
         $familyname = $this->info['lis_person_name_family'];
@@ -254,15 +260,15 @@ class Blti {
 
     // TODO: Add javasript version if headers are already sent
     function redirect() {
-            $host = $_SERVER['HTTP_HOST'];
-            $uri = $_SERVER['PHP_SELF'];
-            $location = $_SERVER['HTTPS'] ? 'https://' : 'http://';
-            $location = $location . $host . $uri;
-            $location = $this->addSession($location);
-            header("Location: $location");
+        $host = $_SERVER['HTTP_HOST'];
+        $uri = $_SERVER['PHP_SELF'];
+        $location = $_SERVER['HTTPS'] ? 'https://' : 'http://';
+        $location = $location . $host . $uri;
+        $location = $this->addSession($location);
+        header("Location: $location");
     }
 
-    function dump() { 
+    function dump() {
         if ( ! $this->valid or $this->info == false ) return "Context not valid\n";
         $ret = "";
         if ( $this->isInstructor() ) {

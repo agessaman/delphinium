@@ -5,7 +5,7 @@ use Delphinium\Roots\Roots;
 
 class Progress extends ComponentBase
 {
-	public $roots;
+    public $roots;
     public function componentDetails()
     {
         return [
@@ -20,32 +20,51 @@ class Progress extends ComponentBase
     }
     public function onRun()
     {
-        $this->addJs("/plugins/delphinium/blossom/assets/javascript/progress.js");
-        $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
-        $this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
-        $this->addCss("/plugins/delphinium/blossom/assets/css/progress.css");
+        try{
+            $this->addJs("/plugins/delphinium/blossom/assets/javascript/progress.js");
+            $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
+            $this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
+            $this->addCss("/plugins/delphinium/blossom/assets/css/progress.css");
 
-        $this->roots = new Roots();
-        try {
-            $res = $this->roots->getAnalyticsStudentAssignmentData();
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
-            echo "In order for the 'Progress' app to run properly you must be a student or you must go in 'Student View'";
+            $this->roots = new Roots();
+            try {
+                $res = $this->roots->getAnalyticsStudentAssignmentData();
+            } catch (\GuzzleHttp\Exception\ClientException $e) {
+                echo "In order for the 'Progress' app to run properly you must be a student or you must go in 'Student View'";
+                return;
+            }
+            //var_dump($res);
+            $possable = 0;
+            $completed = 0;
+            foreach ($res as $assignment) {
+                foreach ($assignment as $key => $submission) {
+                    if($key=="submission"){
+                        $completed++;
+                    }
+                }
+                $possable++;
+            }
+            $progress = $completed / $possable;
+            $this->page['progress'] = $progress;
+        }
+        catch (\GuzzleHttp\Exception\ClientException $e) {
             return;
         }
-        //var_dump($res);
-        $possable = 0;
-        $completed = 0;
-        foreach ($res as $assignment) {
-            foreach ($assignment as $key => $submission) {
-                if($key=="submission"){
-                    $completed++; 
-                }
+        catch(Delphinium\Roots\Exceptions\NonLtiException $e)
+        {
+            if($e->getCode()==584)
+            {
+                return \Response::make($this->controller->run('nonlti'), 500);
             }
-            $possable++; 
         }
-        $progress = $completed / $possable;
-        $this->page['progress'] = $progress;
-
+        catch(\Exception $e)
+        {
+            if($e->getMessage()=='Invalid LMS')
+            {
+                return \Response::make($this->controller->run('nonlti'), 500);
+            }
+            return \Response::make($this->controller->run('error'), 500);
+        }
     }
 
 }

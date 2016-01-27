@@ -8,7 +8,7 @@ use \DateInterval;
 class Timer extends ComponentBase
 {
     public $roots;
-    
+
     public function componentDetails()
     {
         return [
@@ -24,51 +24,69 @@ class Timer extends ComponentBase
 
     public function onRun()
     {
+        try{
 
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
-        $courseId = $_SESSION['courseID'];
-        if(!isset($_SESSION['userToken']))//app hasn't been approved by admin
-        {
-            return;
-        }
-        $this->roots = new Roots();
-        
-         try {
-            $enrollments = $this->roots->getUserEnrollments();
-            foreach($enrollments as $course)
+
+            if(!isset($_SESSION))
             {
-                if ($course->course_id==$courseId)
-                {
-                    $res = $course;
-                    break;
-                }
+                session_start();
             }
+            $courseId = $_SESSION['courseID'];
+            if(!isset($_SESSION['userToken']))//app hasn't been approved by admin
+            {
+                return;
+            }
+            $this->roots = new Roots();
 
-            $end = new DateTime($res->created_at);
-            $end->add(new DateInterval('P60D'));
+            try {
+                $enrollments = $this->roots->getUserEnrollments();
+                foreach($enrollments as $course)
+                {
+                    if ($course->course_id==$courseId)
+                    {
+                        $res = $course;
+                        break;
+                    }
+                }
 
-            $this->page['start'] = $res->created_at;
-            $this->page['end'] = $end->format('c');
-            
-            
-            $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
-            $this->addJs("/plugins/delphinium/blossom/assets/javascript/timer.js");
-    	    $this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
-            $this->addCss("/plugins/delphinium/blossom/assets/css/timer.css");
+                $end = new DateTime($res->created_at);
+                $end->add(new DateInterval('P60D'));
 
-        } 
-        catch (\GuzzleHttp\Exception\ClientException $e) 
+                $this->page['start'] = $res->created_at;
+                $this->page['end'] = $end->format('c');
+
+
+                $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
+                $this->addJs("/plugins/delphinium/blossom/assets/javascript/timer.js");
+                $this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
+                $this->addCss("/plugins/delphinium/blossom/assets/css/timer.css");
+
+            }
+            catch (\GuzzleHttp\Exception\ClientException $e)
+            {
+                $end = new DateTime("now");
+                $this->page['start'] = $end->format('c');
+                $this->page['end'] = $end->format('c');
+                echo "An error has occurred. An invalid user id was provided. You must be a student to use this app, or go into 'Student View'. "
+                    . "Also, make sure that an administrator has approved this application (only administrators have permissions "
+                    . "to see user enrollments)";
+                return;
+            }
+        }
+        catch(Delphinium\Roots\Exceptions\NonLtiException $e)
         {
-            $end = new DateTime("now");
-            $this->page['start'] = $end->format('c');
-            $this->page['end'] = $end->format('c');
-            echo "An error has occurred. An invalid user id was provided. You must be a student to use this app, or go into 'Student View'. "
-            . "Also, make sure that an administrator has approved this application (only administrators have permissions "
-            . "to see user enrollments)";
-            return;
+            if($e->getCode()==584)
+            {
+                return \Response::make($this->controller->run('nonlti'), 500);
+            }
+        }
+        catch(\Exception $e)
+        {
+            if($e->getMessage()=='Invalid LMS')
+            {
+                return \Response::make($this->controller->run('nonlti'), 500);
+            }
+            return \Response::make($this->controller->run('error'), 500);
         }
     }
 }

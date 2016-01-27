@@ -11,6 +11,7 @@ use Delphinium\Roots\Roots;
 use Delphinium\Roots\DB\DbHelper;
 use Config;
 use Carbon\Carbon;
+use Delphinium\Roots\Exceptions\NonLtiException;
 
 class LtiConfiguration extends ComponentBase {
 
@@ -22,7 +23,31 @@ class LtiConfiguration extends ComponentBase {
     }
 
     public function onRun() {
-        $this->doBltiHandshake();
+        try
+        {
+            $this->doBltiHandshake();
+        }
+        catch(NonLtiException $e)
+        {
+            if($e->getCode()==584)
+            {
+                return \Response::make($this->controller->run('nonlti'), 500);
+            }
+            else{
+                echo json_encode($e->getMessage());return;
+            }
+        }
+        catch (\GuzzleHttp\Exception\ClientException $e) {
+            return;
+        }
+        catch(\Exception $e)
+        {
+            if($e->getMessage()=='Invalid LMS')
+            {
+                return \Response::make($this->controller->run('nonlti'), 500);
+            }
+            return \Response::make($this->controller->run('error'), 500);
+        }
     }
 
     public function defineProperties() {
@@ -101,6 +126,7 @@ class LtiConfiguration extends ComponentBase {
 
         //Check to see if the lti handshake passes
         $context = new Blti($consumerKey, false, false);
+
 
         if ($context->valid) { // query DB to see if user has token, if yes, go to LTI.
 
