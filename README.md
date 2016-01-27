@@ -35,8 +35,8 @@
     
     
   9. OctoberCMS moved its guzzle vendor folder (as well as all other vendor files) to a new plugin. You will need to add the October.Drivers plugin in order for Roots to work. In order to do this go to the backend-->Settings-->Updates and click on "Install Plugins". In the search box type "October.Drivers" and install the plugin.
-  10. Install the minimal layout from here https://github.com/ProjectDelphinium/minimized_layout
-  
+  10. Install the minimal layout from [here] (https://github.com/ProjectDelphinium/minimized_layout)
+  11. Add the [nonlti.htm] (https://github.com/ProjectDelphinium/minimized_layout) page to the backend. Without this page, components will throw 404s. Instructions on where to add this page are in the link.
 
 Congratulations! Your app should be up and running.
 
