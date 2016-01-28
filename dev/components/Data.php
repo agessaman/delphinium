@@ -17,40 +17,34 @@ class Data extends ComponentBase
     public function componentDetails()
     {
         return [
-            'name'        => 'Data Component',
+            'name' => 'Data Component',
             'description' => 'This component will handle the LTI handshake and display the data users need to configure an instance of the dev component'
         ];
     }
 
-    public function onRun() {
-         try
-         {
-        $this->doBltiHandshake();
-         }
-         catch(NonLtiException $e)
-         {
-         if($e->getCode()==584)
-         {
-         return \Response::make($this->controller->run('nonlti'), 500);
-         }
-         else{
-         echo json_encode($e->getMessage());return;
-         }
-         }
-         catch (\GuzzleHttp\Exception\ClientException $e) {
-         return;
-         }
-         catch(\Exception $e)
-         {
-         if($e->getMessage()=='Invalid LMS')
-         {
-         return \Response::make($this->controller->run('nonlti'), 500);
-         }
-         return \Response::make($this->controller->run('error'), 500);
-         }
+    public function onRun()
+    {
+        try {
+            $this->doBltiHandshake();
+        } catch (NonLtiException $e) {
+            if ($e->getCode() == 584) {
+                return \Response::make($this->controller->run('nonlti'), 500);
+            } else {
+                echo json_encode($e->getMessage());
+                return;
+            }
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            return;
+        } catch (\Exception $e) {
+            if ($e->getMessage() == 'Invalid LMS') {
+                return \Response::make($this->controller->run('nonlti'), 500);
+            }
+            return \Response::make($this->controller->run('error'), 500);
+        }
     }
 
-    public function defineProperties() {
+    public function defineProperties()
+    {
         return [
             'ltiInstance' => [
                 'title' => 'LTI Instance',
@@ -60,7 +54,8 @@ class Data extends ComponentBase
         ];
     }
 
-    public function getLtiInstanceOptions() {
+    public function getLtiInstanceOptions()
+    {
         $instances = LtiConfigurations::all();
         $array_dropdown = ['0' => '- select an LTI configuration - '];
 
@@ -71,7 +66,8 @@ class Data extends ComponentBase
         return $array_dropdown;
     }
 
-    public function doBltiHandshake() {
+    public function doBltiHandshake()
+    {
         //first obtain the details of the LTI configuration they chose
         $dbHelper = new DbHelper();
         $instanceFromDB = LtiConfigurations::find($this->property('ltiInstance'));
@@ -86,15 +82,11 @@ class Data extends ComponentBase
         $_SESSION['domain'] = \Input::get('custom_canvas_api_domain');
         //get the roles
         $roleStr = \Input::get('roles');
-        if(stristr($roleStr,'Learner'))
-        {
+        if (stristr($roleStr, 'Learner')) {
             $_SESSION['roles'] = $roleStr;
-        }
-        else
-        {
+        } else {
             $parts = explode("lis/", $roleStr);
-            if(count($parts)>=2)
-            {
+            if (count($parts) >= 2) {
                 $_SESSION['roles'] = ($parts[1]);
             }
         }
@@ -123,7 +115,7 @@ class Data extends ComponentBase
 
                     $this->redirect($url);
                 } else {
-                    echo ("A(n) {$approverRole} must authorize this course. Please contact your instructor.");
+                    echo("A(n) {$approverRole} must authorize this course. Please contact your instructor.");
                     return;
                 }
             } else {
@@ -135,7 +127,7 @@ class Data extends ComponentBase
                 $course = $roots->getCourse();
                 $account_id = $course->account_id;
                 $account = $roots->getAccount($account_id);
-                $courseId =$_SESSION['courseID'];
+                $courseId = $_SESSION['courseID'];
 
                 $_SESSION['timezone'] = new \DateTimeZone($account->default_time_zone);
                 echo nl2br("User Id: {$_SESSION['userID']} \n");
@@ -145,7 +137,7 @@ class Data extends ComponentBase
                 echo nl2br("Domain: {$_SESSION['domain']} \n");
 
                 $timez = $_SESSION['timezone']->getName();
-                echo nl2br("Timezone: ". ($timez));
+                echo nl2br("Timezone: " . ($timez));
 
             }
         } else {
@@ -153,7 +145,8 @@ class Data extends ComponentBase
         }
     }
 
-    function redirect($url) {
+    function redirect($url)
+    {
         echo '<script type="text/javascript">';
         echo 'window.location.href="' . $url . '";';
         echo '</script>';
