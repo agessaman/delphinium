@@ -80,6 +80,8 @@ class Data extends ComponentBase
         $_SESSION['courseID'] = \Input::get('custom_canvas_course_id');
         $_SESSION['userID'] = \Input::get('custom_canvas_user_id');
         $_SESSION['domain'] = \Input::get('custom_canvas_api_domain');
+
+
         //get the roles
         $roleStr = \Input::get('roles');
         if (stristr($roleStr, 'Learner')) {
@@ -135,7 +137,7 @@ class Data extends ComponentBase
                 echo nl2br("Course Id: {$_SESSION['courseID']} \n");
                 echo nl2br("LMS: Canvas \n");
                 echo nl2br("Domain: {$_SESSION['domain']} \n");
-
+                echo nl2br("Role(s): {$_SESSION['roles']} \n");
                 $timez = $_SESSION['timezone']->getName();
                 echo nl2br("Timezone: " . ($timez));
 
