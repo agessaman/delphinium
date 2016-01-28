@@ -32,19 +32,8 @@ class Dev extends ComponentBase
         $_SESSION['lms'] = $config->Lms;
 
         //get the roles
-        $roleStr = \Input::get('roles');
-        if(stristr($roleStr,'Learner'))
-        {
-            $_SESSION['roles'] = $roleStr;
-        }
-        else
-        {
-            $parts = explode("lis/", $roleStr);
-            if(count($parts)>=2)
-            {
-                $_SESSION['roles'] = ($parts[1]);
-            }
-        }
+        $roleStr = $config->Roles;
+        $_SESSION['roles'] = $roleStr;
 
         $_SESSION['timezone'] = new \DateTimeZone($config->Timezone);
         //get the timezone
