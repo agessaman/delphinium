@@ -27,4 +27,4 @@
     - modify_users_table.php
 1.0.6:
     - Modified assignments points possible to be a float instead of an int
-    - modify_assignmentS_table.php
+    - modify_assignments_table.php
