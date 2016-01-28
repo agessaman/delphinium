@@ -25,3 +25,6 @@
     - seed_roots_roles_table.php
     - create_roots_users_course_table.php
     - modify_users_table.php
+1.0.6:
+    - Modified assignments points possible to be a float instead of an int
+    - modify_assignmentS_table.php

@@ -4,7 +4,6 @@ var bottomExperienceScores=[];
 //GET DATA FOR THE TOP CHART
 var promise = $.get("gradebook/getAllStudentSubmissions");
 promise.then(function (data1, textStatus, jqXHR) {
-        //console.log(data1);
         submissions = data1;
         var inputs = document.getElementsByClassName('checkboxMultiselect');
         for(var i = 0; i < inputs.length; i++) {
@@ -546,7 +545,7 @@ function callStudentsMilestoneInfo(studentsArr)
     d3.select("#gridContainer").style("display","block");
     var idsArr =[];
     for(var i=0;i<=studentsArr.length-1;i++)
-        // for(var i=0;i<=14;i++)
+        // for(var i=0;i<=9;i++)
     {
         var currentStudent = studentsArr[i];
         idsArr.push(currentStudent.user_id);
@@ -591,9 +590,7 @@ function showStudentDetails(studentSummaryData)
     d3.select("#tdTotalPoints").html(roundToTwo(studentSummaryData.total));
 
     //
-    var currGrade = d3.select("#tdCurrentGrade");
-    var span = currGrade.insert("span", "#aGradeHover");
-    span.html(studentSummaryData.grade);
+    var currGrade = d3.select("#spanCurrentGrade").html(studentSummaryData.grade);
 
     //get bottom data
     var userId = studentSummaryData.id;
