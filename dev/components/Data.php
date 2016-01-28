@@ -23,31 +23,31 @@ class Data extends ComponentBase
     }
 
     public function onRun() {
-        // try
-        // {
+         try
+         {
         $this->doBltiHandshake();
-        // }
-        // catch(NonLtiException $e)
-        // {
-        // if($e->getCode()==584)
-        // {
-        // return \Response::make($this->controller->run('nonlti'), 500);
-        // }
-        // else{
-        // echo json_encode($e->getMessage());return;
-        // }
-        // }
-        // catch (\GuzzleHttp\Exception\ClientException $e) {
-        // return;
-        // }
-        // catch(\Exception $e)
-        // {
-        // if($e->getMessage()=='Invalid LMS')
-        // {
-        // return \Response::make($this->controller->run('nonlti'), 500);
-        // }
-        // return \Response::make($this->controller->run('error'), 500);
-        // }
+         }
+         catch(NonLtiException $e)
+         {
+         if($e->getCode()==584)
+         {
+         return \Response::make($this->controller->run('nonlti'), 500);
+         }
+         else{
+         echo json_encode($e->getMessage());return;
+         }
+         }
+         catch (\GuzzleHttp\Exception\ClientException $e) {
+         return;
+         }
+         catch(\Exception $e)
+         {
+         if($e->getMessage()=='Invalid LMS')
+         {
+         return \Response::make($this->controller->run('nonlti'), 500);
+         }
+         return \Response::make($this->controller->run('error'), 500);
+         }
     }
 
     public function defineProperties() {
