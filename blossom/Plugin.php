@@ -43,7 +43,7 @@ class Plugin extends PluginBase
             '\Delphinium\Blossom\Components\Progress' => 'progress',
             '\Delphinium\Blossom\Components\ExperienceManager' => 'experiencemanager',
             '\Delphinium\Blossom\Components\Gradebook' => 'gradebook',
-            '\Delphinium\Blossom\Components\Pace' => 'pace'
+            '\Delphinium\Blossom\Components\Stats' => 'stats'
         ];
     }
 	
@@ -110,11 +110,11 @@ class Plugin extends PluginBase
                     'group'       => 'Blossom',
                 ],
 
-                'Pace' => [
-                    'label' => 'Pace',
+                'Stats' => [
+                    'label' => 'Stats',
                     'icon' => 'icon-bar-chart',
                     'owner' => 'Delphinium.Greenhouse',
-                    'url' => Backend::url('delphinium/blossom/pace'),
+                    'url' => Backend::url('delphinium/blossom/stats'),
                     'group'       => 'Blossom',
                 ]
             ]);

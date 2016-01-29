@@ -3,20 +3,18 @@
 use Model;
 
 /**
- * pace Model
+ * stats Model
  */
-class Pace extends Model
+class Stats extends Model
 {
 
     /**
      * @var string The database table used by the model.
      */
-    public $table = 'delphinium_blossom_paces';
+    public $table = 'delphinium_blossom_stats';
 
     public $rules = [
         'Name'=>'required',
-        'Maximum'=>'required',
-        'Minimum' => 'required',
         'Animate'=>'required',
         'Size' => 'required'
     ];

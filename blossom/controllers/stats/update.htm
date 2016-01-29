@@ -1,6 +1,6 @@
 <div class="control-breadcrumb">
     <ul>
-        <li><a href="<?= Backend::url('delphinium/blossom/pace') ?>">Pace Instances</a></li>
+        <li><a href="<?= Backend::url('delphinium/blossom/stats') ?>">Stats Instances</a></li>
         <li><?= e($this->pageTitle) ?></li>
     </ul>
 </div>
@@ -17,7 +17,7 @@
                 data-request-data="close:true" 
                 data-hotkey="ctrl+enter"
                 data-hotkey-mac="cmd+enter"
-                data-load-indicator="Saving Pace Instance..." 
+                data-load-indicator="Saving Stats Instance..." 
                 class="btn btn-default">
                 Save and Close
             </button>
@@ -25,12 +25,12 @@
                 type="button" 
                 class="oc-icon-trash-o btn-icon danger pull-right" 
                 data-request="onDelete" 
-                data-load-indicator="Deleting pace Instance..." 
-                data-request-confirm="Do you really want to delete this Pace Instance?">
+                data-load-indicator="Deleting Stats Instance..." 
+                data-request-confirm="Do you really want to delete this Stats Instance?">
             </button>
 
             <span class="btn-text"> or 
-            <a href="<?= Backend::url('delphinium/blossom/pace') ?>">Cancel</a></span>
+            <a href="<?= Backend::url('delphinium/blossom/stats') ?>">Cancel</a></span>
         </div>
     </div>
 <?= Form::close() ?>

@@ -1,5 +1,5 @@
-var paceHeight = 240;
-var paceWidth = 290;
+var statsHeight = 240;
+var statsWidth = 290;
 var trueHeight = 200;
 var trueWidth = 250;
 var halfWidth = trueWidth / 2;
@@ -44,30 +44,30 @@ var stamina = 80;
 var staminaWidth = stamina / 100 * trueWidth;
 var staminaX = (staminaWidth / 2) + 10;
 
-scaleView();
-drawView();
+scaleStats();
+drawStats();
 
-function scaleView() {
-  var paceView = d3.select("#paceView");
-  var paceSVG = d3.select("#paceSVG");
+function scaleStats() {
+  var statsView = d3.select("#statsView");
+  var statsSVG = d3.select("#statsSVG");
 
-  if(paceSize == "small"){
-    paceSVG.attr('width', halfWidth + 40)
+  if(statsSize == "small"){
+    statsSVG.attr('width', halfWidth + 40)
       .attr('height', trueHeight / 2 + 40);
-    paceView.attr('transform', "scale(.5)");
-  }else if(paceSize == "medium"){
-    paceSVG.attr('width', paceWidth)
-      .attr('height', paceHeight);
+    statsView.attr('transform', "scale(.5)");
+  }else if(statsSize == "medium"){
+    statsSVG.attr('width', statsWidth)
+      .attr('height', statsHeight);
   }else{
-    paceSVG.attr('width', trueWidth * 1.5 + 40)
+    statsSVG.attr('width', trueWidth * 1.5 + 40)
       .attr('height', trueHeight * 1.5 + 40);
-    paceView.attr('transform', "scale(1.5)");
+    statsView.attr('transform', "scale(1.5)");
   }
 }
 
-function drawView(){
+function drawStats(){
 
-  var view = d3.select("#paceView");
+  var view = d3.select("#statsView");
 
   drawPace();
   drawHealth();
@@ -110,7 +110,7 @@ function drawView(){
 
   function drawStamina(){
     drawText(3, "Stamina");
-    if(paceAnimate){
+    if(statsAnimate){
       view.append('rect')
         .attr('height', 25)
         .attr('width', 0)
@@ -160,7 +160,7 @@ function drawView(){
   }
 
   function drawPositive(count, value){
-    if(paceAnimate){
+    if(statsAnimate){
       view.append('rect')
         .attr('height', 25)
         .attr('width', 0)
@@ -184,7 +184,7 @@ function drawView(){
   }
 
   function drawNegative(count, value){
-    if(paceAnimate){
+    if(statsAnimate){
       view.append('rect')
         .attr('height', 25)
         .attr('width', 0)
@@ -209,7 +209,7 @@ function drawView(){
   }
 
   function drawNumber(count, x, text){
-    var text = d3.select('#paceView').append("text")
+    var text = d3.select('#statsView').append("text")
       .attr("fill", "none")
       .style("text-anchor", "middle")
       .attr('font-size', "20px")

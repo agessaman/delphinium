@@ -3,14 +3,14 @@
 use Schema;
 use October\Rain\Database\Updates\Migration;
 
-class CreatePacesTable extends Migration
+class CreateStatsTable extends Migration
 {
 
     public function up()
     {
-        if ( !Schema::hasTable('delphinium_blossom_paces') )
+        if ( !Schema::hasTable('delphinium_blossom_stats') )
         {
-            Schema::create('delphinium_blossom_paces', function($table)
+            Schema::create('delphinium_blossom_stats', function($table)
             {
                 $table->engine = 'InnoDB';
                 $table->increments('id');
@@ -24,9 +24,9 @@ class CreatePacesTable extends Migration
 
     public function down()
     {
-        if ( Schema::hasTable('delphinium_blossom_paces') )
+        if ( Schema::hasTable('delphinium_blossom_stats') )
         {
-            Schema::dropIfExists('delphinium_blossom_paces');
+            Schema::dropIfExists('delphinium_blossom_stats');
         }
     }
 

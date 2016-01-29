@@ -3,16 +3,16 @@
 # ===================================
 
 # Model List Column configuration
-list: $/delphinium/blossom/models/pace/columns.yaml
+list: $/delphinium/blossom/models/stats/columns.yaml
 
 # Model Class name
-modelClass: Delphinium\Blossom\Models\Pace
+modelClass: Delphinium\Blossom\Models\Stats
 
 # List Title
-title: Manage Pace Instances
+title: Manage Stats Instances
 
 # Link URL for each record
-recordUrl: delphinium/blossom/pace/update/:id
+recordUrl: delphinium/blossom/stats/update/:id
 
 # Message to display if the list is empty
 noRecordsMessage: backend::lang.list.no_records

@@ -10,5 +10,5 @@
     - Drop grades table
     - drop_grades_table.php
 1.0.3:
-    -Initialize Pace
-    - create_paces_table.php
+    - Initialize Stats
+    - create_stats_table.php
