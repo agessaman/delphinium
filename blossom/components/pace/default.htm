@@ -1,0 +1,11 @@
+<script>
+	var maxPace = {{maxPace}};
+	var minPace = {{minPace}};
+	var paceSize = '{{paceSize}}';
+	var paceAnimate = {{paceAnimate}};
+</script>
+{% if ('Learner' in role) %}
+{% partial 'pace::studentView' %}
+{% elseif ('Instructor' in role or 'TeachingAssistant' in role) %}
+{% partial 'pace::instructorView' %}
+{% endif %}

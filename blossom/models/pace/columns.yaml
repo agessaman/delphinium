@@ -1,0 +1,28 @@
+# ===================================
+#  List Column Definitions
+# ===================================
+
+columns:
+    id:
+        label: ID
+        searchable: true
+
+    Name:
+        label: Name
+        searchable: true
+
+    Maximum:
+        label: Maximum
+        searchable: true
+
+    Minimum:
+        label: Minimum
+        searchable: true
+
+    Animate:
+        label: Animate
+        searchable: true
+
+    Size:
+        label: Size
+        searchable: true

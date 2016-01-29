@@ -48,7 +48,7 @@
     -ms-animation-timing-function: linear;
 }
 </style>
-{% partial 'bonus::display' %}
+{% partial 'pace::display' %}
 
 <a data-toggle="modal" href="#content-confirmation" class=""><i class="icon-cog"></i> Settings</a>
 
@@ -57,28 +57,30 @@
         <div class="modal-content" style="width:260px">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Configure Bonus Settings</h4>
+                <h4 class="modal-title">Configure Pace Settings</h4>
             </div>
             <div class="modal-body">
 				<i id="loading" class="icon-refresh"></i>
 				<form class="form-elements" role="form" id="updateForm">
 					<div class="form-group span-full">
-						<label data-toggle="tooltip" title="Input the name to identify this bonus meter">Name</label>
+						<label data-toggle="tooltip" title="Input the name to identify this 
+						 meter">Name</label>
 						<input type="text" name="name" value="{{name}}" class="form-control" />
 					</div>
 
 					<div class="form-group span-left" style="width:7em; float:left; margin-right:2em;">
 						<label data-toggle="tooltip" title="Input the maximum amount for penalties">Penalty Max</label>
-						<input type="text" name="minBonus" value="{{minBonus}}" class="form-control" />
+						<input type="text" name="min
+						" value="{{minPace}}" class="form-control" />
 					</div>
 
 					<div class="form-group span-right" style="width:7em; float:left;">
-						<label data-toggle="tooltip" title="Input the maximum amount for bonuses">Bonus Max</label>
-						<input type="text" name="maxBonus" value="{{maxBonus}}" class="form-control" />
+						<label data-toggle="tooltip" title="Input the maximum amount for pacees">Pace Max</label>
+						<input type="text" name="maxPace" value="{{maxPace}}" class="form-control" />
 					</div>
 
 					<div style="width:7em; float:left; margin-right:2em;">
-						<label data-toggle="tooltip" title="Select the size of the bonus meter">Size</label>
+						<label data-toggle="tooltip" title="Select the size of the pace meter">Size</label>
 						<select id="selectSize" name="size" class="form-control custom-select">
 							<option value="1">Small</option>
 							<option value="2">Medium</option>
@@ -86,7 +88,7 @@
 						</select>
 					</div>
 					<div style="width:7em; float:left;">
-						<label data-toggle="tooltip" title="Select whether or not to animate the bonus meter when the page loads">Animate</label>
+						<label data-toggle="tooltip" title="Select whether or not to animate the pace meter when the page loads">Animate</label>
 						<select id="selectAnimate" name="animate" class="form-control custom-select">
 							<option value="1">Yes</option>
 							<option value="0">No</option>
@@ -106,13 +108,13 @@
 <script>
 	var s = document.getElementById("selectSize");
 	for ( var i = 0; i < s.options.length; i++ ) {
-        if ( s.options[i].value == "{{bonusSize}}" ) {
+        if ( s.options[i].value == "{{paceSize}}" ) {
             s.options[i].selected = true;
         }
     }
 	var s = document.getElementById("selectAnimate");
 	for ( var i = 0; i < s.options.length; i++ ) {
-        if ( s.options[i].value == "{{bonusAnimate}}" ) {
+        if ( s.options[i].value == "{{paceAnimate}}" ) {
             s.options[i].selected = true;
         }
     }
