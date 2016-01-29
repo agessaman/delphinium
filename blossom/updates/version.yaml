@@ -6,7 +6,9 @@
     - create_milestones_table.php
     - create_grades_table.php
     - create_leaderboards_table.php
-    - create_paces_table.php
 1.0.2:
     - Drop grades table
     - drop_grades_table.php
+1.0.3:
+    -Initialize Pace
+    - create_paces_table.php

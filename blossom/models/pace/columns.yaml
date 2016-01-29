@@ -11,14 +11,6 @@ columns:
         label: Name
         searchable: true
 
-    Maximum:
-        label: Maximum
-        searchable: true
-
-    Minimum:
-        label: Minimum
-        searchable: true
-
     Animate:
         label: Animate
         searchable: true
