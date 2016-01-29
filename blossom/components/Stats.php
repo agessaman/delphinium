@@ -4,13 +4,13 @@ use Cms\Classes\ComponentBase;
 use Delphinium\Blossom\Models\Experience as ExperienceModel;
 use Delphinium\Blossom\Components\Experience as ExperienceComponent;
 
-class Pace extends ComponentBase
+class Stats extends ComponentBase
 {
 
     public function componentDetails()
     {
         return [
-            'name'        => 'Pace',
+            'name'        => 'Stats',
             'description' => 'Displays Pace, Health, Gap and Stamina.'
         ];
     }
@@ -20,7 +20,7 @@ class Pace extends ComponentBase
         return [
             'Experience' => [
                 'title' => 'Experience instance',
-                'description' => 'Select the experience instance to display the student\'s bonus and penalties',
+                'description' => 'Select the experience instance to display the student\'s stats',
                 'type' => 'dropdown'
             ]
         ];
@@ -49,16 +49,16 @@ class Pace extends ComponentBase
             //don't multiply by zero!
             $milestoneNum = count($experienceInstance->milestones) > 0 ? count($experienceInstance->milestones) : 1;
 
-            $this->page['maxPace'] = $experienceInstance->bonus_days * $experienceInstance->bonus_per_day * $milestoneNum;
-            $this->page['minPace'] = -$experienceInstance->penalty_days * $experienceInstance->penalty_per_day * $milestoneNum;
+            //$this->page['maxBonus'] = $experienceInstance->bonus_days * $experienceInstance->bonus_per_day * $milestoneNum;
+            //$this->page['minBonus'] = -$experienceInstance->penalty_days * $experienceInstance->penalty_per_day * $milestoneNum;
 
-            $this->page['paceSize'] = $experienceInstance->size;
-            $this->page['paceAnimate'] = $experienceInstance->animate;
+            $this->page['statsSize'] = $experienceInstance->size;
+            $this->page['statsAnimate'] = $experienceInstance->animate;
 
-            $pacePenalties = $this->getPacePenalties();
+            //$pacePenalties = $this->getBonusPenalties();
 
-            $this->page['totalPace'] = $pacePenalties === 0 ? 0 : round($pacePenalties->bonus, 2);
-            $this->page['totalPenalties'] = $pacePenalties === 0 ? 0 : round($pacePenalties->penalties, 2);
+            //$this->page['totalBonus'] = $bonusPenalties === 0 ? 0 : round($bonusPenalties->bonus, 2);
+            //$this->page['totalPenalties'] = $bonusPenalties === 0 ? 0 : round($bonusPenalties->penalties, 2);
 
             if (!isset($_SESSION)) {
                 session_start();
@@ -89,13 +89,13 @@ class Pace extends ComponentBase
     }
 
 
-    private function getPacePenalties($userId = null) {
+    private function getBonusPenalties($userId = null) {
         $experienceComp = new ExperienceComponent();
         if ((!is_null($this->property('Experience'))) && ($this->property('Experience') > 0)) {
             return $experienceComp->calculateTotalBonusPenalties($this->property('Experience'), $userId);
         } else {
             $obj = new \stdClass();
-            $obj->pace = 0;
+            $obj->bonus = 0;
             $obj->penalties = 0;
         }
     }
