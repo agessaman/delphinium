@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Pace
+
+# Model Form Field configuration
+form: $/delphinium/blossom/models/pace/fields.yaml
+
+# Model Class name
+modelClass: Delphinium\Blossom\Models\Pace
+
+# Default redirect location
+defaultRedirect: delphinium/blossom/pace
+
+# Create page
+create:
+    title: Create Pace Instance
+    redirect: delphinium/blossom/pace/update/:id
+    redirectClose: delphinium/blossom/pace
+
+# Update page
+update:
+    title: Edit Pace Instance
+    redirect: delphinium/blossom/pace
+    redirectClose: delphinium/blossom/pace
+
+# Preview page
+preview:
+    title: Preview Pace
