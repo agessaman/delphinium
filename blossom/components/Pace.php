@@ -49,7 +49,7 @@ class Pace extends ComponentBase
             //don't multiply by zero!
             $milestoneNum = count($experienceInstance->milestones) > 0 ? count($experienceInstance->milestones) : 1;
 
-            $this->page['maxPace'] = $experienceInstance->pace_days * $experienceInstance->pace_per_day * $milestoneNum;
+            $this->page['maxPace'] = $experienceInstance->bonus_days * $experienceInstance->bonus_per_day * $milestoneNum;
             $this->page['minPace'] = -$experienceInstance->penalty_days * $experienceInstance->penalty_per_day * $milestoneNum;
 
             $this->page['paceSize'] = $experienceInstance->size;
