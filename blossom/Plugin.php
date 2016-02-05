@@ -24,7 +24,7 @@ class Plugin extends PluginBase
     {
         return [
             'name'        => 'Blossom',
-            'description' => 'Plug-in used to develop view for displaying grade information',
+            'description' => 'Plug-in used to develop views for displaying grade information',
             'author'      => 'Jacob Reid',
             'icon'        => 'icon-asterisk'
         ];

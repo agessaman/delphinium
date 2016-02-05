@@ -206,7 +206,7 @@ class Gradebook extends ComponentBase {
         $this->users = $userMasterArr;
 
         //comment these two lines
-        // $submissionData = $this->matchSubmissionsAndUsers($users, $aggregateSubmissionScores);
+        // $submissionData = $this->matchSubmissionsAndUsers($users, $aggregateSubmissionScores, $this->property('experienceInstance'));
         // $this->studentData = $submissionData;
         // chart data
         $this->page['chartData'] = json_encode($this->getRedLineData());
@@ -696,13 +696,13 @@ class Gradebook extends ComponentBase {
         return ($submissionA['user_id'] - $submissionB['user_id']);
     }
 
-    public function matchSubmissionsAndUsers($users, $scores) {
-
+    public function matchSubmissionsAndUsers($users, $scores, $experienceInstance) {
+        
         $allStudents = array();
         $standards = $this->roots->getGradingStandards();
         $grading_scheme = $standards[0]->grading_scheme;
         //get experience total points
-        $experienceInstance = ExperienceModel::find($this->property('experienceInstance'));
+        //$experienceInstance = ExperienceModel::find($this->property('experienceInstance'));
         $maxExperiencePts = $experienceInstance->total_points;
 
         $utcTimeZone = new DateTimeZone('UTC');
@@ -716,6 +716,7 @@ class Gradebook extends ComponentBase {
         $penaltySeconds = $experienceInstance->penalty_days * 24 * 60 * 60;
 
         foreach ($users as $user) {
+
             $submissionsArr = $this->findScoreByUserId($user->user_id, $scores);
 
             //this will weed out any TA's and other people in the course who aren't necessarily students

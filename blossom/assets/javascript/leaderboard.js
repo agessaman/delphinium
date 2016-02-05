@@ -1,8 +1,19 @@
 $(document).ready(function(){
 	//scaleLeaderboard();
-	makeAccordion();
-	animateAccordion();
+	getAliases();
 });
+
+var aliases = [];
+
+function getAliases(){
+  $.ajax("plugins/delphinium/blossom/assets/javascript/companies.json").done(function(data) {
+    aliases = data.Companies;
+    makeAccordion();
+		animateAccordion();
+  }).fail(function(jqXHR, textStatus, errorThrown) {
+    console.log(jqXHR, textStatus, errorThrown);
+  });
+}
 
 function scaleLeaderboard(){
 	var height,width;
@@ -34,21 +45,11 @@ function makeAccordion(){
 		{"score":7069, "place":0},{"score":9485, "place":0},{"score":5573, "place":0},{"score":8020, "place":0},{"score":5798, "place":0},
 		{"score":3991, "place":0},{"score":5168, "place":0},{"score":5297, "place":0},{"score":4331, "place":0},{"score":5968, "place":0},
 	];
-	var aliases = [
-		"Acura", "Audi", "Bentley", "BMW", "Buick", 
-		"Cadillac", "Chevrolet", "Chrysler", "Dodge", "Ferrari",
-		"Fait", "Ford", "Geo", "GMC", "Honda", 
-		"Hummer", "Hyundai", "Infiniti", "Isuzu", "Jaguar", 
-		"Jeep", "Kia", "Lamborghini", "Land Rover", "Lexus", 
-		"Lincoln", "Mazda", "Mercedes", "Mini", "Mitsubishi", 
-		"Mercury", "Nissan", "Oldsmobile", "Packard", "Plymouth", 
-		"Pontiac", "Porsche", "Ram", "Rolls-Royce", "Saleen", 
-		"Saturn", "Shelby", "Smart", "Subaru", "Suzuki", 
-		"Tesla", "Toyota", "VW", "Volvo", "Yamaha"
-	];
+
+	//console.log(aliases);
 
 	scores.sort(sortNumber);
-	shuffle(aliases);
+	//shuffle(aliases);
 
 	var studentScore = 6911;
 	var count;
@@ -73,6 +74,8 @@ function makeAccordion(){
 		var tab = document.createElement('div');
 		tab.className='accordionTab';
 		tab.innerHTML="<a class='accordionTabTitle' href='#tab-" + i + "'>" + tabs[i] + "</a>";
+
+		var rank = 1;
 
 		var content = document.createElement('div');
 		content.className='accordionTabContent';
@@ -107,7 +110,7 @@ function makeAccordion(){
 			
 			var html ="";
 			html +=	"<span class = 'studentRank'>";
-			html +=	(j + 1);
+			html +=	rank;
 			html += "</span>";
 			html += "<span style =' display:inline-block;'>";
 			html +=		"<b>" + aliases[j] + "</b> <br> ";
@@ -119,11 +122,12 @@ function makeAccordion(){
 			html +=	"</span>";
 			student.innerHTML=html;
 			content.appendChild(student);
-		};
+			rank++;
+		}
 
 		tab.appendChild(content);
 		document.getElementById("accordion").appendChild(tab);
-	};
+	}
 
 	function shuffle(array) {
 	  var currentIndex = array.length, temporaryValue, randomIndex ;
