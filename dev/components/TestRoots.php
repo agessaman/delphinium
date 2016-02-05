@@ -49,7 +49,7 @@ class TestRoots extends ComponentBase
         $this->canvasHelper = new CanvasHelper();
         $this->dbHelper = new DbHelper();
 //        $this->refreshCache();
-        $this->test();
+//        $this->test();
 //        $this->testBasicModulesRequest();
 //        $this->testDeleteTag();
 //        $this->testAddingUpdatingTags();
@@ -85,7 +85,7 @@ class TestRoots extends ComponentBase
 //        $this->testGetQuizQuestions();
 //        $this->testGetAllQuizzes();
 //        $this->testGetPages();
-//        $this->testQuizTakingWorkflow();
+        $this->testQuizTakingWorkflow();
 //        $this->testIsQuestionAnswered();
 //        $this->testSubmitQuiz();
     }
@@ -588,79 +588,116 @@ class TestRoots extends ComponentBase
 //        }
         
     }
+
+
+    /*This is the order of events in the quiz-taking workflow:
+    1. We check our database to see if we have the current quiz submission (function getQuizSubmission). If we do, we return it.
+    2. If we don't have a quiz submission for the given user and quiz, then we will create one using Canvas' API (function postQuizTakingSession)
+    3. We check whether the question has been answered or not (function isQuestionAnswered)
+    4. If the question has NOT been answered, we can answer it in behalf of the user (function postAnswerQuestion). We do that by creating an array of parameters. This array may vary depending
+        on the question type. (question type is a parameter that is returned when we request  the quiz questions). For information on the format of this array of parameters see:
+        https://canvas.instructure.com/doc/api/quiz_submission_questions.html#Question+Answer+Formats-appendix
+    5. After all the desired questions have been answered we can submit the quiz (function: postTurnInQuiz)
+    6. After the quiz has been submitted we can update the user's score by x amount of points, and add x amount of points to specific questions (function updateStudentQuizScore)
+    */
+
     public function testQuizTakingWorkflow()
     {
-        $quizId = 656063;
-        $questionId = 11472511;
+        //in order for this function to work you must update the values below with valid data
+        $quizId = 658184;//a quiz that is published and has not been turned in
+        $questionId = 11517951; //a question id that belongs to the quiz id listed above
+        $answerId = 3098; //the id of an answer to the questionId listed above
+        $studentId = 4848484; //a student id for whom the quiz submission will be created
+        $totalPointsToFudge = 1;//points to be added or substracted to the current quiz score. Fudging with quiz scores can only be done after the quiz has been submitted.
+
         
-        $quizSubmission = $this->roots->getQuizSubmission($quizId);
+        $quizSubmission = $this->roots->getQuizSubmission($quizId, null, $studentId);
 
         if(is_null($quizSubmission))
         {//it wasn't on canvas or in the db -- create a new submission
             
             echo "was null. Started new quiz taking session";
-            $quizSubmission = $this->roots->postQuizTakingSession($quizId);
+            $quizSubmission = $this->roots->postQuizTakingSession($quizId, $studentId);
         }
-        
-//        echo json_encode($quizSubmission);
+
         //get the question and see if it's answered
-        $isAnswered = $this->roots->isQuestionAnswered($quizId, $questionId, $quizSubmission->quiz_submission_id);
+        $isAnswered=false;
+//        $isAnswered = $this->roots->isQuestionAnswered($quizId, $questionId, $quizSubmission->quiz_submission_id);
 
 
-//        $canvas = new CanvasHelper();
-//        $result = $canvas->updateStudentQuizScore($quizId, $quizSubmission, 2);
 //
 //        echo json_encode($result);return;
 
+//echo json_encode($quizSubmission);return;
+        if($isAnswered){
+            echo "was answered";//do something if the question has been answered
+        }
+        else
+        {//answer it. Still working on this
+//            echo "was not answered";
 
-//        if($isAnswered){
-//            echo "was answered";//do something if the question has been answered
-//        }
-//        else
-//        {//answer it. Still working on this
-////            echo "was not answered";
-////            $quizQuestion = $this->roots->getQuizQuestion($quizId, $questionId);
+            //get the question answer ids, etc
+            $req = new QuizRequest(ActionType::GET, $quizId, false, true);
+            $quizFromDb = $this->roots->quizzes($req);
+
+            foreach($quizFromDb['questions'] as $question)
+            {
+//                $questionId
+                $answers = $question['answers'];
+                $obj = json_decode($answers, true);
+                foreach($obj as $answer)
+                {
+                    if($answer['text']=="True")
+                    {
+                        //$answerId = $answer['id'];
+                    }
+                }
+            }
+            //prepare the answer
+            $answerArr = array(
+               "attempt"=>$quizSubmission->attempt,
+               "validation_token"=> trim($quizSubmission->validation_token),
+               "access_code"=>null,//TODO: where do we get this from?
+               "quiz_questions"=> array([
+                        "id"=> strval($questionId),
+                        "answer"=> $answerId
+                 ]));
+
 //
-//            $questionsWrap = new \stdClass();
-//            $questionsWrap->attempt = $quizSubmission->attempt;
-//            $questionsWrap->validation_token =  $quizSubmission->validation_token;
+//              //the "answer" will vary between question types
+//            switch(strtolower($quizQuestion->type))
+//            {
+//                case "text":
+//                    break;
+//                case "multiple_choice_question":
+//                    $answer->answer = 1;
+//                    break;
 //
-//            $quizQuestionsArr = array();
+//            }
 //
-//            $answersArr = array();
-//            $answer = new \stdClass();
-//            $answer->id = $questionId;
-//            $answer->answer = 'True';
-//            $answersArr[] = $answer;
-//
-//            $questionsWrap->quiz_questions = $answersArr;
-////
-////            echo json_encode($questionsWrap);
-////
-////              //the "answer" will vary between question types
-////            switch(strtolower($quizQuestion->type))
-////            {
-////                case "text":
-////                    break;
-////                case "multiple_choice_question":
-////                    $answer->answer = 1;
-////                    break;
-////
-////            }
-////
-////            $questionsWrap[] = $answer;
+//            $questionsWrap[] = $answer;
 ////            //answer question
 ////
 //
 //
 //
-////            $result =$this->canvasHelper->postAnswerQuestion($quizSubmission, $questionsWrap);
-////            echo json_encode($result);
-//        }
+            //post the answer
+//            $result =$this->canvasHelper->postAnswerQuestion($quizSubmission, $answerArr, $studentId);
+//            var_dump($result);
+        }
         
         //submit the quiz
 //        $res = $this->roots->postTurnInQuiz($quizId, $quizSubmission);
 //        echo json_encode($res);
+
+        //adjust this user's score
+        $questions = array($questionId=> [
+            "score"=> 1,//out of the total points to be fudged, one point will be added to this question. The max number of points that can be added to this particular
+            //question depends on how much the question is worth, but the system won't puke if we assign it more than it's worth. It fails gracefully.
+            "comment"=> "No points were added to this question"
+        ]);
+        $result = $this->roots->updateStudentQuizScore($quizId, $quizSubmission, $questions, $totalPointsToFudge);
+        echo json_encode($result);
     }
     
     

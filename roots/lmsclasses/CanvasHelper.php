@@ -141,7 +141,7 @@ class CanvasHelper
         }
     }
 
-    public function postAnswerQuestion($quizSubmission, $questionsWrap)
+    public function postAnswerQuestion($quizSubmission, $questionsWrap, $studentId)
     {//POST /api/v1/quiz_submissions/:quiz_submission_id/questions
         if(!isset($_SESSION))
         {
@@ -152,46 +152,16 @@ class CanvasHelper
 
         $urlPieces= array();
         $urlPieces[]= "https://{$domain}/api/v1/quiz_submissions/{$quizSubmission->quiz_submission_id}/questions";
+        $urlArgs[] ="as_user_id={$studentId}";
         $urlArgs[]="access_token={$token}";
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
-//        $items = GuzzleHelper::postDataWithParams($url, $questionsWrap);
-//
 
-
-//        {
-//            "attempt": 1,
-//  "validation_token": "YOUR_VALIDATION_TOKEN",
-//  "access_code": null,
-//  "quiz_questions": [{
-//            "id": "1",
-//    "answer": "Hello World!"
-//  }, {
-//            "id": "2",
-//    "answer": 42.0
-//  }]
-//}
-        $client = new Client();
-        $items =  $client->post($url, [
-            'attempt' => $questionsWrap->attempt,
-            'validation_token' => 'd8df890b7f282d45649ccc6e4d475daada0c44d2b1a00bcbdf6d9bb069ea3ac1',
-            'quiz_questions' => $questionsWrap->quiz_questions
-
-        ]);//$response = $client->request('PUT', $url, ['json' => json_encode($obj)]);
-
-        echo json_encode($items);return;
-        if(count($items->quiz_submissions)>0)
-        {
-            return $this->saveQuizSubmission($items->quiz_submissions[0]);
-        }
-        else
-        {
-            $action = "start a quiz taking session";
-            $exception = new InvalidRequestException($action, "unknown error", 400);
-        }
+        $items = GuzzleHelper::postDataWithParamsCurl($url, $questionsWrap, $token);
+        return $items;
 
     }
 
-    public function postQuizTakingSession($quizId)
+    public function postQuizTakingSession($quizId, $studentId)
     {///ap i/v1/courses/:course_id/quizzes/:quiz_id/submissions
         $urlPieces= $this->initUrl();
         if(!isset($_SESSION))
@@ -203,6 +173,7 @@ class CanvasHelper
         $urlPieces[] = 'quizzes';
         $urlPieces[] = $quizId;
         $urlPieces[] = 'submissions';
+        $urlArgs[]="as_user_id={$studentId}";
         $urlArgs[]="access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
@@ -323,7 +294,7 @@ class CanvasHelper
 
     }
 
-    public function updateStudentQuizScore($quizId, $quizSubmission, $newQuizScore)
+    public function updateStudentQuizScore($quizId, $quizSubmission, array $questions, $totalPointsToFudge)
     {/// PUT api/v1/courses/:course_id/quizzes/:quiz_id/submissions/:id
         $urlPieces= $this->initUrl();
         if(!isset($_SESSION))
@@ -337,26 +308,35 @@ class CanvasHelper
         $urlPieces[] = 'submissions';
         $urlPieces[] = $quizSubmission->quiz_submission_id;
 
-        $options = [
+        $options = ["quiz_submissions"=>array([
             "attempt"=> $quizSubmission->attempt,
-            "fudge_points"=> 1,
-            "questions"=> [
-                "11472511"=> [
-                    "score"=> 2.5,
-                    "comment"=> "test."
-                ]
-            ]
+            "fudge_points"=> $totalPointsToFudge,
+            "questions"=> [$questions]
+            ])
         ];
-//        $options =[
-//            'quiz_submissions'  => [
-//                'attempt' => $quizSubmission->attempt,
-//                'fudge_points' => $newQuizScore
-//            ]];
         $urlArgs[]="access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
-        $updated = GuzzleHelper::putData($url, $options);
-        return $updated;
+        try
+        {
+            $updated = GuzzleHelper::postDataWithParamsCurl($url, $options, $token, 'PUT');
+            return $updated;
+        }catch (\GuzzleHttp\Exception\ClientException $e)
+        {
+            $code = $e->getCode();
+            $action = "turn in a quiz";
+
+            switch($code)
+            {
+                case 400:
+                    $exception = new InvalidRequestException($action, "The quiz has not been submitted "
+                        . "or the attempt parameter is incorrect or missing", 400);
+                    throw $exception;
+                case 403:
+                    $exception = new InvalidRequestException($action, "You are not a teacher in this course", 403);
+                    throw $exception;
+            }
+        }
     }
 
     public function getQuizzes()
