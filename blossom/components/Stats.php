@@ -4,30 +4,24 @@ use Cms\Classes\ComponentBase;
 use Delphinium\Blossom\Models\Experience as ExperienceModel;
 use Delphinium\Blossom\Components\Experience as ExperienceComponent;
 
-class Bonus extends ComponentBase {
+class Stats extends ComponentBase
+{
 
-    public function componentDetails() {
+    public function componentDetails()
+    {
         return [
-            'name' => 'Bonus',
-            'description' => 'Displays bonus'
+            'name'        => 'Stats',
+            'description' => 'Displays Pace, Health, Gap and Stamina.'
         ];
     }
 
-    public function defineProperties() {
+    public function defineProperties()
+    {
         return [
             'Experience' => [
                 'title' => 'Experience instance',
-                'description' => 'Select the experience instance to display the student\'s bonus and penalties',
+                'description' => 'Select the experience instance to display the student\'s stats',
                 'type' => 'dropdown'
-            ],
-            'Size' => [
-                'title' => 'Widget Size',
-                'description' => 'Enter the size of the component (as a percentage, no sign)',
-                'type' => 'string',
-                'default' => '100',
-                'validationPattern' => '^([1-9]|[1-9][0-9]|[1][0-9][0-9]|20[0-0])$',
-                'validationMessage' => 'A number between 1 and 200 is required',
-                'placeholder' => 'Enter a number w/o sign'
             ]
         ];
     }
@@ -55,16 +49,16 @@ class Bonus extends ComponentBase {
             //don't multiply by zero!
             $milestoneNum = count($experienceInstance->milestones) > 0 ? count($experienceInstance->milestones) : 1;
 
-            $this->page['maxBonus'] = $experienceInstance->bonus_days * $experienceInstance->bonus_per_day * $milestoneNum;
-            $this->page['minBonus'] = -$experienceInstance->penalty_days * $experienceInstance->penalty_per_day * $milestoneNum;
-            $size = $this->property('Size');
-            $this->page['bonusSize'] = $size;
+            //$this->page['maxBonus'] = $experienceInstance->bonus_days * $experienceInstance->bonus_per_day * $milestoneNum;
+            //$this->page['minBonus'] = -$experienceInstance->penalty_days * $experienceInstance->penalty_per_day * $milestoneNum;
 
+            $this->page['statsSize'] = $experienceInstance->size;
+            $this->page['statsAnimate'] = $experienceInstance->animate;
 
-            $bonusPenalties = $this->getBonusPenalties();
+            //$pacePenalties = $this->getBonusPenalties();
 
-            $this->page['totalBonus'] = $bonusPenalties === 0 ? 0 : round($bonusPenalties->bonus, 2);
-            $this->page['totalPenalties'] = $bonusPenalties === 0 ? 0 : round($bonusPenalties->penalties, 2);
+            //$this->page['totalBonus'] = $bonusPenalties === 0 ? 0 : round($bonusPenalties->bonus, 2);
+            //$this->page['totalPenalties'] = $bonusPenalties === 0 ? 0 : round($bonusPenalties->penalties, 2);
 
             if (!isset($_SESSION)) {
                 session_start();
