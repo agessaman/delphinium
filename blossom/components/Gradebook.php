@@ -58,7 +58,7 @@ class Gradebook extends ComponentBase {
 
     public function onRender() {
 
-        // try{
+         try{
 
         $this->roots = new Roots();
         $standards = $this->roots->getGradingStandards();
@@ -120,25 +120,18 @@ class Gradebook extends ComponentBase {
         $this->page['grading_scheme'] = json_encode($grading_scheme);
 
 
-        // }
-        // catch (\GuzzleHttp\Exception\ClientException $e) {
-        // return;
-        // }
-        // catch(Delphinium\Roots\Exceptions\NonLtiException $e)
-        // {
-        // if($e->getCode()==584)
-        // {
-        // return \Response::make($this->controller->run('nonlti'), 500);
-        // }
-        // }
-        // catch(\Exception $e)
-        // {
-        // if($e->getMessage()=='Invalid LMS')
-        // {
-        // return \Response::make($this->controller->run('nonlti'), 500);
-        // }
-        // return \Response::make($this->controller->run('error'), 500);
-        // }
+         } catch (\GuzzleHttp\Exception\ClientException $e) {
+             return;
+         } catch (Delphinium\Roots\Exceptions\NonLtiException $e) {
+             if ($e->getCode() == 584) {
+                 return \Response::make($this->controller->run('nonlti'), 500);
+             }
+         } catch (\Exception $e) {
+             if ($e->getMessage() == 'Invalid LMS') {
+                 return \Response::make($this->controller->run('nonlti'), 500);
+             }
+             return \Response::make($this->controller->run('error'), 500);
+         }
     }
 
     function onGetContent() {

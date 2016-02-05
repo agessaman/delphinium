@@ -14,9 +14,9 @@ class CreateStatsTable extends Migration
             {
                 $table->engine = 'InnoDB';
                 $table->increments('id');
-                $table->string('Name');
-                $table->string('Animate');
-                $table->string('Size');
+                $table->string('name');
+                $table->boolean('animate');
+                $table->integer('size');
                 $table->timestamps();
             });
         }
