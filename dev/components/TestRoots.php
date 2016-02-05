@@ -85,9 +85,10 @@ class TestRoots extends ComponentBase
 //        $this->testGetQuizQuestions();
 //        $this->testGetAllQuizzes();
 //        $this->testGetPages();
-        $this->testQuizTakingWorkflow();
+//        $this->testQuizTakingWorkflow();
 //        $this->testIsQuestionAnswered();
 //        $this->testSubmitQuiz();
+        $this->getQuizSubmissionQuestions();
     }
     
     private function testBasicModulesRequest()
@@ -593,10 +594,13 @@ class TestRoots extends ComponentBase
     /*This is the order of events in the quiz-taking workflow:
     1. We check our database to see if we have the current quiz submission (function getQuizSubmission). If we do, we return it.
     2. If we don't have a quiz submission for the given user and quiz, then we will create one using Canvas' API (function postQuizTakingSession)
+        2.1 If the student already turned in this quiz (check the quiz submission for this -- if workflow_state==completed) and only one attempt was allowed, then the workflow ends.
     3. We check whether the question has been answered or not (function isQuestionAnswered)
     4. If the question has NOT been answered, we can answer it in behalf of the user (function postAnswerQuestion). We do that by creating an array of parameters. This array may vary depending
         on the question type. (question type is a parameter that is returned when we request  the quiz questions). For information on the format of this array of parameters see:
         https://canvas.instructure.com/doc/api/quiz_submission_questions.html#Question+Answer+Formats-appendix
+        4.1 To grade individual questions you must look at the "weight" part of the "answer" field. If the weight of an option ==0, then that's not the right answer.
+            If the weight is 100, then that's the right answer
     5. After all the desired questions have been answered we can submit the quiz (function: postTurnInQuiz)
     6. After the quiz has been submitted we can update the user's score by x amount of points, and add x amount of points to specific questions (function updateStudentQuizScore)
     */
@@ -622,7 +626,7 @@ class TestRoots extends ComponentBase
 
         //get the question and see if it's answered
         $isAnswered=false;
-//        $isAnswered = $this->roots->isQuestionAnswered($quizId, $questionId, $quizSubmission->quiz_submission_id);
+        $isAnswered = $this->roots->isQuestionAnswered($quizId, $questionId, $quizSubmission->quiz_submission_id);
 
 
 //
@@ -700,7 +704,15 @@ class TestRoots extends ComponentBase
         echo json_encode($result);
     }
     
-    
+    public function getQuizSubmissionQuestions()
+    {
+        $quizId = 656063;//a quiz id that is published
+        $studentId = 1234556; //a student id for whom the quiz submission will be retrieved
+        $quizSubmission = $this->roots->getQuizSubmission($quizId, null, $studentId);
+//var_dump($quizSubmission);return;
+        $data = $this->roots->getQuizSubmissionQuestions($quizSubmission);
+        echo json_encode($data);
+    }
     public function testIsQuestionAnswered()
     {
         $quizSubmissionId = 8287196;

@@ -1076,4 +1076,24 @@ class Roots
                throw new \Exception("Invalid LMS");  
             } 
     }
+
+    public function getQuizSubmissionQuestions($quizSubmission)
+    {
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
+        $lms = strtoupper($_SESSION['lms']);
+        if(Lms::isValidValue($lms))
+        {
+            switch ($lms)
+            {
+                case (Lms::CANVAS):
+                    return $this->canvasHelper->getQuizSubmissionQuestions($quizSubmission);
+            }
+        }else
+        {
+            throw new \Exception("Invalid LMS");
+        }
+    }
 }

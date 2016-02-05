@@ -156,6 +156,21 @@ class CanvasHelper
         $urlArgs[]="access_token={$token}";
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
 
+        try{
+
+        }catch (\GuzzleHttp\Exception\ClientException $e)
+        {
+            $code = $e->getCode();
+            $message = $e->getMessage();
+            $action = "post the answer";
+
+            switch($code)
+            {
+                case 401:
+                    $exception = new InvalidRequestException($action, $message, $code);
+                    throw $exception;
+            }
+        }
         $items = GuzzleHelper::postDataWithParamsCurl($url, $questionsWrap, $token);
         return $items;
 
@@ -337,6 +352,38 @@ class CanvasHelper
                     throw $exception;
             }
         }
+    }
+
+    public function getQuizSubmissionQuestions($quizSubmission)
+    {//GET /api/v1/quiz_submissions/:quiz_submission_id/questions
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
+        $domain = $_SESSION['domain'];
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $urlPieces= array();
+        $urlPieces[]= "https://{$domain}/api/v1/quiz_submissions/{$quizSubmission->quiz_id}/questions";
+
+        $urlArgs[]="access_token={$token}";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+//        try{
+            $results = GuzzleHelper::getAsset($url);
+            return ($results);
+//        }catch (\GuzzleHttp\Exception\ClientException $e)
+//        {
+//            $code = $e->getCode();
+//            $action = "get the quiz submission's questions";
+//
+//            switch($code)
+//            {
+//                case 401:
+//                    $exception = new InvalidRequestException($action, "You are unauthorized to make this request "
+//                        . "or the quiz settings don't allow to view the questions", 401);
+//                    throw $exception;
+//            }
+//        }
     }
 
     public function getQuizzes()
