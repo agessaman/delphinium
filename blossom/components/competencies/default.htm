@@ -1,10 +1,13 @@
-<script>
-	var competencies = {{competencies}};
-	var competenciesAnimate = {{competenciesAnimate}};
-	var competenciesSize = '{{competenciesSize}}';
-</script>
-<h3 class = "name">Competencies</h3>
 
 <svg id = "competenciesSVG">
 	<g id="competenciesView"></g>
 </svg>
+    
+<script>
+	// make available to competencies.js
+	var assignments={{assignments|raw}};
+	var submissions = {{submissions|raw}};//json
+	var competenciesSize='{{competenciesSize}}';
+	var competenciesCount = {{competencies|raw}};// show all UNUSED?
+	var competenciesAnimate={{competenciesAnimate}};
+</script>

@@ -26,29 +26,30 @@ class Plugin extends PluginBase
             'icon'        => 'icon-leaf'
         ];
     }
-    
+
     public function boot()
     {
-    
-    	Event::listen('backend.menu.extendItems', function($manager){	
-    	
+
+        Event::listen('backend.menu.extendItems', function($manager){
+
             $manager->addSideMenuItems('Delphinium.Greenhouse', 'greenhouse', [
                 'Dev' => [
-                            'label' => 'Dev',
-                            'icon' => 'icon-cogs',
-                            'owner' => 'Delphinium.Greenhouse',
-                            'url' => Backend::url('delphinium/dev/configuration'),
-                        ]
+                    'label' => 'Dev',
+                    'icon' => 'icon-cogs',
+                    'owner' => 'Delphinium.Greenhouse',
+                    'url' => Backend::url('delphinium/dev/configuration'),
+                ]
             ]);
-            
+
         });
     }
-    
+
     public function registerComponents()
     {
         return [
             '\Delphinium\Dev\Components\Dev' => 'dev',
-            '\Delphinium\Dev\Components\TestRoots' => 'testRoots'
+            '\Delphinium\Dev\Components\TestRoots' => 'testRoots',
+            '\Delphinium\Dev\Components\Data' => 'data'
         ];
     }
 

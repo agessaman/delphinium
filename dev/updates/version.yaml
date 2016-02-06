@@ -4,3 +4,6 @@
 1.0.2:
     - Modify dev table
     - modify_dev_configuration_table.php
+1.0.3:
+    - Modify dev table again
+    - add_roles_column.php

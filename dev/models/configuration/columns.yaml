@@ -32,4 +32,6 @@ columns:
 
     Timezone:
       label: Timezone
-        
+
+    Roles:
+      label: Roles

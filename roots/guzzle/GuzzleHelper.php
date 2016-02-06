@@ -78,6 +78,12 @@ class GuzzleHelper
         return json_decode($response->getBody());
     }
 
+    public static function putData($url, $options)
+    {
+        $client = new Client();
+        $response = $client->put($url,['quiz_submissions' => $options]);
+        return json_decode($response->getBody());
+    }
     public static function postDataWithParams($url, $obj)
     {
 

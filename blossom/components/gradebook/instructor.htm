@@ -5,6 +5,7 @@
     var students = {{users | raw}};
     var today = {{today}};
     var experienceInstanceId = {{experienceInstanceId}};
+    var gradingScheme = {{grading_scheme|raw}};
 </script>
 
 {% set studentData = __SELF__.studentData %}
@@ -31,13 +32,8 @@
 </div>
 
 <div>
-    <div class="bottomSpinnerDiv" style="width: 100%; height: 400px;">
-        <div style="width:60px;height:60px;position: absolute;top: 50%; left: 50%;transform: translate(-50%,-50%);">
-            <i class="icon-spinner icon-spin icon-3x icon-fw margin-bottom" style="color:#337AB7;"></i>
-        </div>
-    </div>
-    <div id="gridContainer" class="container">
-        <table class='table table-condensed table-responsive table-bordered table-hover table-striped'>
+    <div id="gridContainer" class="container" >
+        <table id="summaryTable" class='table table-condensed table-responsive table-bordered table-hover table-striped' style="display:none !important;">
             <thead>
             <tr>
                 <th title="Number">No.</th>
@@ -51,47 +47,68 @@
                 <th title="See student view for selected student">Details</th>
             </tr>
             </thead>
-            <tbody id="tableBody">
-            {% for item in studentData %}
-            <tr>
-                <td>{{ loop.index }}</td>
-                <td class="tdName"><a target="_blank" href="{{item.profile_url}}">{{ item.name }}</a></td>
-                <td>{{ item.score |round(2, 'common')}}</td>
-                <td>{{ item.bonuses |round(2, 'common')}}</td>
-                <td>{{ item.penalties |round(2, 'common')}}</td>
-                <td>{{ item.totalBP |round(2, 'common')}}</td>
-                <td>{{ item.total |round(2, 'common')}}</td>
-                <td>{{ item.grade }}</td>
-                <td><button type="button" data-toggle="modal" data-target="#myModal"
-                            data-request="onGetContent"
-                            data-request-update="delete: '#modalContent'">Details</button>
-                </td>
-
-            </tr>
-            {% endfor %}
-
-            </tbody>
+            <tbody id="tableBody"></tbody>
         </table>
+    </div>
+    <div class="bottomSpinnerDiv" style="width: 100%; height: 40px;">
+        <div style="width:60px;height:60px;position: relative;top: 50%; left: 50%;transform: translate(-50%,-50%);">
+            <i class="icon-spinner icon-spin icon-3x icon-fw margin-bottom" style="color:#337AB7;"></i>
+        </div>
     </div>
 </div>
 
-<div id="myModal" class="modal fade">
-    <div class="modal-dialog">
+<div id="modalStudentGradebook" class="modal fade" role="dialog">
+    <div class="modal-dialog" style="width:800px !important;">
+
+        <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">Modal title</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" id="studentTitle">Modal Header</h4>
             </div>
             <div class="modal-body">
-                <div id="modalContent"></div>
+                <div class="gradebook top">
+                    <table class="table table-condensed table-responsive table-bordered table-striped table-hover">
+                        <caption>Current Grade</caption>
+                        <thead>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <th class='name td'>Experience Points</td>
+                            <td id="tdExpPoints"></td>
+                        </tr>
+                        <tr>
+                            <th class='name td'>Bonus</td>
+                            <td id="tdBonus"></td>
+                        </tr>
+                        <tr>
+                            <th class='name td'>Penalties</td>
+                            <td id="tdPenalties"></td>
+                        </tr>
+                        <tr>
+                            <th class='imp'>Total Points</td>
+                            <td class='imp' id="tdTotalPoints"></td>
+                        </tr>
+                        <tr id="currentGrade">
+                            <th class='imp'>Current Grade</td>
+                            <td class='imp' id="tdCurrentGrade"><span id="spanCurrentGrade"></span>&nbsp;<a id="aGradeHover" style="color:#337AB7 !important;font-size:20px;"><i id="iGradeTooltip" class="fa fa-question-circle"></i></a></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="spinner">
+                    <span id="bottomSpinner" class="icon-refresh icon-spin icon-3x icon-fw margin-bottom" style="text-align:center;"></span>
+                </div>
+                <div class="gradebook" id="gradebook" style="text-align:center;">
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
             </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+        </div>
+
+    </div>
+</div>
 
 
 <script type="text/javascript" src="plugins/delphinium/blossom/assets/javascript/light-table-sorter.min.js"></script>

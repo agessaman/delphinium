@@ -23,6 +23,9 @@ function makeTables(data)
 
     var columnsNames = ['Assignment Name', 'Score', 'Analytics'];
     var columns = ["name", "score", "analytics"];
+
+    //delete old tables (for professor gradebook)
+    d3.select("#gradebook").selectAll("table").remove();
     var table = d3.select("#gradebook")
         .selectAll("div")
         .data(data)

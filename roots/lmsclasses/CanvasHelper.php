@@ -171,10 +171,10 @@ class CanvasHelper
 //  }]
 //}
         $client = new Client();
-       $items =  $client->post($url, [
-                'attempt' => $questionsWrap->attempt,
-                'validation_token' => 'd8df890b7f282d45649ccc6e4d475daada0c44d2b1a00bcbdf6d9bb069ea3ac1',
-                'quiz_questions' => $questionsWrap->quiz_questions
+        $items =  $client->post($url, [
+            'attempt' => $questionsWrap->attempt,
+            'validation_token' => 'd8df890b7f282d45649ccc6e4d475daada0c44d2b1a00bcbdf6d9bb069ea3ac1',
+            'quiz_questions' => $questionsWrap->quiz_questions
 
         ]);//$response = $client->request('PUT', $url, ['json' => json_encode($obj)]);
 
@@ -294,7 +294,6 @@ class CanvasHelper
         try
         {
             $items = GuzzleHelper::postData($url);
-
             if(count($items->quiz_submissions)>0)
             {
                 return $this->saveQuizSubmission($items->quiz_submissions[0]);
@@ -323,8 +322,45 @@ class CanvasHelper
         }
 
     }
+
+    public function updateStudentQuizScore($quizId, $quizSubmission, $newQuizScore)
+    {/// PUT api/v1/courses/:course_id/quizzes/:quiz_id/submissions/:id
+        $urlPieces= $this->initUrl();
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $urlArgs = array();
+        $urlPieces[] = 'quizzes';
+        $urlPieces[] = $quizId;
+        $urlPieces[] = 'submissions';
+        $urlPieces[] = $quizSubmission->quiz_submission_id;
+
+        $options = [
+            "attempt"=> $quizSubmission->attempt,
+            "fudge_points"=> 1,
+            "questions"=> [
+                "11472511"=> [
+                    "score"=> 2.5,
+                    "comment"=> "test."
+                ]
+            ]
+        ];
+//        $options =[
+//            'quiz_submissions'  => [
+//                'attempt' => $quizSubmission->attempt,
+//                'fudge_points' => $newQuizScore
+//            ]];
+        $urlArgs[]="access_token={$token}";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+        $updated = GuzzleHelper::putData($url, $options);
+        return $updated;
+    }
+
     public function getQuizzes()
-    {
+    {///api/v1/courses/:course_id/quizzes
         //process quiz
         $quizzes = $this->simpleGet('quizzes');
         if(!isset($_SESSION))
@@ -1625,7 +1661,7 @@ class CanvasHelper
         if(isset($row->all_dates)){$assignment->all_dates = $row->all_dates;}
         if(isset($row->course_id)){$assignment->course_id = $row->course_id;}
         if(isset($row->html_url)){$assignment->html_url = $row->html_url;}
-        if(isset($row->points_possible)){$assignment->points_possible = $row->points_possible;}
+        if(isset($row->points_possible)){$assignment->points_possible = floatval($row->points_possible);}
         if(isset($row->locked_for_user)){$assignment->locked_for_user = $row->locked_for_user;}
         if(isset($row->quiz_id)){$assignment->quiz_id = $row->quiz_id;}
         if(isset($row->additional_info)){$assignment->additional_info = $row->additional_info;}

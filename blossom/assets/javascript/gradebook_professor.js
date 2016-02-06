@@ -4,7 +4,6 @@ var bottomExperienceScores=[];
 //GET DATA FOR THE TOP CHART
 var promise = $.get("gradebook/getAllStudentSubmissions");
 promise.then(function (data1, textStatus, jqXHR) {
-        console.log(data1);
         submissions = data1;
         var inputs = document.getElementsByClassName('checkboxMultiselect');
         for(var i = 0; i < inputs.length; i++) {
@@ -19,20 +18,7 @@ promise.then(function (data1, textStatus, jqXHR) {
         console.log("Unable to retrieve student submissions");
     });
 
-console.log(students);
 callStudentsMilestoneInfo(students);
-
-//GET DATA FOR BOTTOM TABLE
-// var secondPromise = $.get("gradebook/getBottomTableData",{experienceInstanceId:experienceInstanceId});
-// secondPromise.then(function (data, textStatus, jqXHR) {
-// d3.select(".bottomSpinnerDiv").style("display","none");
-// console.log(data);
-// buildTable(data);
-// })
-// .fail(function (data2) {
-// console.log("Unable to retrieve bottom chart data.");
-// });
-
 
 div = d3.select("body").append("div")
     .attr("class", "tooltip")
@@ -119,10 +105,10 @@ g.append("svg:rect")
     .attr("stroke-width", 1.5)
     .attr("class", "todayLine")
     .on("mouseover", function (d) {
-        addTooltip(todayDate.toDateString());
+        addTooltipProfessorGradebook(todayDate.toDateString());
     })
     .on("mouseout", function (d) {
-        removeTooltip();
+        removeTooltipProfessorGradebook();
     });
 
 
@@ -166,13 +152,13 @@ function addLine(data, strokeColor, id)
         .on("mouseover", function (d) {
             if (id != "red")
             {
-                addTooltip(text);
+                addTooltipProfessorGradebook(text);
             }
         })
         .on("mouseout", function (d) {
             if (id != "red")
             {
-                removeTooltip();
+                removeTooltipProfessorGradebook();
             }
         });
 
@@ -206,13 +192,13 @@ function addLine(data, strokeColor, id)
                 var day = date.getDate();
                 var monthIndex = date.getMonth();
                 var time = formatAMPM(date);
-                addTooltip(d.points + " pts earned on " + monthNames[monthIndex] + " " + day + " @ " + time);
+                addTooltipProfessorGradebook(text +" -- "+d.points + " pts earned on " + monthNames[monthIndex] + " " + day + " @ " + time);
             }
         })
         .on("mouseout", function (d) {
             if (id != "red")
             {
-                removeTooltip();
+                removeTooltipProfessorGradebook();
             }
         });
 
@@ -408,7 +394,7 @@ function parseDates(data)
     return data;
 }
 
-function addTooltip(text)
+function addTooltipProfessorGradebook(text)
 {
     div.transition()
         .duration(200)
@@ -418,7 +404,7 @@ function addTooltip(text)
         .style("top", (d3.event.pageY - 28) + "px");
 }
 
-function removeTooltip()
+function removeTooltipProfessorGradebook()
 {
     div.transition()
         .duration(500)
@@ -471,10 +457,10 @@ function addRedLineDots()
             return y(d.points);
         })
         .on("mouseover", function (d) {
-            addTooltip(d.points + " points due " + parseTimestamp(d.date));
+            addTooltipProfessorGradebook(d.points + " points due " + parseTimestamp(d.date));
         })
         .on("mouseout", function (d) {
-            removeTooltip();
+            removeTooltipProfessorGradebook();
         });
 }
 
@@ -499,7 +485,7 @@ function checkboxFunctionality()
 
 function buildTable(data)
 {
-
+    d3.select("#summaryTable").style("display","block");
     var tr = d3.select("#tableBody")
         .selectAll('tr').remove();//Because of the complexity of updating a table, we'll remove the nodes and add them again
     tr = d3.select("#tableBody")
@@ -545,29 +531,34 @@ function buildTable(data)
     tr.append('td')
         .append("input")
         .attr("type","button")
-        .attr("value","Details");
+        .attr("value","Details")
+        .attr("class","btn btn-info btn-lg btn-sm")
+        .attr("data-toggle","modal")
+        .attr("data-target","#modalStudentGradebook")
+        .on('click', function(d){
+            showStudentDetails(d);
+        });
 }
 
 function callStudentsMilestoneInfo(studentsArr)
 {
+    d3.select("#gridContainer").style("display","block");
     var idsArr =[];
     for(var i=0;i<=studentsArr.length-1;i++)
+        // for(var i=0;i<=9;i++)
     {
         var currentStudent = studentsArr[i];
         idsArr.push(currentStudent.user_id);
         if((i!=0)&&(i%10==0))
         {//we'll send requests every 10 students.
 
-            var secondPromise = $.get("gradebook/getSetOfUsersMilestoneInfo",{experienceInstanceId:experienceInstanceId, userIds:(idsArr)});
-            secondPromise.then(function (data, textStatus, jqXHR) {
-                    d3.select(".bottomSpinnerDiv").style("display","none");
-                    console.log(data);
-                    bottomExperienceScores = bottomExperienceScores.concat(data);//append the new data to the old
-                    buildTable(bottomExperienceScores);
-                })
-                .fail(function (data2) {
-                    console.log("Unable to retrieve bottom chart data.");
-                });
+            $.get("gradebook/getSetOfUsersMilestoneInfo",{experienceInstanceId:experienceInstanceId, userIds:(idsArr)},function(data,status,xhr)
+            {
+                d3.select(".bottomSpinnerDiv").style("display","none");
+                console.log(data);
+                bottomExperienceScores = bottomExperienceScores.concat(data);//append the new data to the old
+                buildTable(bottomExperienceScores);
+            });
 
             var idsArr =[];//initialize the array again.
         }
@@ -577,16 +568,42 @@ function callStudentsMilestoneInfo(studentsArr)
     //send a last request with the remaining IDS
     if(idsArr.length>0)
     {
-
-        var secondPromise = $.get("gradebook/getSetOfUsersMilestoneInfo",{experienceInstanceId:experienceInstanceId, userIds:(idsArr)});
-        secondPromise.then(function (data, textStatus, jqXHR) {
-                d3.select(".bottomSpinnerDiv").style("display","none");
-                console.log(data);
-                bottomExperienceScores = bottomExperienceScores.concat(data);//append the new data to the old
-                buildTable(bottomExperienceScores);
-            })
-            .fail(function (data2) {
-                console.log("Unable to retrieve bottom chart data.");
-            });
+        $.get("gradebook/getSetOfUsersMilestoneInfo",{experienceInstanceId:experienceInstanceId, userIds:(idsArr)},function(data,status,xhr)
+        {
+            d3.select(".bottomSpinnerDiv").style("display","none");
+            console.log(data);
+            bottomExperienceScores = bottomExperienceScores.concat(data);//append the new data to the old
+            buildTable(bottomExperienceScores);
+        });
     }
+}
+
+function showStudentDetails(studentSummaryData)
+{
+    d3.select("#gradebook").style("display", "none");
+    d3.select("#spinner").style("display","block");
+    //top table
+    d3.select("#studentTitle").html(studentSummaryData.name);
+    d3.select("#tdExpPoints").html(roundToTwo(studentSummaryData.score));
+    d3.select("#tdBonus").html(roundToTwo(studentSummaryData.bonuses));
+    d3.select("#tdPenalties").html(roundToTwo(studentSummaryData.penalties));
+    d3.select("#tdTotalPoints").html(roundToTwo(studentSummaryData.total));
+
+    //
+    var currGrade = d3.select("#spanCurrentGrade").html(studentSummaryData.grade);
+
+    //get bottom data
+    var userId = studentSummaryData.id;
+    var promise = $.get("getStudentGradebookData",{studentId:userId});
+    promise.then(function (data, textStatus, jqXHR) {
+            d3.select("#spinner").style("display","none");
+            makeTables(data);
+            d3.select("#gradebook").style("display", "block");
+        })
+        .fail(function (data2) {
+        });
+}
+
+function roundToTwo(num) {
+    return +(Math.round(num + "e+2")  + "e-2");
 }

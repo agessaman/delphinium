@@ -24,24 +24,24 @@
 }
 
 .box
-{    
+{
     margin: 10px 5px 0 10px;
     width:20px;
     height:10px;
     border-radius: 5px;
 }
 .green{
-    
+
     background-color:#588238;
 }
 .lightBlue{
-    
-    background-color:#3087B4;
+
+    background-color:#5eacd4;
 }
 .darkBlue{
     background-color:#143D55;
 }
 .gray{
-    
+
     background-color:#8F8F8F;
 }

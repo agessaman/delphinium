@@ -31,13 +31,13 @@
             <td class='imp'>{{(totalPts + bonus + penalties)|round(2, 'common')}}</td>
         </tr>
         <tr id="currentGrade">
-            <th class='imp'>Current Grade <a style="color:#337AB7 !important;"><i id="iGradeTooltip" class="fa fa-question-circle"></i></a></td>
-            <td class='imp'>{{letterGrade}}</td>
+            <th class='imp'>Current Grade</td>
+            <td class='imp'>{{letterGrade}} <a style="color:#337AB7 !important;font-size:20px;"><i id="iGradeTooltip" class="fa fa-question-circle"></i></a></td>
         </tr>
         </tbody>
     </table>
 </div>
-<div class="gradebook" id="gradebook" style="text-align:center">
+<div class="gradebook" id="gradebook" style="text-align:center;">
     <div id="spinner">
         <span id="bottomSpinner" class="icon-refresh icon-spin icon-3x icon-fw margin-bottom"></span>
     </div>

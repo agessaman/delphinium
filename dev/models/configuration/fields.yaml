@@ -38,3 +38,8 @@ fields:
         label: Timezone
         span: auto
         comment: Enter the timezone
+
+    Roles:
+        label: Roles
+        span: auto
+        comment: Enter the role (if there is more than one use commas to separate them)

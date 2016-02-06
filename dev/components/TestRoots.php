@@ -35,6 +35,21 @@ class TestRoots extends ComponentBase
     public $roots;
     public $canvasHelper;
     public $dbHelper;
+	
+	/***********************************
+		holds function result after onRun
+		currently only:$this->testGettingSingleAssignment();
+		$this->page['thePages']=$results;// available to twig!
+		//https://octobercms.com/docs/plugin/components
+	*/
+	public $results;// TJones
+	/*TJones: usage in main page: {{ testRoots.showResults }} */
+    public function showResults()
+	{
+		global $results;
+		return $results;
+	}
+	/***********************************/
     public function componentDetails()
     {
         return [
@@ -42,14 +57,14 @@ class TestRoots extends ComponentBase
             'description' => 'This component will test the Roots API'
         ];
     }
-    
+    // global $results ?
     public function onRun()
     {  
         $this->roots = new Roots();
         $this->canvasHelper = new CanvasHelper();
         $this->dbHelper = new DbHelper();
 //        $this->refreshCache();
-//        $this->test();
+        $this->test();// empty
 //        $this->testBasicModulesRequest();
 //        $this->testDeleteTag();
 //        $this->testAddingUpdatingTags();
@@ -63,7 +78,7 @@ class TestRoots extends ComponentBase
 //        $this->testAddingModuleItem();
 //        
 //        $this->testingGettingAssignments();
-//        $this->testGettingSingleAssignment();
+		$this->testGettingSingleAssignment();//1660430;//theAssignment
         
 //        $this->testAssignmentGroups();
 //        $this->testSingleAssignmentGroup();
@@ -81,11 +96,11 @@ class TestRoots extends ComponentBase
 //        $this->testGetCourse();
 //        $this->testGetAccount();
 //        $this->testGetEnrollments();
-//        $this->testGetQuiz();
+       $this->testGetQuiz();// aQuiz
 //        $this->testGetQuizQuestions();
-//        $this->testGetAllQuizzes();
+ ///       $this->testGetAllQuizzes();//'allQuizzes' curlFactory Err:  return function ($ch, $h) use (
 //        $this->testGetPages();
-        $this->testQuizTakingWorkflow();
+//        $this->testQuizTakingWorkflow();
 //        $this->testIsQuestionAnswered();
 //        $this->testSubmitQuiz();
     }
@@ -276,12 +291,20 @@ class TestRoots extends ComponentBase
     
     private function testGettingSingleAssignment()
     {
-        $assignment_id = 1660430;
+        $assignment_id = 1660430;//id//theAssignment
         $freshData = false;
         $includeTags = true;
         $req = new AssignmentsRequest(ActionType::GET, $assignment_id, $freshData, null, $includeTags);
-        $res = $this->roots->assignments($req);
-        echo json_encode($res);
+      $res = json_encode($this->roots->assignments($req));
+		//test obj as json || or store a global $Results ?
+		echo "<p>";
+        echo $res;// or // return json_encode($res);
+		echo " json encoded</p>";
+		//Tjones:
+		$this->page['theAssignment']=$res;// available to twig!
+		//https://octobercms.com/docs/plugin/components
+		global $results;
+		$results=$res;// stored global testRoots.showResults
     }
     
     private function testAssignmentGroups()
@@ -556,24 +579,32 @@ class TestRoots extends ComponentBase
     
     public function testGetAllQuizzes()
     {
-//        $req = new QuizRequest(ActionType::GET, null, $fresh_data = false, true);
         $req = new QuizRequest(ActionType::GET, null, $fresh_data = true, true);
         echo json_encode($this->roots->quizzes($req));
+		$this->page['allQuizzes']=$req;// available to twig!
     }
     public function testGetQuiz()
     {   
-        $req = new QuizRequest(ActionType::GET, 464878, $fresh_data = true, true);
-        $result = $this->roots->quizzes($req);
+        $req = new QuizRequest(ActionType::GET, 621794, $fresh_data = false, true);
+        $result = $this->roots->quizzes($req);//623912 ,true
+		//test obj NOTjson single T/F question
+		echo "<p>";
         echo json_encode($result);
+		echo "<em> NOT json</em></p>";
+		$this->page['aQuiz']=$result;// available to twig!
     }
     public function testGetPages()
     {
-        echo json_encode($this->roots->getPages());
+        $results = json_encode($this->roots->getPages());
+		echo $results;
+		echo "<hr/>";
+		$this->page['thePages']=$results;// available to twig!
+		//https://octobercms.com/docs/plugin/components
     }
     
     public function testGetQuizQuestions()
     {
-        $req = new QuizRequest(ActionType::GET, 621540, false, true);
+        $req = new QuizRequest(ActionType::GET, 623912, false, true);
         $result = $this->roots->quizzes($req);
         
         echo json_encode($result);
@@ -591,10 +622,11 @@ class TestRoots extends ComponentBase
     }
     public function testQuizTakingWorkflow()
     {
-        $quizId = 655691;
-        $questionId = 11464509;
+        $quizId = 656063;
+        $questionId = 11472511;
         
         $quizSubmission = $this->roots->getQuizSubmission($quizId);
+
         if(is_null($quizSubmission))
         {//it wasn't on canvas or in the db -- create a new submission
             
@@ -605,51 +637,58 @@ class TestRoots extends ComponentBase
 //        echo json_encode($quizSubmission);
         //get the question and see if it's answered
         $isAnswered = $this->roots->isQuestionAnswered($quizId, $questionId, $quizSubmission->quiz_submission_id);
-        
-        if($isAnswered){
-            echo "was answered";//do something if the question has been answered
-        }
-        else
-        {//answer it. Still working on this
-//            echo "was not answered";
-//            $quizQuestion = $this->roots->getQuizQuestion($quizId, $questionId);
 
-            $questionsWrap = new \stdClass();
-            $questionsWrap->attempt = $quizSubmission->attempt;
-            $questionsWrap->validation_token =  $quizSubmission->validation_token;
 
-            $quizQuestionsArr = array();
-
-            $answersArr = array();
-            $answer = new \stdClass();
-            $answer->id = $questionId;
-            $answer->answer = 'True';
-            $answersArr[] = $answer;
-
-            $questionsWrap->quiz_questions = $answersArr;
+//        $canvas = new CanvasHelper();
+//        $result = $canvas->updateStudentQuizScore($quizId, $quizSubmission, 2);
 //
-//            echo json_encode($questionsWrap);
-//  
-//              //the "answer" will vary between question types
-//            switch(strtolower($quizQuestion->type))
-//            {
-//                case "text":
-//                    break;
-//                case "multiple_choice_question":
-//                    $answer->answer = 1;
-//                    break;
-//
-//            }
-//
-//            $questionsWrap[] = $answer;
-//            //answer question
-//
+//        echo json_encode($result);return;
 
 
-
-            $result =$this->canvasHelper->postAnswerQuestion($quizSubmission, $questionsWrap);
-//            echo json_encode($result);
-        }
+//        if($isAnswered){
+//            echo "was answered";//do something if the question has been answered
+//        }
+//        else
+//        {//answer it. Still working on this
+////            echo "was not answered";
+////            $quizQuestion = $this->roots->getQuizQuestion($quizId, $questionId);
+//
+//            $questionsWrap = new \stdClass();
+//            $questionsWrap->attempt = $quizSubmission->attempt;
+//            $questionsWrap->validation_token =  $quizSubmission->validation_token;
+//
+//            $quizQuestionsArr = array();
+//
+//            $answersArr = array();
+//            $answer = new \stdClass();
+//            $answer->id = $questionId;
+//            $answer->answer = 'True';
+//            $answersArr[] = $answer;
+//
+//            $questionsWrap->quiz_questions = $answersArr;
+////
+////            echo json_encode($questionsWrap);
+////
+////              //the "answer" will vary between question types
+////            switch(strtolower($quizQuestion->type))
+////            {
+////                case "text":
+////                    break;
+////                case "multiple_choice_question":
+////                    $answer->answer = 1;
+////                    break;
+////
+////            }
+////
+////            $questionsWrap[] = $answer;
+////            //answer question
+////
+//
+//
+//
+////            $result =$this->canvasHelper->postAnswerQuestion($quizSubmission, $questionsWrap);
+////            echo json_encode($result);
+//        }
         
         //submit the quiz
 //        $res = $this->roots->postTurnInQuiz($quizId, $quizSubmission);
@@ -704,68 +743,6 @@ class TestRoots extends ComponentBase
     
     public function test()
     {
-        $req = new SubmissionsRequest(ActionType::GET, array(), true, array(), true, true, true, false, true);
-        $result = $this->roots->submissions($req);
-
-        
-//        echo json_encode($result);
-        
-//https://uvu.instructure.com/api/v1/courses/381983/students/submissions?student_ids%5B%5D=483474&student_ids%5B%5D=944587&student_ids%5B%5D=1576866&student_ids%5B%5D=553940&student_ids%5B%5D=1241607&student_ids%5B%5D=1463096&student_ids%5B%5D=890679&student_ids%5B%5D=1529330&student_ids%5B%5D=488472&student_ids%5B%5D=771735&student_ids%5B%5D=547197&student_ids%5B%5D=539445&student_ids%5B%5D=741224&student_ids%5B%5D=554968&student_ids%5B%5D=1485016&student_ids%5B%5D=471788&student_ids%5B%5D=798500&student_ids%5B%5D=512347&student_ids%5B%5D=557699&student_ids%5B%5D=462755&student_ids%5B%5D=485519&student_ids%5B%5D=480907&student_ids%5B%5D=469426&student_ids%5B%5D=491649&student_ids%5B%5D=944587&student_ids%5B%5D=1576866&student_ids%5B%5D=553940&student_ids%5B%5D=1241607&student_ids%5B%5D=1463096&student_ids%5B%5D=890679&student_ids%5B%5D=1529330&student_ids%5B%5D=488472&student_ids%5B%5D=771735&student_ids%5B%5D=547197&student_ids%5B%5D=539445&student_ids%5B%5D=741224&student_ids%5B%5D=554968&student_ids%5B%5D=1485016&student_ids%5B%5D=471788&student_ids%5B%5D=798500&student_ids%5B%5D=512347&student_ids%5B%5D=557699&student_ids%5B%5D=462755&student_ids%5B%5D=485519&student_ids%5B%5D=480907&student_ids%5B%5D=469426&student_ids%5B%5D=491649&grouped=true&access_token=14~DQbVNTYt3E8djaiyUGckBdbPwAoGqHgIK5UYyIJBciFRikr38wSDXScgeqWGCShL&per_page=5000
-
-//        $quizId = 623422;
-//        $questionId = 10897397;
-//        $canvasHelper = new CanvasHelper();
-//        $dbHelper = new DbHelper();
-//        $res = $canvasHelper->postQuizTakingSession($quizId);
-//        
-//        echo json_encode($res);
-            
-        
-        
-        
-        
-//        $canvasHelper->getQuizSubmissionsFromCanvas($quizId);
-        
-//        $req = new ModulesRequest(ActionType::GET, 380206, null, true, true, null, null , false);
-//        $db = new \Delphinium\Roots\DB\DbHelper();
-//        $res = $db->getModuleData($req);
-//        
-//        echo json_encode($res);
-        
-        
-        
-        
-        
-        
-        
-//        $this->convertDatesUTCLocal();
-//        $now = new DateTime(date("Y-m-d"));
-//        echo json_encode($now);
-//        
-//        
-//        
-//        $rb = new RuleBuilder;
-//
-//        $bonus_90 = $rb->create('current_user_submissions', 'submission',
-//        $rb['submission']['score']->greaterThan($rb['score_threshold']),
-//        [
-//            $rb['(bonus)']->assign($rb['(bonus)']->add($rb['points']))
-//        ]);
-//        
-//        $rb['(bonus)'] = 0;
-//        $rb['submission']['score'] = 0;
-//        $rb['score_threshold'] = 0;
-//        $rb['point'] = 0;
-//
-//        $rg = new RuleGroup('submissionstest');
-//        $rg->add($bonus_90);
-//        $rg->saveRules();
-        
-//        $manager = ComponentManager::instance();
-//       echo json_encode($manager->listComponents());
-        
-        
-
     }
     
 }

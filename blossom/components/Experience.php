@@ -147,6 +147,21 @@ class Experience extends ComponentBase {
             echo "In order for experience to work properly you must be a student, or go into 'Student View'";
             return;
         }
+        catch(Delphinium\Roots\Exceptions\NonLtiException $e)
+        {
+            if($e->getCode()==584)
+            {
+                return \Response::make($this->controller->run('nonlti'), 500);
+            }
+        }
+        catch(\Exception $e)
+        {
+            if($e->getMessage()=='Invalid LMS')
+            {
+                return \Response::make($this->controller->run('nonlti'), 500);
+            }
+            return \Response::make($this->controller->run('error'), 500);
+        }
     }
 
     public function getRedLinePoints($experienceInstanceId) {//only deal with UTC dates. The model will return the date in the user's timezone, but we'll convert it to UTC
@@ -220,9 +235,10 @@ class Experience extends ComponentBase {
 
     }
 
-    public function userClearedMilestones($localMilestonesOrderedByPointsDesc, $userSubmissionsOrderedByDate, $ptsPerSecond, $stDateUTC,$endDateUTC, $bonusPerSecond, $bonusSeconds,
+    public function userClearedMilestones($milestonesOrderedByPointsDesc, $userSubmissionsOrderedByDate, $ptsPerSecond, $stDateUTC,$endDateUTC, $bonusPerSecond, $bonusSeconds,
                                           $penaltyPerSecond, $penaltySeconds)
     {
+        $localMilestonesOrderedByPointsDesc = clone $milestonesOrderedByPointsDesc;
         $milestoneInfo = array();
         $carryingScore = 0;
         foreach ($userSubmissionsOrderedByDate as $submission) {

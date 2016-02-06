@@ -41,52 +41,74 @@ class Grade extends ComponentBase {
 
     public function onRun()
     {
-        if(!is_null($this->property('experienceInstance')))
+        try
         {
-            $instance = ExperienceModel::find($this->property('experienceInstance'));
-            $maxExperiencePts = $instance->total_points;
-
-
-            $exComp = new ExperienceComponent();
-            $exComp->initVariables($this->property('experienceInstance'));
-            $points = $exComp->getUserPoints();
-
-            $roots = new Roots();
-            $standards = $roots->getGradingStandards();
-            $grading_scheme = $standards[0]->grading_scheme;
-            $bonusPenaltiesObj = $exComp->calculateTotalBonusPenalties($this->property('experienceInstance'));
-            $totalBonusPenalties = ($bonusPenaltiesObj->bonus)+($bonusPenaltiesObj->penalties);//penalties come with negative sign
-
-            $totalPoints = $points +$bonusPenaltiesObj->bonus + $bonusPenaltiesObj->penalties;
-            $letterGrade = $this->getLetterGrade($totalPoints, $maxExperiencePts, $grading_scheme);
-
-            //modify grading scheme for display to users
-            foreach($grading_scheme as $grade)
+            if(!is_null($this->property('experienceInstance')))
             {
-                $grade->value = $grade->value * $maxExperiencePts;
+                $instance = ExperienceModel::find($this->property('experienceInstance'));
+                $maxExperiencePts = $instance->total_points;
+
+
+                $exComp = new ExperienceComponent();
+                $exComp->initVariables($this->property('experienceInstance'));
+                $points = $exComp->getUserPoints();
+
+                $roots = new Roots();
+                $standards = $roots->getGradingStandards();
+                $grading_scheme = $standards[0]->grading_scheme;
+                $bonusPenaltiesObj = $exComp->calculateTotalBonusPenalties($this->property('experienceInstance'));
+                $totalBonusPenalties = ($bonusPenaltiesObj->bonus)+($bonusPenaltiesObj->penalties);//penalties come with negative sign
+
+                $totalPoints = $points +$bonusPenaltiesObj->bonus + $bonusPenaltiesObj->penalties;
+                $letterGrade = $this->getLetterGrade($totalPoints, $maxExperiencePts, $grading_scheme);
+
+                //modify grading scheme for display to users
+                foreach($grading_scheme as $grade)
+                {
+                    $grade->value = $grade->value * $maxExperiencePts;
+                }
+                $this->page['grading_scheme'] = json_encode($grading_scheme);
+
+
+                $this->page['XP'] = round($points,2);
+                $this->page['gradeBonus'] = round($totalBonusPenalties,2);
+                $this->page['letterGrade'] = $letterGrade;
             }
-            $this->page['grading_scheme'] = json_encode($grading_scheme);
+            else
+            {
+                $this->page['XP'] = 0;
+                $this->page['gradeBonus'] = 0;
+                $this->page['letterGrade'] = "F";
+            }
 
+            //todo: get the bonus, etc from blade, not from experience
+            $size = $this->property('size');
+            $this->page['gradeSize'] = $size;
 
-            $this->page['XP'] = round($points,2);
-            $this->page['gradeBonus'] = round($totalBonusPenalties,2);
-            $this->page['letterGrade'] = $letterGrade;
+            $this->addJs("/plugins/delphinium/blossom/assets/javascript/grade.js");
+            $this->addCss("/plugins/delphinium/blossom/assets/css/animate.css");
+            $this->addCss("/plugins/delphinium/blossom/assets/css/grade.css");
+            $this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
+
         }
-        else
+        catch (\GuzzleHttp\Exception\ClientException $e) {
+            return;
+        }
+        catch(Delphinium\Roots\Exceptions\NonLtiException $e)
         {
-            $this->page['XP'] = 0;
-            $this->page['gradeBonus'] = 0;
-            $this->page['letterGrade'] = "F";
+            if($e->getCode()==584)
+            {
+                return \Response::make($this->controller->run('nonlti'), 500);
+            }
         }
-
-        //todo: get the bonus, etc from blade, not from experience
-        $size = $this->property('size');
-        $this->page['gradeSize'] = $size;
-
-        $this->addJs("/plugins/delphinium/blossom/assets/javascript/grade.js");
-        $this->addCss("/plugins/delphinium/blossom/assets/css/animate.css");
-        $this->addCss("/plugins/delphinium/blossom/assets/css/grade.css");
-        $this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
+        catch(\Exception $e)
+        {
+            if($e->getMessage()=='Invalid LMS')
+            {
+                return \Response::make($this->controller->run('nonlti'), 500);
+            }
+            return \Response::make($this->controller->run('error'), 500);
+        }
     }
 
     public function getExperienceInstanceOptions()

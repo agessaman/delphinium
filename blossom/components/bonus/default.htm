@@ -4,7 +4,7 @@
 	var bonusSize = {{bonusSize}};
 </script>
 {% if ('Learner' in role) %}
-	{% partial 'bonus::studentView' %}
-{% elseif ('Instructor' in userRoles or 'TeachingAssistant' in userRoles) %}
-	{% partial 'bonus::instructorView' %}
+{% partial 'bonus::studentView' %}
+{% elseif ('Instructor' in role or 'TeachingAssistant' in role) %}
+{% partial 'bonus::instructorView' %}
 {% endif %}

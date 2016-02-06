@@ -10,7 +10,7 @@ class Leaderboard extends ComponentBase
     {
         return [
             'name'        => 'Leaderboard',
-            'description' => 'Shows where student sits compaired to others in the class'
+            'description' => 'Shows where student sits compared to others in the class'
         ];
     }
 
@@ -18,7 +18,7 @@ class Leaderboard extends ComponentBase
     {
         return [
             'Instance' => [
-                 'title'             => 'Instance',
+                'title'             => 'Instance',
                 'description'       => 'Select the Instance',
                 'type'              => 'dropdown',
             ]
@@ -27,9 +27,30 @@ class Leaderboard extends ComponentBase
 
     public function onRun()
     {
-        $this->addJs("/plugins/delphinium/blossom/assets/javascript/leaderboard.js");
-        $this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
-        $this->addCss("/plugins/delphinium/blossom/assets/css/leaderboard.css");
+        try
+        {
+            $this->addJs("/plugins/delphinium/blossom/assets/javascript/leaderboard.js");
+            $this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
+            $this->addCss("/plugins/delphinium/blossom/assets/css/leaderboard.css");
+        }
+        catch (\GuzzleHttp\Exception\ClientException $e) {
+            return;
+        }
+        catch(Delphinium\Roots\Exceptions\NonLtiException $e)
+        {
+            if($e->getCode()==584)
+            {
+                return \Response::make($this->controller->run('nonlti'), 500);
+            }
+        }
+        catch(\Exception $e)
+        {
+            if($e->getMessage()=='Invalid LMS')
+            {
+                return \Response::make($this->controller->run('nonlti'), 500);
+            }
+            return \Response::make($this->controller->run('error'), 500);
+        }
     }
 
     public function getInstances()
