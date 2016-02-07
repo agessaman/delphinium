@@ -132,7 +132,7 @@ for each tagged get assignment points_possible
     // all data or competenciesCount
 	for (var i = 0; i < data.length; i++) {
 		competencies.append('text')
-			.text(data[i].name+' '+data[i].percent+'%')
+			.text(data[i].name)
             .attr('font-size', '1em')
 			.attr('y', i * 50 + 10);
         // grid lines for each - behind the transparent fill
@@ -191,6 +191,6 @@ for each tagged get assignment points_possible
                 .attr('x', 10)
                 .attr('y', i*50+35);
 		*/
-	};
+	}
 });
 
