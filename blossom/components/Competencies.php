@@ -1,38 +1,10 @@
 <?php namespace Delphinium\Blossom\Components;
 
-use Delphinium\Roots\UpdatableObjects\Module;
-use Delphinium\Roots\UpdatableObjects\ModuleItem;
-use Delphinium\Roots\Models\Assignment;
-use Delphinium\Roots\Models\ModuleItem as DbModuleItem;
-use Delphinium\Roots\Models\Quizquestion;
-use Delphinium\Roots\Roots;
-use Delphinium\Roots\Utils;
-use Delphinium\Roots\Requestobjects\SubmissionsRequest;
-use Delphinium\Roots\Requestobjects\ModulesRequest;
-use Delphinium\Roots\Requestobjects\AssignmentsRequest;
-use Delphinium\Roots\Requestobjects\QuizRequest;
-use Delphinium\Roots\Requestobjects\AssignmentGroupsRequest;
-use Delphinium\Roots\Enums\ActionType;
-use Delphinium\Roots\Enums\ModuleItemType;
-use Delphinium\Roots\Enums\CompletionRequirementType;
-use Delphinium\Roots\DB\DbHelper;
-use Delphinium\Roots\Lmsclasses\CanvasHelper;
 use Cms\Classes\ComponentBase;
-use \DateTime;
-use \DateTimeZone;
-use GuzzleHttp\Client;
-use GuzzleHttp\Post\PostFile;
-use Delphinium\Iris\Components\Iris;
-use Cms\Classes\ComponentManager;
-use \Delphinium\Blade\Classes\Rules\RuleBuilder;
-use \Delphinium\Blade\Classes\Rules\RuleGroup;
-use Delphinium\Roots\Guzzle\GuzzleHelper;
-use Delphinium\Blossom\Components\Grade;
-use Delphinium\Blossom\Components\Experience;
-
-/* additional from Stem Manager */
-use Delphinium\Stem\Classes\ManagerHelper as IrisClass;
-use Delphinium\Roots\Enums\Lms;
+use Delphinium\Roots\Roots;
+use Delphinium\Roots\Enums\ActionType;
+use Delphinium\Roots\Requestobjects\SubmissionsRequest;
+use Delphinium\Roots\Requestobjects\AssignmentsRequest;
 
 class Competencies extends ComponentBase
 {
@@ -76,7 +48,7 @@ class Competencies extends ComponentBase
     {
         $this->page['competencies'] = $this->property('Competencies');
         $this->page['competenciesAnimate'] = $this->property('Animate');
-        $this->page['competenciesSize'] = $this->property('Size');// err Medium is not defined
+        $this->page['competenciesSize'] = $this->property('Size');
     }
 
     public function onRun()
@@ -90,26 +62,22 @@ class Competencies extends ComponentBase
 
 			/*get Assignments & submissions ******************
 				data N/A if DevConfig Instructor  MUST BE Student
-				add: if instructor chooses a student?
-				EX:SubmissionsRequest($actionType, array $studentIds = null, $allStudents = false, array $assignmentIds = array(),
-				$allAssignments = false, $multipleStudents = false, $multipleAssignments = false, $includeTags = false, $grouped = false)
+				add: Instructor can choose a student?
 			**************************************************/
 			$roots = new Roots();
 			$req = new AssignmentsRequest(ActionType::GET);
 			$res = $roots->assignments($req);
 
-			$assignmentIds = array();// for submissions
+			$assignmentIds = array();// for submissionsRequest
 			$assignments = array();// for points_possible
 			foreach ($res as $assignment) {
 				array_push($assignmentIds, $assignment["assignment_id"]);
 				array_push($assignments, $assignment);
 			}
-			//$this->page['assignmentIds']=json_encode($assignmentIds);//UNUSED
 			$this->page['assignments']=json_encode($assignments);
 
-			$studentIds = ['1604486'];//null;//['1505562'];//Test Student
+			$studentIds = null;//['1604486'];//Test Student
 			$allStudents = true;
-				//$assignmentIds = array();//above
 			$allAssignments = true;
 			$multipleStudents = false;
 			$multipleAssignments = true;
