@@ -87,7 +87,6 @@ class GuzzleHelper
 
     public static function postDataWithParamsCurl($url, $params, $token, $action = 'POST')
     {
-//        echo json_encode($params);return;
         $data_string = json_encode($params);
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_POST,true);
@@ -101,6 +100,7 @@ class GuzzleHelper
         ));
 
         $result = curl_exec($ch);
+        curl_close($ch);
         return $result;
     }
 
