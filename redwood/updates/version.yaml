@@ -1,0 +1,6 @@
+1.0.1:
+    - First version of Redwood
+    - create_pm_credentials_table.php
+1.0.2:
+    - Add authorization table
+    - create_pm_authorization_table.php
