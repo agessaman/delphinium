@@ -125,7 +125,7 @@ class RedwoodRoots
         $workspace = $_SESSION['workspace'];
         $pmServer = $_SESSION['pm_server'];
         $accessToken = \Crypt::decrypt($_SESSION['encrypted_access_token']);
-//echo $accessToken;
+
         if (empty($accessToken) and isset($_COOKIE['access_token']))
             $accessToken = $_COOKIE['access_token'];
 
