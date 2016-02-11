@@ -644,7 +644,7 @@ class Gradebook extends ComponentBase {
         }
         $userObj->bonuses = $obj->bonus;
         $userObj->penalties = $obj->penalties;
-        $userObj->totalBP = $obj->bonus-$obj->penalties;
+        $userObj->totalBP = $obj->bonus+$obj->penalties;
         $userObj->score = $carryingScore;
         $totalPoints = $carryingScore + $obj->bonus + $obj->penalties;
         $userObj->total = $totalPoints;
