@@ -163,7 +163,22 @@ class LtiConfiguration extends ComponentBase {
                 if(is_null($user))
                 {//get all students from Canvas
                     $roots = new Roots();
-                    $roots->getStudentsInCourse();
+                    $users = $roots->getStudentsInCourse();
+
+                }
+
+
+                $users = $roots->getStudentsInCourse();
+                $aliases = $this->getAliases();
+                //this is where we will update the alias of the user
+                for($i=0;$i<=count($users);$i++)
+                {
+                    $user = $users[$i];
+                    if(is_null($user->alias))
+                    {
+                        $user->alias = $aliases[$i];
+                        $user->save();
+                    }
                 }
 
                 //Also, every so often (every 12 hrs?) we will check to make sure that students who have dropped the class are deleted from the users_course table
@@ -200,6 +215,12 @@ class LtiConfiguration extends ComponentBase {
         }
     }
 
+    private function getAliases()
+    {
+        $url="plugins/delphinium/roots/assets/js/companies.json";
+        $json = file_get_contents($url);
+        return json_decode($json);
+    }
     function redirect($url) {
         echo '<script type="text/javascript">';
         echo 'window.location.href="' . $url . '";';
