@@ -2,7 +2,6 @@
 
 use Schema;
 use October\Rain\Database\Updates\Migration;
-use Delphinium\Roots\Models\User;
 
 class ModifyUsersTable extends Migration
 {
