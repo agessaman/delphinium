@@ -1278,7 +1278,15 @@ class CanvasHelper
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
 
         $data = GuzzleHelper::getAsset($url);
-        $userObj = $this->saveUser($data->id, $data->name, $data->sortable_name,$data->sis_login_id);
+
+        if(isset($data->sis_login_id))
+        {
+            $userObj = $this->saveUser($data->id, $data->name, $data->sortable_name, $data->sis_login_id);
+        }
+        else
+        {
+            $userObj = $this->saveUser($data->id, $data->name, $data->sortable_name);
+        }
         return $userObj;
     }
     public function getUserEnrollments()
@@ -1891,6 +1899,10 @@ class CanvasHelper
 
         foreach($data as $row)
         {
+            if(!isset($row->sis_login_id))//test students don't have a sis_login_id
+            {
+                continue;
+            }
             $this->saveUser($row->id, $row->name, $row->sortable_name, $row->sis_login_id);
 
             $userCourse = UserCourse::firstOrNew(array('user_id' => $row->id, 'course_id' => $courseId));
@@ -1905,13 +1917,13 @@ class CanvasHelper
         return $arr;
     }
 
-    private function saveUser($userId, $name, $sortableName,$sis_login_id, $avatar = null)
+    private function saveUser($userId, $name, $sortableName, $sis_login_id=null, $avatar = null)
     {
         $user = User::firstOrNew(array('user_id' => $userId));
         $user->user_id = $userId;
         $user->name = $name;
         $user->sortable_name = $sortableName;
-        $user->sis_login_id = $sis_login_id;
+        if(!is_null($sis_login_id)){$user->sis_login_id = $sis_login_id;}
         if(!is_null($avatar)){$user->avatar = $avatar;}
         $user->save();
 
