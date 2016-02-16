@@ -327,7 +327,7 @@ class CanvasHelper
             "attempt"=> $quizSubmission->attempt,
             "fudge_points"=> $totalPointsToFudge,
             "questions"=> [$questions]
-            ])
+        ])
         ];
         $urlArgs[]="access_token={$token}";
 
@@ -369,8 +369,8 @@ class CanvasHelper
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
 //        try{
-            $results = GuzzleHelper::getAsset($url);
-            return ($results);
+        $results = GuzzleHelper::getAsset($url);
+        return ($results);
 //        }catch (\GuzzleHttp\Exception\ClientException $e)
 //        {
 //            $code = $e->getCode();

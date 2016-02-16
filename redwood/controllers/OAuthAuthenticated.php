@@ -28,14 +28,14 @@ class OAuthAuthenticated extends Controller
                 if (!isset($_SESSION)) {
                     session_start();
                 }
-                $_SESSION['pm_workspace'] =$workspace;
 
                 $baseUrl = Config::get('app.url', 'backend');
                 $parts =  parse_url($baseUrl);
                 $host = $parts['host'];
                 $workspace = "workflow";
-                $pmServer = "http://{$host}:8080/{$workspace}";
+                $pmServer = "http://{$host}:8080";
 
+                $_SESSION['pm_workspace'] =$workspace;
                 $_SESSION['pm_server'] = $pmServer;
                 $credentials = OAuthModel::find($credentialsId);
                 //TODO: where do we parameterize these urls
@@ -80,8 +80,8 @@ class OAuthAuthenticated extends Controller
                     $authorization->scope = $result->scope;
                     $authorization->save();
 
-                    $_SESSION['encrypted_access_token'] =$encryptedAccessToken;
-                    $_SESSION['encrypted_refresh_token'] =  $encryptedRefreshToken;
+                    $_SESSION['pm_encrypted_access_token'] =$encryptedAccessToken;
+                    $_SESSION['pm_encrypted_refresh_token'] =  $encryptedRefreshToken;
                 }
             }
 

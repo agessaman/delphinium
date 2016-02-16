@@ -94,9 +94,9 @@ class GuzzleHelper
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                'Content-Type: application/json',
-                'Content-Length: ' . strlen($data_string),
-                'Authorization: Bearer '.$token
+            'Content-Type: application/json',
+            'Content-Length: ' . strlen($data_string),
+            'Authorization: Bearer '.$token
         ));
 
         $result = curl_exec($ch);

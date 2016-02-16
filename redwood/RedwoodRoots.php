@@ -1,15 +1,112 @@
 <?php namespace Delphinium\Redwood;
 
+
+use Config;
+use Delphinium\Redwood\Exceptions\InvalidRequestException;
+
 class RedwoodRoots
 {
-    //todo: figure out logic for when the token needs to be refreshed
-    function __construct()
-    {
 
+    public function getUsers($canvas_user_id=null)
+    {//GET /api/1.0/{workspace}/users?filter={filter}&start={start}&limit={limit}
+        $endpoint = "users";
+        $params = null;
+        $returnArr =array();
+        if (!is_null($canvas_user_id)) {
+            $params = array(
+                'filter'    => $canvas_user_id
+            );
+        }
+        $users = $this->pmRestRequest("GET", $endpoint, $params);
+        if(is_null($canvas_user_id))
+        {
+            if(is_array($users)){return $users;}
+            else{
+                array_push($returnArr,$users);
+                return $returnArr;
+            }
+        }
+        else{
+            foreach($users as $user)
+            {
+                if($user->usr_username==strval($canvas_user_id))
+                {
+                    array_push($returnArr,$user);
+                }
+            }
+            return $returnArr;
+        }
+    }
+
+    /**
+     * @param null $pm_dep_uid = the uid of a process maker department
+     * @param null $canvas_course_id = The id of a canvas course
+     * @return array an array with the requested department, or an empty array if no matches were found
+     * @throws Exception
+     * @throws InvalidRequestException
+     */
+    public function getDepartments($pm_dep_uid = null, $canvas_course_id=null)
+    {//GET /api/1.0/{workspace}/departments
+        $endpoint = "departments";
+        $returnArr = array();
+        if (!is_null($pm_dep_uid)) {
+            $endpoint = "{$endpoint}/{$pm_dep_uid}";
+        }
+        $departments = $this->pmRestRequest("GET", $endpoint);
+        if(is_null($canvas_course_id))
+        {
+            if(is_array($departments)){return $departments;}
+            else{
+                array_push($returnArr,$departments);
+                return $returnArr;
+            }
+        }
+        else
+        {
+            foreach($departments as $department)
+            {
+                if($department->dep_title===strval($canvas_course_id))
+                {
+                    array_push($returnArr,$department);
+                }
+            }
+            return $returnArr;
+        }
+    }
+
+    public function getGroups($group_title=null)
+    {//GET /api/1.0/{workspace}/groups?filter={filter}&start={start}&limit={limit}
+        $endpoint = "groups";
+        $params = null;
+        $returnArr = array();
+        if (!is_null($group_title)) {
+            $params = array(
+                'filter'    => $group_title
+            );
+        }
+
+        $groups= $this->pmRestRequest("GET", $endpoint, $params);
+        if(is_null($group_title))
+        {
+            if(is_array($groups)){return $groups;}
+            else{
+               array_push($returnArr,$groups);
+            }
+        }
+        else{
+            foreach($groups as $item)
+            {
+                if($item->grp_title===strval($group_title))
+                {
+                    array_push($returnArr,$item);
+                }
+            }
+            return $returnArr;
+        }
     }
 
     /*
-     * @param $unique_department_name The name of the department. Must be unique
+     * @param $unique_department_name The name of the department. Must be unique. By convention we will use the courseID as department name
      * @param null $department_parent Optional: Parent department's unique ID
      * @param null $department_manager Optional: Department supervisor's unique ID
      * @param $department_status Optional: Department status, which can be "ACTIVE" or "INACTIVE". If not included, then "ACTIVE" by default.
@@ -18,13 +115,6 @@ class RedwoodRoots
      */
     public function createDepartment($unique_department_name, $department_parent = null, $department_manager = null, $department_status = null)
     {//POST /api/1.0/{workspace}/department
-        if(!isset($_SESSION))
-        {
-            session_start();
-        }
-        $workspace = $_SESSION['workspace'];
-        $pmServer = $_SESSION['pm_server'];
-        $url= "{$pmServer}/department";
 
         $postParams = array(
             'dep_title'    => $unique_department_name,
@@ -33,85 +123,53 @@ class RedwoodRoots
             'dep_status' => $department_status
         );
 
-        try
-        {
-            $result = $this->postRequest($url,$postParams);
-            return $result;
-        }
-        catch(Exception $e)
-        {
-            echo json_encode($e->getMessage());
-        }
+        $result = $this->pmRestRequest("POST", "department", $postParams);
+        return $result;
     }
 
-    public function getUsers()
-    {//GET /api/1.0/{workspace}/users?filter={filter}&start={start}&limit={limit}
+    /**
+     * @param $group_title The title of the group (must be the assignment Id)
+     * @return mixed The group that was just created
+     * @throws Exception
+     * @throws InvalidRequestException
+     */
 
-        return $this->pmRestRequest("GET", "users");
-    }
-    private function postRequest($url, $params)
-    {
-        if(!isset($_SESSION))
-        {
-            session_start();
-        }
-        $token = \Crypt::decrypt($_SESSION['encrypted_access_token']);
+    public function createGroup($group_title)
+    {//POST /api/1.0/{workspace}/group
+        $postParams = array(
+            'grp_title'    => $group_title,
+            'grp_status'   => "ACTIVE"
+        );
 
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            'Content-Length: ' . strlen($params),
-            'Authorization: Bearer '.$token
-        ));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $result = $this->pmRestRequest("POST", "group", $postParams);
+        return $result;
 
-        $result = json_decode(curl_exec($ch));
-        $httpStatus = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
     }
 
-    private function getRequest($url)
-    {
-        if(!isset($_SESSION))
-        {
-            session_start();
-        }
-        $token = \Crypt::decrypt($_SESSION['encrypted_access_token']);
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array("Authorization: {$token}"));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $response = curl_exec($ch);
-        $aUsers = json_decode($response);
-        $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $info = curl_getinfo($ch);
-        echo json_encode($info);
-
-        $headers = $this->get_headers_from_curl_response($response);
-        echo json_encode($headers);
-        curl_close($ch);
-
-        if ($statusCode == 401) { //if session has expired or bad login:
-            header("Location: loginForm.php"); //change to match your login method
-            die();
-        }
-        else
-        if ($statusCode != 200) {
-            if (isset ($aUsers) and isset($aUsers->error))
-                echo "Error code: {$aUsers->error->code}\nMessage: {$aUsers->error->message}\n";
-            else
-                echo "Error: HTTP status code: $statusCode\n";
-        }
-        else {
-            foreach ($aUsers as $oUser) {
-                if ($oUser->usr_status == "ACTIVE") {
-                    echo "{$oUser->usr_firstname} {$oUser->usr_lastname} ({$oUser->usr_username})\n";
-                }
-            }
-        }
+    public function createUser($first_name, $last_name, $canvas_user_id, $email, $pm_role)
+    {//POST /api/1.0/{workspace}/user
+//        $postParams = array(
+//            'usr_username'    => $canvas_user_id,
+//            'usr_firstname'   => $first_name,
+//            'usr_lastname'  => $last_name,
+//            'usr_email'=>$email,
+//            'usr_due_date' =>'2020-12-31',
+//            'usr_status' =>'ACTIVE',
+//            'usr_role'=>$pm_role,
+//            'usr_new_pass'=>,
+//            'usr_cnf_pass'=>
+//            );
+//
+//        if(!is_null($email)){
+//            $postParams['usr_email'] = $email;
+//        }
+//        if(!is_null($pm_role)){
+//            $postParams['usr_role'] = $pm_role;
+//        }
+//
+//        $result = $this->pmRestRequest("POST", "user", $postParams);
+//        return $result;
     }
-
     public function refreshToken()
     {
 
@@ -122,24 +180,17 @@ class RedwoodRoots
         {
             session_start();
         }
-        $workspace = $_SESSION['workspace'];
+        $workspace = $_SESSION['pm_workspace'];
         $pmServer = $_SESSION['pm_server'];
-        $accessToken = \Crypt::decrypt($_SESSION['encrypted_access_token']);
+        $accessToken = \Crypt::decrypt($_SESSION['pm_encrypted_access_token']);
 
-        if (empty($accessToken) and isset($_COOKIE['access_token']))
-            $accessToken = $_COOKIE['access_token'];
-
-        if (empty($accessToken)) { //if the access token has expired
-            //To check if the PM login session has expired: !isset($_COOKIE['PHPSESSID'])
-            header("Location: loginForm.php"); //change to match your login method
-            die();
-        }
-
+        $apiServer = "{$pmServer}/api/1.0/{$workspace}";
         //add beginning / to endpoint if it doesn't exist:
         if (!empty($endpoint) and $endpoint[0] != "/")
             $endpoint = "/" . $endpoint;
 
-        $ch = curl_init($pmServer . $endpoint);
+
+        $ch = curl_init($apiServer . $endpoint);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array("Authorization: Bearer " . $accessToken));
         curl_setopt($ch, CURLOPT_TIMEOUT, 30);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -168,6 +219,7 @@ class RedwoodRoots
         $oRet->status   = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
+        $action=$method." ".$endpoint;
         if ($oRet->status == 401) { //access token has expired or is invalid
             $baseUrl = Config::get('app.url', 'backend');
             $parts =  parse_url($baseUrl);
@@ -176,20 +228,18 @@ class RedwoodRoots
             header("Location: {$pmServer}"); //change to match your login method
             die();
         }
-        elseif ($oRet->status == 302) { //if error
-            echo "error is 302";
-            echo json_encode($info);
-        }
         elseif ($oRet->status != 200 and $oRet->status != 201) { //if error
             if ($oRet->response and isset($oRet->response->error)) {
-                print "Error in $pmServer:\nCode: {$oRet->response->error->code}\n" .
-                    "Message: {$oRet->response->error->message}\n";
+                $reason = $oRet->response->error->message;
+                throw new InvalidRequestException($action, $reason, $oRet->response->error->code);
             }
             else {
-                print "Error: HTTP status code: $oRet->status\n";
+                throw new InvalidRequestException($action, "unknown");
             }
         }
+        else{
+            return $oRet->response;
+        }
 
-        return $oRet;
     }
 }

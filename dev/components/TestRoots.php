@@ -49,7 +49,7 @@ class TestRoots extends ComponentBase
         $this->canvasHelper = new CanvasHelper();
         $this->dbHelper = new DbHelper();
 //        $this->refreshCache();
-//        $this->test();
+        $this->test();
 //        $this->testBasicModulesRequest();
 //        $this->testDeleteTag();
 //        $this->testAddingUpdatingTags();
@@ -88,7 +88,7 @@ class TestRoots extends ComponentBase
 //        $this->testQuizTakingWorkflow();
 //        $this->testIsQuestionAnswered();
 //        $this->testSubmitQuiz();
-        $this->getQuizSubmissionQuestions();
+//        $this->getQuizSubmissionQuestions();
     }
     
     private function testBasicModulesRequest()
@@ -760,6 +760,32 @@ class TestRoots extends ComponentBase
     
     public function test()
     {
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
+        $domain = $_SESSION['domain'];
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $courseId = $_SESSION['courseID'];
+        $userId = $_SESSION['userID'];
+
+
+        $studentIds = array(538316);
+        $assignmentIds = array();
+        $multipleStudents = false;
+        $multipleAssignments = true;
+        $allStudents = false;
+        $allAssignments = true;
+        $includeTags = true;
+
+        $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents,
+        $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
+        if (is_null($this->roots)) {
+            $this->roots = new Roots();
+        }
+        $userSubmissions = $this->roots->submissions($req);
+
+        echo json_encode($userSubmissions);
     }
     
 }

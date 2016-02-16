@@ -167,20 +167,6 @@ class LtiConfiguration extends ComponentBase {
 
                 }
 
-
-                $users = $roots->getStudentsInCourse();
-                $aliases = $this->getAliases();
-                //this is where we will update the alias of the user
-                for($i=0;$i<=count($users);$i++)
-                {
-                    $user = $users[$i];
-                    if(is_null($user->alias))
-                    {
-                        $user->alias = $aliases[$i];
-                        $user->save();
-                    }
-                }
-
                 //Also, every so often (every 12 hrs?) we will check to make sure that students who have dropped the class are deleted from the users_course table
                 //Failing to do so will make it so that when we request their submissions along with other students' submissions, the entire
                 // call returns with an Unauthorized error message
@@ -215,12 +201,6 @@ class LtiConfiguration extends ComponentBase {
         }
     }
 
-    private function getAliases()
-    {
-        $url="plugins/delphinium/roots/assets/js/companies.json";
-        $json = file_get_contents($url);
-        return json_decode($json);
-    }
     function redirect($url) {
         echo '<script type="text/javascript">';
         echo 'window.location.href="' . $url . '";';
