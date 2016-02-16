@@ -15,8 +15,9 @@ class CreateCompetenciesTable extends Migration
                 $table->engine = 'InnoDB';
                 $table->increments('id');
                 $table->string('Name');
-                $table->string('Animate');
-                $table->string('Size');
+				$table->string('Color');
+                $table->string('Animate');// tinyInt switch 0~1 true false
+                $table->string('Size');//Small,Medium,Large radio btns
                 $table->timestamps();
             });
         }

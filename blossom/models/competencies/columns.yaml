@@ -11,6 +11,10 @@ columns:
         label: Name
         searchable: true
 
+    Color:
+        label: Color
+        searchable: true
+
     Animate:
         label: Animate
         searchable: true
