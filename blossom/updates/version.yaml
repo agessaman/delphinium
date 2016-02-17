@@ -9,3 +9,6 @@
 1.0.2:
     - Drop grades table
     - drop_grades_table.php
+1.0.3:
+    - Add Color to competencies
+    - add_competencies_color_column.php
