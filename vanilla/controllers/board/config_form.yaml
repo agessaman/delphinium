@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Board
+
+# Model Form Field configuration
+form: $/delphinium/vanilla/models/board/fields.yaml
+
+# Model Class name
+modelClass: Delphinium\Vanilla\Models\Board
+
+# Default redirect location
+defaultRedirect: delphinium/vanilla/board
+
+# Create page
+create:
+    title: Create Board
+    redirect: delphinium/vanilla/board/update/:id
+    redirectClose: delphinium/vanilla/board
+
+# Update page
+update:
+    title: Edit Board
+    redirect: delphinium/vanilla/board
+    redirectClose: delphinium/vanilla/board
+
+# Preview page
+preview:
+    title: Preview Board
