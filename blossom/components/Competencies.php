@@ -46,24 +46,32 @@ class Competencies extends ComponentBase
         $course = $roots->getCourse();
         $this->page['course'] = json_encode($course);
         
+        if (!isset($_SESSION)) { session_start(); }
+        $roleStr = $_SESSION['roles'];// from dev::role ?
+        $this->page['role'] = $roleStr;
+        
     }
 
     public function onRun()
     {
 		try
         {
-            $this->addCss("/plugins/delphinium/blossom/assets/css/bootstrap.min.css");
-            $this->addCss("/plugins/delphinium/blossom/assets/css/competencies.css");//overide alert css !important
+            //moved to display.htm
+            //$this->addCss("/plugins/delphinium/blossom/assets/css/bootstrap.min.css");
+            //$this->addCss("/plugins/delphinium/blossom/assets/css/competencies.css");//overide alert css !important
             //echo '<div id="loader" class="container spinner"></div>';//preloader USELESS
             
-            $this->addJs("/plugins/delphinium/blossom/assets/javascript/jquery.min.js");// before BS.js
-            $this->addJs("/plugins/delphinium/blossom/assets/javascript/bootstrap.min.js");
-			$this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
-            $this->addJs("/plugins/delphinium/blossom/assets/javascript/competencies.js");
+            //$this->addJs("/plugins/delphinium/blossom/assets/javascript/jquery.min.js");// before BS.js
+            //$this->addJs("/plugins/delphinium/blossom/assets/javascript/bootstrap.min.js");
+			//$this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
+            //$this->addJs("/plugins/delphinium/blossom/assets/javascript/competencies.js");
 			
-			/*get Modules, Assignments & Submissions ******************
-				data is N/A if DevConfig Instructor  MUST BE for a Student
-				add: Instructor can choose a student to view?
+			/*get Assignments & Submissions ***** & enrolled students?
+				data N/A if DevConfig Instructor  MUST BE for a Student
+                
+                if instructor, configure component
+				add: Instructor can choose a student to view progress?
+                add: Instructor can configure Stem from here?
 			**************************************************/
 			$roots = new Roots();
             
@@ -76,9 +84,14 @@ class Competencies extends ComponentBase
 				array_push($assignmentIds, $assignment["assignment_id"]);
 				array_push($assignments, $assignment);
 			}
-            // Replace with modules data ???
-			$this->page['assignments']=json_encode($assignments);// REPLACE
-
+            
+			$this->page['assignments']=json_encode($assignments);
+            
+            /* is this in $_SESSION? Learner id
+                would it be possible for an instructor view 
+                to choose an enrolled student from a dropdown [enrolled]
+                to see how that student is doing
+            */
 			$studentIds = null;//['1604486'];//Test Student
 			$allStudents = true;
 			$allAssignments = true;
@@ -132,15 +145,12 @@ class Competencies extends ComponentBase
 		*/
 		
 		$instances = CompetenceModel::where("Name","!=","")->get();
-
         $array_dropdown = ['0'=>'- select Instance - '];//text in dropdown
 
         foreach ($instances as $instance)
         {
             $array_dropdown[$instance->id] = $instance->Name;
         }
-        //echo "getInstanceOptions:".$instances;
-        //$this->page['instances'] = $instances;
         return $array_dropdown;
     }
     
