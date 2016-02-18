@@ -13,21 +13,6 @@ fields:
         placeholder: Must be named
         comment: Enter a name for this instance
 
-    Color:
-        label: Color
-        span: right
-        type: colorpicker
-        commentAbove: Choose a color for the Competency Amount
-
-    Animate:
-        label: Animate
-        span: left
-        type: switch
-        cssClass: custom-switch
-        containerAttributes: {title:"Yes, I like animation!"}
-        default: true
-        comment: Select ON if you want this component to be animated
-
     Size:
         label: Size
         span: right
@@ -40,3 +25,23 @@ fields:
             Medium: [Medium 250 pixels wide]
             Large: [Large 375 pixels wide]
         commentAbove: Select a size for this component
+
+    Color:
+        label: Color
+        span: left
+        type: colorpicker
+        commentAbove: Choose a color for the Competency Amount
+
+    Animate:
+        label: Animate
+        type: switch
+        span: auto
+        containerAttributes: {title:"Yes, I like animation!", style: "padding-top:10px;"}
+        default: true
+        comment: ON = Animated bars
+
+    course_id:
+        label: Course id
+        span: left
+        placeholder: Course id
+        comment: Enter the course id number

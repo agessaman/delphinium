@@ -2,9 +2,9 @@
 
 use Delphinium\Blossom\Models\Competencies as CompetenceModel;
 use Cms\Classes\ComponentBase;
-
 use Delphinium\Roots\Roots;
 use Delphinium\Roots\Enums\ActionType;
+use Delphinium\Roots\Requestobjects\ModulesRequest;//for locked
 use Delphinium\Roots\Requestobjects\AssignmentsRequest;// for submissions
 use Delphinium\Roots\Requestobjects\SubmissionsRequest;// score
 
@@ -18,40 +18,22 @@ class Competencies extends ComponentBase
             'description' => 'Shows students completion of core Competencies'
         ];
     }
-    
-    public function onStart()
-    {
-        /* COURSE & INSTANCE FAIL IF HERE use onRender
-            get course_id I am in (DEV)
-            get instance (with course ID)???
 
-            if (no instance with this course ID){
-                create instance with courseID
-            }
-            launch instance with course ID
-        */ 
-        
-    }
     public function onRender()
     {
-		$config = CompetenceModel::find($this->property('instance'));//getInstanceOptions
-        // Name is just for instances drop down. not used in component display
-        $this->page['config'] = json_encode($config);//->Name;
-
-        $this->page['competenciesColor'] = $config->Color;//Main Color for Amount
-        $this->page['competenciesAnimate'] = $config->Animate;
-        $this->page['competenciesSize'] = $config->Size;
-        
-        $roots = new Roots();
-        $course = $roots->getCourse();
-        $this->page['course'] = json_encode($course);
-        
+		// moved to onRun
     }
 
     public function onRun()
     {
 		try
         {
+            $config = CompetenceModel::find($this->property('instance'));
+            // Name is just for instances drop down. not used in component display
+            $this->page['competenciesColor'] = $config->Color;//Main Color for Amount
+            $this->page['competenciesAnimate'] = $config->Animate;
+            $this->page['competenciesSize'] = $config->Size;
+        
             $this->addCss("/plugins/delphinium/blossom/assets/css/bootstrap.min.css");
             $this->addCss("/plugins/delphinium/blossom/assets/css/competencies.css");//overide alert css !important
             //echo '<div id="loader" class="container spinner"></div>';//preloader USELESS
@@ -63,10 +45,13 @@ class Competencies extends ComponentBase
 			
 			/*get Modules, Assignments & Submissions ******************
 				data is N/A if DevConfig Instructor  MUST BE for a Student
-				add: Instructor can choose a student to view?
+				add: Instructor can choose a student?
+             ___   
+            if this part is in a function unused data gets handled by garbage collection
+            only need trimmed $simpleModules and submissions! 
+            $assignments and parts of $moduleData become unused
 			**************************************************/
 			$roots = new Roots();
-            
 			$req = new AssignmentsRequest(ActionType::GET);
 			$res = $roots->assignments($req);
 
@@ -91,6 +76,41 @@ class Competencies extends ComponentBase
 
 			$submissions = $roots->submissions($req);
 			$this->page['submissions']=json_encode($submissions);// score
+            
+        //simplified modules data *** testing if better than assignments includes locked
+			$freshData = false;
+			
+            $moduleId = null;
+            $moduleItemId = null;
+            $includeContentDetails = true;
+            $includeContentItems = true;
+            $module = null;
+            $moduleItem = null;
+
+            $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems,
+                $includeContentDetails, $module, $moduleItem , $freshData);
+
+            $moduleData = $roots->modules($req);
+            $modArr = $moduleData->toArray();
+
+            $simpleModules = array();
+            foreach($modArr as $item)
+            {
+                $mod = new \stdClass();
+
+                $mod->id = $item['module_id'];
+                $mod->title=$item['name'];
+                $mod->locked=$item['locked'];
+                $mod->items =$item['module_items'];//REPLACES assignments
+                
+                // items contain:
+                //module_items[i].content[0].title & .url, maybe .type
+                //module_items[i].content[0].points_possible & .tags
+
+                $simpleModules[] = $mod;
+            }
+			$this->page['modules'] = json_encode($simpleModules);
+            ///$this->page['modata'] = json_encode($moduleData);// complete array remove when done
             
         }
         catch (\GuzzleHttp\Exception\ClientException $e) {
@@ -130,8 +150,8 @@ class Competencies extends ComponentBase
 		*  The method should have a name in the following format: get*Property*Options()
 		*  where Property is the property name
 		*/
-		
-		$instances = CompetenceModel::where("Name","!=","")->get();
+		///$instances = CompetenceModel::where("Enabled","=","1")->get();
+		$instances = CompetenceModel::where("Name","!=","")->get();//WORKS or add Enabled
 
         $array_dropdown = ['0'=>'- select Instance - '];//text in dropdown
 
@@ -139,8 +159,7 @@ class Competencies extends ComponentBase
         {
             $array_dropdown[$instance->id] = $instance->Name;
         }
-        //echo "getInstanceOptions:".$instances;
-        //$this->page['instances'] = $instances;
+
         return $array_dropdown;
     }
     

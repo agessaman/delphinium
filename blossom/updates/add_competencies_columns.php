@@ -5,12 +5,12 @@ use October\Rain\Database\Updates\Migration;
 
 class CreateCompetenciesTable extends Migration
 {
-
     public function up()
     {
-        if ( !Schema::hasTable('delphinium_blossom_competencies') )
-        {
-            Schema::create('delphinium_blossom_competencies', function($table)
+		// ditch any existing and start fresh?
+            Schema::dropIfExists('delphinium_blossom_competencies');
+			
+			Schema::create('delphinium_blossom_competencies', function($table)
             {
                 $table->engine = 'InnoDB';
                 $table->increments('id');
@@ -21,15 +21,22 @@ class CreateCompetenciesTable extends Migration
 				$table->string('course_id');
                 $table->timestamps();
             });
-        }
+		/*
+		//http://www.w3schools.com/sql/sql_alter.asp
+			Schema::table('delphinium_blossom_competencies', function($table)
+            {
+				$table->string('Color');
+				$table->string('course_id');
+            });
+		*/
     }
 
     public function down()
     {
-        if ( Schema::hasTable('delphinium_blossom_competencies') )
+		Schema::table('delphinium_blossom_competencies', function($table)
         {
-            Schema::dropIfExists('delphinium_blossom_competencies');
-        }
+            //$table->dropColumn('Color');
+			$table->dropColumn('course_id');
+        });
     }
-
 }

@@ -17,11 +17,5 @@ class Competencies extends Model
 		'Color'=>'required',
         'Animate'=>'required',
         'Size' => 'required'
-    ];
-	/*
-	public function getAnimateOptions($value)
-	{
-		
-	}
-	*/
+    ];//'course_id' => 'required' created dynamically ?
 }

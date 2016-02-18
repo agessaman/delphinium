@@ -1,5 +1,4 @@
 <!-- element for d3 to place competencies -->
-<div id='outline' style=''></div>
 <svg id = "competenciesSVG">
 	<g id="competenciesView"></g>
 </svg>
@@ -18,22 +17,18 @@
     </div>
 </div>
 <script>
-    
-    // Not onStart
-    var config = {{config|raw}};//Name
-    console.log('instance.Name = '+config.Name);
-    console.log('instance.id = '+config.id);
-    
-    var course = {{course|raw}};
-    console.log('course_id:'+course.id);// onRender
-    //console.log('course:'+JSON.stringify(course));// onRender
-    
-    
-    
 	// make available to competencies.js
-	var assignments={{assignments|raw}};//json
-	var submissions = {{submissions|raw}};
-	var competenciesColor='{{competenciesColor}}';//string
+    //var modata={{modata|raw}};
+    //console.log(modata);
+    //console.log('remove modata when done');
+
+    var modules={{modules|raw}};
+	var assignments={{assignments|raw}};// REPLACE
+	var submissions = {{submissions|raw}};//json
+	var competenciesColor='{{competenciesColor}}';
 	var competenciesSize='{{competenciesSize}}'.toLowerCase();//string
 	var competenciesAnimate={{competenciesAnimate}};//bool
+    
+    //string HexColor test: Replace with Color Picker in backend instance
+    var compColor='{{competencies}}';
 </script>

@@ -1,7 +1,7 @@
 <!--div class="control-tabs primary-tabs" data-control="tab"-->
 <div>
     <ul class="nav nav-tabs">
-      <li class="active"><a data-toggle="tab" href="#home">Instance</a></li>
+      <li class="active"><a data-toggle="tab" href="#home">Instances</a></li>
       <li><a data-toggle="tab" href="#menu1">Instructions</a></li>
     </ul>
     
@@ -17,13 +17,13 @@
 		<p>Select the New Competencies Instance button.<br/>
 		Type a Name, select the Color for the amount, toggle the Animate switch and select a Size for the component.
 		</p>
-		<img id="image0" style="float:left;" src="" width="790" height="290" title="Style the component" alt="style it"/>
-		<br/>
+		<img id="image0" style="float:left;" src="" width="766" height="250" title="Style the component" alt="style it"/>
 		</div>
-		<div style="clear:both;"></div>
+          
+		<div style="clear:both; padding:20px;">&nbsp;</div>
 		
 		<div style="float:left;">
-		<img id="image1" style="float:right;" src="" width="350" title="Select An Instance" alt="select instance"/>
+		<img id="image1" style="float:right; padding-left:10px;" src="" width="350" title="Select An Instance" alt="select instance"/>
         <h4>Using the component:</h4>
 		<p>In the CMS tab add a New Page and select the Blossom Competencies component.<br/>
         Click the component to select the instance you want to use from the drop down list.
@@ -38,9 +38,10 @@
         </p>
 		</div>
 		
+        <div style="clear:both; padding:20px;">&nbsp;</div>
+        
 		<div style="float:left;">
-        <h4>The Component:</h4>
-        <img id="image2" src="" width="265" height="137" title="What it looks like" alt="competencies"/>
+        <img id="image2" src="" width="750" height="250" title="What it looks like" alt="competencies"/>
 
         <ul>
             <li>The competency bar graph is divided by tenths and displays the percent earned.</li>
@@ -67,5 +68,5 @@
 //console.log("<?= Config::get('app.url', 'backend') ?>");//http://localhost/delphinium/
 	$('#image0').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/competenciesNew.png');
     $('#image1').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/competenciesDropdown.png');
-    $('#image2').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/competencies.png');
+    $('#image2').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/competenciesComp.png');
 </script>

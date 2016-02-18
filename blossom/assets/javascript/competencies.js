@@ -1,5 +1,4 @@
-var div;
-
+var div;// tooltip
 
 $(document).ready(function(){
 	/*
@@ -10,13 +9,6 @@ $(document).ready(function(){
     div = d3.select("body").append("div")
         .attr("class", "tooltip")
         .style("opacity", 0);
-    
-	////var rawData = {{ rawData|raw}};
-	//has locked
-	//module_items[i].content[0].title & html_url or url
-	//module_items[i].content[0] has points_possible & tags
-	// replaces assignments
-	
     
 	////var assignments={{assignments|raw}};
     //console.log(assignments.length, assignments);
@@ -48,6 +40,7 @@ $(document).ready(function(){
                 tagList.push(tagarray[t]);
             }
         }
+        // remove any non C:ompetency tags
         tagged[i]['tags']=tagarray.join();
         var tdetails = 'subm['+i+']';
             tdetails+= ' tags:'+tagged[i].tags+' [score:'+tagged[i].score+']<br/>';
@@ -64,6 +57,7 @@ assignments do NOT have Tags: submissions do NOT have points_possible
 construct the data needed for Competency
 for each tagged get assignment points_possible
 */
+    
     var details=[];// for modal '#detailed' body content
     var data =[];// json for d3
     var gTotal=0, gAmount=0;
@@ -113,11 +107,9 @@ for each tagged get assignment points_possible
     //find largest total for d3.scale
     var maxTotal=Math.max.apply(null,big);
     big=null;// done with big
-    //console.log('maxTotal:'+maxTotal);
+    console.log('maxTotal:'+maxTotal);// maxTotal: -Infinity
     var grid=[20,30,40,50,60,70,80,90];//vertical % tick marks
 
-	// Only show the d3 if data is valid
-	
 	// NOW D3 it!
     //php echo '<div id="loader" class="container spinner"></div>';
     //$('#loader').remove();//.removeClass('spinner');
@@ -144,133 +136,175 @@ for each tagged get assignment points_possible
 				.attr('height', competenciesHeight);// default
 	}
     
-	////var competenciesColor=''{{competenciesColor}}''; 
-    //set with a color picker in backend
-	////var competenciesAnimate={{competenciesAnimate}};
     
-    // add svg and group to default.htm dynamically
-    var competencies = d3.select("#competenciesView");// a <g>roup
-    var xcale = d3.scale.linear()
-        .domain([0, maxTotal+2])
-        .range([0, competenciesWidth]);
-    //console.log(xcale(80), xcale(398), xcale(598));
-    
-    // show all data or competenciesCount
-	for (var i = 0; i < data.length; i++) {
-        //competency name
-		competencies.append('text')
-			.text(data[i].name)
-            .attr('font-size', '1em')
-			.attr('y', i * rowHeight + 13);
+    // Only show the d3 if data is valid
+    //TEST tagList=[];
+    if(tagList.length == 0 ) {
+        //console.log('FAIL'); 
+    //No bars would be rendered because there are no tags to define them.
+    //Possibly show a border using the Color to define the Size and instructions to go use Stem.
+    //competenciesSVG.attr('style', function(){ return 'border: border: 1px solid '+competenciesColor });
+        //$('#outline:style').css({'border': '1px solid '+competenciesColor, 'width':competenciesWidth+'px', 'height':'250px'});
+        // instructions
+        var compview = d3.select("#competenciesSVG");
+            compview.attr('height', 160)
+                .append('rect')
+                .attr('x',2).attr('y', 2)
+                .attr('height', 156)
+				.attr('width', competenciesWidth-4)
+                .attr('fill', 'none')
+                .attr("stroke-width",2)
+				.attr('stroke', competenciesColor)
+            compview.append('text')
+                .text('Now Setup Stem')
+                .attr('x',14).attr('y',80)
+                .attr('font-size', '2em')
+                .attr('fill',competenciesColor);
         
-        //amount bars
-		if(competenciesAnimate == true){
-			competencies.append('rect')
-					.attr('height', 18)
-					.attr('width', 0)
-					.attr('fill', 'white')
-					.attr('y', i * rowHeight + 18)
-					.transition()
-						.delay(250*i)
-						.duration(1000)
+    } else {
+        // Show the component
+		
+		////var competenciesColor=''{{competenciesColor}}''; 
+		//set with color picker in backend
+		var percentColor = '#CCCCCC';//'#f0f0f0'// med gray
+		////var competenciesAnimate={{competenciesAnimate}};
+		
+		// add svg and group to default.htm dynamically
+		var competencies = d3.select("#competenciesView");// a <g>roup
+		var xcale = d3.scale.linear()
+			.domain([0, maxTotal+2])
+			.range([0, competenciesWidth]);
+		//console.log(xcale(80), xcale(398), xcale(598));
+		
+		// show all data or competenciesCount
+		for (var i = 0; i < data.length; i++) {
+			//competency name
+			competencies.append('text')
+				.text(data[i].name)
+				.attr('font-size', '1em')
+				.attr('y', i * rowHeight + 13);
+			
+			//amount bars
+			if(competenciesAnimate == true){
+				competencies.append('rect')
+						.attr('height', 18)
+						.attr('width', 0)
+						.attr('fill', 'white')
+						.attr('y', i * rowHeight + 18)
+						.transition()
+							.delay(250*i)
+							.duration(1000)
+							.attr('width', xcale((data[i].percent/100)*maxTotal))
+							.attr('fill', competenciesColor)
+							.ease('easeInQuart');//easeOutQuad bounce
+			} else {
+				competencies.append('rect')
+						.attr('height', 18)
+						.attr('y', i * rowHeight + 18)
 						.attr('width', xcale((data[i].percent/100)*maxTotal))
-						.attr('fill', competenciesColor)
-						.ease('easeInQuart');//easeOutQuad bounce
-		} else {
+						.attr('fill', competenciesColor);
+			}
+			//grid lines 4px tall
+			competencies.selectAll("gridline")
+				.data(grid)
+				.enter()
+				.append("line")
+				.attr("x1",function(d, i){ return xcale((grid[i]/100)*maxTotal); })
+				.attr("y1", i * rowHeight + 26)
+				.attr("x2",function(d, i){ return xcale((grid[i]/100)*maxTotal); })
+				.attr("y2",i * rowHeight + 30)
+				.style("stroke",'silver')
+				.style("stroke-width",1);
+		
+			// outline			
 			competencies.append('rect')
 					.attr('height', 18)
-					.attr('y', i * rowHeight + 18)
-					.attr('width', xcale((data[i].percent/100)*maxTotal))
-					.attr('fill', competenciesColor);
-		}
-		//grid lines 4px tall
-		competencies.selectAll("gridline")
-			.data(grid)
-			.enter()
-			.append("line")
-			.attr("x1",function(d, i){ return xcale((grid[i]/100)*maxTotal); })
-			.attr("y1", i * rowHeight + 26)
-			.attr("x2",function(d, i){ return xcale((grid[i]/100)*maxTotal); })
-			.attr("y2",i * rowHeight + 30)
-			.style("stroke",'silver')
-			.style("stroke-width",1);
-	
-		// outline			
-		competencies.append('rect')
+					.attr('width', xcale(maxTotal))
+					.attr('stroke-width', '2')
+					.attr('stroke', 'gray')
+					.attr('fill', 'none')
+					.attr('y', i * rowHeight + 18);
+					
+			//percent completed
+			competencies.append('text')
+					.text(data[i].percent+'%')
+					.attr('fill', percentColor)
+					.attr('font-size', '0.9em')
+					.attr('x', 10)
+					.attr('y', i*rowHeight+31);
+			
+			//invisble btn of each bar for tooltip
+			//also stores data[i] info
+			competencies.append('rect')
+				.style('cursor','pointer')
 				.attr('height', 18)
 				.attr('width', xcale(maxTotal))
-				.attr('stroke-width', '2')
-				.attr('stroke', 'gray')
-				.attr('fill', 'none')
-				.attr('y', i * rowHeight + 18);
-                
-        //percent completed
-		competencies.append('text')
-                .text(data[i].percent+'%')
-                .attr('fill', '#f0f0f0')
-                .attr('font-size', '0.9em')
-                .attr('x', 10)
-                .attr('y', i*rowHeight+31);
-        
-        //invisble btn of each bar for tooltip
-        //also stores data[i] info
-        competencies.append('rect')
-            .style('cursor','pointer')
-            .attr('height', 18)
-            .attr('width', xcale(maxTotal))
-            .attr('stroke-width', '0')
-			.attr('fill', 'white')
-            .attr('opacity',0.01)
-			.attr('y', i * rowHeight + 18)
-            .attr('class','comp')
-            .attr('id', function(d, i) { return i; })
-            .attr('data-name', function(d) { return data[i].name; })
-            .attr('data-value', function(d) { return data[i].amount+' points.<br/>'+data[i].total+' possible'; })
-            .on('mouseover', function (d) {
-                console.log(d3.event.currentTarget.id);//
-                var text = $(d3.event.currentTarget).attr('data-value');
-                addTooltip(text);
-            })
-            .on('mousemove', function(d) {
-                var tx = d3.event.clientX;
-                var ty = d3.event.clientY-38;//upper right of mouse
-                ///console.log('tx:'+tx);
-                $('.tooltip').css({'left':tx + 'px','top':ty + 'px','background':competenciesColor});
-                //$('.tooltip').css({'background':competenciesColor+' !important'});
-            })
-            .on('mouseout', function (d) {
-                removeTooltip();
-            })
-            .on('mouseup', function(d) {
-                
-                div.style("opacity",0);// removeTooltip immediately
-                console.log('clicked: '+$(d3.event.currentTarget).attr('data-name'));
-                var detailItem = $.grep(details, function(elem, indx){
-                    return elem['name'] == $(d3.event.currentTarget).attr('data-name');
-                });
-                console.log(detailItem[0]);
-                displayDetails(detailItem[0]);
-            });
-	}
-    // end for
-});
+				.attr('stroke-width', '0')
+				.attr('fill', 'white')
+				.attr('opacity',0.01)
+				.attr('y', i * rowHeight + 18)
+				.attr('class','comp')
+				.attr('id', function(d, i) { return i; })
+				.attr('data-name', function(d) { return data[i].name; })
+				.attr('data-value', function(d) { return data[i].amount+' points.<br/>'+data[i].total+' possible'; })
+				.on('mouseover', function (d) {
+					//console.log(d3.event.currentTarget.id);//
+					var text = $(d3.event.currentTarget).attr('data-value');
+					addTooltip(text);
+				})
+				.on('mousemove', function(d) {
+					var tx = d3.event.clientX;
+					var ty = d3.event.clientY-38;//upper right of mouse
+					///console.log('tx:'+tx);
+					$('.tooltip').css({'left':tx + 'px','top':ty + 'px','background':competenciesColor});
+				})
+				.on('mouseout', function (d) {
+					removeTooltip();
+				})
+				.on('mouseup', function(d) {
+					
+					div.style("opacity",0);// removeTooltip immediately
+					//console.log('clicked: '+$(d3.event.currentTarget).attr('data-name'));
+					var detailItem = $.grep(details, function(elem, indx){
+						return elem['name'] == $(d3.event.currentTarget).attr('data-name');
+					});
+					//console.log(detailItem[0]);
+					displayDetails(detailItem[0]);
+				});
+		}
+		// end for
+    }/*End Else*/
+});/* end .ready */
 
+function addTooltip(text)
+{
+    div.transition()
+        .duration(200)
+        .style("opacity", .9);
+    div.html(text)
+        .style("left", (d3.event.pageX) + "px")
+        .style("top", (d3.event.pageY - 28) + "px");
+}
 
+function removeTooltip()
+{
+    div.transition()
+        .duration(500)
+        .style("opacity", 0);
+}
 /*
 display assignments that match submissions tag groups
-display rows for details {'name': align , id:[{#, #, #, #}]}
+display rows for details[{'name': align, assignment_id:[{#, #, #, #}]}]
 
-grey = locked
+grey = locked : NA unless compare locked_at w/ current date?
 blue = done
 green=available to do still
-
 */
 function displayDetails(item) {
     
     $('.modal-title').html(item.name+' Competency Details');
     var content='';
     var locked=false;
-    var completed=false;
     for(var i=0; i<item.assignments.length; i++) {
         //construct modal content
         var theId = item.assignments[i].id;// id find assignments for id?
@@ -285,15 +319,17 @@ function displayDetails(item) {
         
         // if submitted.score is null check if locked or available
         if(submitted[0].score == null) { 
+            
             // if assignment locked use gray FIGURE OUT MODULE LOCKED !
             if(assignment[0].lock_at == null) {
                 content += '<div class="alert alert-success">';//Available green
             } else {
-                content += '<div class="alert">';//Locked grey [figure out]
+                content += '<div class="alert">';//Locked grey [figure out locked]
                 locked=true;
             }
             //content += '<div class="alert fade in">';
             ///submitted[0].score='0';// instead of null
+            
         }else if(submitted[0].score == 0){
             content += '<div class="alert alert-info">';// red alert-danger
         }else{
@@ -317,21 +353,4 @@ function displayDetails(item) {
     //console.log(submitted.length, submitted);
     $('.modal-body').html(content);
     $('#detailed').modal();
-}
-
-function addTooltip(text)
-{
-    div.transition()
-        .duration(200)
-        .style("opacity", .9);
-    div.html(text)
-        .style("left", (d3.event.pageX) + "px")
-        .style("top", (d3.event.pageY - 28) + "px");
-}
-
-function removeTooltip()
-{
-    div.transition()
-        .duration(500)
-        .style("opacity", 0);
 }
