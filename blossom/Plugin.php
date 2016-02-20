@@ -2,7 +2,11 @@
 
 use System\Classes\PluginBase;
 use Backend;
-Use Event;
+use Event;
+
+use Backend\Classes\FormWidgetBase;
+use Backend\formwidgets\ColorPicker;
+use Backend\widgets\form\Form;// checkbox & radio ?
 
 /**
  * Blossom Plugin Information File
@@ -46,6 +50,19 @@ class Plugin extends PluginBase
         ];
     }
 	
+    public function registerFormWidgets()
+    {
+        return[
+            'Backend\FormWidgets\ColorPicker' => [
+                'label' => 'Color picker',
+                'code' => 'colorpicker'
+            ],
+            'Backend\Widgets\Form' => [
+                'label' => 'Form',
+                'code' => 'form'
+            ]
+        ];
+    }
 	
 	public function boot()
     {

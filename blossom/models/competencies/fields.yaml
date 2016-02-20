@@ -16,7 +16,7 @@ fields:
     Size:
         label: Size
         span: right
-        type: radio
+        type: dropdown
         containerAttributes: {data-control:"balloon-selector"}
         cssClass: control-balloon-selector
         default: Medium
@@ -43,5 +43,6 @@ fields:
     course_id:
         label: Course id
         span: left
+        disabled: true
         placeholder: Course id
         comment: Enter the course id number

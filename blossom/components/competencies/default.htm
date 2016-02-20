@@ -7,13 +7,15 @@
     var course = {{course|raw}};
     console.log('course_id:'+course.id);// onRender
     //console.log('course:'+JSON.stringify(course));// onRender
-    var role = '{{role}}';
+    var role = '{{role}}';// comma separated varChar
     console.log('Role: ',role);// array or string
     
     
-	// make available to competencies.js
-	var assignments={{assignments|raw}};//json
-	var submissions = {{submissions|raw}};
+	// Only available if DevConfig is student role=Learner
+    // make available to competencies.js
+	//var assignments={{assignments|raw}};//json
+	//var submissions = {{submissions|raw}};
+    
 	var competenciesColor='{{competenciesColor}}';//string
 	var competenciesSize='{{competenciesSize}}'.toLowerCase();//string
 	var competenciesAnimate={{competenciesAnimate}};//boolean

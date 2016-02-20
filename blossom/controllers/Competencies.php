@@ -51,4 +51,5 @@ class Competencies extends Controller
 
         return $this->listRefresh();
     }
+    
 }

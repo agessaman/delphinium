@@ -1,23 +1,38 @@
+/* competencies.js 
+    data & details are setup by View partials
+    
+    Uses:
+    submissions for tags & scores
+    assignments for points_possible
+*/
+
 var div;// tooltip
 
-$(document).ready(function(){
-	/*
-        Competencies use
-        submissions for Tags & scores
-        assignments for points_possible
-    */
+$(document).ready(function() {
+	
     div = d3.select("body").append("div")
         .attr("class", "tooltip")
         .style("opacity", 0);
     
 	////var assignments={{assignments|raw}};
-    //console.log(assignments.length, assignments);
-    //get points_possible
+    //console.log(assignments.length, assignments);//has points_possible
     
     ////var submissions = {{submissions|raw}};//json
-    //console.log(submissions.length, submissions);//all
-    //get tags & score
+    //console.log(submissions.length, submissions);//has all tags & score
     // related by assignment_id
+
+//console.log('JS role:',role);
+    /* if learner, filterData then showCompetencies
+        else Instructor, showCompetencies using fake data,details
+             plus configure Settings
+    */
+    if(role == 'Learner') {
+        filterData();
+        showCompetencies();
+    } else { showCompetencies(); }
+});
+
+function filterData() {
     
     //find all submissions that have tags
     var tagged =$.grep(submissions, function(elem, indx){
@@ -49,17 +64,17 @@ $(document).ready(function(){
 
 /*
     loop thru tagList to sort tagged submissions into groups, 
-    for each submission in each group count points possible & amount
+    for each submission in each group count add up amount
 
-get points_possible from assignments that match each group assignment_id
-assignments do NOT have Tags: submissions do NOT have points_possible
+	add up totalPoints from points_possible in each assignments that match each group assignment_id
+	assignments do NOT have Tags: submissions do NOT have points_possible
 
 construct the data needed for Competency
 for each tagged get assignment points_possible
 */
     
-    var details=[];// for modal '#detailed' body content
-    var data =[];// json for d3
+    //var details=[];// for modal '#detailed' body content
+    //var data =[];// json for d3
     var gTotal=0, gAmount=0;
     for(var l=0; l<tagList.length; l++) {
         // {"name":
@@ -99,24 +114,26 @@ for each tagged get assignment points_possible
     }
     console.log(data.length,data);
     console.log(details.length,details);
+    /* // grab data for fake instructor view
+        var dataStr = JSON.stringify(data);
+        console.log(dataStr);
+        var detailStr = JSON.stringify(details);
+        console.log(detailStr);
+    */
+}// END filterData
     
+function showCompetencies() {
     var big=[];
     for(i=0; i<data.length; i++) {
         big.push(data[i].total);
     }
     //find largest total for d3.scale
     var maxTotal=Math.max.apply(null,big);
-    big=null;// done with big
     console.log('maxTotal:'+maxTotal);// maxTotal: -Infinity
     var grid=[20,30,40,50,60,70,80,90];//vertical % tick marks
 
 	// NOW D3 it!
-    //php echo '<div id="loader" class="container spinner"></div>';
-    //$('#loader').remove();//.removeClass('spinner');
-    // not visible while everything loads
-    // try progress bar? https://octobercms.com/docs/ui/progressbar
-    
-    // should construct this dynamically
+
 	var competenciesView = d3.select("#competenciesView");
 	var competenciesSVG = d3.select("#competenciesSVG");
     var rowHeight = 45;// a property?
@@ -136,16 +153,15 @@ for each tagged get assignment points_possible
 				.attr('height', competenciesHeight);// default
 	}
     
-    
     // Only show the d3 if data is valid
-    //TEST tagList=[];
-    if(tagList.length == 0 ) {
+    //TEST data=[];
+    if(data.length == 0 ) {
         //console.log('FAIL'); 
     //No bars would be rendered because there are no tags to define them.
-    //Possibly show a border using the Color to define the Size and instructions to go use Stem.
-    //competenciesSVG.attr('style', function(){ return 'border: border: 1px solid '+competenciesColor });
-        //$('#outline:style').css({'border': '1px solid '+competenciesColor, 'width':competenciesWidth+'px', 'height':'250px'});
-        // instructions
+    //Show a border using the Color to define the Size and instructions to go use Stem.
+    // use the details modal to notify user? $('.modal-body').html(content);
+    //$('#outline:style').css({'border': '1px solid '+competenciesColor, 'width':competenciesWidth+'px', 'height':'250px'});
+    // instructions to setup stem
         var compview = d3.select("#competenciesSVG");
             compview.attr('height', 160)
                 .append('rect')
@@ -274,7 +290,7 @@ for each tagged get assignment points_possible
 		}
 		// end for
     }/*End Else*/
-});/* end .ready */
+}/* End showCompetencies */
 
 function addTooltip(text)
 {
@@ -297,7 +313,7 @@ display assignments that match submissions tag groups
 display rows for details[{'name': align, assignment_id:[{#, #, #, #}]}]
 
 grey = locked : NA unless compare locked_at w/ current date?
-blue = done
+blue = done : also if score = 0 Not Red?
 green=available to do still
 */
 function displayDetails(item) {
