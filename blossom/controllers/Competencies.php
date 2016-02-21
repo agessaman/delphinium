@@ -5,6 +5,7 @@ use BackendMenu;
 use Backend\Classes\Controller;
 use Delphinium\Blossom\FormWidgets\ColorPicker;
 use Delphinium\Blossom\Models\Competencies as ConfigModel;
+use Delphinium\Blossom\Components\Competencies as ConfigComp;
 
 /**
  * Competencies Back-end Controller
@@ -51,6 +52,13 @@ class Competencies extends Controller
         return $this->listRefresh();
     }
 	
-    //index_onCreate & onSave ???
+    public function formExtendFields($form)
+	{
+		// fill values with instance data, must be in controllers
+		// How to get data values
+		//$config = ConfigComp::getConfig();
+		
+		//$form->getField('Name')->value = 'sometext added';
+    }
 	
 }

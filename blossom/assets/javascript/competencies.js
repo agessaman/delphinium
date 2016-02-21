@@ -21,7 +21,6 @@ $(document).ready(function() {
     //console.log(submissions.length, submissions);//has all tags & score
     // related by assignment_id
 
-	//console.log('JS role:',role);
     /* if Learner, filterData then showCompetencies
         else showCompetencies using fake data,details
              plus configure Settings
@@ -62,16 +61,13 @@ function filterData() {
     }
     console.log(tagList.length, 'tagList:'+tagList);
 
-/*
+	/*
     loop thru tagList to sort tagged submissions into groups, 
-    for each submission in each group count add up amount
+    for each submission in each group add up amount
 
-	add up totalPoints from points_possible in each assignments that match each group assignment_id
+	add up total Points from points_possible in each assignments that match each group assignment_id
 	assignments do NOT have Tags: submissions do NOT have points_possible
-
-construct the data needed for Competency
-for each tagged get assignment points_possible
-*/
+	*/
     //var details=[];// for modal '#detailed' body content
     //var data =[];// json for d3
     var gTotal=0, gAmount=0;
@@ -96,8 +92,7 @@ for each tagged get assignment points_possible
                 }
             }    
         }
-        // construct data for D3
-        // xcale((data[i].percent/100)*maxTotal)
+        // construct data for D3 // xcale((data[i].percent/100)*maxTotal)
 		var percent = Math.round(gAmount/gTotal*100);
         data.push({"name":name,"total":gTotal,"amount":gAmount,"percent":percent});
     }
@@ -119,7 +114,7 @@ for each tagged get assignment points_possible
         var detailStr = JSON.stringify(details);
         console.log(detailStr);
     */
-}// END filterData
+}/* END filterData */
     
 function showCompetencies() {
     var big=[];
@@ -136,20 +131,23 @@ function showCompetencies() {
 	var competenciesView = d3.select("#competenciesView");
 	var competenciesSVG = d3.select("#competenciesSVG");
     var rowHeight = 45;// a property?
-	var competenciesHeight = data.length*rowHeight;
 	var competenciesWidth = 250;// could be a property?
-    ////var competenciesSize='{{competenciesSize}}';
+	var competenciesHeight = data.length*rowHeight;
+	
+    ////var competenciesSize=config.Size.toLowerCase();
+	//console.log('competenciesSize',competenciesSize);
 	if(competenciesSize == "small"){
 		competenciesSVG.attr('width', competenciesWidth / 1.5)
-				.attr('height', competenciesHeight / 1.5);
+						.attr('height', competenciesHeight / 1.5);
 		competenciesView.attr('transform', "scale(.66)");
 	}else if(competenciesSize == "large"){
 		competenciesSVG.attr('width', competenciesWidth * 1.5)
-				.attr('height', competenciesHeight * 1.5);
+						.attr('height', competenciesHeight * 1.5);
         competenciesView.attr('transform', "scale(1.5)");
 	}else{
+		// default
 		competenciesSVG.attr('width', competenciesWidth)
-				.attr('height', competenciesHeight);// default
+						.attr('height', competenciesHeight);
 	}
     
 	// remove preloader
@@ -157,12 +155,13 @@ function showCompetencies() {
     // Only show the d3 if data is valid
     //TEST data=[];
     if(data.length == 0 ) {
-        //console.log('FAIL'); 
-    //No bars would be rendered because there are no tags to define them.
-    //Show a border using the Color to define the Size and instructions to go use Stem.
-    // use the details modal to notify user? $('.modal-body').html(content);
-    //$('#outline:style').css({'border': '1px solid '+competenciesColor, 'width':competenciesWidth+'px', 'height':'250px'});
-    // instructions to setup stem
+	/*
+		No bars would be rendered because there are no tags to define them.
+		Show a border using the Color to define the Size with instructions to setup Stem.
+		use the details modal to notify user? $('.modal-body').html(content);
+		$('#outline:style').css({'border': '1px solid '+competenciesColor, 'width':competenciesWidth+'px', 'height':'250px'});
+		instructions to setup stem
+	*/
         var compview = d3.select("#competenciesSVG");
             compview.attr('height', 160)
                 .append('rect')
@@ -180,20 +179,15 @@ function showCompetencies() {
         
     } else {
         // Show the component
-		
-		////var competenciesColor=''{{competenciesColor}}''; 
-		//set with color picker in backend
-		var percentColor = '#CCCCCC';//'#f0f0f0'// med gray
-		////var competenciesAnimate={{competenciesAnimate}};
-		
-		// add svg and group to default.htm dynamically
+		////var competenciesAnimate=config.Animate;
+		////var competenciesColor=config.Color; 
+		var percentColor = '#CCCCCC';// med gray or inverse amount color
 		var competencies = d3.select("#competenciesView");// a <g>roup
 		var xcale = d3.scale.linear()
 			.domain([0, maxTotal+2])
 			.range([0, competenciesWidth]);
 		//console.log(xcale(80), xcale(398), xcale(598));
 		
-		// show all data or competenciesCount
 		for (var i = 0; i < data.length; i++) {
 			//competency name
 			competencies.append('text')
@@ -233,7 +227,7 @@ function showCompetencies() {
 				.style("stroke",'silver')
 				.style("stroke-width",1);
 		
-			// outline			
+			//outline			
 			competencies.append('rect')
 					.attr('height', 18)
 					.attr('width', xcale(maxTotal))
@@ -288,9 +282,8 @@ function showCompetencies() {
 					//console.log(detailItem[0]);
 					displayDetails(detailItem[0]);
 				});
-		}
-		// end for
-    }/*End Else*/
+		}/* End for( */
+    }/* End Else */
 }/* End showCompetencies */
 
 function addTooltip(text)
@@ -309,13 +302,14 @@ function removeTooltip()
         .duration(500)
         .style("opacity", 0);
 }
-/*
-display assignments that match submissions tag groups
-display rows for details[{'name': align, assignment_id:[{#, #, #, #}]}]
 
-grey = locked : NA unless compare locked_at w/ current date?
-blue = done : also if score = 0 Not Red?
-green=available to do still
+/*
+	display assignments that match submissions tag groups
+	display rows for details[{'name': align, assignment_id:[{#, #, #, #}]}]
+
+	grey = locked : NA unless compare locked_at w/ current date?
+	blue = done : also if score = 0 Not Red?
+	green=available to do still
 */
 function displayDetails(item) {
     
@@ -329,8 +323,7 @@ function displayDetails(item) {
         var assignment = $.grep(assignments, function(elem, indx){
             return elem['assignment_id'] == theId;
         });
-	//console.log('Find module_id');//
-    //console.log(assignment);// NO module id
+		//console.log(assignment);// NO module id
         var submitted = $.grep(submissions, function(elem, indx){
             return elem['assignment_id'] == theId;
         });
@@ -346,7 +339,7 @@ function displayDetails(item) {
                 locked=true;
             }
             //content += '<div class="alert fade in">';
-            ///submitted[0].score='0';// instead of null
+            //submitted[0].score='0';// instead of null
             
         }else if(submitted[0].score == 0){
             content += '<div class="alert alert-info">';// red alert-danger
@@ -364,7 +357,6 @@ function displayDetails(item) {
                 content += ' out of '+assignment[0].points_possible+' points possible';
             }
         }
-        
         content += '</div>';
     }
     //console.log(assignment.length, assignment);

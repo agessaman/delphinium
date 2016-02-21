@@ -5,16 +5,12 @@
     console.log('instance.id: '+config.id);
 	console.log('instance.course: '+config.course_id);
     
-	//var course = {{course|raw}};
-    //console.log('course.id: '+course.id);
-    
     var role = '{{role}}';// comma separated
     console.log('Role: ',role);//string
 	
-    // or from config.Color,Size,Animate
-	var competenciesColor='{{competenciesColor}}';//string
-	var competenciesSize='{{competenciesSize}}'.toLowerCase();//string
-	var competenciesAnimate={{competenciesAnimate}};//boolean
+	var competenciesColor=config.Color;//string
+	var competenciesSize=config.Size.toLowerCase();//string
+	var competenciesAnimate=config.Animate;//boolean
     
 </script>
 {% if ('Learner' in role) %}

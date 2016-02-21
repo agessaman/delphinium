@@ -17,17 +17,17 @@ Configure this components <a data-toggle="modal" href="#content-confirmation"><i
             </div>
             <div class="modal-body">
 				<div class="confirm-container bg-success hide">
-                  <p>Successfully created a new entry!</p>
+                  <p style="text-align:center;">Successfully Updated Entry!</p>
                 </div>
 
                 <form role="form"
                   data-request="{{ __SELF__ }}::onSave"
-                  data-request-success="$el.hide();$('.confirm-container').removeClass('hide');">
+                  data-request-success="$el.hide();$('.confirm-container').removeClass('hide');completed(data);">
 
                     {{ form.formRender()|raw }}
                     
                   <div class="form-group">
-                     <button class="btn btn-primary btn-block btn-lg" type="submit" value="register">Create</button>
+                     <button id="go" class="btn btn-primary btn-block btn-md" type="submit" value="register">Update Component</button>
                   </div>
                 </form>
 
@@ -61,6 +61,20 @@ Configure this components <a data-toggle="modal" href="#content-confirmation"><i
     // Fix Animate checkbox switch
     $('<div style="height:90px;" class="clearfix"></div>').insertBefore('.checkbox-field').parent;
 	$('.checkbox-field').attr('style','margin-left:20px').removeClass('span-right').addClass('span-left');
+	
+	function completed(data)
+	{
+		//config has returned updated
+		location.reload();
+	/*	config = JSON.parse(data['result']);
+		//console.log('config:',config);
+		competenciesColor=config.Color;//string
+		competenciesSize=config.Size.toLowerCase();//string
+		competenciesAnimate=config.Animate;//boolean
+		showCompetencies();// refresh component
+		console.log('instance: '+config.id,config.Name,config.Size,config.Color,config.Animate,config.course_id);
+	*/
+	}
 	
 	console.log('instance: '+config.id,config.Name,config.Size,config.Color,config.Animate,config.course_id);
 </script>

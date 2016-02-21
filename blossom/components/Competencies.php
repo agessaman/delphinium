@@ -1,14 +1,11 @@
 <?php namespace Delphinium\Blossom\Components;
 
-use Delphinium\Blossom\Models\Competencies as CompetenceModel;
 use Cms\Classes\ComponentBase;
-
+use Delphinium\Blossom\Models\Competencies as CompetenceModel;
 use Delphinium\Roots\Roots;
 use Delphinium\Roots\Enums\ActionType;
 use Delphinium\Roots\Requestobjects\AssignmentsRequest;// for submissions
 use Delphinium\Roots\Requestobjects\SubmissionsRequest;// score
-//use Backend\formwidgets\ColorPicker;
-//use Delphinium\Blossom\FormWidgets\ColorPicker;
 
 class Competencies extends ComponentBase
 {
@@ -48,16 +45,12 @@ class Competencies extends ComponentBase
 		//getInstanceOptions()
 		$config = CompetenceModel::find($this->property('instance'));
         //Name is just for instances drop down. Use in component display?
-
-        $this->page['competenciesColor'] = $config->Color;//Main Color for Amount
-        $this->page['competenciesAnimate'] = $config->Animate;
-        $this->page['competenciesSize'] = $config->Size;
 		
         $roots = new Roots();
         $course = $roots->getCourse();
 		//$this->page['course'] = json_encode($course);
 		
-		//add $course->id to $config dynamic here???
+		//add $course->id to $config dynamic for form field
 		$config->course_id = $course->id;
 		$this->page['config'] = json_encode($config);
 		
@@ -168,30 +161,33 @@ class Competencies extends ComponentBase
         }
         return $array_dropdown;
     }
-    
+	
+    /**
+	* update, add course_id
+	* save to database and return updated
+	*/
 	public function onSave()
     {
-        /*
-			https://octobercms.com/docs/database/model
-			$flight = Flight::find(1);
-		*/
 		$config = CompetenceModel::find($this->property('instance'));
-		//global $instanceID;
-		
 		$data = post('Competencies');
-		$data['id'] = $config->id;//$instanceID;
-		//course_id added Now save to database
-		echo 'POSTED:'.json_encode($data);// {"Name":"fff", }
 		
-		//return ['error' => Competencies::create(post('Competencies'))];//modify for this component
+		$config->Name = $data['Name'];
+		$config->Size = $data['Size'];
+		$config->Color = $data['Color'];
+		$config->Animate = $data['Animate'];
+		$config->course_id = $data['course_id'];
+		$config->save();// update original record 
+
+		return json_encode($config);
     }
-	
-    public function create()
-    {
-        // this is create!
-		return ['message' => 'Updated ...'];
-    }
+    
 	public function onUpdate() {
 		return ['message' => 'Updated ...'];
+	}
+	// test: for controller.formExtendFields
+	public function getConfig()
+    {
+		$config = CompetenceModel::find($this->property('instance'));
+        return $config;
 	}
 }
