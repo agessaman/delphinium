@@ -1,21 +1,17 @@
 <script>
+    // component configuration [id,Name,Color,Size,Animate,course_id]
+    var config = {{config|raw}};
+    console.log('instance.Name: '+config.Name);
+    console.log('instance.id: '+config.id);
+	console.log('instance.course: '+config.course_id);
     
-    var config = {{config|raw}};//Name
-    console.log('instance.Name = '+config.Name);
-    console.log('instance.id = '+config.id);
+	//var course = {{course|raw}};
+    //console.log('course.id: '+course.id);
     
-    var course = {{course|raw}};
-    console.log('course_id:'+course.id);// onRender
-    //console.log('course:'+JSON.stringify(course));// onRender
-    var role = '{{role}}';// comma separated varChar
-    console.log('Role: ',role);// array or string
-    
-    
-	// Only available if DevConfig is student role=Learner
-    // make available to competencies.js
-	//var assignments={{assignments|raw}};//json
-	//var submissions = {{submissions|raw}};
-    
+    var role = '{{role}}';// comma separated
+    console.log('Role: ',role);//string
+	
+    // or from config.Color,Size,Animate
 	var competenciesColor='{{competenciesColor}}';//string
 	var competenciesSize='{{competenciesSize}}'.toLowerCase();//string
 	var competenciesAnimate={{competenciesAnimate}};//boolean

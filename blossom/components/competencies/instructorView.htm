@@ -1,29 +1,21 @@
-<!-- Instructor View : element for d3 to place competencies -->
+<!-- Instructor View with Settings -->
 
-<p>Configure this components <a data-toggle="modal" href="#content-confirmation" class=""><i class="icon-cog"></i> Settings</a></p>
+<div class="">
+Configure this components <a data-toggle="modal" href="#content-confirmation"><i class="icon-cog"></i> Settings</a>
+</div>
+<!-- place competencies -->
 
 {% partial 'competencies::display' %}
 
-<!--
-https://medium.com/@matissjanis/octobercms-using-backend-forms-in-frontend-component-fe6c86f9296b#.ge50nlmtc
-
-/modules/backend/Widgets/form/partials/_field_colorpicker.htm'
-    Front end form 
--->
-
-<!-- Front end form -->
-
-
-<!-- Configuration modal : Replaced with Front End Form -->
+<!-- Configuration modal with Front End Form -->
 <div class="control-popup modal fade" id="content-confirmation" tabindex="-1" role="dialog">
     <div class="modal-dialog">
-        <div class="modal-content" style="width:530px">
+        <div class="modal-content" style="width:490px">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title">Component Settings</h4>
             </div>
             <div class="modal-body">
-				<i id="loading" class="icon-refresh"></i>
 				<div class="confirm-container bg-success hide">
                   <p>Successfully created a new entry!</p>
                 </div>
@@ -41,59 +33,34 @@ https://medium.com/@matissjanis/octobercms-using-backend-forms-in-frontend-compo
 
             </div>
 			<div style="clear:both; height:1.5em"></div>
-            <div class="modal-footer">
+            <!--div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="updateComponent()">Update</button>
-            </div>
+            </div-->
         </div>
     </div>
 </div>
 
 <script>
 /*
-    use faked data in competency
+    use faked data in competency display : bars are not clickable
     After changing settings, Refresh the component showCompetencies()
+	course id has been added dynamically to config.course_id
     https://medium.com/@matissjanis/octobercms-using-backend-forms-in-frontend-component-fe6c86f9296b#.ge50nlmtc
-    
 */
     var data = [{"name":"Align","total":210,"amount":80,"percent":38},{"name":"Ideas","total":596,"amount":167,"percent":28},{"name":"People","total":830,"amount":299,"percent":36}];
-    
     var details = [{"name":"Align","assignments":[{"id":1660401},{"id":1660391},{"id":1660419},{"id":1660418}]},{"name":"Ideas","assignments":[{"id":1660391},{"id":1660400},{"id":1660403},{"id":1660392},{"id":1660390},{"id":1660394}]},{"name":"People","assignments":[{"id":1660391},{"id":1660408},{"id":1660392},{"id":1660390}]}];
-    
-    // availableColors in ColorPicker.php
-    //var availableColors = [{{availableColors|raw}}];
+    var assignments=[];// for click bar
 
-    // Fix animate switch
-    //$('<p>&nbsp;</p>').insertAfter('#ColorPicker-formColor-Color');
-    $('<div style="height:30px;"></div>').insertBefore('.switch-field').parent;
-    $('.span-right').removeClass('span-right').addClass('span-left');// remove
-    
-	function updateComponent(){
-		$( "#loading" ).show( "slow", function() {});
-        // function in ???
-		$('#updateForm').request('onUpdate', {
-			success: function(data) {
-				//location.reload();
-                console.log(data);
-                //$('#content-confirmation').hide();//modal('toggle');
-                //$('.modal').modal('hide');
-                // doesn't dismiss overlay
-			}
-		})
+	var configVal=[config.Name, config.Size, config.Color, config.Animate, config.course_id];
+	var fieldIDs=['Form-field-Competencies-Name','Form-field-Competencies-Size','ColorPicker-formColor-input-Color','Form-field-Competencies-Animate','Form-field-Competencies-course_id'];
+	
+	//fill the form with current configuration
+	for(var i=0; i<configVal.length; i++) {
+		$('#'+fieldIDs[i]).val(configVal[i]);
 	}
-/*
-	var s = document.getElementById("selectSize");
-	for ( var i = 0; i < s.options.length; i++ ) {
-        if ( s.options[i].value == "{{bonusSize}}" ) {
-            s.options[i].selected = true;
-        }
-    }
-	var s = document.getElementById("selectAnimate");
-	for ( var i = 0; i < s.options.length; i++ ) {
-        if ( s.options[i].value == "{{bonusAnimate}}" ) {
-            s.options[i].selected = true;
-        }
-    }
-*/
+    // Fix Animate checkbox switch
+    $('<div style="height:90px;" class="clearfix"></div>').insertBefore('.checkbox-field').parent;
+	$('.checkbox-field').attr('style','margin-left:20px').removeClass('span-right').addClass('span-left');
+	
+	console.log('instance: '+config.id,config.Name,config.Size,config.Color,config.Animate,config.course_id);
 </script>
-<script type="text/javascript" src="plugins/delphinium/blossom/assets/javascript/competencies.js"></script>

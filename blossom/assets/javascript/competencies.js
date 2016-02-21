@@ -21,9 +21,9 @@ $(document).ready(function() {
     //console.log(submissions.length, submissions);//has all tags & score
     // related by assignment_id
 
-//console.log('JS role:',role);
-    /* if learner, filterData then showCompetencies
-        else Instructor, showCompetencies using fake data,details
+	//console.log('JS role:',role);
+    /* if Learner, filterData then showCompetencies
+        else showCompetencies using fake data,details
              plus configure Settings
     */
     if(role == 'Learner') {
@@ -72,7 +72,6 @@ function filterData() {
 construct the data needed for Competency
 for each tagged get assignment points_possible
 */
-    
     //var details=[];// for modal '#detailed' body content
     //var data =[];// json for d3
     var gTotal=0, gAmount=0;
@@ -153,6 +152,8 @@ function showCompetencies() {
 				.attr('height', competenciesHeight);// default
 	}
     
+	// remove preloader
+	$('#outline').removeClass('spinner');
     // Only show the d3 if data is valid
     //TEST data=[];
     if(data.length == 0 ) {
@@ -318,6 +319,7 @@ green=available to do still
 */
 function displayDetails(item) {
     
+	if(assignments.length==0) { console.log('Instructor View '); return; }
     $('.modal-title').html(item.name+' Competency Details');
     var content='';
     var locked=false;

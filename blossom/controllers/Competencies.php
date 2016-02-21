@@ -3,7 +3,7 @@
 use Flash;
 use BackendMenu;
 use Backend\Classes\Controller;
-use Backend\formwidgets\ColorPicker;
+use Delphinium\Blossom\FormWidgets\ColorPicker;
 use Delphinium\Blossom\Models\Competencies as ConfigModel;
 
 /**
@@ -26,7 +26,6 @@ class Competencies extends Controller
         BackendMenu::setContext('Delphinium.Greenhouse', 'greenhouse', 'greenhouse');
     }
 	/*
-	initForm() error
 	https://octobercms.com/forum/post/plugin-initform-error?page=1
 	Make sure there are no tabs in yaml file (spaces only!)
 	*/
@@ -51,5 +50,7 @@ class Competencies extends Controller
 
         return $this->listRefresh();
     }
-    
+	
+    //index_onCreate & onSave ???
+	
 }

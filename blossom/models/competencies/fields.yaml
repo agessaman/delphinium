@@ -6,6 +6,7 @@ fields:
     id:
         label: ID
         disabled: true
+        hidden: true
 
     Name:
         label: Name
@@ -17,14 +18,12 @@ fields:
         label: Size
         span: right
         type: dropdown
-        containerAttributes: {data-control:"balloon-selector"}
-        cssClass: control-balloon-selector
         default: Medium
         options: 
             Small: [Small 167 pixels wide]
             Medium: [Medium 250 pixels wide]
             Large: [Large 375 pixels wide]
-        commentAbove: Select a size for this component
+        comment: Select a size for this component
 
     Color:
         label: Color
@@ -34,15 +33,14 @@ fields:
 
     Animate:
         label: Animate
-        type: switch
+        type: checkbox
         span: auto
         containerAttributes: {title:"Yes, I like animation!", style: "padding-top:10px;"}
         default: true
-        comment: ON = Animated bars
+        comment: Checked = Animated bars
 
     course_id:
         label: Course id
         span: left
-        disabled: true
         placeholder: Course id
-        comment: Enter the course id number
+        comment: course id is generated dynamically 

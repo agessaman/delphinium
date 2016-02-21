@@ -7,7 +7,8 @@ use Delphinium\Roots\Roots;
 use Delphinium\Roots\Enums\ActionType;
 use Delphinium\Roots\Requestobjects\AssignmentsRequest;// for submissions
 use Delphinium\Roots\Requestobjects\SubmissionsRequest;// score
-
+//use Backend\formwidgets\ColorPicker;
+//use Delphinium\Blossom\FormWidgets\ColorPicker;
 
 class Competencies extends ComponentBase
 {
@@ -19,10 +20,21 @@ class Competencies extends ComponentBase
         ];
     }
     
+	public function defineProperties()
+    {
+        return [
+            'instance'	=> [
+                'title'             => 'Competencies Configuration',
+                'description'       => 'Select an instance',
+                'type'              => 'dropdown',
+            ]
+        ];
+    }
+	
     public function onStart()
     {
         /* COURSE & INSTANCE FAIL IF HERE use onRender
-            get course_id I am in (DEV)
+            get course_id component is in (DEV)
             get instance (with course ID)???
 
             if (no instance with this course ID){
@@ -30,81 +42,96 @@ class Competencies extends ComponentBase
             }
             launch instance with course ID
         */ 
-        
     }
     public function onRender()
     {
-		$config = CompetenceModel::find($this->property('instance'));//getInstanceOptions
-        // Name is just for instances drop down. not used in component display
-        $this->page['config'] = json_encode($config);//->Name;
+		//getInstanceOptions()
+		$config = CompetenceModel::find($this->property('instance'));
+        //Name is just for instances drop down. Use in component display?
 
         $this->page['competenciesColor'] = $config->Color;//Main Color for Amount
         $this->page['competenciesAnimate'] = $config->Animate;
         $this->page['competenciesSize'] = $config->Size;
-        
+		
         $roots = new Roots();
         $course = $roots->getCourse();
-        $this->page['course'] = json_encode($course);
-        
+		//$this->page['course'] = json_encode($course);
+		
+		//add $course->id to $config dynamic here???
+		$config->course_id = $course->id;
+		$this->page['config'] = json_encode($config);
+		
+		// comma delimited string ?
         if (!isset($_SESSION)) { session_start(); }
-        $roleStr = $_SESSION['roles'];// from dev::role ?
+        $roleStr = $_SESSION['roles'];
         $this->page['role'] = $roleStr;
-        
     }
 
     public function onRun()
     {
 		try
         {
-            //moved to display.htm
-            //$this->addCss("/plugins/delphinium/blossom/assets/css/bootstrap.min.css");
-            //$this->addCss("/plugins/delphinium/blossom/assets/css/competencies.css");//overide alert css !important
-            //echo '<div id="loader" class="container spinner"></div>';//preloader USELESS
-            
-            //$this->addJs("/plugins/delphinium/blossom/assets/javascript/jquery.min.js");// before BS.js
-            //$this->addJs("/plugins/delphinium/blossom/assets/javascript/bootstrap.min.js");
-			//$this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
-            //$this->addJs("/plugins/delphinium/blossom/assets/javascript/competencies.js");
-			
+            $this->addCss("/plugins/delphinium/blossom/assets/css/bootstrap.min.css");
+            $this->addCss("/plugins/delphinium/blossom/assets/css/competencies.css");//overide alert !important
+
 			/*get Assignments & Submissions ***** & enrolled students?
-				data N/A if DevConfig Instructor  MUST BE for a Student
+				live data is only available if viewed by a Learner
+				fake data is used if Instructor
                 
-                if instructor, configure component
-				add: Instructor can choose a student to view progress?
-                add: Instructor can configure Stem from here?
+                if instructor, add configure component
+				todo: Instructor can choose a student to view their progress?
+                todo: Instructor can configure Stem from here?
 			**************************************************/
 			$roots = new Roots();
-            
-			$req = new AssignmentsRequest(ActionType::GET);
-			$res = $roots->assignments($req);
-
-			$assignmentIds = array();// for submissionsRequest
-			$assignments = array();// for points_possible // REPLACE
-			foreach ($res as $assignment) {
-				array_push($assignmentIds, $assignment["assignment_id"]);
-				array_push($assignments, $assignment);
+			//PHP: if($_SESSION['roles'].indexOf('Instructor'))
+			if($_SESSION['roles'] == 'Instructor')
+			{
+				//https://medium.com/@matissjanis/octobercms-using-backend-forms-in-frontend-component-fe6c86f9296b#.ge50nlmtc
+				$this->addCss('/plugins/delphinium/blossom/formwidgets/colorpicker/assets/vendor/colpick/css/colpick.css', 'delphinium.blossom');
+				$this->addJs('/plugins/delphinium/blossom/formwidgets/colorpicker/assets/vendor/colpick/js/colpick.js', 'delphinium.blossom');
+				$this->addCss('/plugins/delphinium/blossom/formwidgets/colorpicker/assets/css/colorpicker.css', 'delphinium.blossom');
+				$this->addJs('/plugins/delphinium/blossom/formwidgets/colorpicker/assets/js/colorpicker.js', 'delphinium.blossom');
+				
+				// Build a back-end form with the context of 'frontend'
+				$formController = new \Delphinium\Blossom\Controllers\Competencies();
+				$formController->create('frontend');
+				
+				// Append the formController to the page
+				$this->page['form'] = $formController;
+				//form items should match $config->Name, color, animate, id, course
+				//Competencies[Size]
 			}
-            
-			$this->page['assignments']=json_encode($assignments);
-            
-            /* is this in $_SESSION? Learner id
-                would it be possible for an instructor view 
-                to choose an enrolled student from a dropdown [enrolled]
-                to see how that student is doing
-            */
-			$studentIds = null;//['1604486'];//Test Student
-			$allStudents = true;
-			$allAssignments = true;
-			$multipleStudents = false;
-			$multipleAssignments = true;
-			$includeTags = true;
-			$grouped = true;
+			if($_SESSION['roles'] == 'Learner')
+			{
+				$req = new AssignmentsRequest(ActionType::GET);
+				$res = $roots->assignments($req);
 
-			$req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, $assignmentIds, $allAssignments, $multipleAssignments, $includeTags, $includeTags, $grouped);
+				$assignmentIds = array();// for submissionsRequest
+				$assignments = array();// for points_possible // REPLACE
+				foreach ($res as $assignment) {
+					array_push($assignmentIds, $assignment["assignment_id"]);
+					array_push($assignments, $assignment);
+				}
+				
+				$this->page['assignments']=json_encode($assignments);
+				
+				/* todo:
+					instructor chooses an enrolled student from a dropdown
+					to see how that students competencies?
+				*/
+				$studentIds = null;//['1604486'];//Test Student
+				$allStudents = true;
+				$allAssignments = true;
+				$multipleStudents = false;
+				$multipleAssignments = true;
+				$includeTags = true;
+				$grouped = true;
 
-			$submissions = $roots->submissions($req);
-			$this->page['submissions']=json_encode($submissions);// score
-            
+				$req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, $assignmentIds, $allAssignments, $multipleAssignments, $includeTags, $includeTags, $grouped);
+
+				$submissions = $roots->submissions($req);
+				$this->page['submissions']=json_encode($submissions);// score
+            }
         }
         catch (\GuzzleHttp\Exception\ClientException $e) {
             return;
@@ -125,17 +152,6 @@ class Competencies extends ComponentBase
             return \Response::make($this->controller->run('error'), 500);
         }
     }
-	
-	public function defineProperties()
-    {
-        return [
-            'instance'	=> [
-                'title'             => 'Competencies Configuration',
-                'description'       => 'Select an instance',
-                'type'              => 'dropdown',
-            ]
-        ];
-    }
 
     public function getInstanceOptions()
     {
@@ -143,7 +159,6 @@ class Competencies extends ComponentBase
 		*  The method should have a name in the following format: get*Property*Options()
 		*  where Property is the property name
 		*/
-		
 		$instances = CompetenceModel::where("Name","!=","")->get();
         $array_dropdown = ['0'=>'- select Instance - '];//text in dropdown
 
@@ -154,4 +169,29 @@ class Competencies extends ComponentBase
         return $array_dropdown;
     }
     
+	public function onSave()
+    {
+        /*
+			https://octobercms.com/docs/database/model
+			$flight = Flight::find(1);
+		*/
+		$config = CompetenceModel::find($this->property('instance'));
+		//global $instanceID;
+		
+		$data = post('Competencies');
+		$data['id'] = $config->id;//$instanceID;
+		//course_id added Now save to database
+		echo 'POSTED:'.json_encode($data);// {"Name":"fff", }
+		
+		//return ['error' => Competencies::create(post('Competencies'))];//modify for this component
+    }
+	
+    public function create()
+    {
+        // this is create!
+		return ['message' => 'Updated ...'];
+    }
+	public function onUpdate() {
+		return ['message' => 'Updated ...'];
+	}
 }

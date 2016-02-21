@@ -5,8 +5,9 @@ use Backend;
 use Event;
 
 use Backend\Classes\FormWidgetBase;
-use Backend\formwidgets\ColorPicker;
-use Backend\widgets\form\Form;// checkbox & radio ?
+use Delphinium\Blossom\FormWidgets\ColorPicker;
+//use Backend\formwidgets\ColorPicker;
+//use Backend\widgets\form\Form;// checkbox & radio ?
 
 /**
  * Blossom Plugin Information File
@@ -53,13 +54,9 @@ class Plugin extends PluginBase
     public function registerFormWidgets()
     {
         return[
-            'Backend\FormWidgets\ColorPicker' => [
+            'Delphinium\Blossom\FormWidgets\ColorPicker' => [
                 'label' => 'Color picker',
                 'code' => 'colorpicker'
-            ],
-            'Backend\Widgets\Form' => [
-                'label' => 'Form',
-                'code' => 'form'
             ]
         ];
     }
