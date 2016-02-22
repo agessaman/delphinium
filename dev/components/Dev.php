@@ -40,6 +40,7 @@ class Dev extends ComponentBase
         $roots = new Roots();
         $course = $roots->getCourse();
         $account_id = $course->account_id;
+
         try
         {
             $account = $roots->getAccount($account_id);

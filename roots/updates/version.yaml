@@ -27,4 +27,14 @@
     - modify_users_table.php
 1.0.6:
     - Modified assignments points possible to be a float instead of an int
+<<<<<<< HEAD
     - modify_assignments_table.php
+=======
+    - modify_assignments_table.php
+1.0.7:
+    - Added alias field to users table
+    - move_alias_users_course.php
+1.0.8:
+    - Add sis_login_id to users table
+    - modify_users_table_add_login_id.php
+>>>>>>> upstream/master

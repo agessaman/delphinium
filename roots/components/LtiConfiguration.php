@@ -163,7 +163,8 @@ class LtiConfiguration extends ComponentBase {
                 if(is_null($user))
                 {//get all students from Canvas
                     $roots = new Roots();
-                    $roots->getStudentsInCourse();
+                    $users = $roots->getStudentsInCourse();
+
                 }
 
                 //Also, every so often (every 12 hrs?) we will check to make sure that students who have dropped the class are deleted from the users_course table

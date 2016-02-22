@@ -1,0 +1,29 @@
+# ===================================
+#  List Column Definitions
+# ===================================
+
+columns:
+    id:
+        label: ID
+        searchable: true
+
+    name:
+        label: Name
+        searchable: true
+
+    client_id:
+        label: Client Id
+        searchable: true
+
+    client_secret:
+        label: Client name
+        searchable: true
+
+
+         $table->increments('id');
+        $table->string('workflow');
+        $table->longText('encrypted_access_token');
+        $table->longText('encrypted_refresh_token');
+        $table->integer('expires_in')->unsigned();
+        $table->string('token_type');
+        $table->string('scope');

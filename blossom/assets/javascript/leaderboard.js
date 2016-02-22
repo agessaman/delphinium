@@ -1,9 +1,40 @@
+var scores = [];
 $(document).ready(function(){
+	getUserData();
 	//scaleLeaderboard();
 	makeAccordion();
-	animateAccordion();
+	//animateAccordion();
 });
 
+function getUserData()
+{
+	idsArr=[];
+	for(var i=0;i<=users.length-1;i++)// for(var i=0;i<=9;i++)
+	{
+		var currentStudent = users[i];
+		idsArr.push(currentStudent.user_id);
+		if((i!=0)&&(i%10==0))
+		{//we'll send requests every 10 students.
+
+			$.get("gradebook/getSetOfUsersMilestoneInfo",{experienceInstanceId:experienceInstanceId, userIds:(idsArr)},function(data,status,xhr)
+			{
+				scores= scores.concat(data);
+			});
+
+			var idsArr =[];//initialize the array again.
+		}
+
+	}
+	if(idsArr.length>0)
+	{
+		$.get("gradebook/getSetOfUsersMilestoneInfo",{experienceInstanceId:experienceInstanceId, userIds:(idsArr)},function(data,status,xhr)
+		{
+			scores= scores.concat(data);
+			console.log(scores);
+		});
+	}
+
+}
 function scaleLeaderboard(){
 	var height,width;
 	if(leaderboardSize == "Small"){

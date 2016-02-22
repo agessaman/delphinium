@@ -557,7 +557,7 @@ class Gradebook extends ComponentBase {
         $masterArr=array();
         foreach($filteredUsers as $user)
         {
-            $item = $this->getUserMilestoneInfo($user['user'], $milestonesOrderedByPointsDesc, $ptsPerSecond, $stDate, $endDate, $bonusPerSecond, $bonusSeconds,
+            $item = $this->getUserMilestoneInfo($user, $milestonesOrderedByPointsDesc, $ptsPerSecond, $stDate, $endDate, $bonusPerSecond, $bonusSeconds,
                 $penaltyPerSecond, $penaltySeconds, $maxExperiencePts, $grading_scheme);
             $masterArr[] = $item;
         }
@@ -618,8 +618,9 @@ class Gradebook extends ComponentBase {
 
         // echo json_encode($userMilestoneInfo);return;
         $userObj = new \stdClass();
-        $userObj->id = $user['user_id'];
-        $userObj->name = $user['name'];
+        $userObj->id = $user['user']['user_id'];
+        $userObj->name = $user['user']['name'];
+        $userObj->alias = $user['alias'];
         //add link to user profile
         if (!isset($_SESSION)) {
             session_start();
@@ -644,7 +645,7 @@ class Gradebook extends ComponentBase {
         }
         $userObj->bonuses = $obj->bonus;
         $userObj->penalties = $obj->penalties;
-        $userObj->totalBP = $obj->bonus-$obj->penalties;
+        $userObj->totalBP = $obj->bonus+$obj->penalties;
         $userObj->score = $carryingScore;
         $totalPoints = $carryingScore + $obj->bonus + $obj->penalties;
         $userObj->total = $totalPoints;

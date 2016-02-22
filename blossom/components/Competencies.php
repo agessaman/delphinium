@@ -49,21 +49,16 @@ class Competencies extends ComponentBase
 		//$this->page['course'] = json_encode($course);
         //$course->id or $_SESSION['courseID']
 		
-        $this->page['crsid'] = $_SESSION['courseID'];
+        $this->page['crsid'] = $_SESSION['courseID'];// test
         
         /*
         When a component wakes up in a course, it needs to know what course it is assigned to
         and which copy it is so it can configure itself properly.
         
-        
         if courseID is available, get records matching course ID
             could be multiple
         
-        
-        
-
         Using this information, it can select the proper instance to load with the appropriate configuration data.
-        
         
         */
         

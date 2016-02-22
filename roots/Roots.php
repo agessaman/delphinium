@@ -930,13 +930,16 @@ class Roots
         }
     }
     
-    public function getQuizSubmission($quizId, $quizSubmissionId=null)
+    public function getQuizSubmission($quizId, $quizSubmissionId=null, $studentId=null)
     {
         if(!isset($_SESSION)) 
         { 
             session_start(); 
     	}
-        $studentId = $_SESSION['userID'];
+        if(is_null($studentId))
+        {
+            $studentId = $_SESSION['userID'];
+        }
         $quizSubmission = $this->dbHelper->getQuizSubmission($quizId, $studentId);
         if(is_null($quizSubmission))
         {//try to get it from the LMS
@@ -993,7 +996,7 @@ class Roots
             }
         }
     }
-    public function postQuizTakingSession($quizId)
+    public function postQuizTakingSession($quizId, $studentId)
     {
         if(!isset($_SESSION)) 
         { 
@@ -1002,16 +1005,35 @@ class Roots
         $lms = strtoupper($_SESSION['lms']);
         if(Lms::isValidValue($lms))
         {
-            $studentId = $_SESSION['userID'];
             switch ($lms)
             {
                 case (Lms::CANVAS):
-                    $this->canvasHelper->postQuizTakingSession($quizId);
+                    $this->canvasHelper->postQuizTakingSession($quizId, $studentId);
                     return $this->dbHelper->getQuizSubmission($quizId, $studentId);
             }
         }else
         {
            throw new \Exception("Invalid LMS");  
+        }
+    }
+
+    public function updateStudentQuizScore($quizId, $quizSubmission, array $questions, $totalPointsToFudge)
+    {
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
+        $lms = strtoupper($_SESSION['lms']);
+        if(Lms::isValidValue($lms))
+        {
+            switch ($lms)
+            {
+                case (Lms::CANVAS):
+                    return $this->canvasHelper->updateStudentQuizScore($quizId, $quizSubmission, $questions, $totalPointsToFudge);
+            }
+        }else
+        {
+            throw new \Exception("Invalid LMS");
         }
     }
     
@@ -1053,5 +1075,25 @@ class Roots
             {
                throw new \Exception("Invalid LMS");  
             } 
+    }
+
+    public function getQuizSubmissionQuestions($quizSubmission)
+    {
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
+        $lms = strtoupper($_SESSION['lms']);
+        if(Lms::isValidValue($lms))
+        {
+            switch ($lms)
+            {
+                case (Lms::CANVAS):
+                    return $this->canvasHelper->getQuizSubmissionQuestions($quizSubmission);
+            }
+        }else
+        {
+            throw new \Exception("Invalid LMS");
+        }
     }
 }
