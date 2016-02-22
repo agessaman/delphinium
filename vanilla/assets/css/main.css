@@ -1,0 +1,27 @@
+.name{
+	text-align:center;
+}
+.questdiv{
+    width: 90%;
+    margin: auto;
+    height: auto;
+    padding: 10px;
+    border: 0.5em solid #336033;
+    background-color: #efefef;
+}
+.ansholder{
+    margin: auto;
+    width: 80%;/*Must be set to center*/
+    height: auto;
+}
+.answdiv{
+    float: left;
+    margin-left: auto;
+    margin-right: 20px;
+    width: auto;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    border: 0.2em solid #336033;
+    background-color: #efffef;
+}

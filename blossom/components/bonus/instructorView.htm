@@ -106,13 +106,13 @@
 <script>
 	var s = document.getElementById("selectSize");
 	for ( var i = 0; i < s.options.length; i++ ) {
-        if ( s.options[i].value == {{bonusSize}} ) {
+        if ( s.options[i].value == "{{bonusSize}}" ) {
             s.options[i].selected = true;
         }
     }
 	var s = document.getElementById("selectAnimate");
 	for ( var i = 0; i < s.options.length; i++ ) {
-        if ( s.options[i].value == {{bonusAnimate}} ) {
+        if ( s.options[i].value == "{{bonusAnimate}}" ) {
             s.options[i].selected = true;
         }
     }

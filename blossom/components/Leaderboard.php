@@ -11,7 +11,6 @@ use Delphinium\Blossom\Components\Experience as ExperienceComponent;
 
 class Leaderboard extends ComponentBase
 {
-
     public $roots;
     public $gradebook;
 
@@ -47,6 +46,7 @@ class Leaderboard extends ComponentBase
         }
     }
 
+
     public function onRender()
     {
         try {
@@ -60,6 +60,7 @@ class Leaderboard extends ComponentBase
             $this->page['users'] = json_encode($users);
             $this->page['experienceInstanceId']=$this->property('Experience');
         }
+
         catch (\GuzzleHttp\Exception\ClientException $e) {
             return;
         }
@@ -77,7 +78,9 @@ class Leaderboard extends ComponentBase
                 return \Response::make($this->controller->run('nonlti'), 500);
             }
             return \Response::make($this->controller->run('error'), 500);
+
         }
+
     }
 
 }

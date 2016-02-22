@@ -35,6 +35,21 @@ class TestRoots extends ComponentBase
     public $roots;
     public $canvasHelper;
     public $dbHelper;
+	
+	/***********************************
+		holds function result after onRun
+		currently only:$this->testGettingSingleAssignment();
+		$this->page['thePages']=$results;// available to twig!
+		//https://octobercms.com/docs/plugin/components
+	*/
+	public $results;// TJones
+	/*TJones: usage in main page: {{ testRoots.showResults }} */
+    public function showResults()
+	{
+		global $results;
+		return $results;
+	}
+	/***********************************/
     public function componentDetails()
     {
         return [
@@ -42,14 +57,18 @@ class TestRoots extends ComponentBase
             'description' => 'This component will test the Roots API'
         ];
     }
-    
+    // global $results ?
     public function onRun()
     {  
         $this->roots = new Roots();
         $this->canvasHelper = new CanvasHelper();
         $this->dbHelper = new DbHelper();
 //        $this->refreshCache();
+<<<<<<< HEAD
+        $this->test();// empty
+=======
         $this->test();
+>>>>>>> upstream/master
 //        $this->testBasicModulesRequest();
 //        $this->testDeleteTag();
 //        $this->testAddingUpdatingTags();
@@ -63,7 +82,7 @@ class TestRoots extends ComponentBase
 //        $this->testAddingModuleItem();
 //        
 //        $this->testingGettingAssignments();
-//        $this->testGettingSingleAssignment();
+		$this->testGettingSingleAssignment();//1660430;//theAssignment
         
 //        $this->testAssignmentGroups();
 //        $this->testSingleAssignmentGroup();
@@ -81,9 +100,9 @@ class TestRoots extends ComponentBase
 //        $this->testGetCourse();
 //        $this->testGetAccount();
 //        $this->testGetEnrollments();
-//        $this->testGetQuiz();
+       $this->testGetQuiz();// aQuiz
 //        $this->testGetQuizQuestions();
-//        $this->testGetAllQuizzes();
+ ///       $this->testGetAllQuizzes();//'allQuizzes' curlFactory Err:  return function ($ch, $h) use (
 //        $this->testGetPages();
 //        $this->testQuizTakingWorkflow();
 //        $this->testIsQuestionAnswered();
@@ -277,12 +296,20 @@ class TestRoots extends ComponentBase
     
     private function testGettingSingleAssignment()
     {
-        $assignment_id = 1660430;
+        $assignment_id = 1660430;//id//theAssignment
         $freshData = false;
         $includeTags = true;
         $req = new AssignmentsRequest(ActionType::GET, $assignment_id, $freshData, null, $includeTags);
-        $res = $this->roots->assignments($req);
-        echo json_encode($res);
+      $res = json_encode($this->roots->assignments($req));
+		//test obj as json || or store a global $Results ?
+		echo "<p>";
+        echo $res;// or // return json_encode($res);
+		echo " json encoded</p>";
+		//Tjones:
+		$this->page['theAssignment']=$res;// available to twig!
+		//https://octobercms.com/docs/plugin/components
+		global $results;
+		$results=$res;// stored global testRoots.showResults
     }
     
     private function testAssignmentGroups()
@@ -559,16 +586,30 @@ class TestRoots extends ComponentBase
     {
         $req = new QuizRequest(ActionType::GET, null, $fresh_data = true, true);
         echo json_encode($this->roots->quizzes($req));
+		$this->page['allQuizzes']=$req;// available to twig!
     }
     public function testGetQuiz()
     {   
+<<<<<<< HEAD
+        $req = new QuizRequest(ActionType::GET, 621794, $fresh_data = false, true);
+        $result = $this->roots->quizzes($req);//623912 ,true
+		//test obj NOTjson single T/F question
+		echo "<p>";
+=======
         $req = new QuizRequest(ActionType::GET, 623912, $fresh_data = true, true);
         $result = $this->roots->quizzes($req);
+>>>>>>> upstream/master
         echo json_encode($result);
+		echo "<em> NOT json</em></p>";
+		$this->page['aQuiz']=$result;// available to twig!
     }
     public function testGetPages()
     {
-        echo json_encode($this->roots->getPages());
+        $results = json_encode($this->roots->getPages());
+		echo $results;
+		echo "<hr/>";
+		$this->page['thePages']=$results;// available to twig!
+		//https://octobercms.com/docs/plugin/components
     }
     
     public function testGetQuizQuestions()
@@ -607,6 +648,12 @@ class TestRoots extends ComponentBase
 
     public function testQuizTakingWorkflow()
     {
+<<<<<<< HEAD
+        $quizId = 656063;
+        $questionId = 11472511;
+        
+        $quizSubmission = $this->roots->getQuizSubmission($quizId);
+=======
         //in order for this function to work you must update the values below with valid data
         $quizId = 658184;//a quiz that is published and has not been turned in
         $questionId = 11517951; //a question id that belongs to the quiz id listed above
@@ -616,6 +663,7 @@ class TestRoots extends ComponentBase
 
         
         $quizSubmission = $this->roots->getQuizSubmission($quizId, null, $studentId);
+>>>>>>> upstream/master
 
         if(is_null($quizSubmission))
         {//it wasn't on canvas or in the db -- create a new submission
@@ -627,6 +675,27 @@ class TestRoots extends ComponentBase
         //get the question and see if it's answered
         $isAnswered=false;
         $isAnswered = $this->roots->isQuestionAnswered($quizId, $questionId, $quizSubmission->quiz_submission_id);
+<<<<<<< HEAD
+
+
+//        $canvas = new CanvasHelper();
+//        $result = $canvas->updateStudentQuizScore($quizId, $quizSubmission, 2);
+//
+//        echo json_encode($result);return;
+
+
+//        if($isAnswered){
+//            echo "was answered";//do something if the question has been answered
+//        }
+//        else
+//        {//answer it. Still working on this
+////            echo "was not answered";
+////            $quizQuestion = $this->roots->getQuizQuestion($quizId, $questionId);
+//
+//            $questionsWrap = new \stdClass();
+//            $questionsWrap->attempt = $quizSubmission->attempt;
+//            $questionsWrap->validation_token =  $quizSubmission->validation_token;
+=======
 
 
 //
@@ -676,9 +745,42 @@ class TestRoots extends ComponentBase
 //                case "multiple_choice_question":
 //                    $answer->answer = 1;
 //                    break;
+>>>>>>> upstream/master
 //
-//            }
+//            $quizQuestionsArr = array();
 //
+<<<<<<< HEAD
+//            $answersArr = array();
+//            $answer = new \stdClass();
+//            $answer->id = $questionId;
+//            $answer->answer = 'True';
+//            $answersArr[] = $answer;
+//
+//            $questionsWrap->quiz_questions = $answersArr;
+////
+////            echo json_encode($questionsWrap);
+////
+////              //the "answer" will vary between question types
+////            switch(strtolower($quizQuestion->type))
+////            {
+////                case "text":
+////                    break;
+////                case "multiple_choice_question":
+////                    $answer->answer = 1;
+////                    break;
+////
+////            }
+////
+////            $questionsWrap[] = $answer;
+////            //answer question
+////
+//
+//
+//
+////            $result =$this->canvasHelper->postAnswerQuestion($quizSubmission, $questionsWrap);
+////            echo json_encode($result);
+//        }
+=======
 //            $questionsWrap[] = $answer;
 ////            //answer question
 ////
@@ -689,6 +791,7 @@ class TestRoots extends ComponentBase
 //            $result =$this->canvasHelper->postAnswerQuestion($quizSubmission, $answerArr, $studentId);
 //            var_dump($result);
         }
+>>>>>>> upstream/master
         
         //submit the quiz
 //        $res = $this->roots->postTurnInQuiz($quizId, $quizSubmission);
@@ -760,6 +863,8 @@ class TestRoots extends ComponentBase
     
     public function test()
     {
+<<<<<<< HEAD
+=======
         if(!isset($_SESSION))
         {
             session_start();
@@ -786,6 +891,7 @@ class TestRoots extends ComponentBase
         $userSubmissions = $this->roots->submissions($req);
 
         echo json_encode($userSubmissions);
+>>>>>>> upstream/master
     }
     
 }

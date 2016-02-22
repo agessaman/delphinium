@@ -1,6 +1,4 @@
-<?php
-
-namespace Delphinium\Blossom\Components;
+<?php namespace Delphinium\Blossom\Components;
 
 use Cms\Classes\ComponentBase;
 use Delphinium\Blossom\Models\Experience as ExperienceModel;

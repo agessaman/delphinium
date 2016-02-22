@@ -1,0 +1,160 @@
+<strong>plugins/delphinium/vanilla/components/vanilla/default.htm</strong>
+
+<div id="cont"></div>
+<div id="asgnid"></div>
+<div id="asgn"></div>
+<div id="aqiz"></div>
+
+<div id="thesvg"></div>
+
+<!-- Bootstrap Modal HTML $("#myModal").modal('show'); -->
+    <div id="myModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                    <h4 class="modal-title">Comments</h4>
+                </div>
+                <div class="modal-body">
+                    <p>you do not want to see this</p>
+                    <!-- Written dynamically with data for answer clicked -->
+                </div>
+            </div>
+        </div>
+    </div>
+<hr/>
+<!--script src="plugins/delphinium/vanilla/assets/javascript/d3.min.js"></script-->
+<script src="plugins/delphinium/vanilla/assets/javascript/jquery.min.js"></script>
+<!--script src="plugins/delphinium/vanilla/assets/javascript/drawit.js"></script-->
+<script>
+$(document).ready(function() {
+
+    // jquery is loaded above
+    //$('#cont').html("jquery is now available in default.htm");
+	
+	/*
+		get the data from Vanilla.php
+		use it here with d3
+	*/
+
+	//var theAssignment = {{theAssignment|raw}};
+	//$('#asgnid').html('ID:'+theAssignment[0].assignment_id);//json_encoded
+	//$('#asgn').html('Name:'+theAssignment[0].name);
+    
+    var aQuiz = {{aQuiz|raw}};// |raw wont be escaped
+	//console.log(aQuiz);
+	//$('#aqiz').append('Quiz title:' + aQuiz.title+' points:'+aQuiz.points_possible+' Count:'+aQuiz.questions.length+' type:'+aQuiz.questions[0].type);
+	
+	// ready to draw each question in quiz
+	// style w/css
+	var count = aQuiz.questions.length;
+	//console.log('Count'+count);// step through each
+	
+	var question = aQuiz.questions[0];
+    console.log(question);
+    ///console.log(question.text);
+	var questxt= htmlDecode(question.text);// convert
+	///console.log(questxt);
+    var answs = $.parseJSON(aQuiz.questions[0].answers);
+	console.log(answs);
+	//correct = weight:100
+	
+	// Display question
+	var quest = d3.select("#aqiz")
+		.append('div')
+		.attr("id","txt")
+		.attr("class","questdiv")
+		.html(htmlDecode(question.text));
+	
+	
+	// Display multiple answers 
+    var holder = d3.select(".questdiv")
+        .append("div")
+        .attr("id","answers")
+        .attr("class","ansholder");// for answers
+    
+	var answers = holder.selectAll("#answers")
+        .data(answs)
+        .enter()
+		.append("div")
+		.attr("id", function(d,i){ return i; })
+		.attr("class","answdiv")
+        .text(function(d,i){return answs[i].text; })
+		.on("click", function(d) {
+            
+            // show correct_ or incorrect_comments in modal
+            console.log(d.weight);
+			var showmodal=false;
+            var msg='';
+            if(d.weight == 0){
+                msg=question.incorrect_comments;
+				if(msg != ''){ showmodal=true; }
+            } else {
+				// could have multiple answers weight 40
+                msg=question.correct_comments;
+				showmodal=true;
+				$('.modal-title').html('Correct');
+            }
+			console.log(msg);
+			if(showmodal){
+            
+            $(".modal-body").html(msg);
+            $("#myModal").modal('show');
+			}
+		});
+		
+		
+	//target drawit.drawnow(aQuiz);// send it data?
+	//drawnow();])
+	
+	
+	// convert to html
+	function htmlDecode(value){
+	  return $('<div/>').html(value).text();
+	}
+	function htmlEncode(value){
+	  //create a in-memory div, set it's inner text(which jQuery automatically encodes)
+	  //then grab the encoded contents back out.  The div never exists on the page.
+	  return $('<div/>').text(value).html();
+	}
+	
+	//target drawit.drawnow(aQuiz);// send it data?
+	//drawnow();
+	function drawnow() {
+	
+		var svg = d3.select("#thesvg")
+			.append('svg');
+
+		var rect = svg.append("rect")
+			.datum("some Quiz")
+			.attr({
+			  width: 100,
+			  height: 100,
+			  x: 26,
+			  y: 10
+			});
+
+		var coords = svg.append("text")
+			.text("x: 0, y:0")
+			.attr({
+			  x: 150,
+			  y: 80
+			})
+			
+		rect.on("mousemove", function(d) {
+		  var mouse = d3.mouse(this);
+		  coords.text("x:" + mouse[0] + " y:" + mouse[1]);
+		});
+
+		rect.on("mouseover", function(d) {
+		  d3.select(this).attr("fill", "#ae2424");
+		});
+		rect.on("mouseout", function(d) {
+		  d3.select(this).attr("fill", "#000000");
+		});
+		rect.on("click", function(d) {
+		  alert(d);
+		})
+	}
+});	
+</script>

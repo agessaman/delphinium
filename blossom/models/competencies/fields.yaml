@@ -6,18 +6,45 @@ fields:
     id:
         label: ID
         disabled: true
+        hidden: true
 
     Name:
         label: Name
-        span: auto
-        comment: Enter the name of this instance
-
-    Animate:
-        label: Animate
-        span: auto
-        comment: Enter if you want this component to be animated
+        span: left
+        placeholder: Must be named
+        comment: Enter a name for this instance
 
     Size:
         label: Size
+        span: right
+        type: dropdown
+        default: Medium
+        options: 
+            Small: [Small 167 pixels wide]
+            Medium: [Medium 250 pixels wide]
+            Large: [Large 375 pixels wide]
+        commentAbove: Select a size for this component
+
+    Color:
+        label: Color
+        span: left
+        type: colorpicker
+        commentAbove: Choose a color for the Competency Amount
+
+    Animate:
+        label: Animate
+        type: checkbox
         span: auto
-        comment: Enter the the size of component you want
+        containerAttributes: {title:"Yes, I like animation!", style: "padding-top:10px;"}
+        default: true
+        comment: Checked = Animated bars
+
+    course_id:
+        label: Course id
+        span: left
+        comment: course id is generated dynamically 
+
+    copy_id:
+        label: copy id
+        span: auto
+        comment: copy id is generated dynamically
