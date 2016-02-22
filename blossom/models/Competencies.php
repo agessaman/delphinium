@@ -19,10 +19,9 @@ class Competencies extends Model
 		'Color'=>'required',
         'Animate'=>'required',
         'Size' => 'required'
-    ];//'course_id' => 'required' created dynamically ?
+    ];//copy_id & 'course_id' => 'required' created dynamically
     
-    /* https://medium.com/@matissjanis/octobercms-using-backend-forms-in-frontend-component-fe6c86f9296b#.ge50nlmtc */
     protected $guarded = ['*'];
-    protected $fillable = ['Name', 'Color', 'Animate', 'Size','course_id'];
+    protected $fillable = ['Name','Color','Animate','Size','course_id','copy_id'];
     
 }

@@ -31,29 +31,52 @@ class Competencies extends ComponentBase
     public function onStart()
     {
         /* COURSE & INSTANCE FAIL IF HERE use onRender
-            get course_id component is in (DEV)
-            get instance (with course ID)???
+            get course_id from (DEV/DATA $_SESSION)
+            get instance (matching course ID)
 
-            if (no instance with this course ID){
-                create instance with courseID
+            if (no instance with this course ID) {
+                create new instance dynamically with defaults & courseID
+                save new instance to db with courseID, copyID=1
+            } else {
+                launch instance with course ID
             }
-            launch instance with course ID
         */ 
     }
     public function onRender()
     {
-		//getInstanceOptions()
+		//$roots = new Roots();
+        //$course = $roots->getCourse();
+		//$this->page['course'] = json_encode($course);
+        //$course->id or $_SESSION['courseID']
+		
+        $this->page['crsid'] = $_SESSION['courseID'];
+        
+        /*
+        When a component wakes up in a course, it needs to know what course it is assigned to
+        and which copy it is so it can configure itself properly.
+        
+        
+        if courseID is available, get records matching course ID
+            could be multiple
+        
+        
+        
+
+        Using this information, it can select the proper instance to load with the appropriate configuration data.
+        
+        
+        */
+        
+        //instance set in CMS getInstanceOptions()
 		$config = CompetenceModel::find($this->property('instance'));
         //Name is just for instances drop down. Use in component display?
 		
-        $roots = new Roots();
-        $course = $roots->getCourse();
-		//$this->page['course'] = json_encode($course);
-		
-		//add $course->id to $config dynamic for form field
-		$config->course_id = $course->id;
+        // copy_id is part of $config
+		//add $course->id to $config for form field
+		$config->course_id = $_SESSION['courseID'];//$course->id;
 		$this->page['config'] = json_encode($config);
-		
+		//$config->save();// update original record now ???
+        
 		// comma delimited string ?
         if (!isset($_SESSION)) { session_start(); }
         $roleStr = $_SESSION['roles'];
@@ -76,8 +99,8 @@ class Competencies extends ComponentBase
                 todo: Instructor can configure Stem from here?
 			**************************************************/
 			$roots = new Roots();
-			//PHP: if($_SESSION['roles'].indexOf('Instructor'))
-			if($_SESSION['roles'] == 'Instructor')
+            $roleStr = $_SESSION['roles'];
+            if(stristr($roleStr, 'Instructor'))
 			{
 				//https://medium.com/@matissjanis/octobercms-using-backend-forms-in-frontend-component-fe6c86f9296b#.ge50nlmtc
 				$this->addCss('/plugins/delphinium/blossom/formwidgets/colorpicker/assets/vendor/colpick/css/colpick.css', 'delphinium.blossom');
@@ -94,7 +117,8 @@ class Competencies extends ComponentBase
 				//form items should match $config->Name, color, animate, id, course
 				//Competencies[Size]
 			}
-			if($_SESSION['roles'] == 'Learner')
+            //if($_SESSION['roles'] == 'Learner')
+            if(stristr($roleStr, 'Learner'))
 			{
 				$req = new AssignmentsRequest(ActionType::GET);
 				$res = $roots->assignments($req);
@@ -151,9 +175,10 @@ class Competencies extends ComponentBase
         /*https://octobercms.com/docs/plugin/components#dropdown-properties
 		*  The method should have a name in the following format: get*Property*Options()
 		*  where Property is the property name
+        * Fill the Competencies Configuration [dropdown] for CMS
 		*/
-		$instances = CompetenceModel::where("Name","!=","")->get();
-        $array_dropdown = ['0'=>'- select Instance - '];//text in dropdown
+		$instances = CompetenceModel::all();//where("Name","!=","")->get();
+        $array_dropdown = ['0'=>'- select Instance - '];//id, text in dropdown
 
         foreach ($instances as $instance)
         {
@@ -176,18 +201,28 @@ class Competencies extends ComponentBase
 		$config->Color = $data['Color'];
 		$config->Animate = $data['Animate'];
 		$config->course_id = $data['course_id'];
+        $config->copy_id = $data['copy_id'];
 		$config->save();// update original record 
 
 		return json_encode($config);
     }
     
-	public function onUpdate() {
-		return ['message' => 'Updated ...'];
-	}
 	// test: for controller.formExtendFields
 	public function getConfig()
     {
 		$config = CompetenceModel::find($this->property('instance'));
         return $config;
 	}
+    
+    public function dynamicInstance()
+    {
+        $config = new CompetenceModel;// db record
+        $config->Name = 'New Instance';//+ total records count?
+        $config->Size = 'Medium';
+        $config->Color = '#4d7123';//uvu green
+        $config->Animate = '1';//true
+        $config->course_id = $_SESSION['courseID'];// or null
+        $config->copy_id = 1;
+        $config->save();// create new record 
+    }
 }

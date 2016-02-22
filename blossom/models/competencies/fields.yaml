@@ -42,5 +42,9 @@ fields:
     course_id:
         label: Course id
         span: left
-        placeholder: Course id
         comment: course id is generated dynamically 
+
+    copy_id:
+        label: copy id
+        span: auto
+        comment: copy id is generated dynamically

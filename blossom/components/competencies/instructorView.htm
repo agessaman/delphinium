@@ -1,11 +1,13 @@
 <!-- Instructor View with Settings -->
 
-<div class="">
-Configure this components <a data-toggle="modal" href="#content-confirmation"><i class="icon-cog"></i> Settings</a>
-</div>
+
 <!-- place competencies -->
 
 {% partial 'competencies::display' %}
+
+<div class="">
+<a data-toggle="modal" href="#content-confirmation">Configure component <i class="icon-cog"></i> Settings</a>
+</div>
 
 <!-- Configuration modal with Front End Form -->
 <div class="control-popup modal fade" id="content-confirmation" tabindex="-1" role="dialog">
@@ -43,16 +45,16 @@ Configure this components <a data-toggle="modal" href="#content-confirmation"><i
 <script>
 /*
     use faked data in competency display : bars are not clickable
-    After changing settings, Refresh the component showCompetencies()
-	course id has been added dynamically to config.course_id
+    After changing settings, Refresh the page
+	course_id has been added dynamically to config.course_id
     https://medium.com/@matissjanis/octobercms-using-backend-forms-in-frontend-component-fe6c86f9296b#.ge50nlmtc
 */
     var data = [{"name":"Align","total":210,"amount":80,"percent":38},{"name":"Ideas","total":596,"amount":167,"percent":28},{"name":"People","total":830,"amount":299,"percent":36}];
     var details = [{"name":"Align","assignments":[{"id":1660401},{"id":1660391},{"id":1660419},{"id":1660418}]},{"name":"Ideas","assignments":[{"id":1660391},{"id":1660400},{"id":1660403},{"id":1660392},{"id":1660390},{"id":1660394}]},{"name":"People","assignments":[{"id":1660391},{"id":1660408},{"id":1660392},{"id":1660390}]}];
     var assignments=[];// for click bar
 
-	var configVal=[config.Name, config.Size, config.Color, config.Animate, config.course_id];
-	var fieldIDs=['Form-field-Competencies-Name','Form-field-Competencies-Size','ColorPicker-formColor-input-Color','Form-field-Competencies-Animate','Form-field-Competencies-course_id'];
+	var configVal=[config.Name, config.Size, config.Color, config.Animate, config.course_id, config.copy_id];
+	var fieldIDs=['Form-field-Competencies-Name','Form-field-Competencies-Size','ColorPicker-formColor-input-Color','Form-field-Competencies-Animate','Form-field-Competencies-course_id','Form-field-Competencies-copy_id'];
 	
 	//fill the form with current configuration
 	for(var i=0; i<configVal.length; i++) {
@@ -61,7 +63,14 @@ Configure this components <a data-toggle="modal" href="#content-confirmation"><i
     // Fix Animate checkbox switch
     $('<div style="height:90px;" class="clearfix"></div>').insertBefore('.checkbox-field').parent;
 	$('.checkbox-field').attr('style','margin-left:20px').removeClass('span-right').addClass('span-left');
-	
+	//ToDo: custom-color #ColorPicker-formColor-Color dataLocker
+    //$('div#someElement').colorPicker({ dataLocker: 'input#locker' })
+    //$('div#ColorPicker-formColor-Color').colorPicker({ dataLocker: config.Color });//nope
+    //HAKK figure out dataLocker
+    $('#ColorPicker-formColor-Color-input-Color').val(config.Color);
+    $('.custom-color').addClass('active');
+    $('.custom-color span').attr('style','background:'+config.Color);
+    
 	function completed(data)
 	{
 		//config has returned updated
