@@ -30,7 +30,10 @@ class TestRedwoodRoots extends ComponentBase
 //        $this->testPeerReviewWorkflow();
 //        $this->testLoginUser();
         $this->testGradePostBack();
+
+//        var_dump($_POST);
     }
+
     public function test()
     {
         echo json_encode($this->roots->getUsers());
@@ -154,16 +157,61 @@ class TestRedwoodRoots extends ComponentBase
 
     public function testGradePostBack()
     {//'ext_outcome_data_values_accepted' =>  'url,text'
-        $url = "https://uvu.instructure.com/api/lti/v1/tools/46776/grade_passback";//lis_outcome_service_url
-        //"https://uvu.instructure.com/api/lti/v1/tools/46776/ext_grade_passback";//ext_ims_lis_basic_outcome_url
-        $source_id = 614714;//lis_person_sourcedid
-        $value = 90;//out of 100 as set in custom_canvas_assignment_points_possible
-        $oauth_consumer_key = 'honey';
-        $secret = 'honey';
-        $oauth_signature_method="HMAC-SHA1";
-        $oauth_timestamp=1455838644;
-        $oauth_nonce='VLe2r9KtU4ejAJwAWvzDF4Lvm1DACSsvDfq1UDFwU';
-        $oauth_version= 1.0;
+//        $url = "https://uvu.instructure.com/api/lti/v1/tools/46776/grade_passback";//lis_outcome_service_url
+//        //"https://uvu.instructure.com/api/lti/v1/tools/46776/ext_grade_passback";//ext_ims_lis_basic_outcome_url
+//        $source_id = 614714;//lis_person_sourcedid
+//        $value = 0.94;//between 0 and 1
+//        $oauth_consumer_key = 'honey';//oauth_consumer_key
+//        $secret = 'honey';
+//        $oauth_signature = 'NrMvbW1cjuSaPGUAlx1phwxGWyQ';//oauth_signature
+//        $oauth_signature_method="HMAC-SHA1'";//oauth_signature_method
+//        $oauth_timestamp=1456173930;//oauth_timestamp
+//        $oauth_nonce='yJheZTMRAujFThhy9rqEvL0SHhYUP010HXMfgoA5NE';//oauth_nonce
+//        $oauth_version= 1.0;//oauth_version
+//        $oauth_token = '??';
+
+
+        $value = 0.5;
+        $url = 'https://learn-lti.herokuapp.com/grade_passback/5607';
+        $source_id = 'f3b73f9607';
+        $oauth_consumer_key = '7257e50bf37455f398dddbeb40552d61';
+        $oauth_signature_method = 'HMAC-SHA1';
+        $oauth_timestamp = '1456175342';
+        $oauth_nonce = 'uQiahSY8FSnGWsTdTD5fwnPlEdZReNHxL5NzSrntU';
+        $oauth_version = '1.0';
+        $oauth_signature = 'MurIq7dY4fGhJpkCKkxwTnerx8Q=';
+        $realm = "http://uvu.instructure.com/";
+//        $oauth_token =
+        //build params
+        $postParams = array(
+            'oauth_consumer_key'    => $oauth_consumer_key,
+            'oauth_token'   => $oauth_token,
+            'oauth_signature_method'=>$oauth_signature_method,
+            'oauth_signature' =>$oauth_signature,
+            'oauth_timestamp' =>$oauth_timestamp,
+            'oauth_nonce'=>$oauth_nonce,
+            'oauth_version'=>$oauth_version,
+            'realm'=>$realm
+        );
+
+
+        //then we need to sign this signature
+        $adsfa = \OAuth::getRequestHeader ( 'POST',$url, [$postParams] );
+
+
+        //sign body
+//        $bodyHash = base64_encode(sha1($xml_data, TRUE)); // build oauth_body_hash
+//        $consumer = new \OAuthConsumer($oauth_consumer_key, $secret);return;
+//        $request = \OAuthRequest::from_consumer_and_token($consumer, '', 'POST', $endpoint, array('oauth_body_hash' => $bodyHash) );
+//        $request->sign_request(new \OAuthSignatureMethod_HMAC_SHA1(), $consumer, '');
+//        $header = $request->to_header() . "\r\nContent-Type: application/xml\r\n"; // add content type header
+
+
+
+        var_dump($adsfa);return;
+
+
+
         $xml_data ='<?xml version = "1.0" encoding = "UTF-8"?>'.
             '<imsx_POXEnvelopeRequest xmlns="http://www.imsglobal.org/services/ltiv1p1/xsd/imsoms_v1p0">'.
                 '<imsx_POXHeader>'.
@@ -180,10 +228,10 @@ class TestRedwoodRoots extends ComponentBase
                             '</sourcedGUID>'.
                             '<result>'.
                                 '<!-- Added element -->'.
-                                '<resultTotalScore>'.
+                                '<resultScore>'.
                                     '<language>en</language>'.
                                     '<textString>'.$value.'</textString>'.
-                                '</resultTotalScore>'.
+                                '</resultScore>'.
                             '</result>'.
                         '</resultRecord>'.
                     '</replaceResultRequest>'.
@@ -191,27 +239,40 @@ class TestRedwoodRoots extends ComponentBase
             '</imsx_POXEnvelopeRequest>';
 
 
-        //sign body
-        $bodyHash = base64_encode(sha1($xml_data, TRUE)); // build oauth_body_hash
-        $consumer = new \OAuthConsumer($oauth_consumer_key, $secret);return;
-        $request = \OAuthRequest::from_consumer_and_token($consumer, '', 'POST', $endpoint, array('oauth_body_hash' => $bodyHash) );
-        $request->sign_request(new \OAuthSignatureMethod_HMAC_SHA1(), $consumer, '');
-        $header = $request->to_header() . "\r\nContent-Type: application/xml\r\n"; // add content type header
 
+//        var_dump($this->arraytostr($postParams));
+//        return;
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($ch, CURLOPT_POST, 1);
-        $token = "14~bW9RoI0juL1R0qxZfT8HHrcyVXO7DESCU1sT8r1aYZXwkHRWnAyLt5Q8GZ327JeO";
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml', "Authorization: Bearer " . $token));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml', "Authorization: OAuth " . http_build_query($postParams)));
         curl_setopt($ch, CURLOPT_POSTFIELDS, "$xml_data");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
         $result = json_decode(curl_exec($ch));
+        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
         var_dump($result);
+        var_dump($status);
     }
 
+    function arraytostr ($array=array()) {
+        $string = '';
+        $count = count($array);
+        $i=0;
+        foreach ($array as $key => $value) {
+            $string .= "$key"."=";
+            $string .= "'{$value}'";
+            if($i<$count-1)
+            {
+                $string.=',';
+            }
+            $i++;
+        }
+        return $string;
+    }
 
 }
