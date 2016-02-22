@@ -783,7 +783,7 @@ class Gradebook extends ComponentBase {
 
     private function findScoreByUserId($userId, $scoresComplex) {
 
-        // $scores = $scoresComplex['bottom'];
+        $scores = $scoresComplex['bottom'];
         if(count($scores)>0)
         {
             $filteredItems = array_values(array_filter($scores, function($elem) use($userId) {

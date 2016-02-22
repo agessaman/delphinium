@@ -18,15 +18,18 @@ class TestRedwoodRoots extends ComponentBase
 
     public function onRun()
     {
-        $this->roots = new RedwoodRoots();
+        $this->roots = new RedwoodRoots(1);
 //        $this->test();
 //        $this->testGetUsers();
-        $this->testCreateUser();
+//        $this->testCreateUser();
 //        $this->testGetDepartments();
 //        $this->testCreateDepartment();
 //        $this->testGetGroup();
 //        $this->testCreateGroup();
+//        $this->testGetRoles();
 //        $this->testPeerReviewWorkflow();
+//        $this->testLoginUser();
+        $this->testGradePostBack();
     }
     public function test()
     {
@@ -43,10 +46,15 @@ class TestRedwoodRoots extends ComponentBase
 
     public function testCreateUser()
     {
+        //we'd look through the roles and figure out which role we need
+        //$roles = $this->testGetRoles();
+
         $first_name = "Tara";
         $last_name = "Jorgensen";
-        $canvas_user_id = 1226308;
-        $newUser = $this->roots->createUser($first_name, $last_name, $canvas_user_id);
+        $canvas_user_id = 10344545;
+        $email = $canvas_user_id.'@uvlink.uvu.edu';//TODO: figure out a dynamic way to do the email
+        $pm_role = "PROCESSMAKER_OPERATOR";
+        $newUser = $this->roots->createUser($first_name, $last_name, $canvas_user_id, $email, $pm_role);
         echo json_encode($newUser);
     }
 
@@ -85,6 +93,13 @@ class TestRedwoodRoots extends ComponentBase
         echo json_encode($this->roots->createGroup($assignmentId));
     }
 
+    public function testGetRoles()
+    {
+        $res = $this->roots->getRoles();
+        echo json_encode($res);
+        return $res;
+    }
+
     public function testPeerReviewWorkflow()
     {
         $courseId = 343331;
@@ -120,4 +135,83 @@ class TestRedwoodRoots extends ComponentBase
         }
         echo json_encode($users);
     }
+
+    public function testLoginUser()
+    {
+        $studentId = 123456;
+        $users = $this->roots->getUsers($studentId);
+        if(count($users)<1)
+        {
+            $user = $this->roots->createUser("Test", "User", $studentId, $studentId."@uvu.edu","PROCESSMAKER_OPERATOR");
+            array_push($users,$user);
+        }
+        if(count($users)>0)
+        {
+            $response = $this->roots->loginUser($users[0]->usr_username,$users[0]->usr_username);
+            var_dump($response);
+        }
+    }
+
+    public function testGradePostBack()
+    {//'ext_outcome_data_values_accepted' =>  'url,text'
+        $url = "https://uvu.instructure.com/api/lti/v1/tools/46776/grade_passback";//lis_outcome_service_url
+        //"https://uvu.instructure.com/api/lti/v1/tools/46776/ext_grade_passback";//ext_ims_lis_basic_outcome_url
+        $source_id = 614714;//lis_person_sourcedid
+        $value = 90;//out of 100 as set in custom_canvas_assignment_points_possible
+        $oauth_consumer_key = 'honey';
+        $secret = 'honey';
+        $oauth_signature_method="HMAC-SHA1";
+        $oauth_timestamp=1455838644;
+        $oauth_nonce='VLe2r9KtU4ejAJwAWvzDF4Lvm1DACSsvDfq1UDFwU';
+        $oauth_version= 1.0;
+        $xml_data ='<?xml version = "1.0" encoding = "UTF-8"?>'.
+            '<imsx_POXEnvelopeRequest xmlns="http://www.imsglobal.org/services/ltiv1p1/xsd/imsoms_v1p0">'.
+                '<imsx_POXHeader>'.
+                   '<imsx_POXRequestHeaderInfo>'.
+                        '<imsx_version>V1.0</imsx_version>'.
+                        '<imsx_messageIdentifier>999999123</imsx_messageIdentifier>'.
+                    '</imsx_POXRequestHeaderInfo>'.
+                '</imsx_POXHeader>'.
+                '<imsx_POXBody>'.
+                    '<replaceResultRequest>'.
+                        '<resultRecord>'.
+                            '<sourcedGUID>'.
+                                '<sourcedId>'.$source_id.'</sourcedId>'.
+                            '</sourcedGUID>'.
+                            '<result>'.
+                                '<!-- Added element -->'.
+                                '<resultTotalScore>'.
+                                    '<language>en</language>'.
+                                    '<textString>'.$value.'</textString>'.
+                                '</resultTotalScore>'.
+                            '</result>'.
+                        '</resultRecord>'.
+                    '</replaceResultRequest>'.
+                '</imsx_POXBody>'.
+            '</imsx_POXEnvelopeRequest>';
+
+
+        //sign body
+        $bodyHash = base64_encode(sha1($xml_data, TRUE)); // build oauth_body_hash
+        $consumer = new \OAuthConsumer($oauth_consumer_key, $secret);return;
+        $request = \OAuthRequest::from_consumer_and_token($consumer, '', 'POST', $endpoint, array('oauth_body_hash' => $bodyHash) );
+        $request->sign_request(new \OAuthSignatureMethod_HMAC_SHA1(), $consumer, '');
+        $header = $request->to_header() . "\r\nContent-Type: application/xml\r\n"; // add content type header
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        $token = "14~bW9RoI0juL1R0qxZfT8HHrcyVXO7DESCU1sT8r1aYZXwkHRWnAyLt5Q8GZ327JeO";
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml', "Authorization: Bearer " . $token));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, "$xml_data");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $result = json_decode(curl_exec($ch));
+        curl_close($ch);
+
+        var_dump($result);
+    }
+
+
 }
