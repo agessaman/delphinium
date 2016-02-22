@@ -2,11 +2,8 @@
 
 use Cms\Classes\ComponentBase;
 use Delphinium\Roots\Roots;
-<<<<<<< HEAD
-=======
 use Delphinium\Roots\Requestobjects\SubmissionsRequest;
 use Delphinium\Roots\Enums\ActionType;
->>>>>>> upstream/master
 use Delphinium\Blossom\Components\Gradebook;
 use Delphinium\Blossom\Models\Experience as ExperienceModel;
 use Delphinium\Blossom\Components\Experience as ExperienceComponent;
@@ -14,14 +11,9 @@ use Delphinium\Blossom\Components\Experience as ExperienceComponent;
 
 class Leaderboard extends ComponentBase
 {
-
     public $roots;
     public $gradebook;
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> upstream/master
     public function componentDetails()
     {
         return [
@@ -54,28 +46,7 @@ class Leaderboard extends ComponentBase
         }
     }
 
-<<<<<<< HEAD
-    public function onRender(){
-        //try
-        //{
-            $this->addJs("/plugins/delphinium/blossom/assets/javascript/leaderboard.js");
-            $this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
-            $this->addCss("/plugins/delphinium/blossom/assets/css/leaderboard.css");
-            
-            $this->roots = new Roots();
-            $this->gradebook = new Gradebook();
 
-            //get all students in course
-            $users = $this->roots->getStudentsInCourse();
-
-            //get all scores
-            //$scores = $this->gradebook->aggregateSubmissionScores();
-            echo $this->gradebook->aggregateSubmissionScores();
-            //$experienceInstance = ExperienceModel::find($this->property('Experience'));
-
-            //$list = $this->gradebook->matchSubmissionsAndUsers($users, $scores, $experienceInstance);
-        /*}
-=======
     public function onRender()
     {
         try {
@@ -89,7 +60,7 @@ class Leaderboard extends ComponentBase
             $this->page['users'] = json_encode($users);
             $this->page['experienceInstanceId']=$this->property('Experience');
         }
->>>>>>> upstream/master
+
         catch (\GuzzleHttp\Exception\ClientException $e) {
             return;
         }
@@ -107,11 +78,9 @@ class Leaderboard extends ComponentBase
                 return \Response::make($this->controller->run('nonlti'), 500);
             }
             return \Response::make($this->controller->run('error'), 500);
-<<<<<<< HEAD
-        }*/
-=======
+
         }
->>>>>>> upstream/master
+
     }
 
 }

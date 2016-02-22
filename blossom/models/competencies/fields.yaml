@@ -23,7 +23,7 @@ fields:
             Small: [Small 167 pixels wide]
             Medium: [Medium 250 pixels wide]
             Large: [Large 375 pixels wide]
-        comment: Select a size for this component
+        commentAbove: Select a size for this component
 
     Color:
         label: Color
