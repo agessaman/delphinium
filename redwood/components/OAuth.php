@@ -36,7 +36,7 @@ class Oauth extends ComponentBase
     {
         $instances = OAuthModel::get();
 
-        $array_dropdown = ['0'=>'- select configiguration - '];
+        $array_dropdown = ['0'=>'- select configuration - '];
 
         foreach ($instances as $instance)
         {
@@ -77,7 +77,7 @@ class Oauth extends ComponentBase
             $client_id = $credentials->client_id;
 
             //TODO: where do we parameterize these urls?
-            $url = "{$pmServer}/oauth2/authorize?response_type=code&client_id={$client_id}&scope=*";
+            $url = "{$pmServer}/{$this->property('workspace')}/oauth2/authorize?response_type=code&client_id={$client_id}&scope=*";
             $this->redirect($url);
         }
 

@@ -1,10 +1,25 @@
 <script>
-	var competencies = {{competencies}};
-	var competenciesAnimate = {{competenciesAnimate}};
-	var competenciesSize = '{{competenciesSize}}';
+    
+    //test:
+    var crsid = '{{crsid|raw}}';
+    console.log('crsid:',crsid);//crsid: 343331
+    
+    // component configuration [id,Name,Color,Size,Animate,course_id,copy_id]
+    var config = {{config|raw}};
+    console.log('instance.Name: '+config.Name);
+    console.log('instance.id: '+config.id);
+	console.log('instance.course: '+config.course_id);
+    
+    var role = '{{role}}';// comma separated
+    console.log('Role: ',role);//string
+	
+	var competenciesColor=config.Color;//string
+	var competenciesSize=config.Size.toLowerCase();//string
+	var competenciesAnimate=config.Animate;//boolean
+    
 </script>
-<h3 class = "name">Competencies</h3>
-
-<svg id = "competenciesSVG">
-	<g id="competenciesView"></g>
-</svg>
+{% if ('Learner' in role) %}
+{% partial 'competencies::studentView' %}
+{% elseif ('Instructor' in role or 'TeachingAssistant' in role) %}
+{% partial 'competencies::instructorView' %}
+{% endif %}

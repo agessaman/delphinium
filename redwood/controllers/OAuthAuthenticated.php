@@ -47,7 +47,7 @@ class OAuthAuthenticated extends Controller
                     'client_secret' => $credentials->client_secret
                 );
 
-                $ch = curl_init($pmServer . "/oauth2/token");
+                $ch = curl_init("{$pmServer}/{$workspace}/oauth2/token");
                 curl_setopt($ch, CURLOPT_TIMEOUT, 30);
                 curl_setopt($ch, CURLOPT_POST, 1);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $postParams);

@@ -36,6 +36,7 @@ class Plugin extends PluginBase
         return [
             'Delphinium\Redwood\Components\Oauth' => 'Oauth',
             'Delphinium\Redwood\Components\TestRedwoodRoots' => 'testRedwoodRoots',
+            'Delphinium\Redwood\Components\PeerReview' => 'PeerReview'
         ];
     }
 
