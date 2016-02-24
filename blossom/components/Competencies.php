@@ -49,14 +49,14 @@ class Competencies extends ComponentBase
         is an insance set? yes show it
         
         else is copy set? 
-            -yes check if there is an instance that matches copy + course show it
+            -yes check for an instance that matches copy + course show it
         
         else create dynamicInstance, save new instance show it
     */
         if (!isset($_SESSION)) { session_start(); }
     
         $courseID = $_SESSION['courseID'];
-		// if instance
+		// if instance != 0
         if( $this->property('instance') )
         {
             //instance set in CMS getInstanceOptions()
@@ -98,19 +98,13 @@ class Competencies extends ComponentBase
                 $config->course_id = $_SESSION['courseID'];// or null
                 $config->copy_id = '';
                 $config->save();// create new record
-                //$this->property('instance')->selected[$config.id];// Error: Can't use method return value in write context
-                // need to set for onSave
-                // this would be the selected dropdown item #
-                //$this->property('instance')->options[$config.id];
-                //$this->property('instance')->default=$config.id;
-                //https://octobercms.com/forum/post/how-to-pass-variable-to-component-by-overriding-property
+                ///$this->property('instance', $config->id);// instance=id#
+                //dont need to set for onSave
             }
         }
         
 		$this->page['config'] = json_encode($config);
-		$this->page['instance'] = $this->property('instance');// instance id#
 		// comma delimited string ?
-        //if (!isset($_SESSION)) { session_start(); }
         $roleStr = $_SESSION['roles'];
         
         if(stristr($roleStr, 'Learner')) {
@@ -225,33 +219,28 @@ class Competencies extends ComponentBase
     }
 	
     /**
-	* update, add course_id
+	* update, add course_id & copy_id
 	* save to database and return updated
     
-    if id is disabled in fields.yaml
-    $data does not contain .id
-    if $config = new CompetenceModel sql Error at save()
-    
-    if new dynamic instance, $config.id is unknown
-    Need to set: $this->property('instance') to update
+    * id is disabled in fields.yaml
+    * id, course & copy are also hidden
+    * $data gets .id from config setting hidden field
+    * called from instructorView configure settings
 	*/
-	public function onSave()
+	public function onUpdate()
     {
-		$config = CompetenceModel::find($this->property('instance'));
-		$data = post('Competencies');
-        //echo json_encode($data));
-        //$config = new CompetenceModel;//new \stdClass;//new stdClass();// = new class{};//(object)[];// = new \stdClass;// initialize first
-		//$config->id = intval($data['id']);// id is now in $data :error: Creating default object from empty value
+        $data = post('Competencies');
+        $did = intval($data['id']);
+        $config = CompetenceModel::find($did);
+        //echo json_encode($config);
 		$config->Name = $data['Name'];
 		$config->Size = $data['Size'];
 		$config->Color = $data['Color'];
 		$config->Animate = $data['Animate'];
 		$config->course_id = $data['course_id'];//hidden
-        $config->copy_id = $data['copy_id'];//hidden figure out how to update
+        $config->copy_id = $data['copy_id'];//hidden
 		$config->save();// update original record 
-
 		return json_encode($config);
-        
     }
     
 	// test: for controller.formExtendFields
