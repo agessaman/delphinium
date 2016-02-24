@@ -6,7 +6,6 @@ fields:
     id:
         label: ID
         disabled: true
-        hidden: true
 
     Name:
         label: Name
@@ -46,5 +45,6 @@ fields:
 
     copy_id:
         label: copy id
+        type: text
         span: auto
         comment: copy id is generated dynamically

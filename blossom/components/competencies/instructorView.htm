@@ -1,21 +1,21 @@
 <!-- Instructor View with Settings -->
 
-
-<!-- place competencies -->
-
+<!-- place competencies component-->
 {% partial 'competencies::display' %}
 
-<div class="">
-<a data-toggle="modal" href="#content-confirmation">Configure component <i class="icon-cog"></i> Settings</a>
+<div class=""><!-- Settings & Instructions -->
+<a data-toggle="modal" href="#content-configuration"><i class="icon-cog"></i> Configure Component Settings </a>
+: | :
+<a data-toggle="modal" href="#content-instruction"> <i class="icon-info"></i> View Instructions</a>
 </div>
 
 <!-- Configuration modal with Front End Form -->
-<div class="control-popup modal fade" id="content-confirmation" tabindex="-1" role="dialog">
+<div class="control-popup modal fade" id="content-configuration" tabindex="-1" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content" style="width:490px">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Component Settings</h4>
+                <h4 class="modal-title">Competencies Settings</h4>
             </div>
             <div class="modal-body">
 				<div class="confirm-container bg-success hide">
@@ -42,6 +42,26 @@
     </div>
 </div>
 
+<!-- Instructions modal -->
+<div class="control-popup modal fade" id="content-instruction" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content" style="width:790px">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Competencies Instructions</h4>
+            </div>
+            <div class="modal-body">
+                
+				{% partial 'competencies::instructions' %}
+            </div>
+			<div style="clear:both; height:1.5em"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 /*
     use faked data in competency display : bars are not clickable
@@ -53,18 +73,20 @@
     var details = [{"name":"Align","assignments":[{"id":1660401},{"id":1660391},{"id":1660419},{"id":1660418}]},{"name":"Ideas","assignments":[{"id":1660391},{"id":1660400},{"id":1660403},{"id":1660392},{"id":1660390},{"id":1660394}]},{"name":"People","assignments":[{"id":1660391},{"id":1660408},{"id":1660392},{"id":1660390}]}];
     var assignments=[];// for click bar
 
-	var configVal=[config.Name, config.Size, config.Color, config.Animate, config.course_id, config.copy_id];
-	var fieldIDs=['Form-field-Competencies-Name','Form-field-Competencies-Size','ColorPicker-formColor-input-Color','Form-field-Competencies-Animate','Form-field-Competencies-course_id','Form-field-Competencies-copy_id'];
+	var configVal=[config.id, config.Name, config.Size, config.Color, config.Animate, config.course_id, config.copy_id];
+	var fieldIDs=['Form-field-Competencies-id','Form-field-Competencies-Name','Form-field-Competencies-Size','ColorPicker-formColor-input-Color','Form-field-Competencies-Animate','Form-field-Competencies-course_id','Form-field-Competencies-copy_id'];
 	
 	//fill the form with current configuration
 	for(var i=0; i<configVal.length; i++) {
 		$('#'+fieldIDs[i]).val(configVal[i]);
 	}
+    // hide id,course,copy on this page
+    
     // Fix Animate checkbox switch
     $('<div style="height:90px;" class="clearfix"></div>').insertBefore('.checkbox-field').parent;
 	$('.checkbox-field').attr('style','margin-left:20px').removeClass('span-right').addClass('span-left');
 	//ToDo: custom-color #ColorPicker-formColor-Color dataLocker
-    //$('div#someElement').colorPicker({ dataLocker: 'input#locker' })
+    //jsAPI: $('div#someElement').colorPicker({ dataLocker: 'input#locker' })
     //$('div#ColorPicker-formColor-Color').colorPicker({ dataLocker: config.Color });//nope
     //HAKK figure out dataLocker
     $('#ColorPicker-formColor-Color-input-Color').val(config.Color);
@@ -85,5 +107,5 @@
 	*/
 	}
 	
-	console.log('instance: '+config.id,config.Name,config.Size,config.Color,config.Animate,config.course_id);
+	console.log('instance: '+config.id,config.Name,config.Size,config.Color,config.Animate,config.course_id,config.copy_id);
 </script>

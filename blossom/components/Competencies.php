@@ -20,71 +20,111 @@ class Competencies extends ComponentBase
 	public function defineProperties()
     {
         return [
+
+            'copy_id' => [
+                'title'        => 'Copy Name:',
+                'type'         => 'string'
+            ],
             'instance'	=> [
-                'title'             => 'Competencies Configuration',
+                'title'             => 'Configuration:',
                 'description'       => 'Select an instance',
                 'type'              => 'dropdown',
+                'default'           => 0
             ]
         ];
     }
 	
-    public function onStart()
-    {
-        /* COURSE & INSTANCE FAIL IF HERE use onRender
-            get course_id from (DEV/DATA $_SESSION)
-            get instance (matching course ID)
-
-            if (no instance with this course ID) {
-                create new instance dynamically with defaults & courseID
-                save new instance to db with courseID, copyID=1
-            } else {
-                launch instance with course ID
-            }
-        */ 
-    }
+    /* options?
+    'Size' => [
+                'title'        => 'Size',
+                'type'         => 'dropdown',
+                'default'      => 'Medium',
+                'options'      => ['Small'=>'Small', 'Medium'=>'Medium', 'Large'=>'Large']
+            ]
+    */
+    //The CMS controller executes this method before the default markup is rendered.
     public function onRender()
     {
-		//$roots = new Roots();
-        //$course = $roots->getCourse();
-		//$this->page['course'] = json_encode($course);
-        //$course->id or $_SESSION['courseID']
-		
-        $this->page['crsid'] = $_SESSION['courseID'];// test
+    /*
+        is an insance set? yes show it
         
-        /*
-        When a component wakes up in a course, it needs to know what course it is assigned to
-        and which copy it is so it can configure itself properly.
+        else is copy set? 
+            -yes check if there is an instance that matches copy + course show it
         
-        if courseID is available, get records matching course ID
-            could be multiple
-        
-        Using this information, it can select the proper instance to load with the appropriate configuration data.
-        
-        */
-        
-        //instance set in CMS getInstanceOptions()
-		$config = CompetenceModel::find($this->property('instance'));
-        //Name is just for instances drop down. Use in component display?
-		
-        // copy_id is part of $config
-		//add $course->id to $config for form field
-		$config->course_id = $_SESSION['courseID'];//$course->id;
-		$this->page['config'] = json_encode($config);
-		//$config->save();// update original record now ???
-        
-		// comma delimited string ?
+        else create dynamicInstance, save new instance show it
+    */
         if (!isset($_SESSION)) { session_start(); }
+    
+        $courseID = $_SESSION['courseID'];
+		// if instance
+        if( $this->property('instance') )
+        {
+            //instance set in CMS getInstanceOptions()
+            $config = CompetenceModel::find($this->property('instance'));
+            //add $course->id to $config for form field
+            $config->course_id = $_SESSION['courseID'];//$course->id;
+            //$config->save();//??? update original record now ???
+            
+        } else {
+            // if copy has a name 
+            $copyLength = strlen($this->property('copy_id'));
+            if($copyLength > 0 )
+            {
+                // find all matching course
+                $instances = CompetenceModel::table()->where('course_id',$courseID);
+                // find instance with copy
+                foreach ($instances as $instance)
+                {
+                   if($instance->copy_id == $this->property('copy_id') )
+                   {
+                       $config = $instance;
+                       break;// got first found
+                   }
+                }
+                // no match found so create one
+                if(!$config) { 
+                    $copyLength = 0;
+                }
+            }
+            
+            if($copyLength == 0 )
+            {
+                //$config = dynamicInstance();// undefined use onRun?
+                $config = new CompetenceModel;// db record
+                $config->Name = 'dynamic_';//+ total records count?
+                $config->Size = 'Medium';
+                $config->Color = '#4d7123';//uvu green
+                $config->Animate = '1';//true
+                $config->course_id = $_SESSION['courseID'];// or null
+                $config->copy_id = '';
+                $config->save();// create new record
+                //$this->property('instance')->selected[$config.id];// Error: Can't use method return value in write context
+                // need to set for onSave
+                // this would be the selected dropdown item #
+                //$this->property('instance')->options[$config.id];
+                //$this->property('instance')->default=$config.id;
+                //https://octobercms.com/forum/post/how-to-pass-variable-to-component-by-overriding-property
+            }
+        }
+        
+		$this->page['config'] = json_encode($config);
+		$this->page['instance'] = $this->property('instance');// instance id#
+		// comma delimited string ?
+        //if (!isset($_SESSION)) { session_start(); }
         $roleStr = $_SESSION['roles'];
-        $this->page['role'] = $roleStr;
+        
+        if(stristr($roleStr, 'Learner')) {
+            $roleStr = 'Learner';
+        } else { 
+            $roleStr = 'Instructor';
+        }
+        $this->page['role'] = $roleStr;// only one or the other
     }
-
+    
     public function onRun()
     {
 		try
         {
-            $this->addCss("/plugins/delphinium/blossom/assets/css/bootstrap.min.css");
-            $this->addCss("/plugins/delphinium/blossom/assets/css/competencies.css");//overide alert !important
-
 			/*get Assignments & Submissions ***** & enrolled students?
 				live data is only available if viewed by a Learner
 				fake data is used if Instructor
@@ -93,6 +133,8 @@ class Competencies extends ComponentBase
 				todo: Instructor can choose a student to view their progress?
                 todo: Instructor can configure Stem from here?
 			**************************************************/
+            $this->addCss("/plugins/delphinium/blossom/assets/css/bootstrap.min.css");
+            $this->addCss("/plugins/delphinium/blossom/assets/css/competencies.css");//overide alert !important
 			$roots = new Roots();
             $roleStr = $_SESSION['roles'];
             if(stristr($roleStr, 'Instructor'))
@@ -170,7 +212,7 @@ class Competencies extends ComponentBase
         /*https://octobercms.com/docs/plugin/components#dropdown-properties
 		*  The method should have a name in the following format: get*Property*Options()
 		*  where Property is the property name
-        * Fill the Competencies Configuration [dropdown] for CMS
+        * Fill the Competencies Configuration [dropdown] in CMS
 		*/
 		$instances = CompetenceModel::all();//where("Name","!=","")->get();
         $array_dropdown = ['0'=>'- select Instance - '];//id, text in dropdown
@@ -185,21 +227,31 @@ class Competencies extends ComponentBase
     /**
 	* update, add course_id
 	* save to database and return updated
+    
+    if id is disabled in fields.yaml
+    $data does not contain .id
+    if $config = new CompetenceModel sql Error at save()
+    
+    if new dynamic instance, $config.id is unknown
+    Need to set: $this->property('instance') to update
 	*/
 	public function onSave()
     {
 		$config = CompetenceModel::find($this->property('instance'));
 		$data = post('Competencies');
-		
+        //echo json_encode($data));
+        //$config = new CompetenceModel;//new \stdClass;//new stdClass();// = new class{};//(object)[];// = new \stdClass;// initialize first
+		//$config->id = intval($data['id']);// id is now in $data :error: Creating default object from empty value
 		$config->Name = $data['Name'];
 		$config->Size = $data['Size'];
 		$config->Color = $data['Color'];
 		$config->Animate = $data['Animate'];
-		$config->course_id = $data['course_id'];
-        $config->copy_id = $data['copy_id'];
+		$config->course_id = $data['course_id'];//hidden
+        $config->copy_id = $data['copy_id'];//hidden figure out how to update
 		$config->save();// update original record 
 
 		return json_encode($config);
+        
     }
     
 	// test: for controller.formExtendFields
@@ -209,6 +261,7 @@ class Competencies extends ComponentBase
         return $config;
 	}
     
+    //onRender() undefined
     public function dynamicInstance()
     {
         $config = new CompetenceModel;// db record
@@ -217,7 +270,8 @@ class Competencies extends ComponentBase
         $config->Color = '#4d7123';//uvu green
         $config->Animate = '1';//true
         $config->course_id = $_SESSION['courseID'];// or null
-        $config->copy_id = 1;
-        $config->save();// create new record 
+        $config->copy_id = '';
+        $config->save();// create new record
+        return $config;
     }
 }

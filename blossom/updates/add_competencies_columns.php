@@ -19,7 +19,7 @@ class CreateCompetenciesTable extends Migration
                 $table->boolean('Animate');//tinyInt switch 0~1 true false
                 $table->string('Size');//Small,Medium,Large radio btns
 				$table->integer('course_id')->nullable();
-                $table->integer('copy_id')->nullable();
+                $table->string('copy_id')->nullable();
                 $table->timestamps();
             });
 		//http://octobercms.com/docs/database/structure
