@@ -69,14 +69,18 @@ class Competencies extends ComponentBase
                     $copyLength = 0;// none found
                 } else {
                     // find instance with copy
+                    $flag=false;
                     foreach ($instances as $instance)
                     {
                        if($instance->copy_id == $this->property('copy_id') )
                        {
                            $config = $instance;
+                           $flag=true;
                            break;// got first found
                        }
                     }
+                    //yes found courses but not copy+copy
+                    if( !$flag ) { $copyLength=0; }
                 }
             }
             // no match found so create one
@@ -138,8 +142,10 @@ class Competencies extends ComponentBase
 				
 				// Append the formController to the page
 				$this->page['form'] = $formController;
-				//form items should match $config->Name, color, animate, id, course
-				//Competencies[Size]
+                
+                // Instructions page
+                $instructions = $formController->makePartial('instructions');
+                $this->page['instructions'] = $instructions;
 			}
             //if($_SESSION['roles'] == 'Learner')
             if(stristr($roleStr, 'Learner'))

@@ -25,9 +25,7 @@
                 <form role="form" id="updateForm"
                   data-request="{{ __SELF__ }}::onUpdate"
                   data-request-success="$el.hide();$('.confirm-container').removeClass('hide');completed(data);">
-
                     {{ form.formRender()|raw }}
-                    
                   <div class="form-group">
                      <button id="go" class="btn btn-primary btn-block btn-md" type="submit" value="register">Update Component</button>
                   </div>
@@ -48,8 +46,7 @@
                 <h4 class="modal-title">Competencies Instructions</h4>
             </div>
             <div class="modal-body">
-                
-				{% partial 'competencies::instructions' %}
+				{{ instructions|raw }}
             </div>
 			<div style="clear:both; height:1.5em"></div>
             <div class="modal-footer">
@@ -92,7 +89,9 @@
     $('#ColorPicker-formColor-Color-input-Color').val(config.Color);
     $('.custom-color').addClass('active');
     $('.custom-color span').attr('style','background:'+config.Color);
-    $('#go').attr('data-dismiss','modal');// on submit form close modal
+    
+    // closes modal but cancels submit : Just let user close modal
+    //$('#go').attr('data-dismiss','modal');// on submit form close modal
     
     //fill the form with current configuration
     for(var i=0; i<configVal.length; i++) {
@@ -104,7 +103,7 @@
         /*  returned updated record
             dont reload page
             if dynamic it will add another record and show it insead
-            Replace:
+            Replace: contents
             <svg id = "competenciesSVG">
 	           <g id="competenciesView"></g></svg>
         */
@@ -122,7 +121,7 @@
         $('#updateForm').show();// could remove success in form
         $('.confirm-container').addClass('hide');//rehide success
         
-		//console.log('instance: '+config.id,config.Name,config.Size,config.Color,config.Animate,config.course_id);
+		console.log('instance: '+config.id,config.Name,config.Size,config.Color,config.Animate,config.course_id,config.copy_id);
 	}
-	//console.log('instance: '+config.id,config.Name,config.Size,config.Color,config.Animate,config.course_id,config.copy_id);
+	console.log('instance: '+config.id,config.Name,config.Size,config.Color,config.Animate,config.course_id,config.copy_id);
 </script>
