@@ -1,0 +1,43 @@
+# ===================================
+#  Form Field Definitions
+# ===================================
+
+fields:
+    id:
+        label: ID
+        disabled: true
+
+    name:
+        label: Name
+        span: auto
+        comment: Enter the name of this instance of credentials
+
+    client_id:
+        label: Client Id
+        span: auto
+        comment: Enter the client id
+
+    client_secret:
+        label: Client Secret
+        span: auto
+        comment: Enter the client secret
+
+    workspace:
+        label: Workspace
+        span: auto
+        comment: Enter the workspace that ProcessMaker is running on
+
+    key:
+        label: Key
+        span: auto
+        comment: Enter the pmoauth key for this LTI app
+
+    secret:
+        label: Secret
+        span: auto
+        comment: Enter the pmoauth secret for this LTI app
+
+    server_url:
+        label: Server Url
+        span: auto
+        comment: Enter the full url of your ProcessMaker server (including the port)

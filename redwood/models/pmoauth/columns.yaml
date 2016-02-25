@@ -22,3 +22,15 @@ columns:
     workspace:
         label: Workspace
         searchable: true
+
+    server_url:
+        label: Server Url
+        searchable: true
+
+    key:
+        label: Key
+        searchable: true
+
+    secret:
+        label: Secret
+        searchable: true

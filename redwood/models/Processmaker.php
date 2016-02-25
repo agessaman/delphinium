@@ -3,25 +3,32 @@
 use Model;
 
 /**
- * OAuth Model
+ * Processmaker Model
  */
-class OAuth extends Model
+class Processmaker extends Model
 {
 
     /**
      * @var string The database table used by the model.
      */
-    public $table = 'delphinium_pm_credentials';
+    public $table = 'delphinium_redwood_processmakers';
 
     /**
      * @var array Guarded fields
      */
-    protected $guarded = ['*'];
+    protected $guarded = [];
 
     /**
      * @var array Fillable fields
      */
-    protected $fillable = [];
+    protected $fillable = ['*'];
+
+    public $rules = [
+        'id'=>'required',
+        'copy_name'=>'required',
+        'course_id' => 'required',
+        'process_id' => 'required'
+    ];
 
     /**
      * @var array Relations

@@ -3,16 +3,16 @@
 # ===================================
 
 # Model List Column configuration
-list: $/delphinium/redwood/models/oauth/columns.yaml
+list: $/delphinium/redwood/models/processmaker/columns.yaml
 
 # Model Class name
-modelClass: Delphinium\Redwood\Models\OAuth
+modelClass: Delphinium\Redwood\Models\Processmaker
 
 # List Title
-title: Manage O Auths
+title: Manage Processmakers
 
 # Link URL for each record
-recordUrl: delphinium/redwood/oauth/update/:id
+recordUrl: delphinium/redwood/processmaker/update/:id
 
 # Message to display if the list is empty
 noRecordsMessage: backend::lang.list.no_records

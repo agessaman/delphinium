@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Processmaker
+
+# Model Form Field configuration
+form: $/delphinium/redwood/models/processmaker/fields.yaml
+
+# Model Class name
+modelClass: Delphinium\Redwood\Models\Processmaker
+
+# Default redirect location
+defaultRedirect: delphinium/redwood/processmaker
+
+# Create page
+create:
+    title: Create Processmaker
+    redirect: delphinium/redwood/processmaker/update/:id
+    redirectClose: delphinium/redwood/processmaker
+
+# Update page
+update:
+    title: Edit Processmaker
+    redirect: delphinium/redwood/processmaker
+    redirectClose: delphinium/redwood/processmaker
+
+# Preview page
+preview:
+    title: Preview Processmaker

@@ -3,8 +3,11 @@
 
 use Config;
 use Delphinium\Redwood\Exceptions\InvalidRequestException;
-use Delphinium\Redwood\Models\OAuth;
+use Delphinium\Redwood\Models\PMOAuth;
 use Delphinium\Redwood\Models\Authorization;
+use Delphinium\Roots\Classes\OAuthConsumer;
+use Delphinium\Roots\Classes\OAuthRequest;
+use Delphinium\Roots\Classes\OAuthSignatureMethodHMAC;
 
 class RedwoodRoots
 {
@@ -125,6 +128,25 @@ class RedwoodRoots
         }
     }
 
+    public function getProjects()
+    {//GET /api/1.0/{workspace}/roles
+        $projects = $this->pmRestRequest("GET", 'projects');
+        $returnArr=array();
+        if(count($projects)<1)
+        {
+            array_push($returnArr,$projects);
+        }
+        else
+        {
+            return $projects;
+        }
+    }
+
+    /**
+     * @return mixed An array with the roles available in ProcessMaker
+     * @throws Exception
+     * @throws InvalidRequestException
+     */
     public function getRoles()
     {//GET /api/1.0/{workspace}/roles
         $roles = $this->pmRestRequest("GET", 'roles');
@@ -136,6 +158,40 @@ class RedwoodRoots
         else
         {
             return $roles;
+        }
+    }
+
+    /**
+     * @param $group_id The processMaker grp_uid of the group
+     * @param $username The Process Maker username of the user
+     * @return mixed An array containing the user, or an empty array if not found
+     * @throws Exception
+     * @throws InvalidRequestException
+     */
+    public function isUserInGroup($group_id, $username)
+    {// GET /api/1.0/{workspace}/group/{grp_uid}/users?filter={filter}&start={start}&limit={limit}
+        $endpoint = "group/{$group_id}/users";
+        $params = null;
+        $params = array(
+            'filter'    => $username
+        );
+        $groups= $this->pmRestRequest("GET", $endpoint, $params);
+        return $groups;
+    }
+
+    /**
+     * @param $canvas_role The role of the user in Canvas
+     * @return string the ProcessMaker role
+     */
+    public function getPmRole($canvas_role)
+    {
+        switch($canvas_role)
+        {
+            case 'Instructor':
+                return "PROCESSMAKER_MANAGER";
+            case 'Learner':
+            default:
+                return "PROCESSMAKER_OPERATOR";
         }
     }
     /*
@@ -239,7 +295,7 @@ class RedwoodRoots
               Object returned by /oauth2/token endpoint, which either contains access token or error message.*/
     public function refreshToken($clientId=null, $clientSecret=null, $refreshToken=null)
     {
-        $credentials = OAuth::find($this->credentials_id)->first();
+        $credentials = PMOauth::find($this->credentials_id)->first();
         $aVars = array(
             'grant_type'    => 'refresh_token',
             'client_id'     => $credentials->client_id,
@@ -414,5 +470,101 @@ class RedwoodRoots
                 return "{$pmServer}/sys{$workspace}/en/neoclassic/cases/casesListExtJs";
 
         }
+    }
+
+    public function gradePostback($source_id, $url, $value, $oauth_consumer_key)
+    {
+        $xml_data ='<?xml version = "1.0" encoding = "UTF-8"?>'.
+            '<imsx_POXEnvelopeRequest xmlns="http://www.imsglobal.org/services/ltiv1p1/xsd/imsoms_v1p0">'.
+                '<imsx_POXHeader>'.
+                    '<imsx_POXRequestHeaderInfo>'.
+                        '<imsx_version>V1.0</imsx_version>'.
+                        '<imsx_messageIdentifier>999999123</imsx_messageIdentifier>'.
+                    '</imsx_POXRequestHeaderInfo>'.
+                '</imsx_POXHeader>'.
+                '<imsx_POXBody>'.
+                    '<replaceResultRequest>'.
+                        '<resultRecord>'.
+                            '<sourcedGUID>'.
+                                '<sourcedId>'.$source_id.'</sourcedId>'.
+                            '</sourcedGUID>'.
+                            '<result>'.
+                                '<resultScore>'.
+                                    '<language>en</language>'.
+                                    '<textString>'.$value.'</textString>'.
+                                '</resultScore>'.
+                            '</result>'.
+                        '</resultRecord>'.
+                    '</replaceResultRequest>'.
+                '</imsx_POXBody>'.
+            '</imsx_POXEnvelopeRequest>';
+
+        //get the key and secret
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+
+        $credentials = PMOauth::find($_SESSION['pm_credentials_id']);
+        $secret = $credentials->secret;
+        $method = 'POST';
+        $content_type = 'application/xml';
+        $sendOAuthBodyPOST = $this->sendOAuthBodyPOST($url, $oauth_consumer_key, $secret, $content_type, $xml_data);
+        return $sendOAuthBodyPOST;
+    }
+
+    private function sendOAuthBodyPOST($url, $oauth_consumer_key, $oauth_consumer_secret, $content_type, $body)
+    {
+        $hash = base64_encode(sha1($body, TRUE));
+
+        $params = array('oauth_body_hash' => $hash);
+        $test_token = '';
+        $hmac_method = new OAuthSignatureMethodHMAC();
+        $test_consumer = new OAuthConsumer($oauth_consumer_key, $oauth_consumer_secret, NULL);
+
+        $acc_req = OAuthRequest::from_consumer_and_token($test_consumer, $test_token, "POST", $url, $params);
+        $acc_req->sign_request($hmac_method, $test_consumer, $test_token);
+
+        $header = $acc_req->to_header();
+        $header = $header . "\r\nContent-type: " . $content_type . "\r\n";
+
+        $params = array('http' => array(
+            'method' => 'POST',
+            'content' => $body,
+            'header' => $header
+        ));
+        try {
+            $ctx = stream_context_create($params);
+            $fp = @fopen($url, 'rb', false, $ctx);
+        } catch (Exception $e) {
+            $fp = false;
+        }
+        if ($fp) {
+            $response = @stream_get_contents($fp);
+        } else {  // Try CURL
+            $headers = explode("\r\n",$header);
+            $response = $this->sendXmlOverPost($url, $body, $headers);
+        }
+
+        if ($response === false) {
+            throw new Exception("Problem reading data from $url, $php_errormsg");
+        }
+        return $response;
+    }
+    function sendXmlOverPost($url, $xml, $header) {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+
+        // For xml, change the content-type.
+        curl_setopt ($ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $xml);
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); // ask for results to be returned
+
+        // Send to remote and return data to caller.
+        $result = curl_exec($ch);
+        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        return $result;
     }
 }

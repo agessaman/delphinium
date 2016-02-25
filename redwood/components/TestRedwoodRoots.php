@@ -3,6 +3,9 @@
 use Cms\Classes\ComponentBase;
 use Delphinium\Redwood\RedwoodRoots;
 use Delphinium\Redwood\Exceptions\InvalidRequestException;
+use Delphinium\Roots\Classes\OAuthConsumer;
+use Delphinium\Roots\Classes\OAuthRequest;
+use Delphinium\Roots\Classes\OAuthSignatureMethodHMAC;
 
 class TestRedwoodRoots extends ComponentBase
 {
@@ -11,7 +14,7 @@ class TestRedwoodRoots extends ComponentBase
     public function componentDetails()
     {
         return [
-            'name'        => 'TestRedwoodRoots Component',
+            'name'        => 'testredwoodroots Component',
             'description' => 'Playground for RedwoodRoots'
         ];
     }
@@ -29,8 +32,8 @@ class TestRedwoodRoots extends ComponentBase
 //        $this->testGetRoles();
 //        $this->testPeerReviewWorkflow();
 //        $this->testLoginUser();
-        $this->testGradePostBack();
-
+//        $this->testIsUserInGroup();
+        $this->testGetProjects();
 //        var_dump($_POST);
     }
 
@@ -52,13 +55,14 @@ class TestRedwoodRoots extends ComponentBase
         //we'd look through the roles and figure out which role we need
         //$roles = $this->testGetRoles();
 
-        $first_name = "Tara";
-        $last_name = "Jorgensen";
-        $canvas_user_id = 10344545;
+        $first_name = "Dummy";
+        $last_name = "Tra";
+        $canvas_user_id = 1114325;
         $email = $canvas_user_id.'@uvlink.uvu.edu';//TODO: figure out a dynamic way to do the email
         $pm_role = "PROCESSMAKER_OPERATOR";
         $newUser = $this->roots->createUser($first_name, $last_name, $canvas_user_id, $email, $pm_role);
         echo json_encode($newUser);
+        return $newUser;
     }
 
     public function testCreateDepartment()
@@ -86,14 +90,17 @@ class TestRedwoodRoots extends ComponentBase
         $assignmentId = 1660429;
 //        $assignmentId = 5432;
         $group = $this->roots->getGroups();//get all groups
-        $group = $this->roots->getGroups($assignmentId);//get a specific assignment aka group
+//        $group = $this->roots->getGroups($assignmentId);//get a specific assignment aka group
         echo json_encode($group);
+        return $group;
     }
 
     public function testCreateGroup()
     {
         $assignmentId = 1660429;
-        echo json_encode($this->roots->createGroup($assignmentId));
+        $group = $this->roots->createGroup($assignmentId);
+        echo json_encode($group);
+        return $group;
     }
 
     public function testGetRoles()
@@ -155,124 +162,26 @@ class TestRedwoodRoots extends ComponentBase
         }
     }
 
-    public function testGradePostBack()
-    {//'ext_outcome_data_values_accepted' =>  'url,text'
-//        $url = "https://uvu.instructure.com/api/lti/v1/tools/46776/grade_passback";//lis_outcome_service_url
-//        //"https://uvu.instructure.com/api/lti/v1/tools/46776/ext_grade_passback";//ext_ims_lis_basic_outcome_url
-//        $source_id = 614714;//lis_person_sourcedid
-//        $value = 0.94;//between 0 and 1
-//        $oauth_consumer_key = 'honey';//oauth_consumer_key
-//        $secret = 'honey';
-//        $oauth_signature = 'NrMvbW1cjuSaPGUAlx1phwxGWyQ';//oauth_signature
-//        $oauth_signature_method="HMAC-SHA1'";//oauth_signature_method
-//        $oauth_timestamp=1456173930;//oauth_timestamp
-//        $oauth_nonce='yJheZTMRAujFThhy9rqEvL0SHhYUP010HXMfgoA5NE';//oauth_nonce
-//        $oauth_version= 1.0;//oauth_version
-//        $oauth_token = '??';
+    public function testIsUserInGroup()
+    {
+        $user = $this->testCreateUser();
+        $group = $this->testCreateGroup();
+        $this->roots->assignUserToGroup($group->grp_uid,$user->usr_uid);
 
-
-        $value = 0.5;
-        $url = 'https://learn-lti.herokuapp.com/grade_passback/5607';
-        $source_id = 'f3b73f9607';
-        $oauth_consumer_key = '7257e50bf37455f398dddbeb40552d61';
-        $oauth_signature_method = 'HMAC-SHA1';
-        $oauth_timestamp = '1456175342';
-        $oauth_nonce = 'uQiahSY8FSnGWsTdTD5fwnPlEdZReNHxL5NzSrntU';
-        $oauth_version = '1.0';
-        $oauth_signature = 'MurIq7dY4fGhJpkCKkxwTnerx8Q=';
-        $realm = "http://uvu.instructure.com/";
-//        $oauth_token =
-        //build params
-        $postParams = array(
-            'oauth_consumer_key'    => $oauth_consumer_key,
-            'oauth_token'   => $oauth_token,
-            'oauth_signature_method'=>$oauth_signature_method,
-            'oauth_signature' =>$oauth_signature,
-            'oauth_timestamp' =>$oauth_timestamp,
-            'oauth_nonce'=>$oauth_nonce,
-            'oauth_version'=>$oauth_version,
-            'realm'=>$realm
-        );
-
-
-        //then we need to sign this signature
-        $adsfa = \OAuth::getRequestHeader ( 'POST',$url, [$postParams] );
-
-
-        //sign body
-//        $bodyHash = base64_encode(sha1($xml_data, TRUE)); // build oauth_body_hash
-//        $consumer = new \OAuthConsumer($oauth_consumer_key, $secret);return;
-//        $request = \OAuthRequest::from_consumer_and_token($consumer, '', 'POST', $endpoint, array('oauth_body_hash' => $bodyHash) );
-//        $request->sign_request(new \OAuthSignatureMethod_HMAC_SHA1(), $consumer, '');
-//        $header = $request->to_header() . "\r\nContent-Type: application/xml\r\n"; // add content type header
-
-
-
-        var_dump($adsfa);return;
-
-
-
-        $xml_data ='<?xml version = "1.0" encoding = "UTF-8"?>'.
-            '<imsx_POXEnvelopeRequest xmlns="http://www.imsglobal.org/services/ltiv1p1/xsd/imsoms_v1p0">'.
-                '<imsx_POXHeader>'.
-                   '<imsx_POXRequestHeaderInfo>'.
-                        '<imsx_version>V1.0</imsx_version>'.
-                        '<imsx_messageIdentifier>999999123</imsx_messageIdentifier>'.
-                    '</imsx_POXRequestHeaderInfo>'.
-                '</imsx_POXHeader>'.
-                '<imsx_POXBody>'.
-                    '<replaceResultRequest>'.
-                        '<resultRecord>'.
-                            '<sourcedGUID>'.
-                                '<sourcedId>'.$source_id.'</sourcedId>'.
-                            '</sourcedGUID>'.
-                            '<result>'.
-                                '<!-- Added element -->'.
-                                '<resultScore>'.
-                                    '<language>en</language>'.
-                                    '<textString>'.$value.'</textString>'.
-                                '</resultScore>'.
-                            '</result>'.
-                        '</resultRecord>'.
-                    '</replaceResultRequest>'.
-                '</imsx_POXBody>'.
-            '</imsx_POXEnvelopeRequest>';
-
-
-
-//        var_dump($this->arraytostr($postParams));
-//        return;
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml', "Authorization: OAuth " . http_build_query($postParams)));
-        curl_setopt($ch, CURLOPT_POSTFIELDS, "$xml_data");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-
-        $result = json_decode(curl_exec($ch));
-        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        var_dump($result);
-        var_dump($status);
-    }
-
-    function arraytostr ($array=array()) {
-        $string = '';
-        $count = count($array);
-        $i=0;
-        foreach ($array as $key => $value) {
-            $string .= "$key"."=";
-            $string .= "'{$value}'";
-            if($i<$count-1)
-            {
-                $string.=',';
-            }
-            $i++;
+        $inGroup =  $this->roots->isUserInGroup($group->grp_uid, $user->usr_uid);
+        if($inGroup)
+        {
+            echo "In Group";
         }
-        return $string;
+        else{
+            echo "Not in group!";
+        }
     }
 
+    private function testGetProjects()
+    {
+        $projects = $this->roots->getProjects();
+        var_dump($projects);
+        return $projects;
+    }
 }
