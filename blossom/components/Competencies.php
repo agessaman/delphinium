@@ -34,14 +34,6 @@ class Competencies extends ComponentBase
         ];
     }
 	
-    /* options?
-    'Size' => [
-                'title'        => 'Size',
-                'type'         => 'dropdown',
-                'default'      => 'Medium',
-                'options'      => ['Small'=>'Small', 'Medium'=>'Medium', 'Large'=>'Large']
-            ]
-    */
     //The CMS controller executes this method before the default markup is rendered.
     public function onRender()
     {
@@ -56,7 +48,7 @@ class Competencies extends ComponentBase
         if (!isset($_SESSION)) { session_start(); }
     
         $courseID = $_SESSION['courseID'];
-		// if instance != 0
+		// if instance has been set
         if( $this->property('instance') )
         {
             //instance set in CMS getInstanceOptions()
@@ -70,23 +62,24 @@ class Competencies extends ComponentBase
             $copyLength = strlen($this->property('copy_id'));
             if($copyLength > 0 )
             {
-                // find all matching course
-                $instances = CompetenceModel::table()->where('course_id',$courseID);
-                // find instance with copy
-                foreach ($instances as $instance)
-                {
-                   if($instance->copy_id == $this->property('copy_id') )
-                   {
-                       $config = $instance;
-                       break;// got first found
-                   }
-                }
-                // no match found so create one
-                if(!$config) { 
-                    $copyLength = 0;
+                // find all matching course 
+                $instances = CompetenceModel::where('course_id','=', $courseID)->get();
+                $instCount = count($instances);
+                if($instCount == 0) { 
+                    $copyLength = 0;// none found
+                } else {
+                    // find instance with copy
+                    foreach ($instances as $instance)
+                    {
+                       if($instance->copy_id == $this->property('copy_id') )
+                       {
+                           $config = $instance;
+                           break;// got first found
+                       }
+                    }
                 }
             }
-            
+            // no match found so create one
             if($copyLength == 0 )
             {
                 //$config = dynamicInstance();// undefined use onRun?
