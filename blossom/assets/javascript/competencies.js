@@ -128,8 +128,8 @@ function showCompetencies() {
 
 	// NOW D3 it!
 
-	var competenciesView = d3.select("#competenciesView");
-	var competenciesSVG = d3.select("#competenciesSVG");
+	var competenciesView = d3.selectAll(".competenciesView");
+	var competenciesSVG = d3.selectAll(".competenciesSVG");
     var rowHeight = 45;// a property?
 	var competenciesWidth = 250;// could be a property?
 	var competenciesHeight = data.length*rowHeight;
@@ -151,7 +151,7 @@ function showCompetencies() {
 	}
     
 	// remove preloader
-	$('#outline').removeClass('spinner');
+	$('.outline').removeClass('spinner');
     // Only show the d3 if data is valid
     //TEST data=[];
     if(data.length == 0 ) {
@@ -162,7 +162,7 @@ function showCompetencies() {
 		$('#outline:style').css({'border': '1px solid '+competenciesColor, 'width':competenciesWidth+'px', 'height':'250px'});
 		instructions to setup stem
 	*/
-        var compview = d3.select("#competenciesSVG");
+        var compview = d3.selectAll(".competenciesSVG");
             compview.attr('height', 160)
                 .append('rect')
                 .attr('x',2).attr('y', 2)
@@ -182,7 +182,7 @@ function showCompetencies() {
 		////var competenciesAnimate=config.Animate;
 		////var competenciesColor=config.Color; 
 		var percentColor = '#CCCCCC';// med gray or inverse amount color
-		var competencies = d3.select("#competenciesView");// a <g>roup
+		var competencies = d3.selectAll(".competenciesView");// a <g>roup
 		var xcale = d3.scale.linear()
 			.domain([0, maxTotal+2])
 			.range([0, competenciesWidth]);
