@@ -18,4 +18,11 @@ class EasterEggs extends ComponentBase
         return [];
     }
 
+    public function onRun()
+    {
+        //$this->addJs("/plugins/delphinium/blossom/assets/javascript/eastereggs.js");
+        $this->addJs("/plugins/delphinium/blossom/assets/javascript/harlem-shake.js");
+        //$this->addJs("/plugins/delphinium/blossom/assets/javascript/jquery.ripples.js");
+    }
+
 }
