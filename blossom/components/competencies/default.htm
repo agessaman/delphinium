@@ -11,6 +11,16 @@
 	var competenciesSize=config.Size.toLowerCase();//string
 	var competenciesAnimate=config.Animate;//boolean
     
+    var data =[];// json for d3
+    var details=[];// for modal '#detailed' body content
+    
+	//student view uses
+    //var assignments={{assignments|raw}};//json
+    //var submissions = {{submissions|raw}};
+    
+    //instructor view uses
+    //var modules={{modules|raw}};// use items to build data
+    
 </script>
 {% if ('Learner' in role) %}
 {% partial 'competencies::studentView' %}

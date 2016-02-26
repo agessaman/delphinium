@@ -10,5 +10,5 @@
     - Drop grades table
     - drop_grades_table.php
 1.0.3:
-    - Add Color and course_id to Competencies
+    - Add Color, course_id and copy_id to Competencies
     - add_competencies_columns.php

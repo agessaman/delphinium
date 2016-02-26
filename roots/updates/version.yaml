@@ -33,8 +33,4 @@
     - move_alias_users_course.php
 1.0.8:
     - Add sis_login_id to users table
-<<<<<<< HEAD
     - modify_users_table_add_login_id.php
-=======
-    - modify_users_table_add_login_id.php
->>>>>>> upstream/master

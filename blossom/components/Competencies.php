@@ -4,6 +4,7 @@ use Cms\Classes\ComponentBase;
 use Delphinium\Blossom\Models\Competencies as CompetenceModel;
 use Delphinium\Roots\Roots;
 use Delphinium\Roots\Enums\ActionType;
+use Delphinium\Roots\Requestobjects\ModulesRequest;//for locked & Instructor view
 use Delphinium\Roots\Requestobjects\AssignmentsRequest;// for submissions
 use Delphinium\Roots\Requestobjects\SubmissionsRequest;// score
 
@@ -23,7 +24,11 @@ class Competencies extends ComponentBase
 
             'copy_id' => [
                 'title'        => 'Copy Name:',
-                'type'         => 'string'
+                'type'         => 'string',
+                'default'      => 'copy-1',
+                'required'     => 'true',
+                'validationPattern' => '^(?!\s*$).+',
+                'validationMessage' => 'This field cannot be left blank.'
             ],
             'instance'	=> [
                 'title'             => 'Configuration:',
@@ -33,16 +38,21 @@ class Competencies extends ComponentBase
             ]
         ];
     }
-	
+	/*  copy id must have a string 
+        validation above should warn user
+        also in backend New form!!!
+    */
     //The CMS controller executes this method before the default markup is rendered.
     public function onRender()
     {
     /*
         is an insance set? yes show it
         
-        else is copy set? 
+        else get all instances
+            is copy set?
             -yes check for an instance that matches copy + course show it
-        
+            
+            is there an instance with this course? yes use it
         else create dynamicInstance, save new instance show it
     */
         if (!isset($_SESSION)) { session_start(); }
@@ -55,7 +65,7 @@ class Competencies extends ComponentBase
             $config = CompetenceModel::find($this->property('instance'));
             //add $course->id to $config for form field
             $config->course_id = $_SESSION['courseID'];//$course->id;
-            //$config->save();//??? update original record now ???
+            $config->save();//update original record now in case it did not have course
             
         } else {
             // if copy has a name 
@@ -79,11 +89,12 @@ class Competencies extends ComponentBase
                            break;// got first found
                        }
                     }
-                    //yes found courses but not copy+copy
-                    if( !$flag ) { $copyLength=0; }
+                    
+                    //yes found courses but not matching copy. use the first one found with course id
+                    if( !$flag ) { $config = $instances[0]; }
                 }
             }
-            // no match found so create one
+            // no match found so create new one
             if($copyLength == 0 )
             {
                 //$config = dynamicInstance();// undefined use onRun?
@@ -93,7 +104,7 @@ class Competencies extends ComponentBase
                 $config->Color = '#4d7123';//uvu green
                 $config->Animate = '1';//true
                 $config->course_id = $_SESSION['courseID'];// or null
-                $config->copy_id = '';
+                $config->copy_id = $this->property('copy_id');//
                 $config->save();// create new record
                 ///$this->property('instance', $config->id);// instance=id#
                 //dont need to set for onSave
@@ -146,7 +157,43 @@ class Competencies extends ComponentBase
                 // Instructions page
                 $instructions = $formController->makePartial('instructions');
                 $this->page['instructions'] = $instructions;
+                
+                //simplified modules data *** testing if better than assignments includes locked
+                $freshData = false;
+
+                $moduleId = null;
+                $moduleItemId = null;
+                $includeContentDetails = true;
+                $includeContentItems = true;
+                $module = null;
+                $moduleItem = null;
+
+                $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems,
+                    $includeContentDetails, $module, $moduleItem , $freshData);
+
+                $moduleData = $roots->modules($req);
+                $modArr = $moduleData->toArray();
+
+                $simpleModules = array();
+                foreach($modArr as $item)
+                {
+                    $mod = new \stdClass();
+
+                    $mod->id = $item['module_id'];
+                    $mod->title=$item['name'];
+                    $mod->locked=$item['locked'];
+                    $mod->items =$item['module_items'];//REPLACES assignments
+
+                    // items contain:
+                    //module_items[i].content[0].title & .url, maybe .type
+                    //module_items[i].content[0].points_possible & .tags
+
+                    $simpleModules[] = $mod;
+                }
+                $this->page['modules'] = json_encode($simpleModules);
+                ///$this->page['modata'] = json_encode($moduleData);// complete array remove when done
 			}
+            
             //if($_SESSION['roles'] == 'Learner')
             if(stristr($roleStr, 'Learner'))
 			{

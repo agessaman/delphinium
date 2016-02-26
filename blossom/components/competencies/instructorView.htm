@@ -1,18 +1,18 @@
-<!-- Instructor View with Settings -->
-
-<!-- place competencies component -->
-{% partial 'competencies::display' %}
-
-<div class=""><!-- Settings & Instructions -->
-<a data-toggle="modal" href="#content-configuration"><i class="icon-cog"></i> Configure Component Settings </a>
-: | :
-<a data-toggle="modal" href="#content-instruction"> <i class="icon-info"></i> View Instructions</a>
+<!-- Instructor View with Settings cog -->
+<div style="position:relative;">
+    <div id="cog" data-toggle="modal" href="#content-configuration" style="position:absolute; top:0; z-index:950; padding-left:220px;">
+        <a data-toggle="tooltip" title="Settings" data-placement="bottom"><i class="icon-cog"></i></a>
+    </div>
+    <div style="z-index:10;">
+        <!-- competencies component -->
+        {% partial 'competencies::display' %}
+    </div>
 </div>
 
-<!-- Configuration modal with Front End Form -->
+<!-- Configuration modal with Front End Form and Instructions in tabs -->
 <div class="control-popup modal fade" id="content-configuration" tabindex="-1" role="dialog">
     <div class="modal-dialog">
-        <div class="modal-content" style="width:490px">
+        <div class="modal-content" style="width:800px">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title">Competencies Settings</h4>
@@ -21,36 +21,43 @@
 				<div class="confirm-container bg-success hide">
                   <p style="text-align:center;">Successfully Updated Entry!</p>
                 </div>
-
-                <form role="form" id="updateForm"
-                  data-request="{{ __SELF__ }}::onUpdate"
-                  data-request-success="$el.hide();$('.confirm-container').removeClass('hide');completed(data);">
-                    {{ form.formRender()|raw }}
-                  <div class="form-group">
-                     <button id="go" class="btn btn-primary btn-block btn-md" type="submit" value="register">Update Component</button>
+                <!-- Tabs -->
+                <ul class="nav nav-tabs">
+                  <li class="active"><a data-toggle="tab" href="#configure">Configure</a></li>
+                  <li><a data-toggle="tab" href="#instruct">Instructions</a></li>
+                </ul>
+                <div class="tab-content">
+                <!-- Configure instance -->
+                  <div id="configure" class="tab-pane fade in active" style="padding: 5px 0px;">
+                    <form role="form" id="updateForm"
+                      data-request="{{ __SELF__ }}::onUpdate"
+                      data-request-success="$el.hide();$('.confirm-container').removeClass('hide');completed(data);">
+                        {{ form.formRender()|raw }}
+                      <div class="form-group">
+                         <button class="btn btn-primary btn-block btn-md" type="submit" value="register">Update Component</button>
+                      </div>
+                    </form>
                   </div>
-                </form>
-
+                <!-- Instructions -->
+                  <div id="instruct" class="tab-pane fade in" style="padding: 0px 20px;">
+                      {{ instructions|raw }}
+                  </div>
+                </div>
             </div>
-			<div style="clear:both; height:1.5em"></div>
         </div>
     </div>
 </div>
 
-<!-- Instructions modal -->
-<div class="control-popup modal fade" id="content-instruction" tabindex="-1" role="dialog">
+<!-- Modal: when a bar is clicked show details for the competency -->
+<div class="control-popup modal fade" id="detailed" tabindex="-1" role="dialog">
     <div class="modal-dialog">
-        <div class="modal-content" style="width:790px">
+        <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Competencies Instructions</h4>
+                <h4 id="detailed-title" class="modal-title">Competency Details</h4>
             </div>
-            <div class="modal-body">
-				{{ instructions|raw }}
-            </div>
-			<div style="clear:both; height:1.5em"></div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            <div id="detailed-body" class="modal-body">
+                <p>This displays details of competency</p>
             </div>
         </div>
     </div>
@@ -58,15 +65,20 @@
 
 <script>
 /*
-    use faked data in competency display : bars are not clickable
-    After changing settings, Refresh the page
+    
+    After changing settings, Refresh the component but not the page
 	course_id has been added dynamically to config.course_id
+    
+    get tags from module items to build data & details
+    bars clickable with assignments but no submissions yet
+    
     https://medium.com/@matissjanis/octobercms-using-backend-forms-in-frontend-component-fe6c86f9296b#.ge50nlmtc
 */
-    var data = [{"name":"Align","total":210,"amount":80,"percent":38},{"name":"Ideas","total":596,"amount":167,"percent":28},{"name":"People","total":830,"amount":299,"percent":36}];
-    var details = [{"name":"Align","assignments":[{"id":1660401},{"id":1660391},{"id":1660419},{"id":1660418}]},{"name":"Ideas","assignments":[{"id":1660391},{"id":1660400},{"id":1660403},{"id":1660392},{"id":1660390},{"id":1660394}]},{"name":"People","assignments":[{"id":1660391},{"id":1660408},{"id":1660392},{"id":1660390}]}];
+    var modules={{modules|raw}};// use items to build data
+    console.log('modules:',modules.length, modules);
     var assignments=[];// for click bar
-
+    var submissions=[];
+    
 	var configVal=[config.Name, config.Size, config.Color, config.Animate];
 	var fieldIDs=['Form-field-Competencies-Name','Form-field-Competencies-Size','ColorPicker-formColor-input-Color','Form-field-Competencies-Animate'];
 	
@@ -81,17 +93,15 @@
     // Fix Animate checkbox switch
     $('<div style="height:90px;" class="clearfix"></div>').insertBefore('.checkbox-field').parent;
 	$('.checkbox-field').attr('style','margin-left:20px').removeClass('span-right').addClass('span-left');
+    $('#Form-field-Competencies-Name-group').hide();// not useful
     
-	//ToDo: custom-color #ColorPicker-formColor-Color dataLocker
+	//ToDo: custom-color dataLocker
     //jsAPI: $('div#someElement').colorPicker({ dataLocker: 'input#locker' })
-    //$('div#ColorPicker-formColor-Color').colorPicker({ dataLocker: config.Color });//nope
-    //HAKK figure out dataLocker
-    $('#ColorPicker-formColor-Color-input-Color').val(config.Color);
-    $('.custom-color').addClass('active');
-    $('.custom-color span').attr('style','background:'+config.Color);
-    
-    // closes modal but cancels submit : Just let user close modal
-    //$('#go').attr('data-dismiss','modal');// on submit form close modal
+    //$('div #ColorPicker-formColor-Color').colorPicker({ dataLocker: config.Color });// not a function
+//HACK figure out dataLocker
+//    $('#ColorPicker-formColor-Color-input-Color').val(config.Color);
+//    $('.custom-color').addClass('active');
+//    $('.custom-color span').attr('style','background:'+config.Color);
     
     //fill the form with current configuration
     for(var i=0; i<configVal.length; i++) {
@@ -102,12 +112,12 @@
 	{
         /*  returned updated record
             dont reload page
-            if dynamic it will add another record and show it insead
+            if dynamic it will add another record and show it instead
             Replace: contents
             <svg id = "competenciesSVG">
 	           <g id="competenciesView"></g></svg>
         */
-        //location.reload();
+        //location.reload();// TRY THIS AGAIN SHOULD CATCH required copy-1
         config = JSON.parse(data['result']);
 		competenciesColor=config.Color;//string
 		competenciesSize=config.Size.toLowerCase();//string
