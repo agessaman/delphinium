@@ -192,7 +192,7 @@ function addLine(data, strokeColor, id)
                 var day = date.getDate();
                 var monthIndex = date.getMonth();
                 var time = formatAMPM(date);
-                addTooltipProfessorGradebook(text +" -- "+d.points + " pts earned on " + monthNames[monthIndex] + " " + day + " @ " + time);
+                addTooltipProfessorGradebook(text +" -- "+roundToTwo(d.points) + " pts earned on " + monthNames[monthIndex] + " " + day + " @ " + time);
             }
         })
         .on("mouseout", function (d) {
@@ -457,7 +457,7 @@ function addRedLineDots()
             return y(d.points);
         })
         .on("mouseover", function (d) {
-            addTooltipProfessorGradebook(d.points + " points due " + parseTimestamp(d.date));
+            addTooltipProfessorGradebook(roundToTwo(d.points) + " points due " + parseTimestamp(d.date));
         })
         .on("mouseout", function (d) {
             removeTooltipProfessorGradebook();

@@ -1,0 +1,108 @@
+<style>
+    .row{
+        margin-bottom:40px;
+    }
+</style>
+<div class="layout-row min-size">
+    <ul class="nav nav-tabs" data-disposable="">
+        <li class="active"><a href="#primarytab-1"  data-toggle="tab" title="Settings"><span class="title"><span>Instances</span></span></a><span class="tab-close"></span></li>
+        <li class=""><a href="#primarytab-2" data-toggle="tab" title="Instructions"><span class="title"><span>Instructions</span></span></a><span class="tab-close"></span></li>
+    </ul>
+</div>
+<div>
+    <div class="tab-content">
+        <div id="primarytab-1" class="tab-pane fade in active" style="padding: 5px 0px;">
+            <?= $this->listRender() ?>
+        </div>
+
+        <div id="primarytab-2" class="tab-pane fade in" style="padding: 0px 20px;">
+
+            <h3>ProcessMaker Component</h3>
+            <div class="row">
+                <div class="col-sm-12">
+                    In order for this component to work you must have an installation of
+                    <a target="_blank" href="http://www.processmaker.com/processmaker-bpm">ProcessMaker</a>.
+                    After you have installed it, you will need to <a target="_blank" href="http://wiki.processmaker.com/OAuth_2.0">register</a>
+                    your application to obtain OAuth credentials (client_id and client_secret).
+                    <br/>
+                    With these credentials you will create a new instance of the PMOAuth component.
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12"><img id="image0"  src="" title="Create PMOauth component" alt="Create PMOauth component"/></div>
+            </div>
+            <div class="row">
+                <div class="col-sm-5">
+                    <h4>Setting up the component in your OctoberCMS app</h4>
+                    <p>In a CMS page drag the PMOAuth component and the ProcessMaker component. In the PMOAuth component you must select the instance of ProcessMaker's client_id and
+                        secret that you just created. You must also select a layout that contains OctoberCMS js extras (the default layout has all the necessary js libraries, etc).
+                    </p>
+                </div>
+                <div class="col-sm-7">
+                    <img id="image1" src="" title="Page set up" alt="Page set up"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-5">
+                    <h4>Setting up the LTI on Canvas</h4>
+                    <p>
+                        Add an LTI app on Canvas pointing to the page you just created in your app. To do this go to your Canvas course and follow this path:
+                        <br/><b>Settings->Apps->View App Configurations->Add App->Paste XML</b>
+                        <br/>Give the lti app a name and the key and secret you used to configure the PMOAuth component. You will need to create an XML configuration for this LTI.
+                        You can use <a target="_blank" href="http://www.edu-apps.org/build_xml.html">this tool</a> to create the LTI XML you will need.
+                        Now paste the XML you just created to finish setting up your LTI configuration.
+                    </p>
+                </div>
+                <div class="col-sm-7">
+                    <img id="image2" src="" title="New LTI" alt="new lti"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-5">
+                    <h4>Setting up the Assignment on Canvas</h4>
+                    <p>
+                        You will create a new assignment on Canvas:
+                        <br/><b>Assignments->+Assignment</b>
+                        <br/>In "Submission Type" select 'External Tool'. Enter the URL of the CMS page you just created (that contains you PMOAuth and ProcessMaker components).
+                        If your ProcessMaker domain is secure (https) the tool can be loaded in an iFrame inside Canvas. If your domain isn't secure it will be loaded in a new tab.
+                    </p>
+                </div>
+                <div class="col-sm-7">
+                    <img id="image3"  src="" title="Create Canvas assignment" alt="Create Canvas assignment"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <h4>How this component works</h4>
+                    <p>
+                        When the assignment is launched, the process maker component will verify the existance of certain variables, or will
+                        create them if they're missing in your installation of processmaker (PM):
+                        <ul>
+                            <li>A department (equivalent to your Canvas course)</li>
+                            <li>A group (equivalent to the assignment)</li>
+                            <li>A user. The component will also log in the user in PM</li>
+                        </ul>
+                    <br/>
+                    If the calling user is a professor, the component will display configuration options, including the ProcessMaker process that
+                    this component will connect to. If the calling user is a student
+                    the component will redirect the user to the appropriate PM process/case for the student to work on.
+                    </p>
+                </div>
+            </div>
+
+
+
+            </div>
+
+
+
+        </div>
+    </div>
+
+<script>
+    $('#image0').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/redwood/assets/images/new_pmoauth.png');
+    $('#image1').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/redwood/assets/images/cms_processmaker.png');
+    $('#image2').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/redwood/assets/images/new_lti.png');
+    $('#image3').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/redwood/assets/images/new_assignment.png');
+</script>
+

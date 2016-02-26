@@ -35,7 +35,7 @@ class TestRoots extends ComponentBase
     public $roots;
     public $canvasHelper;
     public $dbHelper;
-	
+
     public function componentDetails()
     {
         return [
@@ -43,33 +43,32 @@ class TestRoots extends ComponentBase
             'description' => 'This component will test the Roots API'
         ];
     }
-    
+
     public function onRun()
-    {  
+    {
         $this->roots = new Roots();
         $this->canvasHelper = new CanvasHelper();
         $this->dbHelper = new DbHelper();
 //        $this->refreshCache();
-
         $this->test();
 //        $this->testBasicModulesRequest();
 //        $this->testDeleteTag();
 //        $this->testAddingUpdatingTags();
 //        $this->testUpdatingModuleItem();
 //        $this->testUpdatingModule();
-        
+
 //        $this->testDeletingModuleItem();
 //        $this->testDeletingModule();   //need to double check this one
-        
+
 //        $this->testAddingModule();
 //        $this->testAddingModuleItem();
-//        
+//
 //        $this->testingGettingAssignments();
-		$this->testGettingSingleAssignment();//1660430;//theAssignment
-        
+//        $this->testGettingSingleAssignment();
+
 //        $this->testAssignmentGroups();
 //        $this->testSingleAssignmentGroup();
-//        
+//
 //        $this->testGettingSingleSubmissionSingleUserSingleAssignment();
 //        $this->testGettingAllSubmissionForSingleAssignment();
 //        $this->testGettingMultipleSubmissionsForSingleStudent();
@@ -83,18 +82,18 @@ class TestRoots extends ComponentBase
 //        $this->testGetCourse();
 //        $this->testGetAccount();
 //        $this->testGetEnrollments();
-       $this->testGetQuiz();// aQuiz
+//        $this->testGetQuiz();
 //        $this->testGetQuizQuestions();
- ///       $this->testGetAllQuizzes();//'allQuizzes' curlFactory Err:  return function ($ch, $h) use (
+//        $this->testGetAllQuizzes();
 //        $this->testGetPages();
 //        $this->testQuizTakingWorkflow();
 //        $this->testIsQuestionAnswered();
 //        $this->testSubmitQuiz();
 //        $this->getQuizSubmissionQuestions();
     }
-    
+
     private function testBasicModulesRequest()
-    { 
+    {
         $moduleId = null;//380200;
         $moduleItemId = null;//2368085;
         $includeContentDetails = true;
@@ -102,27 +101,27 @@ class TestRoots extends ComponentBase
         $module = null;
         $moduleItem = null;
         $freshData = true;
-                
-        $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems, 
-                $includeContentDetails, $module, $moduleItem , $freshData) ;
-        
+
+        $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems,
+            $includeContentDetails, $module, $moduleItem , $freshData) ;
+
         $res = $this->roots->modules($req);
         echo json_encode($res);
     }
-    
-    
+
+
     private function testUpdatingModule()
-    {   
+    {
         //380212
         $empty =  array();
         $module = new Module(null, null, null, null, 22);
-        $req = new ModulesRequest(ActionType::PUT, 380206, null,  
+        $req = new ModulesRequest(ActionType::PUT, 380206, null,
             false, false, $module, null , false);
-        
+
         $res = $this->roots->modules($req);
-        
+
 //        $name = "Updated from backend";
-//        
+//
 //        $format = DateTime::ISO8601;
 //        $date = new DateTime("now");
 //        $date->add(new DateInterval('P1D'));
@@ -130,24 +129,24 @@ class TestRoots extends ComponentBase
 //        $prerequisite_module_ids =array("380199","380201");
 //        $published = true;
 //        $position = 4;
-//        
+//
 //        $module = new Module($name, $unlock_at, $prerequisite_module_ids, $published, $position);
-//        
-//        
+//
+//
 //        $moduleId = 457494;
 //        $moduleItemId = null;
 //        $includeContentItems = false;
 //        $includeContentDetails = false;
 //        $moduleItem = null;
 //        $freshData = false;
-//        
+//
 //        //update a module (changing title and published to false)
-//        $req = new ModulesRequest(ActionType::PUT, $moduleId, $moduleItemId,  
+//        $req = new ModulesRequest(ActionType::PUT, $moduleId, $moduleItemId,
 //            $includeContentItems, $includeContentDetails, $module, $moduleItem , $freshData);
-//        
+//
 //        $res = $this->roots->modules($req);
     }
-    
+
     private function testUpdatingModuleItem()
     {
         //added
@@ -160,25 +159,25 @@ class TestRoots extends ComponentBase
         $page_url = null;//"http://www.gmail.com";
         $published = true;
         $position = 1;//2;
-        
-        $moduleItem = new ModuleItem($title, $modItemType, $content_id, $page_url, null, $completion_requirement_type, 
-                $completion_requirement_min_score, $published, $position, $tags);
+
+        $moduleItem = new ModuleItem($title, $modItemType, $content_id, $page_url, null, $completion_requirement_type,
+            $completion_requirement_min_score, $published, $position, $tags);
         //end added
-        
+
         $moduleId = 457097;
         $moduleItemId = 2885671;
         $includeContentItems = false;
         $includeContentDetails = false;
         $module = null;
         $freshData = false;
-        
-        $req = new ModulesRequest(ActionType::PUT, $moduleId, $moduleItemId,  
+
+        $req = new ModulesRequest(ActionType::PUT, $moduleId, $moduleItemId,
             $includeContentItems, $includeContentDetails, $module, $moduleItem , $freshData);
-        
+
         $res = $this->roots->modules($req);
     }
-    
-    
+
+
     private function testDeletingModuleItem()
     {
         $moduleId = 457097;
@@ -188,14 +187,14 @@ class TestRoots extends ComponentBase
         $module = null;
         $moduleItem = null;
         $freshData = false;
-        
-        $req = new ModulesRequest(ActionType::DELETE, $moduleId, $moduleItemId,  
+
+        $req = new ModulesRequest(ActionType::DELETE, $moduleId, $moduleItemId,
             $includeContentItems, $includeContentDetails, $module, $moduleItem , $freshData);
-        
+
         $res = $this->roots->modules($req);
         echo json_encode($res);
     }
-    
+
     private function testDeletingModule()
     {
         $moduleId = 526591;
@@ -205,10 +204,10 @@ class TestRoots extends ComponentBase
         $module = null;
         $moduleItem = null;
         $freshData = false;
-        
-        $req = new ModulesRequest(ActionType::DELETE, $moduleId, $moduleItemId,  
+
+        $req = new ModulesRequest(ActionType::DELETE, $moduleId, $moduleItemId,
             $includeContentItems, $includeContentDetails, $module, $moduleItem , $freshData);
-        
+
 //        \Cache::flush();
         $res = $this->roots->modules($req);
         echo json_encode($res);
@@ -216,7 +215,7 @@ class TestRoots extends ComponentBase
     private function testAddingModule()
     {
         $name = "Module from backend";
-        
+
         $format = DateTime::ISO8601;
         $date = new DateTime("now");
 //        $date->add(new DateInterval('P1D'));
@@ -224,7 +223,7 @@ class TestRoots extends ComponentBase
         $prerequisite_module_ids =array("380199","380201");
         $published = true;
         $position = 1;
-        
+
         $module = new Module($name, $unlock_at, $prerequisite_module_ids, $published, $position);
         $moduleId = null;
         $moduleItemId = null;
@@ -232,14 +231,14 @@ class TestRoots extends ComponentBase
         $includeContentDetails = false;
         $moduleItem = null;
         $freshData = false;
-        
-        $req = new ModulesRequest(ActionType::POST, $moduleId, $moduleItemId,  
+
+        $req = new ModulesRequest(ActionType::POST, $moduleId, $moduleItemId,
             $includeContentItems, $includeContentDetails, $module, $moduleItem , $freshData);
-        
+
         $res = $this->roots->modules($req);
         echo json_encode($res);
     }
-    
+
     private function testAddingModuleItem()
     {
         $tags = array('Brand', 'New');
@@ -250,64 +249,64 @@ class TestRoots extends ComponentBase
         $page_url = "http://www.google.com";
         $published = true;
         $position = 1;
-        
-        $moduleItem = new ModuleItem($title, $modItemType, $content_id, $page_url, null, CompletionRequirementType::MUST_SUBMIT, 
-                $completion_requirement_min_score, $published, $position, $tags);
-                
+
+        $moduleItem = new ModuleItem($title, $modItemType, $content_id, $page_url, null, CompletionRequirementType::MUST_SUBMIT,
+            $completion_requirement_min_score, $published, $position, $tags);
+
         $moduleId = 457494;
         $moduleItemId = null;
         $includeContentItems = false;
         $includeContentDetails = false;
         $freshData = false;
         $module = null;
-        
-        $req = new ModulesRequest(ActionType::POST, $moduleId, $moduleItemId,  
+
+        $req = new ModulesRequest(ActionType::POST, $moduleId, $moduleItemId,
             $includeContentItems, $includeContentDetails,  $module, $moduleItem , $freshData);
-        
+
         $res = $this->roots->modules($req);
         echo json_encode($res);
     }
-    
+
     private function testingGettingAssignments()
     {
         $req = new AssignmentsRequest(ActionType::GET, null, false, null, true);
 //        $req = new AssignmentsRequest(ActionType::GET);
-        
+
         $res = $this->roots->assignments($req);
         echo json_encode($res);
     }
-    
+
     private function testGettingSingleAssignment()
     {
-        $assignment_id = 1660430;//id//theAssignment
+        $assignment_id = 1660430;
         $freshData = false;
         $includeTags = true;
         $req = new AssignmentsRequest(ActionType::GET, $assignment_id, $freshData, null, $includeTags);
-        
+
         $res = $this->roots->assignments($req);
-		echo json_encode($res);
+        echo json_encode($res);
     }
-    
+
     private function testAssignmentGroups()
     {
         $include_assignments = true;
         $fresh_data = true;
         $assignmentGpId = null;
         $req = new AssignmentGroupsRequest(ActionType::GET, $include_assignments, $assignmentGpId, $fresh_data);
-        
+
         $res = $this->roots->assignmentGroups($req);
-        echo json_encode($res);   
+        echo json_encode($res);
     }
-    
+
     private function testSingleAssignmentGroup()
     {
         $assignment_group_id = 378245;
         $req = new AssignmentGroupsRequest(ActionType::GET, true, $assignment_group_id);
-        
+
         $res = $this->roots->assignmentGroups($req);
         echo json_encode($res);
     }
-    
+
     private function testGettingSingleSubmissionSingleUserSingleAssignment()
     {
         $studentIds = array(1489289);
@@ -316,15 +315,15 @@ class TestRoots extends ComponentBase
         $multipleAssignments = false;
         $allStudents = false;
         $allAssignments = false;
-        
+
         //can have the student Id param null if multipleUsers is set to false (we'll only get the current user's submissions)
-        $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, 
-                $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
-        
+        $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents,
+            $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
+
         $res = $this->roots->submissions($req);
         echo json_encode($res);
     }
-    
+
     private function testGettingAllSubmissionForSingleAssignment()
     {
         $studentIds = array(10733259,10733259);
@@ -333,39 +332,39 @@ class TestRoots extends ComponentBase
         $multipleAssignments = false;
         $allStudents = true;
         $allAssignments = false;
-        
+
         //can have the student Id param null if multipleUsers is set to false (we'll only get the current user's submissions)
-        $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, 
-                $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
-        
+        $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents,
+            $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
+
         $res = $this->roots->submissions($req);
         echo json_encode($res);
     }
-    
+
     private function testGettingMultipleSubmissionsForSingleStudent()
     {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
         $studentId = $_SESSION['userID'];
-        
+
         $studentIds = array($studentId);
         $assignmentIds = array();
         $multipleStudents = false;
         $multipleAssignments = true;
         $allStudents = false;
         $allAssignments = true;
-        
+
         //can have the student Id param null if multipleUsers is set to false (we'll only get the current user's submissions)
-        
-        $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, 
-                $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
-        
+
+        $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents,
+            $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
+
         $res = $this->roots->submissions($req);
         echo json_encode($res);
     }
-    
+
     private function testGettingMultipleSubmissionsAllStudents()
     {
         $studentIds = null;
@@ -374,16 +373,16 @@ class TestRoots extends ComponentBase
         $multipleAssignments = true;
         $allStudents = true;
         $allAssignments = false;
-        
+
         //can have the student Id param null if multipleUsers is set to false (we'll only get the current user's submissions)
-        
-        $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, 
-                $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
-        
+
+        $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents,
+            $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
+
         $res = $this->roots->submissions($req);
         echo json_encode($res);
     }
-       
+
     private function testGettingAllSubmissionsAllStudents()
     {
         $studentIds = null;
@@ -393,12 +392,12 @@ class TestRoots extends ComponentBase
         $allStudents = true;
         $allAssignments = true;
         $includeTags = true;
-        
+
         //can have the student Id param null if multipleUsers is set to false (we'll only get the current user's submissions)
-        
-        $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, 
-                $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments, $includeTags);
-        
+
+        $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents,
+            $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments, $includeTags);
+
         $res = $this->roots->submissions($req);
         echo json_encode($res);
     }
@@ -410,16 +409,16 @@ class TestRoots extends ComponentBase
         $multipleAssignments = true;
         $allStudents = false;
         $allAssignments = false;
-        
+
         //can have the student Id param null if multipleUsers is set to false (we'll only get the current user's submissions)
-        
-        $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, 
-                $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
-        
+
+        $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents,
+            $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
+
         $res = $this->roots->submissions($req);
         echo json_encode($res);
     }
-    
+
     private function refreshCache()
     {
         $moduleId = null;
@@ -427,32 +426,32 @@ class TestRoots extends ComponentBase
         $includeContentItems = true;
         $moduleItemId = null;
         $refreshData = true;
-        
-        $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems, $includeContentDetails, null, 
-                null, $refreshData);
-        
+
+        $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems, $includeContentDetails, null,
+            null, $refreshData);
+
         $res = $this->roots->modules($req);
         echo json_encode($res);
     }
-    
+
     public function convertDatesUTCLocal()
     {
         $utcTime = Utils::convertLocalDateTimeToUTC(new DateTime('now'));
         echo "UTC:".json_encode($utcTime);
-        
+
         $localTime = Utils::convertUTCDateTimetoLocal($utcTime);
         echo "MOUNTAIN".json_encode($localTime);
-        
+
     }
-    
-    
-   
+
+
+
 
     function testAddingUpdatingTags()
     {
         //To add/update tags the bare minimum that is needed is the content id and the tags.
         //A moduleItem can be updated on Canvas and have tags added to it in the same request IF the module_item_id is provided
-        
+
         $tags = array('New Tag', 'Another New Tag');
         $title = null;
         $modItemType = null;
@@ -462,25 +461,25 @@ class TestRoots extends ComponentBase
         $page_url = null;
         $published = true;
         $position = null;
-        
-        $moduleItem = new ModuleItem($title, $modItemType, $content_id, $page_url, null, $completion_requirement_type, 
-                $completion_requirement_min_score, $published, $position, $tags);
+
+        $moduleItem = new ModuleItem($title, $modItemType, $content_id, $page_url, null, $completion_requirement_type,
+            $completion_requirement_min_score, $published, $position, $tags);
         //end added
-        
+
         $moduleId = null;
         $moduleItemId = null;
         $includeContentItems = false;
         $includeContentDetails = false;
         $module = null;
         $freshData = false;
-        
-        $req = new ModulesRequest(ActionType::PUT, $moduleId, $moduleItemId,  
+
+        $req = new ModulesRequest(ActionType::PUT, $moduleId, $moduleItemId,
             $includeContentItems, $includeContentDetails, $module, $moduleItem , $freshData);
-        
+
         $res = $this->roots->modules($req);
         return $res;
     }
-    
+
     public function testDeleteTag()
     {
         $tags = array('New Tag', 'Another New Tag');
@@ -492,31 +491,31 @@ class TestRoots extends ComponentBase
         $page_url = null;
         $published = true;
         $position = null;
-        
-        $moduleItem = new ModuleItem($title, $modItemType, $content_id, $page_url, null, $completion_requirement_type, 
-                $completion_requirement_min_score, $published, $position, $tags);
+
+        $moduleItem = new ModuleItem($title, $modItemType, $content_id, $page_url, null, $completion_requirement_type,
+            $completion_requirement_min_score, $published, $position, $tags);
         //end added
-        
+
         $moduleId = null;
         $moduleItemId = null;
         $includeContentItems = false;
         $includeContentDetails = false;
         $module = null;
         $freshData = false;
-        
-        $req = new ModulesRequest(ActionType::PUT, $moduleId, $moduleItemId,  
+
+        $req = new ModulesRequest(ActionType::PUT, $moduleId, $moduleItemId,
             $includeContentItems, $includeContentDetails, $module, $moduleItem , $freshData);
-        
+
         $res = $this->roots->modules($req);
         return $res;
     }
-    
+
     public function testFileUpload()
     {
 //        /api/v1/courses/:course_id/files
-        
+
     }
-    
+
     public function testAddingAssignment()
     {
         $date = new DateTime("now");
@@ -525,25 +524,25 @@ class TestRoots extends ComponentBase
         $assignment->description = "This assignment was created from backend";
         $assignment->points_possible = 30;
         $assignment->due_at = $date;
-        
+
         $req = new AssignmentsRequest(ActionType::POST, null, null, $assignment);
-        
+
         $res = $this->roots->assignments($req);
         echo json_encode($res);
     }
-    
+
     public function testStudentAnalyticsAssignmentData()
     {
         $res = $this->roots->getAnalyticsStudentAssignmentData(false);
         echo json_encode($res);
     }
-    
+
     public function testGetCourse()
     {
         $res = $this->roots->getCourse();
         echo json_encode($res);
     }
-    
+
     public function testGetAccount()
     {
         $accountId = 16;
@@ -556,40 +555,33 @@ class TestRoots extends ComponentBase
         $res = $this->roots->getUserEnrollments();
         echo json_encode($res);
     }
-    
+
     public function testGetAllQuizzes()
     {
         $req = new QuizRequest(ActionType::GET, null, $fresh_data = true, true);
         echo json_encode($this->roots->quizzes($req));
-		$this->page['allQuizzes']=$req;// available to twig!
     }
     public function testGetQuiz()
-    {   
+    {
 
         $req = new QuizRequest(ActionType::GET, 623912, $fresh_data = true, true);
         $result = $this->roots->quizzes($req);
         echo json_encode($result);
-		echo "<em> NOT json</em></p>";
-		$this->page['aQuiz']=$result;// available to twig!
     }
     public function testGetPages()
     {
-        $results = json_encode($this->roots->getPages());
-		echo $results;
-		echo "<hr/>";
-		$this->page['thePages']=$results;// available to twig!
-		//https://octobercms.com/docs/plugin/components
+        echo json_encode($this->roots->getPages());
     }
-    
+
     public function testGetQuizQuestions()
     {
         $req = new QuizRequest(ActionType::GET, 623912, false, true);
         $result = $this->roots->quizzes($req);
-        
+
         echo json_encode($result);
 //        foreach($result['questions'] as $question)
 //        {
-//            
+//
 //            $answers = $question['answers'];
 //            $obj = json_decode($answers, true);
 //            foreach($obj as $answer)
@@ -597,7 +589,7 @@ class TestRoots extends ComponentBase
 //                echo json_encode($answer['text']);
 //            }
 //        }
-        
+
     }
 
 
@@ -624,12 +616,12 @@ class TestRoots extends ComponentBase
         $studentId = 4848484; //a student id for whom the quiz submission will be created
         $totalPointsToFudge = 1;//points to be added or substracted to the current quiz score. Fudging with quiz scores can only be done after the quiz has been submitted.
 
-        
+
         $quizSubmission = $this->roots->getQuizSubmission($quizId, null, $studentId);
 
         if(is_null($quizSubmission))
         {//it wasn't on canvas or in the db -- create a new submission
-            
+
             echo "was null. Started new quiz taking session";
             $quizSubmission = $this->roots->postQuizTakingSession($quizId, $studentId);
         }
@@ -669,13 +661,13 @@ class TestRoots extends ComponentBase
             }
             //prepare the answer
             $answerArr = array(
-               "attempt"=>$quizSubmission->attempt,
-               "validation_token"=> trim($quizSubmission->validation_token),
-               "access_code"=>null,//TODO: where do we get this from?
-               "quiz_questions"=> array([
-                        "id"=> strval($questionId),
-                        "answer"=> $answerId
-                 ]));
+                "attempt"=>$quizSubmission->attempt,
+                "validation_token"=> trim($quizSubmission->validation_token),
+                "access_code"=>null,//TODO: where do we get this from?
+                "quiz_questions"=> array([
+                    "id"=> strval($questionId),
+                    "answer"=> $answerId
+                ]));
 
 //
 //              //the "answer" will vary between question types
@@ -687,7 +679,7 @@ class TestRoots extends ComponentBase
 //                    $answer->answer = 1;
 //                    break;
 //
-//            $quizQuestionsArr = array();
+//            }
 //
 //            $questionsWrap[] = $answer;
 ////            //answer question
@@ -699,7 +691,7 @@ class TestRoots extends ComponentBase
 //            $result =$this->canvasHelper->postAnswerQuestion($quizSubmission, $answerArr, $studentId);
 //            var_dump($result);
         }
-        
+
         //submit the quiz
 //        $res = $this->roots->postTurnInQuiz($quizId, $quizSubmission);
 //        echo json_encode($res);
@@ -713,7 +705,7 @@ class TestRoots extends ComponentBase
         $result = $this->roots->updateStudentQuizScore($quizId, $quizSubmission, $questions, $totalPointsToFudge);
         echo json_encode($result);
     }
-    
+
     public function getQuizSubmissionQuestions()
     {
         $quizId = 656063;//a quiz id that is published
@@ -738,36 +730,36 @@ class TestRoots extends ComponentBase
             echo "no";
         }
     }
-    
+
     public function testSubmitQuiz()
     {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
         $userId = $_SESSION['userID'];
         $quizId = 621753;
         $dbHelper = new DbHelper();
         $canvasHelper = new CanvasHelper();
-        
+
 //        $canvasHelper->postQuizTakingSession($quizId);
-        
+
         $quizSubmission = $dbHelper->getQuizSubmission($quizId, $userId);
         $result = $canvasHelper->postSubmitQuiz($quizSubmission);
         echo json_encode($result);
     }
-    
+
     private function convertToUTC()
     {
         $date = new DateTime("now", new \DateTimeZone('America/Denver'));
         echo json_encode($date);
-        
+
         $UTC = new DateTimeZone("UTC");
         $utc_date = $date->setTimezone( $UTC );
         echo json_encode($utc_date);
     }
-    
-    
+
+
     public function test()
     {
         if(!isset($_SESSION))
@@ -789,7 +781,7 @@ class TestRoots extends ComponentBase
         $includeTags = true;
 
         $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents,
-        $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
+            $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
         if (is_null($this->roots)) {
             $this->roots = new Roots();
         }
@@ -797,5 +789,4 @@ class TestRoots extends ComponentBase
 
         echo json_encode($userSubmissions);
     }
-    
 }

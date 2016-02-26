@@ -1,7 +1,7 @@
 <?php namespace Delphinium\Redwood\Controllers;
 
 use Illuminate\Routing\Controller;
-use Delphinium\Redwood\Models\OAuth as OAuthModel;
+use Delphinium\Redwood\Models\PMOAuth as OAuthModel;
 use Delphinium\Redwood\Models\Authorization;
 use Config;
 
@@ -28,17 +28,11 @@ class OAuthAuthenticated extends Controller
                 if (!isset($_SESSION)) {
                     session_start();
                 }
-
-                $baseUrl = Config::get('app.url', 'backend');
-                $parts =  parse_url($baseUrl);
-                $host = $parts['host'];
-                $workspace = "workflow";
-                $pmServer = "http://{$host}:8080";
-
-                $_SESSION['pm_workspace'] =$workspace;
-                $_SESSION['pm_server'] = $pmServer;
                 $credentials = OAuthModel::find($credentialsId);
-                //TODO: where do we parameterize these urls
+                $_SESSION['pm_workspace'] =$credentials->workspace;
+                $_SESSION['pm_credentials_id']=$credentialsId;
+                $_SESSION['pm_server'] = $credentials->server_url;
+                $pmServer = $credentials->server_url;
 
                 $postParams = array(
                     'grant_type'    => 'authorization_code',
@@ -47,7 +41,7 @@ class OAuthAuthenticated extends Controller
                     'client_secret' => $credentials->client_secret
                 );
 
-                $ch = curl_init($pmServer . "/oauth2/token");
+                $ch = curl_init("{$pmServer}/{$workspace}/oauth2/token");
                 curl_setopt($ch, CURLOPT_TIMEOUT, 30);
                 curl_setopt($ch, CURLOPT_POST, 1);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $postParams);
@@ -66,7 +60,6 @@ class OAuthAuthenticated extends Controller
                         "Description: {$result->error_description}\n</pre>";
                 }
                 else {
-
 
                     $encryptedAccessToken = \Crypt::encrypt($result->access_token);
                     $encryptedRefreshToken = \Crypt::encrypt($result->refresh_token);

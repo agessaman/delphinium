@@ -6,7 +6,7 @@ class Authorization extends Model
 {
     use \October\Rain\Database\Traits\Validation;
 
-    public $table = 'delphinium_pm_authorization';
+    public $table = 'delphinium_redwood_pm_authorization';
 
     protected $fillable = array('*');
     /*

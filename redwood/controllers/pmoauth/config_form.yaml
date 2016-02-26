@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: O Auth
+
+# Model Form Field configuration
+form: $/delphinium/redwood/models/pmoauth/fields.yaml
+
+# Model Class name
+modelClass: Delphinium\Redwood\Models\PMOAuth
+
+# Default redirect location
+defaultRedirect: delphinium/redwood/pmoauth
+
+# Create page
+create:
+    title: Create PM OAuth
+    redirect: delphinium/redwood/pmoauth/update/:id
+    redirectClose: delphinium/redwood/pmoauth
+
+# Update page
+update:
+    title: Edit O Auth
+    redirect: delphinium/redwood/pmoauth
+    redirectClose: delphinium/redwood/pmoauth
+
+# Preview page
+preview:
+    title: Preview O Auth

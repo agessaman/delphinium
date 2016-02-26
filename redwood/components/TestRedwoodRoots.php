@@ -3,6 +3,9 @@
 use Cms\Classes\ComponentBase;
 use Delphinium\Redwood\RedwoodRoots;
 use Delphinium\Redwood\Exceptions\InvalidRequestException;
+use Delphinium\Roots\Classes\OAuthConsumer;
+use Delphinium\Roots\Classes\OAuthRequest;
+use Delphinium\Roots\Classes\OAuthSignatureMethodHMAC;
 
 class TestRedwoodRoots extends ComponentBase
 {
@@ -11,23 +14,29 @@ class TestRedwoodRoots extends ComponentBase
     public function componentDetails()
     {
         return [
-            'name'        => 'TestRedwoodRoots Component',
+            'name'        => 'testredwoodroots Component',
             'description' => 'Playground for RedwoodRoots'
         ];
     }
 
     public function onRun()
     {
-        $this->roots = new RedwoodRoots();
+        $this->roots = new RedwoodRoots(1);
 //        $this->test();
 //        $this->testGetUsers();
-        $this->testCreateUser();
+//        $this->testCreateUser();
 //        $this->testGetDepartments();
 //        $this->testCreateDepartment();
 //        $this->testGetGroup();
 //        $this->testCreateGroup();
+//        $this->testGetRoles();
 //        $this->testPeerReviewWorkflow();
+//        $this->testLoginUser();
+//        $this->testIsUserInGroup();
+        $this->testGetProjects();
+//        var_dump($_POST);
     }
+
     public function test()
     {
         echo json_encode($this->roots->getUsers());
@@ -43,11 +52,17 @@ class TestRedwoodRoots extends ComponentBase
 
     public function testCreateUser()
     {
-        $first_name = "Tara";
-        $last_name = "Jorgensen";
-        $canvas_user_id = 1226308;
-        $newUser = $this->roots->createUser($first_name, $last_name, $canvas_user_id);
+        //we'd look through the roles and figure out which role we need
+        //$roles = $this->testGetRoles();
+
+        $first_name = "Dummy";
+        $last_name = "Tra";
+        $canvas_user_id = 1114325;
+        $email = $canvas_user_id.'@uvlink.uvu.edu';//TODO: figure out a dynamic way to do the email
+        $pm_role = "PROCESSMAKER_OPERATOR";
+        $newUser = $this->roots->createUser($first_name, $last_name, $canvas_user_id, $email, $pm_role);
         echo json_encode($newUser);
+        return $newUser;
     }
 
     public function testCreateDepartment()
@@ -75,14 +90,24 @@ class TestRedwoodRoots extends ComponentBase
         $assignmentId = 1660429;
 //        $assignmentId = 5432;
         $group = $this->roots->getGroups();//get all groups
-        $group = $this->roots->getGroups($assignmentId);//get a specific assignment aka group
+//        $group = $this->roots->getGroups($assignmentId);//get a specific assignment aka group
         echo json_encode($group);
+        return $group;
     }
 
     public function testCreateGroup()
     {
         $assignmentId = 1660429;
-        echo json_encode($this->roots->createGroup($assignmentId));
+        $group = $this->roots->createGroup($assignmentId);
+        echo json_encode($group);
+        return $group;
+    }
+
+    public function testGetRoles()
+    {
+        $res = $this->roots->getRoles();
+        echo json_encode($res);
+        return $res;
     }
 
     public function testPeerReviewWorkflow()
@@ -119,5 +144,44 @@ class TestRedwoodRoots extends ComponentBase
             //$this->roots->createUser($first_name, $last_name, $canvaS_user_id);
         }
         echo json_encode($users);
+    }
+
+    public function testLoginUser()
+    {
+        $studentId = 123456;
+        $users = $this->roots->getUsers($studentId);
+        if(count($users)<1)
+        {
+            $user = $this->roots->createUser("Test", "User", $studentId, $studentId."@uvu.edu","PROCESSMAKER_OPERATOR");
+            array_push($users,$user);
+        }
+        if(count($users)>0)
+        {
+            $response = $this->roots->loginUser($users[0]->usr_username,$users[0]->usr_username);
+            var_dump($response);
+        }
+    }
+
+    public function testIsUserInGroup()
+    {
+        $user = $this->testCreateUser();
+        $group = $this->testCreateGroup();
+        $this->roots->assignUserToGroup($group->grp_uid,$user->usr_uid);
+
+        $inGroup =  $this->roots->isUserInGroup($group->grp_uid, $user->usr_uid);
+        if($inGroup)
+        {
+            echo "In Group";
+        }
+        else{
+            echo "Not in group!";
+        }
+    }
+
+    private function testGetProjects()
+    {
+        $projects = $this->roots->getProjects();
+        var_dump($projects);
+        return $projects;
     }
 }

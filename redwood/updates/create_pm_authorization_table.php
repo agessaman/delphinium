@@ -8,9 +8,9 @@ class CreatePMAuthorizationTable extends Migration
 
     public function up()
     {
-        if ( !Schema::hasTable('delphinium_pm_authorization') )
+        if ( !Schema::hasTable('delphinium_redwood_pm_authorization') )
         {
-            Schema::create('delphinium_pm_authorization', function($table)
+            Schema::create('delphinium_redwood_pm_authorization', function($table)
             {
                 $table->engine = 'InnoDB';
                 $table->increments('id');
@@ -28,9 +28,9 @@ class CreatePMAuthorizationTable extends Migration
 
     public function down()
     {
-        if ( Schema::hasTable('delphinium_pm_authorization') )
+        if ( Schema::hasTable('delphinium_redwood_pm_authorization') )
         {
-            Schema::drop('delphinium_pm_authorization');
+            Schema::drop('delphinium_redwood_pm_authorization');
         }
     }
 
