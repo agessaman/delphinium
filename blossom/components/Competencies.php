@@ -128,10 +128,11 @@ class Competencies extends ComponentBase
 		try
         {
 			/*get Assignments & Submissions ***** & enrolled students?
-				live data is only available if viewed by a Learner
-				fake data is used if Instructor
+				submissions data is only available if viewed by a Learner
+				Module Items data is used if Instructor
                 
-                if instructor, add configure component
+                if instructor, you can configure the component
+                and view the tags set in Stem that define competencies
 				todo: Instructor can choose a student to view their progress?
                 todo: Instructor can configure Stem from here?
 			**************************************************/

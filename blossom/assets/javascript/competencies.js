@@ -22,8 +22,10 @@ $(document).ready(function() {
     // related by assignment_id
 
     /* if Learner, filterData then showCompetencies
-        else showCompetencies using fake data,details
-             plus configure Settings
+        else 
+        create assignments using Module Items
+        showCompetencies data,details
+        plus configure Settings
     */
     if(role == 'Learner') {
         filterData();
@@ -86,9 +88,9 @@ function filterModuleTags() {
             }
         }
     }
-    console.log('tagList:', tagList.length, tagList);
-    console.log('modAssignments:', modAssignments.length, modAssignments);
-    console.log('assignments:',assignments.length, assignments);
+    //console.log('tagList:', tagList.length, tagList);
+    //console.log('modAssignments:', modAssignments.length, modAssignments);
+    //console.log('assignments:',assignments.length, assignments);
     
     var gTotal=0;// total points
     var gAmount=0;//remains 0, no submissions
@@ -101,8 +103,7 @@ function filterModuleTags() {
             if(hasTag(elem, tagList[l])) { return elem; }
         });
 
-        console.log('group '+l, tagList[l], group.length, group);// submissions with this tag
-        
+        //console.log('group '+l, tagList[l], group.length, group);
         gTotal=0;// reset for each group
         
 		// for each group of assignments
@@ -118,8 +119,8 @@ function filterModuleTags() {
 		var percent = Math.round(gAmount/gTotal*100);
         data.push({"name":name,"total":gTotal,"amount":gAmount,"percent":percent});
     }
-    console.log('data:',data.length,data);
-    console.log('details:',details.length,details);
+    //console.log('data:',data.length,data);
+    //console.log('details:',details.length,details);
 }/* END filterModuleTags */
 
 function filterData() {
@@ -150,7 +151,7 @@ function filterData() {
         var tdetails = 'subm['+i+']';
             tdetails+= ' tags:'+tagged[i].tags+' [score:'+tagged[i].score+']<br/>';
     }
-    console.log(tagList.length, 'tagList:'+tagList);
+    //console.log(tagList.length, 'tagList:'+tagList);
 
 	/*
     loop thru tagList to sort tagged submissions into groups, 
@@ -187,8 +188,8 @@ function filterData() {
 		var percent = Math.round(gAmount/gTotal*100);
         data.push({"name":name,"total":gTotal,"amount":gAmount,"percent":percent});
     }
-    console.log(data.length,data);
-    console.log(details.length,details);
+    //console.log(data.length,data);
+    //console.log(details.length,details);
 }/* END filterData */
 
 /********************************************
@@ -212,7 +213,7 @@ function showCompetencies() {
     }
     //find largest total for d3.scale
     var maxTotal=Math.max.apply(null,big);
-    console.log('maxTotal:'+maxTotal);// maxTotal: -Infinity
+    //console.log('maxTotal:'+maxTotal);// maxTotal: -Infinity
     var grid=[20,30,40,50,60,70,80,90];//vertical % tick marks
 
 	// NOW D3 it!
