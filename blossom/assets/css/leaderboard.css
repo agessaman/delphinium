@@ -1,20 +1,20 @@
 /*----- Accordion -----*/
 #accordion, #accordion * {
-    -webkit-box-sizing:border-box; 
-    -moz-box-sizing:border-box; 
+    -webkit-box-sizing:border-box;
+    -moz-box-sizing:border-box;
     box-sizing:border-box;
 }
- 
+
 #accordion {
     overflow:hidden;
-	border-bottom:grey;
-    //box-shadow:0px 1px 3px rgba(0,0,0,0.25);
-    //border-radius:3px;
-    //background:#f7f7f7;
+    border-bottom:grey;
+//box-shadow:0px 1px 3px rgba(0,0,0,0.25);
+//border-radius:3px;
+//background:#f7f7f7;
     border-bottom: 1px solid lightgray;
     display: table;
 }
- 
+
 /*----- Tab Titles -----*/
 .accordionTabTitle {
     width:300px;
@@ -26,63 +26,97 @@
     font-size:1.200em;
     color: #4682B4;
 }
- 
+
 .accordionTabTitle.active, .accordionTabTitle:hover{
     background:#4682B4;
-	color: white;
+    color: white;
 }
 
 .accordionTabTitle:hover, .accordionTabTitle:focus, .accordionTabTitle:visited, .accordionTabTitle:active, .accordionTabTitle:link{
     text-decoration: none;
-    //color: white;
+//color: white;
 }
 
 .accordionTab:last-child .accordionTabTitle {
-    //border-bottom:none;
+//border-bottom:none;
 }
- 
+
 /*----- Tab Content -----*/
 .accordionTabContent {
-    //padding:15px;
+//padding:15px;
     display:none;
     width:300px;
-	color:grey;
+    color:grey;
+    max-height:250px;
+    overflow:auto;
 }
 
 .accordionTabContent .open{
-	border-bottom:1px solid lightgrey;
+    border-bottom:1px solid lightgrey;
 }
 
 .accordionTabContentStudent{
     border: 1px solid lightgray;
-    //border-radius: 15px;
-    //background-color: #FDFFD5;
-    padding-top: 5px;
-    padding-bottom: 3px;
+//border-radius: 15px;
+//background-color: #FDFFD5;
+    padding: 5px 0 3px 0;
+    /*padding-bottom: 3px;*/
     margin-left: 10px;
 }
 
 .accordionTabContentStudentCurrent{
     border: 1px solid gray;
-    //border-radius: 15px;
+//border-radius: 15px;
     background-color: #FFBA39;
-    //padding: 10px;
+    height:63px;
 }
 
-.studentRank{
-	font-size:30px;
-	margin-left:10px;
-	margin-right:10px;
-	font-style:italic;
-	color:gray;
+.studentRank {
+    font-size: 30px;
+    margin-left: 10px;
+    margin-right: 10px;
+    font-style: italic;
+    color: gray;
+    width: 35px;
+    height: 40px;
+    float: left;
 }
 
 .accordionTabContentStudentCurrent .studentRank{
-	font-size:40px;
-	margin-left:10px;
-	margin-right:10px;
-	font-style:italic;
-	color:gray;
-	font-weight:bold;
+    font-size:40px;
+    margin-left:10px;
+    margin-right:10px;
+    font-style:italic;
+    color:gray;
+    font-weight:bold;
 }
 
+.panel-group .panel + .panel {
+    margin-top: 0px !important;
+}
+
+.accordionTabContentStudent table{
+    color:grey;
+    font-size:14px;
+}
+
+.contentContainer
+{
+    position: relative;
+    min-height: 40px;
+    margin-bottom: 8px;
+    margin-top: 5px;
+    margin-right: 5px;
+}
+.rightDiv
+{
+    float: right;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+.centerDiv
+{
+    margin: 0 auto;
+    width:170px;
+}
