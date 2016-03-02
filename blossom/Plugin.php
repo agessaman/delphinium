@@ -48,6 +48,7 @@ class Plugin extends PluginBase
             '\Delphinium\Blossom\Components\Progress' => 'progress',
             '\Delphinium\Blossom\Components\ExperienceManager' => 'experiencemanager',
             '\Delphinium\Blossom\Components\Gradebook' => 'gradebook',
+            '\Delphinium\Blossom\Components\EasterEggs' => 'eastereggs'
             '\Delphinium\Blossom\Components\Stats' => 'stats'
         ];
     }
@@ -122,6 +123,14 @@ class Plugin extends PluginBase
                     'owner' => 'Delphinium.Greenhouse',
                     'url' => Backend::url('delphinium/blossom/progress'),
                     'group'       => 'Blossom',
+                ],
+
+                'Easter Eggs' => [
+                    'label' => 'Easter Eggs',
+                    'icon' => 'icon-bar-chart',
+                    'owner' => 'Delphinium.Greenhouse',
+                    'url' => Backend::url('delphinium/blossom/eastereggs'),
+                    'group' =>'Blossom',
                 ],
 
                 'Stats' => [
