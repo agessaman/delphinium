@@ -22,7 +22,7 @@ class EasterEggs extends ComponentBase
     {
         //$this->addJs("/plugins/delphinium/blossom/assets/javascript/eastereggs.js");
         $this->addJs("/plugins/delphinium/blossom/assets/javascript/harlem-shake.js");
-        //$this->addJs("/plugins/delphinium/blossom/assets/javascript/jquery.ripples.js");
+        $this->addJs("/plugins/delphinium/blossom/assets/javascript/jquery.ripples.js");
     }
 
 }
