@@ -83,9 +83,6 @@ class Processmaker extends ComponentBase
             $assignmentAsGroup=$groups[0];
         }
 
-
-        //assign this group (and all the users who will be added to it) to the first task of the process, so that in the future we can create
-        //a case for the calling user
         $tasks = $this->roots->getStartingTask($this->instance->process_id);//get starting task
         if(count($tasks)>0) {
             $this->startingTask  = $tasks[0];
@@ -95,8 +92,6 @@ class Processmaker extends ComponentBase
             echo "A starting task for this activity has not been configured. Please contact your instructor";
             return;
         }
-
-        $this->roots->assignGroupToTask($this->instance->process_id, $this->startingTask->act_uid, $assignmentAsGroup->grp_uid);
 
         //FOR DEV PURPOSES: if the user is a test user their canvas_login_id is over 20 characters long. Since the password and user names are the same
         //the create user request will fail because the max-length of the password is 20. So we will trim the canvas_login_id
@@ -132,6 +127,12 @@ class Processmaker extends ComponentBase
         else{
             $givenUser = $users[0];
         }
+
+
+        //assign this user to the first task of the process, so that in the future we can create
+        //a case for the calling user
+        $this->roots->assignUserToTask($this->instance->process_id, $this->startingTask->act_uid, $givenUser->usr_uid);
+
         //if user is not assigned to group, assign him/her
         $userInGroup = $this->roots->isUserInGroup($assignmentAsGroup->grp_uid, $givenUser->usr_username);
         if(!($userInGroup))
@@ -148,6 +149,7 @@ class Processmaker extends ComponentBase
         }
         else if(stristr($roleStr, 'Learner'))
         {
+
             $this->student($canvas_login_id,$pm_role);
         }
 
