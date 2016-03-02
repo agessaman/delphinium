@@ -1901,7 +1901,7 @@ class CanvasHelper
         {
             if(!isset($row->sis_login_id))//test students don't have a sis_login_id
             {
-                continue;
+                $row->sis_login_id = 0;
             }
             $this->saveUser($row->id, $row->name, $row->sortable_name, $row->sis_login_id);
 

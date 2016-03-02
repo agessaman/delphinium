@@ -11,55 +11,55 @@
 	}
 </script>
 <style>
-@-webkit-keyframes spinnerRotate
-{
-    from{-webkit-transform:rotate(0deg);}
-    to{-webkit-transform:rotate(360deg);}
-}
-@-moz-keyframes spinnerRotate
-{
-    from{-moz-transform:rotate(0deg);}
-    to{-moz-transform:rotate(360deg);}
-}
-@-ms-keyframes spinnerRotate
-{
-    from{-ms-transform:rotate(0deg);}
-    to{-ms-transform:rotate(360deg);}
-}
-#loading{
-	opacity: 0.6;
-	display: none;
-	position:absolute; 
-    top:60%;
-    left:37%;
-	color:blue;
-	font-size:5em;
-    -webkit-animation-name: spinnerRotate;
-    -webkit-animation-duration: 2s;
-    -webkit-animation-iteration-count: infinite;
-    -webkit-animation-timing-function: linear;
-    -moz-animation-name: spinnerRotate;
-    -moz-animation-duration: 2s;
-    -moz-animation-iteration-count: infinite;
-    -moz-animation-timing-function: linear;
-    -ms-animation-name: spinnerRotate;
-    -ms-animation-duration: 2s;
-    -ms-animation-iteration-count: infinite;
-    -ms-animation-timing-function: linear;
-}
+	@-webkit-keyframes spinnerRotate
+	{
+		from{-webkit-transform:rotate(0deg);}
+		to{-webkit-transform:rotate(360deg);}
+	}
+	@-moz-keyframes spinnerRotate
+	{
+		from{-moz-transform:rotate(0deg);}
+		to{-moz-transform:rotate(360deg);}
+	}
+	@-ms-keyframes spinnerRotate
+	{
+		from{-ms-transform:rotate(0deg);}
+		to{-ms-transform:rotate(360deg);}
+	}
+	#loading{
+		opacity: 0.6;
+		display: none;
+		position:absolute;
+		top:60%;
+		left:37%;
+		color:blue;
+		font-size:5em;
+		-webkit-animation-name: spinnerRotate;
+		-webkit-animation-duration: 2s;
+		-webkit-animation-iteration-count: infinite;
+		-webkit-animation-timing-function: linear;
+		-moz-animation-name: spinnerRotate;
+		-moz-animation-duration: 2s;
+		-moz-animation-iteration-count: infinite;
+		-moz-animation-timing-function: linear;
+		-ms-animation-name: spinnerRotate;
+		-ms-animation-duration: 2s;
+		-ms-animation-iteration-count: infinite;
+		-ms-animation-timing-function: linear;
+	}
 </style>
 {% partial 'bonus::display' %}
 
 <a data-toggle="modal" href="#content-confirmation" class=""><i class="icon-cog"></i> Settings</a>
 
 <div class="control-popup modal fade" id="content-confirmation" tabindex="-1" role="dialog">
-    <div class="modal-dialog">
-        <div class="modal-content" style="width:260px">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Configure Bonus Settings</h4>
-            </div>
-            <div class="modal-body">
+	<div class="modal-dialog">
+		<div class="modal-content" style="width:260px">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">Configure Bonus Settings</h4>
+			</div>
+			<div class="modal-body">
 				<i id="loading" class="icon-refresh"></i>
 				<form class="form-elements" role="form" id="updateForm">
 					<div class="form-group span-full">
@@ -93,27 +93,27 @@
 						</select>
 					</div>
 				</form>
-            </div>
+			</div>
 			<div style="clear:both; height:1.5em"></div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="updateComponent()">Update</button>
-            </div>
-        </div>
-    </div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" onclick="updateComponent()">Update</button>
+			</div>
+		</div>
+	</div>
 </div>
 
 <script>
 	var s = document.getElementById("selectSize");
 	for ( var i = 0; i < s.options.length; i++ ) {
-        if ( s.options[i].value == "{{bonusSize}}" ) {
-            s.options[i].selected = true;
-        }
-    }
-	var s = document.getElementById("selectAnimate");
-	for ( var i = 0; i < s.options.length; i++ ) {
-        if ( s.options[i].value == "{{bonusAnimate}}" ) {
-            s.options[i].selected = true;
-        }
-    }
+		if ( s.options[i].value == {{bonusSize}} ) {
+			s.options[i].selected = true;
+		}
+	}
+	//var s = document.getElementById("selectAnimate");
+	//for ( var i = 0; i < s.options.length; i++ ) {
+	//    if ( s.options[i].value == {{bonusAnimate}} ) {
+	//        s.options[i].selected = true;
+	//    }
+	//}
 </script>

@@ -7,10 +7,11 @@ use Delphinium\Roots\Enums\ActionType;
 use Delphinium\Blossom\Components\Gradebook;
 use Delphinium\Blossom\Models\Experience as ExperienceModel;
 use Delphinium\Blossom\Components\Experience as ExperienceComponent;
-
+use Delphinium\Roots\Db\DbHelper;
 
 class Leaderboard extends ComponentBase
 {
+
     public $roots;
     public $gradebook;
 
@@ -46,7 +47,6 @@ class Leaderboard extends ComponentBase
         }
     }
 
-
     public function onRender()
     {
         try {
@@ -59,8 +59,17 @@ class Leaderboard extends ComponentBase
             $users = $this->roots->getStudentsInCourse();
             $this->page['users'] = json_encode($users);
             $this->page['experienceInstanceId']=$this->property('Experience');
-        }
 
+            if(!isset($_SESSION))
+            {
+                session_start();
+            }
+            $userId = $_SESSION['userID'];
+            $courseId = $_SESSION['courseID'];
+            $dbHelper = new DbHelper();
+            $user = $dbHelper->getUserInCourse($courseId, $userId);
+            $this->page['calling_user'] = json_encode($user);
+        }
         catch (\GuzzleHttp\Exception\ClientException $e) {
             return;
         }
@@ -78,9 +87,7 @@ class Leaderboard extends ComponentBase
                 return \Response::make($this->controller->run('nonlti'), 500);
             }
             return \Response::make($this->controller->run('error'), 500);
-
         }
-
     }
 
 }

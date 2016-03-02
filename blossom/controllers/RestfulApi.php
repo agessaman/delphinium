@@ -198,4 +198,15 @@ class RestfulApi extends Controller
         $gradebook = new GradebookComponent();
         return $gradebook->getSetOfUsersMilestoneInfo($instanceId, $userIds);
     }
+
+
+    public function getSetOfUsersTotalScores()
+    {
+        $instanceId = \Input::get('experienceInstanceId');
+        $userIds =\Input::get('userIds');
+
+        $gradebook = new GradebookComponent();
+
+        return $gradebook->getSetOfUsersTotalScores($instanceId, $userIds);
+    }
 }
