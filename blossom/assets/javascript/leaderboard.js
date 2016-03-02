@@ -30,7 +30,7 @@ function getUserData()
 		var promise =$.get("gradebook/getSetOfUsersTotalScores",{experienceInstanceId:experienceInstanceId, userIds:(idsArr)});
 		promise.then(function (data, textStatus, jqXHR, data2) {
 				scores= scores.concat(data);
-				document.getElementtById("spinnerDiv").style.display = "none";
+				document.getElementById("spinnerDiv").style.display = "none";
 				makeAccordion();
 			})
 			.fail(function (data2) {

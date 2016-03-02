@@ -35,8 +35,9 @@ class TestRedwoodRoots extends ComponentBase
 //        $this->testIsUserInGroup();
 //        $this->testGetProjects();
 //        var_dump($_POST);
-//        $this->testGetStartingTask();
-        $this->testAssignGroupToTask();
+        $this->testGetStartingTask();
+//        $this->testAssignGroupToTask();
+//        $this->testGetTaskAssignees();
     }
 
     public function test()
@@ -189,10 +190,12 @@ class TestRedwoodRoots extends ComponentBase
 
     private function testGetStartingTask()
     {
+        $project_uid = '73043823256b50f6624af93018053833';
         $proj = $this->testGetProjects();
         if(count($proj)>0)
         {
-            $startingTask = $this->roots->getStartingTask($proj[0]->prj_uid);
+//            $project_uid = $proj[0]->prj_uid;
+            $startingTask = $this->roots->getStartingTask($project_uid);
             var_dump($startingTask);
             return $startingTask;
         }
@@ -220,5 +223,14 @@ class TestRedwoodRoots extends ComponentBase
                 $this->roots->assignGroupToTask($project_id,$task_uid , $group_id);
             }
         }
+    }
+
+    private function testGetTaskAssignees()
+    {
+        $project_uid = '73043823256b50f6624af93018053833';
+        $activity_uid = '96176147456b510867fa071036708730';
+        $result = $this->roots->getTaskAssignees($project_uid, $activity_uid);
+        var_dump($result);
+        return $result;
     }
 }
