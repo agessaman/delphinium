@@ -2,6 +2,11 @@
 	var maxBonus = {{maxBonus}};
 	var minBonus = {{minBonus}};
 	var bonusSize = {{bonusSize}};
+    var totalBonus = {{totalBonus}};
+    var totalPenalties = {{totalPenalties}};
+    var role = '{{role}}';
+    //console.log('vars: ',minBonus, maxBonus, bonusSize);
+    console.log('Role: ',role);
 </script>
 {% if ('Learner' in role) %}
 {% partial 'bonus::studentView' %}

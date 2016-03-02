@@ -12,3 +12,6 @@
 1.0.3:
     - Initialize Stats
     - create_stats_table.php
+1.0.4:
+    - Add Color and course_id to Competencies
+    - add_competencies_columns.php

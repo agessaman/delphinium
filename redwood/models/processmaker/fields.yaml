@@ -1,0 +1,23 @@
+# ===================================
+#  Form Field Definitions
+# ===================================
+
+fields:
+    id:
+        label: ID
+        disabled: true
+
+    copy_name:
+        label: Copy name
+        span: auto
+        comment: Enter the name of this copy of the component
+
+    process_id:
+        label: Process Id
+        span: auto
+        comment: Enter the id of the process
+
+    course_id:
+        label: Course Id
+        span: auto
+        comment: Enter the course id to which this component belongs

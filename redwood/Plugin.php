@@ -34,8 +34,9 @@ class Plugin extends PluginBase
     {
 
         return [
-            'Delphinium\Redwood\Components\Oauth' => 'Oauth',
+            'Delphinium\Redwood\Components\PMOauth' => 'PMOauth',
             'Delphinium\Redwood\Components\TestRedwoodRoots' => 'testRedwoodRoots',
+            'Delphinium\Redwood\Components\Processmaker' => 'processmaker'
         ];
     }
 
@@ -45,11 +46,18 @@ class Plugin extends PluginBase
         Event::listen('backend.menu.extendItems', function($manager) {
 
             $manager->addSideMenuItems('Delphinium.Greenhouse', 'greenhouse', [
-                'OAuth' => [
-                    'label' => 'Oauth',
+                'PMOAuth' => [
+                    'label' => 'PM Oauth',
                     'icon' => 'icon-key',
                     'owner' => 'Delphinium.Greenhouse',
-                    'url' => Backend::url('delphinium/redwood/oauth'),
+                    'url' => Backend::url('delphinium/redwood/pmoauth'),
+                    'group'       => 'Redwood',
+                ],
+                'Processmaker' => [
+                    'label' => 'ProcessMaker',
+                    'icon' => 'icon-key',
+                    'owner' => 'Delphinium.Greenhouse',
+                    'url' => Backend::url('delphinium/redwood/processmaker'),
                     'group'       => 'Redwood',
                 ]
             ]);

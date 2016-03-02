@@ -1,0 +1,28 @@
+<!-- Student View : element for d3 to place competencies -->
+<script>
+    // Only available if DevConfig is student
+    // make available to competencies.js
+    var assignments={{assignments|raw}};//json
+	var submissions = {{submissions|raw}};
+    
+    var data =[];// json for d3
+    var details=[];// for modal '#detailed' body content
+    
+</script>
+
+{% partial 'competencies::display' %}
+
+<!-- Modal: when a bar is clicked show details for the competency -->
+<div class="control-popup modal fade" id="detailed" tabindex="-1" role="dialog">
+    <div class="modal-dialog"><!--  modal-lg -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Competency Details</h4>
+            </div>
+            <div class="modal-body">
+                <p>This is a very basic example of a popup...</p>
+            </div>
+        </div>
+    </div>
+</div>

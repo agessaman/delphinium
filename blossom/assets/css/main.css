@@ -1,3 +1,16 @@
 .name{
 	text-align:center;
 }
+.left{
+    float: left;
+}
+.right{
+    float: right;
+}
+.colm{
+    width:49%;
+    padding: 5px;
+    margin: 2px;
+    border: 1px solid #888888;
+}
+.comp{padding: 5px;}

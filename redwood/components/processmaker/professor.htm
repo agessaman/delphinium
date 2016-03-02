@@ -1,0 +1,72 @@
+<script>
+    var instance = {{instance|raw}};
+    console.log(instance);
+</script>
+
+<a data-toggle="modal" href="#modal-configuration" class=""><i class="icon-cog"></i> Settings</a>
+
+<div id="modal-configuration" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" id="studentTitle">Edit current instance</h4>
+            </div>
+            <div class="modal-body">
+                <!--Usually we would use the form below to load the backend form, but here we need to present a dropdown with options coming
+                from PM REST API, so we'll do our own little form-->
+
+                <div id="Form-outsideTabs" class="form-tabless-fields ">
+                    <!--Copy name-->
+                    <div class="form-group  text-field span-left" data-field-name="copy_name" id="Form-field-Processmaker-copy_name-group">
+                        <label for="Form-field-Processmaker-copy_name">Copy name</label>
+                        <span class="help">Enter the name of this copy of the component</span>
+                        <!-- Text -->
+                        <input type="text" name="Processmaker[copy_name]" id="Form-field-Processmaker-copy_name" value="{{instance.copy_name}}"
+                               placeholder="" class="form-control" autocomplete="off" maxlength="255">
+
+                    </div>
+
+                    <!--Process ID-->
+                    <div class="form-group  text-field span-right   " data-field-name="process_id" id="Form-field-Processmaker-process_id-group">
+                        <label for="Form-field-Processmaker-process_id">Process</label><span class="help">Current process/change process</span>
+                        <br/>
+                        <select id="Form-field-Processmaker-process_id">
+                            <option value="0">--Select a process--</option>
+                            {% for process in processes %}
+                                {% if process.prj_uid == instance.process_id %}
+                                    <option value="{{process.prj_uid}}"  selected="selected">{{ process.prj_name }}</option>
+                                {% else %}
+                                    <option value="{{process.prj_uid}}">{{ process.prj_name }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!--Course ID-->
+                    <div class="form-group  text-field span-left   " data-field-name="course_id" id="Form-field-Processmaker-course_id-group">
+                        <label for="Form-field-Processmaker-course_id">Course Id</label><span class="help">Enter the course id to which this component belongs</span>
+                        <!-- Text -->
+                        <input type="text" name="Processmaker[course_id]" id="Form-field-Processmaker-course_id" value="{{instance.course_id}}"
+                               placeholder="" class="form-control" autocomplete="off" maxlength="255">
+                        <b><span>Make sure you have access to the given course, otherwise you won't be able to access this page</span></b>
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="updateComponent()">Update</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+
+<!--<div class=”confirm-container bg-success hide”>-->
+    <!--<p>Successfully created a new entry!</p>-->
+<!--</div>-->

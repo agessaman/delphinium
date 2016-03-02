@@ -8,16 +8,19 @@ class CreatePMCredentialsTable extends Migration
 
     public function up()
     {
-        if ( !Schema::hasTable('delphinium_pm_credentials') )
+        if ( !Schema::hasTable('delphinium_redwood_pm_credentials') )
         {
-            Schema::create('delphinium_pm_credentials', function($table)
+            Schema::create('delphinium_redwood_pm_credentials', function($table)
             {
                 $table->engine = 'InnoDB';
                 $table->increments('id');
                 $table->string('name');
                 $table->string('client_id');
                 $table->string('client_secret');
+                $table->string('key');
+                $table->string('secret');
                 $table->string('workspace');
+                $table->string('server_url');
                 $table->timestamps();
             });
         }
@@ -25,9 +28,9 @@ class CreatePMCredentialsTable extends Migration
 
     public function down()
     {
-        if ( Schema::hasTable('delphinium_pm_credentials') )
+        if ( Schema::hasTable('delphinium_redwood_pm_credentials') )
         {
-            Schema::drop('delphinium_pm_credentials');
+            Schema::drop('delphinium_redwood_pm_credentials');
         }
     }
 
