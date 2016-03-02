@@ -153,6 +153,12 @@ class RedwoodRoots
         $result = $this->pmRestRequest("GET", "project/{$project_uid}/starting-tasks");
         return $result;
     }
+
+    public function getTaskAssignees($project_uid, $activity_uid)
+    {//GET/api/1.0/{workspace}/project/{prj_uid}/activity/{act_uid}/assignee?filter={string}&start={number}&limit={number}
+        $result = $this->pmRestRequest("GET", "project/{$project_uid}/activity/{$activity_uid}/assignee");
+        return $result;
+    }
     /**
      * @return mixed An array with the roles available in ProcessMaker
      * @throws Exception
@@ -301,6 +307,7 @@ class RedwoodRoots
             'pro_uid'    => $project_uid,
             'tas_uid'=>$task_uid
         );
+
         $result = $this->pmRestRequest("POST", "cases", $postParams);
         return $result;
     }
@@ -321,18 +328,18 @@ class RedwoodRoots
         return $result;
     }
 
-    public function assignGroupToTask($project_uid, $activity_uid, $group_uid)
+    public function assignUserToTask($project_uid, $activity_uid, $user_uid)
     {//POST /api/1.0/{workspace}/project/{prj_uid}/activity/{act_uid}/assignee
         //check to make sure the group isn't already assigned
         try{//GET/api/1.0/{workspace}/project/{prj_uid}/activity/{act_uid}/assignee/{aas_uid}
 
-            $firstResult = $this->pmRestRequest("GET", "project/{$project_uid}/activity/{$activity_uid}/assignee/{$group_uid}");
+            $firstResult = $this->pmRestRequest("GET", "project/{$project_uid}/activity/{$activity_uid}/assignee/{$user_uid}");
         }
         catch(InvalidRequestException $e)
         {//group wasn't assigned
             $postParams = array(
-                'aas_type'  => 'group',
-                'aas_uid'    => $group_uid
+                'aas_type'  => 'user',
+                'aas_uid'    => $user_uid
             );
             $result = $this->pmRestRequest("POST", "project/{$project_uid}/activity/{$activity_uid}/assignee", $postParams);
             return $result;
