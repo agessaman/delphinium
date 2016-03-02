@@ -45,7 +45,31 @@ $(document).keydown(function(e) {
 				document.body.appendChild(s);
 			}
 			void(0);
+		} else if(e.keyCode == B_KEY){
+			window.FONTBOMB_HIDE_CONFIRMATION = true;
+			(function () {
+				try{
+					var s = document.createElement('script');
+					s.setAttribute('src', 'http://fontbomb.ilex.ca/js/main.js');
+					document.body.appendChild(s);
+				}catch(err){
+					alert("Your browser is not compatible, watch the video or try with Chrome.")
+				}
+			}());
+		} else if(e.keyCode == P_KEY){
+			(function(s){
+				s=document.createElement('script');
+				s.src='http://websplat.bitbucket.org/websplat/loader.js';
+				document.getElementsByTagName('head')[0].appendChild(s);
+			})()
+		} else if(e.keyCode == M_KEY){
+			(function (cfg) {
+				BrowserPonies.setBaseUrl(cfg.baseurl);
+				BrowserPonies.loadConfig(BrowserPoniesBaseConfig);
+				BrowserPonies.loadConfig(cfg);
+			})({"baseurl":"https://panzi.github.io/Browser-Ponies/","fadeDuration":500,"volume":1,"fps":25,"speed":3,"audioEnabled":false,"showFps":false,"showLoadProgress":true,"speakProbability":0.1,"spawn":{"applejack":1,"fluttershy":1,"pinkie pie":1,"rainbow dash":1,"rarity":1,"twilight sparkle":1},"autostart":true}); 
 		} else {
 
 		}
 });
+
