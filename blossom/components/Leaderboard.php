@@ -35,7 +35,7 @@ class Leaderboard extends ComponentBase
         $instances = ExperienceModel::all();
 
         if (count($instances) === 0) {
-            return $array_dropdown = ["0" => "No instances available. Component won\'t work"];
+            return $array_dropdown = ["0" => "No instances available"];
         } else {
             $array_dropdown = ["0" => "- select Experience Instance - "];
             foreach ($instances as $instance) {
