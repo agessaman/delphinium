@@ -20,8 +20,6 @@ function getUserData()
 			$.get("gradebook/getSetOfUsersTotalScores",{experienceInstanceId:experienceInstanceId, userIds:(idsArr)},function(data,status,xhr)
 			{
 				scores= scores.concat(data);
-
-				document.getElementsByClassName("spinnerDiv").style.display = "none";
 			});
 			var idsArr =[];//initialize the array again.
 		}
@@ -32,7 +30,7 @@ function getUserData()
 		var promise =$.get("gradebook/getSetOfUsersTotalScores",{experienceInstanceId:experienceInstanceId, userIds:(idsArr)});
 		promise.then(function (data, textStatus, jqXHR, data2) {
 				scores= scores.concat(data);
-				document.getElementsByClassName("spinnerDiv").style.display = "none";
+				document.getElementtById("spinnerDiv").style.display = "none";
 				makeAccordion();
 			})
 			.fail(function (data2) {
