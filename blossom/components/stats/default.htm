@@ -1,0 +1,9 @@
+<script>
+	var statsSize = '{{statsSize}}';
+	var statsAnimate = {{statsAnimate}};
+</script>
+{% if ('Learner' in role) %}
+{% partial 'stats::studentView' %}
+{% elseif ('Instructor' in role or 'TeachingAssistant' in role) %}
+{% partial 'stats::instructorView' %}
+{% endif %}

@@ -29,7 +29,7 @@ class Plugin extends PluginBase
     {
         return [
             'name'        => 'Blossom',
-            'description' => 'Plug-in used to develop view for displaying grade information',
+            'description' => 'Plug-in used to develop views for displaying grade information',
             'author'      => 'Jacob Reid',
             'icon'        => 'icon-asterisk'
         ];
@@ -49,6 +49,7 @@ class Plugin extends PluginBase
             '\Delphinium\Blossom\Components\ExperienceManager' => 'experiencemanager',
             '\Delphinium\Blossom\Components\Gradebook' => 'gradebook',
             '\Delphinium\Blossom\Components\EasterEggs' => 'eastereggs'
+            '\Delphinium\Blossom\Components\Stats' => 'stats'
         ];
     }
 	
@@ -129,6 +130,14 @@ class Plugin extends PluginBase
                     'icon' => 'icon-bar-chart',
                     'owner' => 'Delphinium.Greenhouse',
                     'url' => Backend::url('delphinium/blossom/eastereggs'),
+                    'group' =>'Blossom',
+                ],
+
+                'Stats' => [
+                    'label' => 'Stats',
+                    'icon' => 'icon-bar-chart',
+                    'owner' => 'Delphinium.Greenhouse',
+                    'url' => Backend::url('delphinium/blossom/stats'),
                     'group'       => 'Blossom',
                 ]
             ]);
