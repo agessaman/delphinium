@@ -8,15 +8,12 @@ function updateComponent(copy, course_id){
 
     var pm = {copy_name:copy, process_id:process_id, course_id:course_id};
 
-    $('.calcresult').on('ajaxUpdate', function() {
-        console.log('Updated!');
-    })
+    $.request('processmaker::onSave', {data: {instance_id: instance.id, obj:pm}},
+        function() {
+            console.log('got here!');
+        });
 
-    $.request('onSave',{data: {instance_id: instance.id, obj:pm}}, {
-        success: function(data) {
-            console.log('Finished!');
-            console.log(data);
-        }
-    });
+    $('#modal-configuration').modal('hide');
+    //set success message:
 
 }

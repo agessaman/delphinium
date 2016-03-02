@@ -11,6 +11,8 @@ class Processmaker extends ComponentBase
 {
     public $roots;
     public $instance;
+    public $startingTask;
+
     public function componentDetails()
     {
         return [
@@ -34,19 +36,19 @@ class Processmaker extends ComponentBase
 
     public function onRun()
     {
-//        if(!isset($_POST['lis_outcome_service_url']))
-//        {
-//            echo "The peer review tool must be launched inside of your LMS. Add it as an assignment of the type 'External Tool'";
-//            return;
-//        }
-//        if (!isset($_SESSION)) {
-//            session_start();
-//        }
-//        if(!isset($_SESSION['pm_credentials_id']))
-//        {
-//            echo "Session variables not set. You must include the PMOauth component on this page";
-//            return;
-//        }
+        if(!isset($_POST['lis_outcome_service_url']))
+        {
+            echo "The peer review tool must be launched inside of your LMS. Add it as an assignment of the type 'External Tool'";
+            return;
+        }
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+        if(!isset($_SESSION['pm_credentials_id']))
+        {
+            echo "Session variables not set. You must include the PMOauth component on this page";
+            return;
+        }
 
         //grab the instance for this course, or create a new one if it doesn't exist
         $instance = $this->firstOrNewCourseInstance();
@@ -81,6 +83,28 @@ class Processmaker extends ComponentBase
             $assignmentAsGroup=$groups[0];
         }
 
+
+        //assign this group (and all the users who will be added to it) to the first task of the process, so that in the future we can create
+        //a case for the calling user
+        $tasks = $this->roots->getStartingTask($this->instance->process_id);//get starting task
+        if(count($tasks)>0) {
+            $this->startingTask  = $tasks[0];
+        }
+        else
+        {
+            echo "A starting task for this activity has not been configured. Please contact your instructor";
+            return;
+        }
+
+        $this->roots->assignGroupToTask($this->instance->process_id, $this->startingTask->act_uid, $assignmentAsGroup->grp_uid);
+
+        //FOR DEV PURPOSES: if the user is a test user their canvas_login_id is over 20 characters long. Since the password and user names are the same
+        //the create user request will fail because the max-length of the password is 20. So we will trim the canvas_login_id
+        //for the test student
+        if(strlen($canvas_login_id)>20)
+        {
+            $canvas_login_id = substr($canvas_login_id,0,19);
+        }
         //try to get a student. If not found on PM, create a new one
         $users = $this->roots->getUsers($canvas_login_id);
         $givenUser=null;
@@ -95,19 +119,25 @@ class Processmaker extends ComponentBase
             {
                 $user_email = "{$canvas_login_id}@uvlink.uvu.edu";//TODO: make this a more generic fall back
             }
+
+            //if the user is a test user their canvas_login_id is over 20 characters long. Since the password and user names are the same
+            //the create user request will fail because the max-length of the password is 20. So we will trim the canvas_login_id
+            //for the test student
+            if(strlen($canvas_login_id)>20)
+            {
+                $canvas_login_id = substr($canvas_login_id,0,19);
+            }
             $givenUser = $this->roots->createUser($first_name, $last_name, $canvas_login_id, $user_email, $pm_role);
         }
         else{
             $givenUser = $users[0];
         }
-
         //if user is not assigned to group, assign him/her
         $userInGroup = $this->roots->isUserInGroup($assignmentAsGroup->grp_uid, $givenUser->usr_username);
-        if(count($userInGroup)<1)
+        if(!($userInGroup))
         {
-            $this->roots->assignUserToGroup($assignmentAsGroup->grp_uid,$givenUser->usr_uid);
+            $res = $this->roots->assignUserToGroup($assignmentAsGroup->grp_uid,$givenUser->usr_uid);
         }
-
         //redirect instructors and students to their corresponding places
         $roleStr = $_POST['roles'];
         $this->page['role'] = $roleStr;
@@ -149,9 +179,22 @@ class Processmaker extends ComponentBase
         $loginResponse = $this->roots->loginUser($canvas_login_id,$canvas_login_id);
         if($loginResponse->status_code==0)
         {
-            $pmServer = $this->roots->getRedirectUrl($pm_role);//students in Canvas are operators in processmaker. Teachers are managers
-            $url = $pmServer."?sid={$loginResponse->message}";
-            $this->redirect($url);
+            $process_id = $this->instance->process_id;
+            //create a case for the student
+            if(!is_null($this->startingTask))
+            {
+//                $case = $this->roots->createCase($process_id,$this->startingTask->act_uid);
+//                echo json_encode($case);
+            }
+            else
+            {//no start task configured for that process. Redirect them to default URL
+                //redirect them to the appropriate place
+//                $pmServer = $this->roots->getRedirectUrl($pm_role);//students in Canvas are operators in processmaker. Teachers are managers
+//                $url = $pmServer."?sid={$loginResponse->message}";
+//                $this->redirect($url);
+            }
+
+
         }
         else{
             print "Unable to log student into ProcessMaker. Please inform your instructor";
@@ -185,8 +228,13 @@ class Processmaker extends ComponentBase
         $res->code=1;
         $res->message = "Success";
         $res->instance = $pm;
-        return json_encode($res);
-        Flash::success('Saved!');
+
+        return [
+            'code' => 1,
+            'message' => 'Success',
+            'instance'=>json_encode($pm)
+        ];
+
     }
 
 
