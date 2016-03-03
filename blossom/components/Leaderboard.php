@@ -2,17 +2,19 @@
 
 use Cms\Classes\ComponentBase;
 use Delphinium\Roots\Roots;
+use Delphinium\Roots\Requestobjects\SubmissionsRequest;
+use Delphinium\Roots\Enums\ActionType;
 use Delphinium\Blossom\Components\Gradebook;
 use Delphinium\Blossom\Models\Experience as ExperienceModel;
 use Delphinium\Blossom\Components\Experience as ExperienceComponent;
-
+use Delphinium\Roots\Db\DbHelper;
 
 class Leaderboard extends ComponentBase
 {
 
     public $roots;
     public $gradebook;
-    
+
     public function componentDetails()
     {
         return [
@@ -35,7 +37,7 @@ class Leaderboard extends ComponentBase
         $instances = ExperienceModel::all();
 
         if (count($instances) === 0) {
-            return $array_dropdown = ["0" => "No instances available"];
+            return $array_dropdown = ["0" => "No instances available. Component won\'t work"];
         } else {
             $array_dropdown = ["0" => "- select Experience Instance - "];
             foreach ($instances as $instance) {
@@ -45,26 +47,29 @@ class Leaderboard extends ComponentBase
         }
     }
 
-    public function onRender(){
-        //try
-        //{
+    public function onRender()
+    {
+        try {
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/leaderboard.js");
             $this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
             $this->addCss("/plugins/delphinium/blossom/assets/css/leaderboard.css");
-            
+
             $this->roots = new Roots();
             $this->gradebook = new Gradebook();
-
-            //get all students in course
             $users = $this->roots->getStudentsInCourse();
+            $this->page['users'] = json_encode($users);
+            $this->page['experienceInstanceId']=$this->property('Experience');
 
-            //get all scores
-            //$scores = $this->gradebook->aggregateSubmissionScores();
-            echo $this->gradebook->aggregateSubmissionScores();
-            //$experienceInstance = ExperienceModel::find($this->property('Experience'));
-
-            //$list = $this->gradebook->matchSubmissionsAndUsers($users, $scores, $experienceInstance);
-        /*}
+            if(!isset($_SESSION))
+            {
+                session_start();
+            }
+            $userId = $_SESSION['userID'];
+            $courseId = $_SESSION['courseID'];
+            $dbHelper = new DbHelper();
+            $user = $dbHelper->getUserInCourse($courseId, $userId);
+            $this->page['calling_user'] = json_encode($user);
+        }
         catch (\GuzzleHttp\Exception\ClientException $e) {
             return;
         }
@@ -82,7 +87,7 @@ class Leaderboard extends ComponentBase
                 return \Response::make($this->controller->run('nonlti'), 500);
             }
             return \Response::make($this->controller->run('error'), 500);
-        }*/
+        }
     }
 
 }
