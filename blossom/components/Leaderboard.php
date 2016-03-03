@@ -27,7 +27,7 @@ class Leaderboard extends ComponentBase
         return [
             'Experience' => [
                 'title' => 'Experience Instance',
-                'description' => 'Select the experience instance to display the student\'s bonus and penalties',
+                'description' => '(OPTIONAL) Select the experience instance to display the student\'s bonus and penalties',
                 'type' => 'dropdown',
             ]
         ];
@@ -37,7 +37,7 @@ class Leaderboard extends ComponentBase
         $instances = ExperienceModel::all();
 
         if (count($instances) === 0) {
-            return $array_dropdown = ["0" => "No instances available. Component won\'t work"];
+            return $array_dropdown = ["0" => "No instances available."];
         } else {
             $array_dropdown = ["0" => "- select Experience Instance - "];
             foreach ($instances as $instance) {
