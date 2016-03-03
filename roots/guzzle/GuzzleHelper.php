@@ -5,9 +5,14 @@ use GuzzleHttp\Client;
 
 class GuzzleHelper
 {
-    public static function makeRequest($request, $url, $getRawResponse = false)
+    public static function makeRequest($request, $url, $getRawResponse = false, $token=null)
     {
 
+        //if the raw response is requested, we cannot do the recursive url (for which the token is needed), so we will need to set it to false
+        if($getRawResponse==true)
+        {
+            $token=null;
+        }
         $client = new Client();
         switch($request->getActionType())
         {
@@ -15,6 +20,10 @@ class GuzzleHelper
                 if($getRawResponse)
                 {
                     return $client->get($url);
+                }
+                else if(!is_null($token))
+                {
+                    $response = GuzzleHelper::recursiveGet($url, $token);
                 }
                 else
                 {
@@ -36,27 +45,40 @@ class GuzzleHelper
         return $response;
     }
 
-    public static function recursiveGet($url)
+    public static function recursiveGet($url, $token)
     {
-        $data = GuzzleHelper::getAsset($url);
-        $currentPage = 1;
-        $hasData = true;
-        while($hasData)
-        {
-            $currentPage = $currentPage + 1;
-            $newUrl = $url."&page={$currentPage}";
-            $next_data = (GuzzleHelper::getAsset($newUrl));
-            if(!empty($next_data))
-            {
-                $data = array_merge($data,$next_data);
-            }
-            else
-            {
-                $hasData = false;
+        $ch = curl_init();
+        curl_setopt($ch,CURLOPT_URL, $url);
+        curl_setopt($ch,CURLOPT_CUSTOMREQUEST, "GET");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_VERBOSE, 1); //Requires to load headers
+        curl_setopt($ch, CURLOPT_HEADER, 1);  //Requires to load headers
+        $result = curl_exec($ch);
+
+        #Parse header information from body response
+        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $header = substr($result, 0, $header_size);
+        $body = substr($result, $header_size);
+        $data = json_decode($body);
+        curl_close($ch);
+//        #Parse Link Information
+        $header_info = GuzzleHelper::http_parse_headers($header);
+        if(isset($header_info['Link'])){
+            $links = explode(',', $header_info['Link']);
+            foreach ($links as $value) {
+                if (preg_match('/^\s*<(.*?)>;\s*rel="(.*?)"/', $value, $match)) {
+                    $links[$match[2]] = $match[1];
+                }
             }
         }
-        return $data;
-
+        #Check for Pagination
+        if(isset($links['next'])){
+            $next_data = GuzzleHelper::recursiveGet($links['next'] . "&access_token=$token", $token);
+            $data = array_merge($data,$next_data);
+            return $data;
+        }else{
+            return $data;
+        }
     }
 
     public static function getAsset($url)
@@ -171,4 +193,29 @@ class GuzzleHelper
         return $url;
     }
 
+    private static function http_parse_headers( $header ) {
+        $retVal = array();
+        $fields = explode("\r\n", preg_replace('/\x0D\x0A[\x09\x20]+/', ' ', $header));
+        foreach( $fields as $field ) {
+            if( preg_match('/([^:]+): (.+)/m', $field, $match) ) {
+                $match[1] = preg_replace_callback(
+                    '/(?<=^|[\x09\x20\x2D])./',
+                    function($m) { return (strtoupper($m[0])); },
+                    strtolower(trim($match[1])
+                    ));
+                if( isset($retVal[$match[1]]) ) {
+                    if ( is_array( $retVal[$match[1]] ) ) {
+                        $i = count($retVal[$match[1]]);
+                        $retVal[$match[1]][$i] = $match[2];
+                    }
+                    else {
+                        $retVal[$match[1]] = array($retVal[$match[1]], $match[2]);
+                    }
+                } else {
+                    $retVal[$match[1]] = trim($match[2]);
+                }
+            }
+        }
+        return $retVal;
+    }
 }
