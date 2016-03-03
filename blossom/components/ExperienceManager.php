@@ -10,7 +10,7 @@ class ExperienceManager extends ComponentBase
     public function componentDetails()
     {
         return [
-            'name'        => 'Experience_manager Component',
+            'name'        => 'Experience Manager',
             'description' => 'No description provided yet...'
         ];
     }
