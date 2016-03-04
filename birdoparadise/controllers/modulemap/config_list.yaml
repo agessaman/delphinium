@@ -1,0 +1,13 @@
+title: 'Manage Modulemaps'
+modelClass: Delphinium\BirdoParadise\Models\Modulemap
+list: $/delphinium/birdoparadise/models/modulemap/columns.yaml
+recordUrl: 'delphinium/birdoparadise/modulemap/update/:id'
+noRecordsMessage: 'backend::lang.list.no_records'
+recordsPerPage: 20
+showSetup: true
+showCheckboxes: 1
+showSorting: true
+toolbar:
+    buttons: list_toolbar
+    search:
+        prompt: 'backend::lang.list.search_prompt'

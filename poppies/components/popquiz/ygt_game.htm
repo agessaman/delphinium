@@ -1,0 +1,149 @@
+<!-- You Got This Game partial -->
+
+    <div class="bkground"></div>
+    <div class="page">
+        <div class="title">
+            <div id="you"></div>
+            <div id="this"></div>
+            <div id="got"></div>
+            <div id="yep"></div>
+            <div id="gobtn">Play Now</div>
+        </div>
+        
+        <div class="gameplay">
+            <div class="headbox">
+                <div class="score">Score:</div>
+                <div class="missd">Missed:</div>
+                <div class="timr">Timer:</div>
+            </div>
+
+            <div class="questbox">Question:</div>
+			<div class="valid"></div>
+            <div class="answerbox">
+                <div id="a0" class="makeDraggable">Answer 0</div>
+                <div id="a1" class="makeDraggable">Answer 1</div>
+                <div id="a2" class="makeDraggable">Answer 2</div>
+                <div id="a3" class="makeDraggable">Answer 3</div>
+                <div id="nextaro"></div>
+            </div>
+            <div id="star"></div>
+            <div id="wrong"></div>
+        </div>
+    </div>
+
+<script>
+
+    $('gameplay').hide();
+/*
+    animated title as js file ???
+    click Play Now #gobtn
+*/
+$('#you')
+   .animate({
+      left: 335, opacity: 1
+    }, 300);
+
+$('#got')
+    .delay(500)
+    .animate({
+        top:228, opacity: 1
+    }, 500);
+
+$('#this')
+    .delay(800)
+    .animate({
+        left:392, opacity: 1
+    }, 300);	
+
+$('#yep')
+    .delay(1000)
+    .animate({
+        top: 392, opacity: 1
+    }, 300);
+
+$('#gobtn')
+    .delay(1600)
+    .animate({opacity: 1}, 400);
+/*
+    click Play Now animates title off
+    play area onto screen
+*/
+
+$('#gobtn').on('click', function(){
+    $('.title').animate({left: -1000, opacity: 0}, 500, function(){ $('.title').hide(); });
+    $('.bkground').animate({opacity:0.2},800);
+    $('.gameplay').show();
+    
+    //conclusion screen reset and play again?
+});
+
+/* http://spritely.net/ sprites */
+$('#star').hide();
+function showStar() {
+    $('#star').show();
+    $('#star').sprite({fps: 6, no_of_frames: 6,
+            on_last_frame: function(obj) { obj.stop(true); }
+            }).active();
+    $('#star').css({'left':350,'top':120, opacity:1})
+        .animate({ left: 200, top: 20, opacity: 0 }, 1000, function(){ $('#star').destroy(); });
+}
+
+$('#wrong').hide();
+function shoWrong() {
+    $('#wrong').show();
+    $('#wrong').sprite({fps: 6, no_of_frames: 6,
+            on_last_frame: function(obj) { obj.stop(true); }
+            }).active();
+    $('#wrong').css({'left':450,'top':150, opacity:1})
+        .animate({ top: 20, opacity: 0 }, 1000, function(){ $('#wrong').destroy(); });
+}
+
+$('#nextaro').hide();
+function showNextaro() {
+    $('#nextaro').show();
+    $('#nextaro').sprite({fps: 6, no_of_frames: 4}).active();
+}
+$('#nextaro').on('click', function(){
+    $('#nextaro').hide().spStop(true);
+    //load next question
+});
+
+
+/*
+    http://www.elated.com/articles/drag-and-drop-with-jquery-your-essential-guide/
+    http://api.jqueryui.com/draggable/
+	http://getbootstrap.com/css/
+*/
+$('.makeDraggable').draggable({
+    containment: '.page',
+    snap: '.page',
+    zIndex: 500,
+    iframeFix: true,
+    distance: 10,
+	revert: true
+});
+
+$('.questbox').droppable({
+    drop: handleDropEvent
+});
+function handleDropEvent( event, ui ) {
+    var offsetXPos = parseInt( ui.offset.left );
+    var offsetYPos = parseInt( ui.offset.top );
+    console.log( event.target.id+" Offset: (" + offsetXPos + ", " + offsetYPos + ")");
+    
+    var id = ui.draggable.attr('id');
+    console.log( 'dropped ID "' + id + '" was dropped onto me!' );
+    if(id == 'a2') {
+        showStar();//play correct sprite
+        console.log("correct");
+        $('.makeDraggable').hide();// all answers
+        $('.valid').append($('#'+id).html());// show answer
+        showNextaro();
+    } else {
+        
+       shoWrong();//play wrong
+    }
+}
+
+
+</script>

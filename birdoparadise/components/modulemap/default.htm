@@ -1,0 +1,26 @@
+<p>This is the default markup for component vanilla</p>
+
+<small>You can delete this file if you want</small>
+
+<script type="text/javascript" src="plugins/delphinium/birdoparadise/assets/javascript/jquery.min.js"></script>
+<script type="text/javascript" src="plugins/delphinium/birdoparadise/assets/javascript/bootstrap.min.js"></script>
+<script>
+    // include css or javascript libraries
+    //component configuration [id,name, <Your Fields>, course_id,copy_id]
+    var config = {{config|raw}};//array
+    console.log('config',config);
+    
+    var role = '{{role}}';//string
+    console.log('Role: ',role);
+    /*
+        get variables from the php with twig
+        
+        use twig to determine if the component is seen 
+        by an instructor or a student
+    */
+</script>
+{% if ('Learner' in role) %}
+{% partial 'modulemap::student' %}
+{% elseif ('Instructor' in role) %}
+{% partial 'modulemap::instructor' %}
+{% endif %}

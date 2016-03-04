@@ -1,0 +1,11 @@
+columns:
+    id:
+        label: ID
+        type: number
+        searchable: true
+    name:
+        label: Name
+        type: text
+    modules:
+        label: Modules
+        type: text
