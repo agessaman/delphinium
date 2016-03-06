@@ -1,4 +1,3 @@
-<p>This is the Instructor popquiz</p>
 <div class="center">
 <div class="accordion">
     <div class="accordion-section">
@@ -35,7 +34,7 @@
         
 		<a class="accordion-section-title" href="#accordion-4">Selected Questions for Game</a>
 		<div id="accordion-4" class="accordion-section-content">
-            <h2>Selected Game Questions</h2>
+            <p>Select what you want to do with these Questions:</p>
 			<div>
             <button class="btn btn-default" type="submit" id="clearit" name="clearit">Remove All Questions</button>
 			<button class="btn btn-warning" type="submit" id="removeit" name="removeit">Remove Selected Questions</button>
@@ -69,29 +68,35 @@
                 <h4 id="detailed-title" class="modal-title">Quiz Questions</h4>
             </div>
             <div id="detailed-body" class="modal-body">
-                <p>display details of each question with answers</p>
-                <div class="center alert">
-                    <div id="qtype" class="left">Type:</div>
-                    <div id="qpints" class="right">Points:</div>
+                <div class="clearfix">
+                    <div id="qtype" class="left questype">Type:</div>
+                    <div id="qpoints" class="right questype">Points:</div>
                 </div>
-                <div id="qtext"></div>
-                
-                <div id="qanswers"></div>
-                <div id="qfeedback"></div>
-                
+				<hr/>
+				<div>
+					<div id="qtext"></div>
+                </div>
+				<div>
+					<div id="qanswers"></div>
+					
+					
+					<div id="qfeedback"></div>
+                </div>
             </div>
             <div class="modal-footer">
-                <button id="nextbtn" type="button" class="btn btn-primary" >Next -></button>
+                <button id="nextbtn" type="button" class="btn btn-primary"> Next -> </button>
             </div>
         </div>
     </div>
 </div>
-<!--script type="text/javascript" src="plugins/delphinium/poppies/assets/javascript/jquery-ui.min.js"></script-->
+
 <script type="text/javascript" src="plugins/delphinium/poppies/assets/javascript/popquiz.js"></script>
 <script>
 	// list of all quizzes : sortable?
 	var quizList = {{quizList|raw}};
 	console.log('quizList:', quizList.length, quizList);
+	
+	var nextcount=0;
 	
     $('.accordion-section-title').click(function(e) {
         e.preventDefault();
@@ -115,10 +120,10 @@
             selecteditems=[];// accumulated selections if mouse dragged
             $( ".ui-selected", this ).each(function() {
              var index = $( "#quizselectable li" ).index( this );// list[index]
-             var qid = $(this).attr('data-id');// $(this).hide();
+             var qid = $(this).attr('data-id');
             if(qid) { selecteditems.push(qid); }
-            });// else just the one clicked
-            console.log('selected:',selecteditems);// array of objects
+            });// or just the one clicked
+            console.log('selected:',selecteditems);// array of object id
         }
     });
     // accordion-4 game questions
@@ -128,10 +133,10 @@
             chosenitems=[];// accumulated selections if mouse dragged
             $( ".ui-selected", this ).each(function() {
              var index = $( "#gameselectable li" ).index( this );// list[index]
-             var qid = $(this).attr('data-id');// $(this).hide();
-             chosenitems.push(qid);//this);// push each to an array
-            });// else just the one clicked
-            console.log('chosen:',chosenitems);// array of objects
+             var qid = $(this).attr('data-id');
+             chosenitems.push(qid);// push id for each to an array
+            });// or just the one clicked
+            console.log('chosen:',chosenitems);// array of object 
         }
     });
     
@@ -186,30 +191,77 @@
     $('#useit').click(function(e) {
         e.preventDefault();
         // gameitems = questions to use in game : store in DB?
+		console.log('gameitems:',gameitems.length, gameitems);
+		// check: if saved yet, if changed since save
+		gameQuest=gameitems;// gameQuest is var in game
+		// or send to function in game?
     });
 
     // need to be able to see question with answers
     //see details of questions in modal next btn?
     $('#seeit').click(function(e) {
         e.preventDefault();
-        
-        // display question[0] details with answers
-        
-        
+        //detailed-body display question details with answers
+		constructQuestion(nextcount);
         $('#detailed').modal('show');
     });
     $('#nextbtn').click(function(e) {
         e.preventDefault();
         //detailed-body replace content with next question
-        
+		nextcount++;
+		if(nextcount==gameitems.length){ nextcount=0; }
+		constructQuestion(nextcount);
     });
-function constructQuestion(index){
-    
-    var quest = quests[index];
-    
-}
+	
+	function constructQuestion(index){
+		
+		var quest = gameitems[index];
+		$('#detailed-title').html('Question '+(index+1));
+		$('#qtype').html('Type: '+gameitems[index][0].type);
+		$('#qpoints').html('Points: '+gameitems[index][0].points_possible);
+		$('#qtext').html(gameitems[index][0].text);
+		var answers= $.parseJSON(gameitems[index][0].answers);
+		var ansdiv='';
+		console.log(answers);//for each
+		for(var i=0; i<answers.length; i++){
+		//for(var answobj in answers) {
+			if(answers[i].weight==0){
+				ansdiv+='<div class="alert alert-danger">';
+			} else {
+				ansdiv+='<div class="alert alert-success">';
+			}
+			ansdiv+=answers[i].text;
+			ansdiv+='</div>';
+		}
+		$('#qanswers').html('<hr/>Answers:<br/>'+ansdiv);
+		
+		var comdiv='';
+		if(gameitems[index][0].correct_comments!= "")
+		{
+			comdiv+='<div class=bg-success>';
+			comdiv+=gameitems[index][0].correct_comments;
+			comdiv+='</div>';
+		}
+		if(gameitems[index][0].incorrect_comments != "")
+		{
+			comdiv+='<div class=bg-danger>';
+			comdiv+=gameitems[index][0].incorrect_comments;
+			comdiv+='</div>';
+		}
+		if(gameitems[index][0].neutral_comments != "")
+		{
+			comdiv+='<div class=bg-warning>';
+			comdiv+=gameitems[index][0].neutral_comments;
+			comdiv+='</div>';
+		}
+		$('#qfeedback').html('<hr/>Comments:<br/>'+comdiv);
+	}
 /*
-answers: "[{"weight":0,"id":2028,"migration_id":"RESPONSE_1113","text":"Organizational change is the movement of an organization from one state of affairs to another."},{"weight":100,"id":5595,"migration_id":"RESPONSE_2746","text":"Organizational change takes only a few forms."},{"weight":0,"id":6439,"migration_id":"RESPONSE_8703","text":"Organizational change, at its most basic, involves effective people management."},{"weight":0,"id":5998,"migration_id":"RESPONSE_1895","text":"Organizational change can be forced or planned."}]"
+answers: "[
+	{"weight":0,"id":2028,"migration_id":"RESPONSE_1113","text":"Organizational change is..."},
+	{"weight":60,"id":5595,"migration_id":"RESPONSE_2746","text":"Organizational change..."},
+	{"weight":40,"id":6439,"migration_id":"RESPONSE_8703","text":"Organizational change..."},
+	{"weight":0,"id":5998,"migration_id":"RESPONSE_1895","text":"Organizational change..."}]"
 correct_comments: ""
 created_at: "2016-03-04 20:12:19"
 incorrect_comments: ""

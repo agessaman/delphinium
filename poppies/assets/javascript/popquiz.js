@@ -25,22 +25,15 @@
 		
 	http://inspirationalpixels.com/tutorials/creating-an-accordion-with-html-css-jquery
 */
+
+// Instructor view
 // globals
 var selecteditems=[];// quiz question_id selections
 var chosenitems=[];// question_id of gameitems to use, remove clear all
 var gameitems=[];// questions for game
-var quests=[];// selected questions to retrieve selected from
+var quests=[];// quiz questions to selected from
 // gameitems = '{items:[ obj, obj, ... ]}';
 
-$(document).ready(function() {
-
-	if(role == 'Learner') {
-        // play game:
-    } else { 
-        //split up list
-		showQuizzes();
-    }
-});
 
 /* show all quizzes */
 function showQuizzes()
@@ -48,6 +41,22 @@ function showQuizzes()
 	var count = Math.ceil(quizList.length/3);
 	//console.log('count:',count);
 	// put 1/3 in each column
+	//inc to count, reset : inc colm
+	//console.log('quizList.length:',quizList.length);
+	var col=0;
+	var row=0;
+	for(var i=0; i<quizList.length; i++)
+	{
+		content = '<div id='+quizList[i].quiz_id+' class="alert alert-info">';// blue
+		content += quizList[i].title;
+		content += ': total questions: '+quizList[i].question_count;
+		//content += ' worth: '+quizList[i].points_possible;
+		content += '</div>';
+		$('#col_'+col).append(content);
+		row++;
+		if(row==count){ row=0; col++; }
+	}
+	/*
 	for(var i=0; i<count; i++) {
 		for(var c=0; c<3; c++) {
 			content = '<div id='+quizList[(i*(c+1))].quiz_id+' class="alert alert-info">';// blue
@@ -59,6 +68,7 @@ function showQuizzes()
 			$('#col_'+c).append(content);
 		}
 	}
+	*/
 	//click quiz to view questions
 	$('.alert').on('click', function(e){
 		showQuiz(e.target.id);

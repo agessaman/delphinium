@@ -13,6 +13,7 @@ class CreateModulemapsTable extends Migration
             $table->engine = 'InnoDB';
             $table->increments('id');
             $table->string('name');
+			$table->string('units');
             $table->string('modules');
             $table->string('course_id');
             $table->string('copy_id');

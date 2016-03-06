@@ -52,7 +52,10 @@ class Popquiz extends ComponentBase
 			$this->addCss("/plugins/delphinium/poppies/assets/css/bootstrap.min.css");
             $this->addCss("/plugins/delphinium/poppies/assets/css/popquiz.css");
 			//$this->addCss("/plugins/delphinium/poppies/assets/css/university-ave.css");
-            
+            //$this->addJs("/plugins/delphinium/poppies/assets/javascript/jquery.min.js");
+			//$this->addJs("/plugins/delphinium/poppies/assets/javascript/jquery-ui.min.js");
+			//$this->addJs("/plugins/delphinium/poppies/assets/javascript/jquery.spritely.js");
+			//$this->addJs("/plugins/delphinium/poppies/assets/javascript/bootstrap.min.js");
 			
 			$role = $this->setup();
 			$this->page['role'] = $role;// either Learner or Instructor

@@ -21,7 +21,7 @@ class Modulemap extends Model
     /**
      * @var array Fillable fields
      */
-    protected $fillable = [];
+    protected $fillable = ['name','units','modules','copy_id','course_id'];
 
     /**
      * @var array Relations
