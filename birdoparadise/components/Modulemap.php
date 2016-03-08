@@ -118,7 +118,7 @@ class Modulemap extends ComponentBase
             
             // include any css or javascript here
             $this->addCss("/plugins/delphinium/birdoparadise/assets/css/bootstrap.min.css");
-            $this->addCss("/plugins/delphinium/birdoparadise/assets/css/font-awesome.min.css");
+            $this->addCss("/plugins/delphinium/birdoparadise/assets/css/font-awesome.css");
             $this->addCss("/plugins/delphinium/birdoparadise/assets/css/university-ave.css");
             $this->addCss("/plugins/delphinium/birdoparadise/assets/css/bop.css");
         /*  $this->addJs("/plugins/delphinium/birdoparadise/assets/javascript/jquery.min.js");

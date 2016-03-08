@@ -14,15 +14,18 @@
     </div>
     
     <div class="rightcolm">
+        <div class="dropzone"></div>
         <button id="addTab" class="btn btn-success" type="button">+ New Unit</button>
         <div id="tabs">
           <ul id="tablist">
-            <li><a href="#tab_0">Unit 1</a></li>
+            <li><a href="#tab_1">Unit 1</a></li>
               <!-- Insert new tabs -->
           </ul>
-          <div id="tab_0"><div class="tabody"></div></div>
+          <div id="tab_1"><div class="tabody"></div></div>
           <!-- Insert tab content -->
 
+        </div>
+        <div><strong>Instructions: </strong>Drag a module from the left onto the unit. Add new units as needed.
         </div>
     </div>
 </div>
@@ -63,12 +66,12 @@
     </div>
 </div>
 
+
 <script>
 (function() {
     
-    $('.brand').hide();// in the way
-	var configVal=[config.name];// .units, .modules
-	var fieldIDs=['Form-field-Modulemap-name'];// units, modules
+	var configVal=[config.name,config.units,config.modules];
+	var fieldIDs=['Form-field-Modulemap-name','Form-field-Modulemap-units','Form-field-Modulemap-modules'];
 	
     /* set id,course,copy in the POST they are not editable
         Add hidden input fields so they will transfer to onUpdate
@@ -103,34 +106,39 @@
         
         http://stackoverflow.com/questions/14308290/jquery-draggable-and-droppable-between-two-containers-and-sortable
         
+        https://api.jqueryui.com/draggable/
         
         
         Model:
         units [ {name, order}, 
         modules [ {unit_index, mod_id, mod_order, image_url, }, 
+        
+        todo: construct from config
     */
-    var units = [{'name':'Unit 1', 'order': 0}];
+    // if ! config.units
+    var units = [{'name':'Unit 1', 'order': 0}];//default first tab
     var modules = [];// modules in unit tab
     
+    // add, delete, edit name
     var tabTitle = $( "#tab_title" ),
     tabContent = $( "#tab_content" ),
-    tabTemplate = "<li><a href='#{href}'>#{label}</a> <span class='ui-icon ui-icon-close' role='presentation'>Remove Tab</span></li>",
+    tabTemplate = "<li><a href='#{href}'>#{label}</a></li>",
     tabCounter = 2;// not 0 based
     
     // jquery-UI tabs
 	var tabs = $( "#tabs" ).tabs({
-       //event: "click"
-      //collapsible: false
+        //event: "click"
+        //collapsible: false
     });
     
-    //sortable tabs : function ? as new are added
-    //var tabs = $( "#tabs" ).tabs();
+    // are sortable sortable tabs
     tabs.find( ".ui-tabs-nav" ).sortable({
         axis: "x",
         stop: function() {
-            tabs.tabs( "refresh" );
-            // update units[].order 
+            tabs.tabs( "refresh" ); 
             console.log('tabs:',tabs);
+            //update units.order
+            
         }
     });
     
@@ -140,13 +148,13 @@
     });
     
     function addTab() {
-        var label = tabTitle.val() || "Unit " + tabCounter,
+        var label = "Unit " + tabCounter,
             id = "tab_" + tabCounter,
             li = $( tabTemplate.replace( /#\{href\}/g, "#" + id ).replace( /#\{label\}/g, label ) ),
-            tabContentHtml = tabContent.val() || "Unit " + tabCounter + " content.";
+            tabContentHtml = "<div id='" + id + "'><div class='tabody'></div></div>";
 
         tabs.find( ".ui-tabs-nav" ).append( li );
-        tabs.append( "<div id='" + id + "'><div class='tabody'></div></div>" );
+        tabs.append( tabContentHtml );
         tabs.tabs( "refresh" );
         tabCounter++;
         // update arrays function?
@@ -155,8 +163,8 @@
         //dropzone = $('.tabody').droppable({  drop: handleDropEvent });// Not a function
     }
     
-    // setup draggable module elements
-    //add elements
+    // if ! config.modules, else hide leftcolm?
+    // create draggable module elements
     for(var i=0; i<moduledata.length; i++) {
         var modbox = '<div id="'+moduledata[i].module_id+'" class="modbox modDraggable">';
             modbox +='<p>'+moduledata[i].name+'</p>';
@@ -167,50 +175,117 @@
         $('.modbox').attr('data-locked',moduledata[i].locked);
     }
     
-    
-    $('.modDraggable').draggable({
+    // all module items drag to unit tab.tabody
+    var modlist = $('.modDraggable').draggable({
         helper: 'clone',
         containment: '.page',
         snap: '.page',
         zIndex: 1100,
         iframeFix: true,
         distance: 10,
+        start: function( event, ui ) {
+            $('.dropzone').show();// $(ui.draggable).detach();
+        },
+        stop: function( event, ui ) {
+            $('.dropzone').hide();
+        },
+        revertDuration: 300,
         revert: true
-    });
+    });// return clone changes 
     
-    //current visible Unit body
-    var dropzone = $('.tabody').droppable({
+    // if dragged from tabody & dropped on modlist
+    
+    // sortable inside unit.tabody adjusts mod_order
+    var sortlist = $('.itemDraggable').draggable({
+        /*helper: 'clone',*/
+        containment: '.rightcolm',
+        snap: '.rightcolm',
+        zIndex: 1100,
+        iframeFix: true,
+        distance: 10,
+        revert: 'invalid'
+    });
+    //$("#sortable").sortable();
+    /* Already does this */
+    sortlist.find( ".tabody" ).sortable({
+        axis: "x",
+        stop: function() {
+            sortlist.draggable( "refresh" ); 
+            console.log('sortlist:',sortlist);
+            //update modules.mod_order
+            
+        }
+    });
+   
+    /*// cant do 2 another dropzone?
+    var dropzone = $('.dropzone').droppable({
+        accept: '.itemDraggable',
+        drop: sortDropped
+    });
+    function sortDropped( event, ui ) {
+        console.log('sort: ', ui.draggable.attr('id'));// nope
+    }
+    */
+    // transparent zone over tab body
+    $('.dropzone').hide();// show when dragging module
+    var dropzone = $('.dropzone').droppable({
+        accept: '.modDraggable',
         drop: handleDropEvent
     });
     function handleDropEvent( event, ui ) {
         //var offsetXPos = parseInt( ui.offset.left );
         //var offsetYPos = parseInt( ui.offset.top );
         //console.log( event.target.id+"drop location: (" + offsetXPos + ", " + offsetYPos + ")");
-        var id = ui.draggable.attr('id');
-        console.log( 'dropped ID "' + id + '" was dropped onto '+event.target.id );
+        var modid = ui.draggable.attr('id');
+        //console.log( 'dropped ID "' + modid + '" was dropped onto '+event.target.id );
         
-        $(ui.draggable).detach().appendTo(this);
-        $(ui.draggable).removeClass('modbox modDraggable').addClass('moditem itemDragable');
+        //remove mod from left column, add to active tab.tabody, change style
+        // get active tab 
+        var actor = $('li.ui-state-active').attr('aria-controls');
+        //console.log('Active Tab:',actor);//tab_id
+        // get active tabody
+        var nuplace = $('#'+actor+' > div:first');
+        ui.helper.remove();
+        //http://stackoverflow.com/questions/1324044/how-do-i-disable-a-jquery-ui-draggable
+        ui.draggable.draggable("destroy");// remove drag ability
         
-        var el = $(this).first();//'.tabody'
-        var wit = $(el).width()+210;// original width 648
-        $(el).css({ 'width': wit, 'height':'220px', 'overflow-x':'auto' });
+        $(ui.draggable).detach().appendTo(nuplace);// .tabody
+        $(ui.draggable).removeClass('modbox modDraggable').addClass('moditem itemDraggable');// still draggable to modules
         
-        var sleft = 650-wit;//sliderwidth;
-        dragcontainer=[-sleft,0,wit,0];//update slider container
-        console.log('dragcontainer='+dragcontainer);
+        //ui.draggable.draggable("disable", 1);// no longer draggable
+        ui.draggable.draggable();
+    //ui.draggable.draggable({ connectToSortable: "#my-sortable" });// as itemDraggable
+    /*
+        want to change these to sort modules type
+        http://api.jqueryui.com/sortable/
+    */
+        // update modules[]
+        var modorder = $(nuplace).children().length;// child position
         
-        /*
-            remove mod from left column OK
-            change style OK
-            
-            update units & modules
-        */
+        modules.push({"unit":actor, "mod_id":modid, "mod_order": modorder, "image_url": ""});
+        //console.log('dropped modules: '+modules.length, modules);
+        
+        // if > 3 items on tab adjust width of tabody
+        var count = $.grep(modules, function(elem, index) {
+            return elem.unit == actor;
+        });
+        console.log('count: '+count.length, count);
+        
+        var widt = $(nuplace).width();// increase for each new module
+        if(count.length > 3) {
+            widt += 200; 
+            $(nuplace).css({ 'width': widt });
+            console.log('width:',widt);
+        }
+        var sleft = widt-(670*1.5);
+        dragcontainer=[-sleft,0,280,0];//update slider container in array
+        //console.log('dragcontainer='+dragcontainer);
+        tabscrol.draggable("option", "containment", dragcontainer);//at switch tabs too?
     }
     
-    var dragcontainer=[0,0,650,0];
+    var dragcontainer=[0,0,650,0];// array for each tab!
     
-    $('.tabody').draggable({ axis:'x', containment:dragcontainer });
+    var tabscrol = $('.tabody').draggable({ axis:'x', containment:dragcontainer });
     /* slider for tabody
     //JQ.UI.draggable set limits with [x1, y1, x2, y2] or 'parent', 'document', 'window'
         var bl=0;//var bt=2;
