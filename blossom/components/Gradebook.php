@@ -58,87 +58,98 @@ class Gradebook extends ComponentBase {
 
     public function onRender() {
 
-        // try{
+        try{
 
-        $this->roots = new Roots();
-        $standards = $this->roots->getGradingStandards();
-        $grading_scheme = $standards[0]->grading_scheme;
+            $this->roots = new Roots();
+            $standards = $this->roots->getGradingStandards();
+            $grading_scheme = $standards[0]->grading_scheme;
 
-        $this->addCss("/plugins/delphinium/blossom/assets/css/bootstrap.min.css");
-        $this->addCss("/plugins/delphinium/blossom/assets/css/gradebook.css");
-        $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
-        $this->addJs("/plugins/delphinium/blossom/assets/javascript/gradebook_student.js");
-        $this->page['experienceInstanceId'] = $this->property('experienceInstance');
-        $userRoles = $_SESSION['roles'];
-        $this->page['userRoles'] = $userRoles;
-        if (!is_null($this->property('experienceInstance'))) {
-            $instance = ExperienceModel::find($this->property('experienceInstance'));
-            $maxExperiencePts = $instance->total_points;
-
-        }
-        if (stristr($userRoles, 'Learner')) {
-            if (!isset($_SESSION))
-            {
-                session_start();
-            }
-            // $_SESSION['userID'] = 1230622;
-
-            $bonusPenalties = $this->getBonusPenalties();
-
-            $this->page['bonus'] = $bonusPenalties === 0 ? 0 : $bonusPenalties->bonus;
-            $this->page['penalties'] = $bonusPenalties === 0 ? 0 : $bonusPenalties->penalties;
-
-            $exp = new ExperienceComponent();
-            $pts = $exp->getUserPoints();
-            $this->page['totalPts'] = $pts;
-
-            //get letter grade
+            $this->addCss("/plugins/delphinium/blossom/assets/css/bootstrap.min.css");
+            $this->addCss("/plugins/delphinium/blossom/assets/css/gradebook.css");
+            $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
+            $this->addJs("/plugins/delphinium/blossom/assets/javascript/gradebook_student.js");
+            $this->page['experienceInstanceId'] = $this->property('experienceInstance');
+            $userRoles = $_SESSION['roles'];
+            $this->page['userRoles'] = $userRoles;
             if (!is_null($this->property('experienceInstance'))) {
                 $instance = ExperienceModel::find($this->property('experienceInstance'));
                 $maxExperiencePts = $instance->total_points;
 
-                $grade = new GradeComponent();
-                $totalPoints = $pts + $bonusPenalties->bonus+$bonusPenalties->penalties;
-                $letterGrade = $grade->getLetterGrade($totalPoints, $maxExperiencePts, $grading_scheme);
-
-                $this->page['letterGrade'] = $letterGrade;
             }
-            $this->addJs("/plugins/delphinium/blossom/assets/javascript/boxplot_d3.js");
-        } else if ((stristr($userRoles, 'Instructor')) || (stristr($userRoles, 'TeachingAssistant'))) {
-            $this->getProfessorData();
-            $this->addCss("/plugins/delphinium/blossom/assets/css/light-js-table-sorter.css");
-            $this->addJs("/plugins/delphinium/blossom/assets/javascript/gradebook_professor.js");
-            $this->addJs("/plugins/delphinium/blossom/assets/javascript/boxplot_d3.js");
+            if (stristr($userRoles, 'Learner')) {
+                if (!isset($_SESSION))
+                {
+                    session_start();
+                }
+                // $_SESSION['userID'] = 1230622;
+
+                $bonusPenalties = $this->getBonusPenalties();
+
+                $this->page['bonus'] = $bonusPenalties === 0 ? 0 : $bonusPenalties->bonus;
+                $this->page['penalties'] = $bonusPenalties === 0 ? 0 : $bonusPenalties->penalties;
+
+                $exp = new ExperienceComponent();
+                $pts = $exp->getUserPoints();
+                $this->page['totalPts'] = $pts;
+
+                //get letter grade
+                if (!is_null($this->property('experienceInstance'))) {
+                    $instance = ExperienceModel::find($this->property('experienceInstance'));
+                    $maxExperiencePts = $instance->total_points;
+
+                    $grade = new GradeComponent();
+                    $totalPoints = $pts + $bonusPenalties->bonus+$bonusPenalties->penalties;
+                    $letterGrade = $grade->getLetterGrade($totalPoints, $maxExperiencePts, $grading_scheme);
+
+                    $this->page['letterGrade'] = $letterGrade;
+                }
+                $this->addJs("/plugins/delphinium/blossom/assets/javascript/boxplot_d3.js");
+            } else if ((stristr($userRoles, 'Instructor')) || (stristr($userRoles, 'TeachingAssistant'))) {
+                $this->getProfessorData();
+                $this->addCss("/plugins/delphinium/blossom/assets/css/light-js-table-sorter.css");
+                $this->addJs("/plugins/delphinium/blossom/assets/javascript/gradebook_professor.js");
+                $this->addJs("/plugins/delphinium/blossom/assets/javascript/boxplot_d3.js");
+            }
+
+
+            //modify grading scheme for display to users
+            foreach($grading_scheme as $grade)
+            {
+                $grade->value = $grade->value * $maxExperiencePts;
+            }
+            $this->page['grading_scheme'] = json_encode($grading_scheme);
+
+
         }
-
-
-        //modify grading scheme for display to users
-        foreach($grading_scheme as $grade)
+        catch(\Delphinium\Roots\Exceptions\InvalidRequestException $e)
         {
-            $grade->value = $grade->value * $maxExperiencePts;
+            if($e->getCode()==401)//meaning there are two professors and one is trying to access the other professor's grades
+            {
+                return;
+            }
+            else
+            {
+                return \Response::make($this->controller->run('error'), 500);
+            }
         }
-        $this->page['grading_scheme'] = json_encode($grading_scheme);
-
-
-        // }
-        // catch (\GuzzleHttp\Exception\ClientException $e) {
-        // return;
-        // }
-        // catch(Delphinium\Roots\Exceptions\NonLtiException $e)
-        // {
-        // if($e->getCode()==584)
-        // {
-        // return \Response::make($this->controller->run('nonlti'), 500);
-        // }
-        // }
-        // catch(\Exception $e)
-        // {
-        // if($e->getMessage()=='Invalid LMS')
-        // {
-        // return \Response::make($this->controller->run('nonlti'), 500);
-        // }
-        // return \Response::make($this->controller->run('error'), 500);
-        // }
+        catch (\GuzzleHttp\Exception\ClientException $e) {
+            return;
+        }
+        catch(Delphinium\Roots\Exceptions\NonLtiException $e)
+        {
+            if($e->getCode()==584)
+            {
+                return \Response::make($this->controller->run('nonlti'), 500);
+            }
+        }
+        catch(\Exception $e)
+        {
+            if($e->getMessage()=='Invalid LMS')
+            {
+                return \Response::make($this->controller->run('nonlti'), 500);
+            }
+            return \Response::make($this->controller->run('error'), 500);
+        }
     }
 
     function onGetContent() {

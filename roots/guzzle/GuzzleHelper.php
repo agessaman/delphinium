@@ -1,6 +1,7 @@
 <?php namespace Delphinium\Roots\Guzzle;
 
 use Delphinium\Roots\Enums\ActionType;
+use Delphinium\Roots\Exceptions\InvalidRequestException;
 use GuzzleHttp\Client;
 
 class GuzzleHelper
@@ -60,6 +61,23 @@ class GuzzleHelper
         $header = substr($result, 0, $header_size);
         $body = substr($result, $header_size);
         $data = json_decode($body);
+        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        if($status != 200 and $status != 201)
+        {
+            $action = "retrieve resource";
+            $reason='';
+            if ($data and isset($data->errors)) {
+                if(count($data->errors)>0)
+                {
+                    $reason = $data->errors[0]->message;
+                }
+                else
+                {
+                    $reason = $data->errors->message;
+                }
+                throw new \Delphinium\Roots\Exceptions\InvalidRequestException($action, $reason, $status);
+            }
+        }
         curl_close($ch);
 //        #Parse Link Information
         $header_info = GuzzleHelper::http_parse_headers($header);

@@ -1,2 +1,91 @@
+<!--<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<style>
+    .row{
+        margin-bottom:40px;
+    }
+</style>
+<div class="layout-row min-size">
+    <ul class="nav nav-tabs" data-disposable="">
+        <li class="active"><a href="#primarytab-1"  data-toggle="tab" title="Settings"><span class="title"><span>Instances</span></span></a><span class="tab-close"></span></li>
+        <li class=""><a href="#primarytab-2" data-toggle="tab" title="Instructions"><span class="title"><span>Instructions</span></span></a><span class="tab-close"></span></li>
+    </ul>
+</div>
+<div>
+    <div class="tab-content">
+        <div id="primarytab-1" class="tab-pane fade in active" style="padding: 5px 0px;">
+            <?= $this->listRender() ?>
+        </div>
 
-<?= $this->listRender() ?>
+        <div id="primarytab-2" class="tab-pane fade in" style="padding: 0px 20px;">
+            <div class="container">
+                <h2>Stats Component</h2>
+                <p>The stats component is tightly related to the Experience component, and in order for Stats to work an instance of Experience must be
+                configured. Configuring an insntance of experience is achieved through the back end.</p>
+                <p>After configuring experience, an instance of stats must be created through the Greenhouse backend:</p>
+
+                <p>There are four elements to the stats component:</p>
+                <div class="panel-group" id="accordion">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Pace</a>
+                            </h4>
+                        </div>
+                        <div id="collapse1" class="panel-collapse collapse in">
+                            <div class="panel-body">Gap shows how many points students are ahead or behind the red line. Be sure to stay in the green to earn bonus!</div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Health</a>
+                            </h4>
+                        </div>
+                        <div id="collapse2" class="panel-collapse collapse">
+                            <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+                                sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">Gap</a>
+                            </h4>
+                        </div>
+                        <div id="collapse3" class="panel-collapse collapse">
+                            <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+                                sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">Stamina</a>
+                            </h4>
+                        </div>
+                        <div id="collapse3" class="panel-collapse collapse">
+                            <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+                                sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<script>
+    $('#image0').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/redwood/assets/images/new_pmoauth.png');
+    $('#image1').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/redwood/assets/images/cms_processmaker.png');
+    $('#image2').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/redwood/assets/images/new_lti.png');
+    $('#image3').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/redwood/assets/images/new_assignment.png');
+</script>
+

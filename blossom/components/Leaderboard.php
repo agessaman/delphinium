@@ -27,7 +27,7 @@ class Leaderboard extends ComponentBase
         return [
             'Experience' => [
                 'title' => 'Experience Instance',
-                'description' => '(OPTIONAL) Select the experience instance to display the student\'s bonus and penalties',
+                'description' => '(OPTIONAL) Select the experience instance to include the student\'s bonus and penalties',
                 'type' => 'dropdown',
             ]
         ];
@@ -70,7 +70,19 @@ class Leaderboard extends ComponentBase
             $user = $dbHelper->getUserInCourse($courseId, $userId);
             $this->page['calling_user'] = json_encode($user);
         }
+        catch(\Delphinium\Roots\Exceptions\InvalidRequestException $e)
+        {
+            if($e->getCode()==401)//meaning there are two professors and one is trying to access the other professor's grades
+            {
+                return;
+            }
+            else
+            {
+                return \Response::make($this->controller->run('error'), 500);
+            }
+        }
         catch (\GuzzleHttp\Exception\ClientException $e) {
+            echo "In order for experience to work properly you must be a student, or go into 'Student View'";
             return;
         }
         catch(Delphinium\Roots\Exceptions\NonLtiException $e)

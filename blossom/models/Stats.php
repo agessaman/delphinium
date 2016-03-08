@@ -13,10 +13,15 @@ class Stats extends Model
      */
     public $table = 'delphinium_blossom_stats';
 
+    /**
+     * @var array Fillable fields
+     */
+    protected $fillable = ['*'];
+
     public $rules = [
-        'Name'=>'required',
-        'Animate'=>'required',
-        'Size' => 'required'
+        'name'=>'required',
+        'animate'=>'required',
+        'size' => 'required'
     ];
 
 

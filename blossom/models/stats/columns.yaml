@@ -7,14 +7,14 @@ columns:
         label: ID
         searchable: true
 
-    Name:
+    name:
         label: Name
         searchable: true
 
-    Animate:
+    animate:
         label: Animate
         searchable: true
 
-    Size:
+    size:
         label: Size
         searchable: true

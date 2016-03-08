@@ -3,6 +3,10 @@
 use Cms\Classes\ComponentBase;
 use Delphinium\Blossom\Models\Experience as ExperienceModel;
 use Delphinium\Blossom\Components\Experience as ExperienceComponent;
+use Delphinium\Blossom\Components\Gradebook;
+use Delphinium\Roots\Roots;
+use Delphinium\Roots\Requestobjects\AssignmentsRequest;
+use Delphinium\Roots\Requestobjects\SubmissionsRequest;
 
 class Stats extends ComponentBase
 {
@@ -42,24 +46,11 @@ class Stats extends ComponentBase
 
 
     public function onRun() {
-        try
-        {
+//        try
+//        {
             $experienceInstance = ExperienceModel::find($this->property('Experience'));
-
-            //don't multiply by zero!
-            $milestoneNum = count($experienceInstance->milestones) > 0 ? count($experienceInstance->milestones) : 1;
-
-            //$this->page['maxBonus'] = $experienceInstance->bonus_days * $experienceInstance->bonus_per_day * $milestoneNum;
-            //$this->page['minBonus'] = -$experienceInstance->penalty_days * $experienceInstance->penalty_per_day * $milestoneNum;
-
             $this->page['statsSize'] = $experienceInstance->size;
             $this->page['statsAnimate'] = $experienceInstance->animate;
-
-            //$pacePenalties = $this->getBonusPenalties();
-
-            //$this->page['totalBonus'] = $bonusPenalties === 0 ? 0 : round($bonusPenalties->bonus, 2);
-            //$this->page['totalPenalties'] = $bonusPenalties === 0 ? 0 : round($bonusPenalties->penalties, 2);
-
             if (!isset($_SESSION)) {
                 session_start();
             }
@@ -67,27 +58,103 @@ class Stats extends ComponentBase
 
             $this->page['role'] = $roleStr;
             $this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
-        }
-        catch (\GuzzleHttp\Exception\ClientException $e) {
-            return;
-        }
-        catch(Delphinium\Roots\Exceptions\NonLtiException $e)
-        {
-            if($e->getCode()==584)
+
+             if(stristr($roleStr, 'Learner'))
             {
-                return \Response::make($this->controller->run('nonlti'), 500);
+                $this->student();
             }
-        }
-        catch(\Exception $e)
-        {
-            if($e->getMessage()=='Invalid LMS')
-            {
-                return \Response::make($this->controller->run('nonlti'), 500);
-            }
-            return \Response::make($this->controller->run('error'), 500);
-        }
+
+//        }
+//        catch (\GuzzleHttp\Exception\ClientException $e) {
+//            return;
+//        }
+//        catch(Delphinium\Roots\Exceptions\NonLtiException $e)
+//        {
+//            if($e->getCode()==584)
+//            {
+//                return \Response::make($this->controller->run('nonlti'), 500);
+//            }
+//        }
+//        catch(\Exception $e)
+//        {
+//            if($e->getMessage()=='Invalid LMS')
+//            {
+//                return \Response::make($this->controller->run('nonlti'), 500);
+//            }
+//            return \Response::make($this->controller->run('error'), 500);
+//        }
     }
 
+
+    private function student()
+    {
+        //GAP
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+        $studentId = $_SESSION['userID'];
+
+        //get min and max gap =
+        // MAX = experience points + max bonus points
+        //MIN = experience points + max penalty points
+        $experience = ExperienceModel::find($this->property('Experience'));
+        $expTotalPoints = $experience->total_points;
+        $maxBonus = $experience->bonus_per_day * $experience->bonus_days;
+        $maxPenalties = $experience->penalty_per_day * $experience->penalty_days;
+
+        //get red line points
+        $experienceComp = new ExperienceComponent();
+        $redLine = $experienceComp->getRedLinePoints($this->property('Experience'));
+        $milestoneClearanceInfo = $experienceComp->getMilestoneClearanceInfo($this->property('Experience'));
+
+        $potentialBonus =0.0;
+        $potentialPenalties=0.0;
+        foreach($milestoneClearanceInfo as $mileInfo)
+        {
+            if($mileInfo->cleared)
+            {
+                continue;
+            }
+
+            if($mileInfo->bonusPenalty>=0)
+            {
+                $potentialBonus+=$mileInfo->bonusPenalty;
+            }
+            else{
+                $potentialPenalties+=$mileInfo->bonusPenalty;
+            }
+        }
+
+        $potential = new \stdClass();
+        $potential->bonus = $potentialBonus;
+        $potential->penalties = $potentialPenalties;
+
+        $this->page['potential'] = json_encode($potential);
+        $this->page['redLine']= $redLine;
+        //get milestone info (total points including bonus and penalties)
+        $gradebookComponent = new Gradebook();
+        $userIds = array($studentId);
+        $milestoneSummary = $gradebookComponent->getSetOfUsersMilestoneInfo($this->property('Experience'), $userIds);
+
+        if(count($milestoneSummary)>0)
+        {
+            $milestoneSummary = $milestoneSummary[0];
+        }
+        $this->page['milestoneSummary'] = json_encode($milestoneSummary);
+
+        $milestoneNum = count($experience->milestones);
+        $healthObj = new \stdClass();
+        $healthObj->maxPenalties = $maxPenalties*$milestoneNum;
+        $healthObj->maxBonuses = $maxBonus*$milestoneNum;
+        $this->page['health'] = json_encode($healthObj);
+
+        $gap = new \stdClass();
+        $gap->minGap = $expTotalPoints+$maxPenalties;
+        $gap->maxGap = $expTotalPoints+$maxBonus;
+        $this->page['gap'] = json_encode($gap);
+
+        $this->page['stamina'] = $this->calculateStamina();
+    }
 
     private function getBonusPenalties($userId = null) {
         $experienceComp = new ExperienceComponent();
@@ -100,4 +167,25 @@ class Stats extends ComponentBase
         }
     }
 
+    private function calculateStamina()
+    {
+        $roots = new Roots();
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+        $analytics = $roots->getAnalyticsStudentAssignmentData(false);
+
+        $average = 0.0;
+        $percentageArr = array();
+        foreach($analytics as $item)
+        {
+            if(!is_null($item->submission->score))
+            {
+                $percentageArr[] = ($item->submission->score/$item->points_possible)*100;
+            }
+        }
+
+        $average = array_sum($percentageArr) / count($percentageArr);
+        return $average;
+    }
 }

@@ -49,7 +49,7 @@ class TestRoots extends ComponentBase
         $this->canvasHelper = new CanvasHelper();
         $this->dbHelper = new DbHelper();
 //        $this->refreshCache();
-        $this->test();
+//        $this->test();
 //        $this->testBasicModulesRequest();
 //        $this->testDeleteTag();
 //        $this->testAddingUpdatingTags();
@@ -77,7 +77,7 @@ class TestRoots extends ComponentBase
 //        $this->testGettingSubmissions();
 //        $this->testFileUpload();
 //        $this->testAddingAssignment();
-//        $this->testStudentAnalyticsAssignmentData();
+        $this->testStudentAnalyticsAssignmentData();
 //        $this->testGetCourse();
 //        $this->testGetAccount();
 //        $this->testGetEnrollments();

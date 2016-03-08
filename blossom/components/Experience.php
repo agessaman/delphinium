@@ -14,6 +14,7 @@ use Delphinium\Roots\Enums\ActionType;
 use Delphinium\Roots\Utils;
 use \DateTime;
 use \DateTimeZone;
+use \Delphinium\Roots\Exceptions\InvalidRequestException;
 
 class Experience extends ComponentBase {
 
@@ -143,7 +144,20 @@ class Experience extends ComponentBase {
             $this->page['experienceSize'] = $instance->size;
             $this->page['experienceAnimate'] = $instance->animate;
             $this->page['redLine'] = $this->getRedLinePoints($this->property('Instance'));
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
+
+        }
+        catch(\Delphinium\Roots\Exceptions\InvalidRequestException $e)
+        {
+            if($e->getCode()==401)//meaning there are two professors and one is trying to access the other professor's grades
+            {
+                return;
+            }
+            else
+            {
+                return \Response::make($this->controller->run('error'), 500);
+            }
+        }
+        catch (\GuzzleHttp\Exception\ClientException $e) {
             echo "In order for experience to work properly you must be a student, or go into 'Student View'";
             return;
         }
@@ -527,8 +541,10 @@ class Experience extends ComponentBase {
         {
             $submissions = $roots->submissions($request);
             return $submissions;
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
-            return[];
+        } catch (\Delphinium\Roots\Exceptions\InvalidRequestException $e) {
+            if($e->getCode()===401)
+            {return [];}
+            else{throw $e;}
         }
 
     }

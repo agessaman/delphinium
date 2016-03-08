@@ -2,6 +2,8 @@
 
 use BackendMenu;
 use Backend\Classes\Controller;
+use Delphinium\Blossom\Models\Stats as StatsModel;
+use Flash;
 
 /**
  * Stats Back-end Controller
@@ -21,5 +23,23 @@ class Stats extends Controller
         parent::__construct();
 
         BackendMenu::setContext('Delphinium.Greenhouse', 'greenhouse', 'greenhouse');
+    }
+
+    public function index_onDelete()
+    {
+        if (($checkedIds = post('checked')) && is_array($checkedIds) && count($checkedIds)) {
+
+            foreach ($checkedIds as $statsId) {
+                if (!$stats = StatsModel::find($statsId)) continue;
+                $stats->delete();
+            }
+
+            Flash::success("Successfully deleted");
+        }
+        else {
+            Flash::error("An error occurred when trying to delete this item");
+        }
+
+        return $this->listRefresh();
     }
 }

@@ -70,6 +70,17 @@ class Iris extends ComponentBase
             $this->page['graphData'] = json_encode($finalData);
 
         }
+        catch(\Delphinium\Roots\Exceptions\InvalidRequestException $e)
+        {
+            if($e->getCode()==401)//meaning there are two professors and one is trying to access the other professor's grades
+            {
+                return;
+            }
+            else
+            {
+                return \Response::make($this->controller->run('error'), 500);
+            }
+        }
         catch (\GuzzleHttp\Exception\ClientException $e) {
             return;
         }

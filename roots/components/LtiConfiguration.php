@@ -27,6 +27,10 @@ class LtiConfiguration extends ComponentBase {
         {
             $this->doBltiHandshake();
         }
+        catch(\Delphinium\Roots\Exceptions\InvalidRequestException $e)
+        {
+            return \Response::make($this->controller->run('error'), 500);
+        }
         catch(NonLtiException $e)
         {
             if($e->getCode()==584)
