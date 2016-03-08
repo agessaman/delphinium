@@ -2,6 +2,9 @@
 
 use Cms\Classes\ComponentBase;
 use Delphinium\BirdoParadise\Models\Modulemap as ModulemapModel;
+use Delphinium\Roots\Roots;
+use Delphinium\Roots\Enums\ActionType;
+use Delphinium\Roots\Requestobjects\ModulesRequest;
 
 class Modulemap extends ComponentBase
 {
@@ -115,11 +118,15 @@ class Modulemap extends ComponentBase
             
             // include any css or javascript here
             $this->addCss("/plugins/delphinium/birdoparadise/assets/css/bootstrap.min.css");
-            $this->addJs("/plugins/delphinium/birdoparadise/assets/javascript/jquery.min.js");
+            $this->addCss("/plugins/delphinium/birdoparadise/assets/css/font-awesome.min.css");
+            $this->addCss("/plugins/delphinium/birdoparadise/assets/css/university-ave.css");
+            $this->addCss("/plugins/delphinium/birdoparadise/assets/css/bop.css");
+        /*  $this->addJs("/plugins/delphinium/birdoparadise/assets/javascript/jquery.min.js");
+            $this->addJs("/plugins/delphinium/birdoparadise/assets/javascript/jquery-ui.min.js");
             $this->addJs("/plugins/delphinium/birdoparadise/assets/javascript/bootstrap.min.js");
-            
+        */
             // include the backend form with instructions here
-            if(stristr($roleStr, 'Instructor'))
+            if($roleStr == 'Instructor')
 			{
 				//https://medium.com/@matissjanis/octobercms-using-backend-forms-in-frontend-component-fe6c86f9296b#.ge50nlmtc
 				// Build a back-end form with the context of 'frontend'
@@ -134,13 +141,17 @@ class Modulemap extends ComponentBase
                 $this->page['instructions'] = $instructions;
                 
                 //other code specific to instructor view goes here
+                
+                
+                $moduledata = $this->getModules();// both or just instructor to create FORM entries
+                $this->page['moduledata'] = json_encode($moduledata);
             }
             
-            if(stristr($roleStr, 'Learner'))
+            if($roleStr == 'Learner')
 			{
-            //code specific to the student view goes here
+                //code specific to the student view goes here
             }
-            
+           
         }
         catch (\GuzzleHttp\Exception\ClientException $e) {
             return;
@@ -160,6 +171,7 @@ class Modulemap extends ComponentBase
             }
             return \Response::make($this->controller->run('error'), 500);
         }
+        
     }
     
     public function getInstanceOptions()
@@ -195,7 +207,7 @@ class Modulemap extends ComponentBase
         $config = ModulemapModel::find($did);
         //echo json_encode($config);
 		$config->name = $data['name'];
-		// add your fields to update
+		// add units
         $config->modules = $data['modules'];
 
 		$config->course_id = $data['course_id'];//hidden
@@ -203,5 +215,47 @@ class Modulemap extends ComponentBase
 		$config->save();// update original record 
 		return json_encode($config);// back to instructor
     }
-    /* End of class */
+
+    public function getModules()
+    {
+        // define the request
+        $moduleId = null;
+        $moduleItemId = null;
+        $includeContentDetails = true;
+        $includeContentItems = true;
+        $module = null;
+        $moduleItem = null;
+        $freshData = false;
+
+        $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems, $includeContentDetails, $module, $moduleItem , $freshData);
+        
+        $roots = new Roots();
+        $moduleData = $roots->modules($req);
+        
+        $modArr = $moduleData->toArray();
+        
+        $simpleModules = array();// simplified module data?
+        
+        foreach($modArr as $item)
+        {
+            $mod = new \stdClass();
+
+            $mod->id = $item['module_id'];
+            $mod->title=$item['name'];
+            $mod->locked=$item['locked'];
+            $mod->items =$item['module_items'];//REPLACES assignments
+
+            // items contain:
+            //module_items[i].content[0].title & .url, maybe .type
+            //module_items[i].content[0].points_possible & .tags
+
+            $simpleModules[] = $mod;
+        }
+        
+        //$this->page['simpleMods'] = json_encode($simpleModules);
+        //$this->page['modata'] = json_encode($moduleData);// complete array remove when done
+        return $modArr;//$simpleModules;//
+    }
+
+/* End of class */
 }

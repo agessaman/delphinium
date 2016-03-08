@@ -1,11 +1,29 @@
 <!-- Instructor View with Settings cog -->
-<div style="position:relative;">
-    <div id="cog" data-toggle="modal" href="#content-configuration" style="position:absolute; top:0; z-index:950; padding-left:220px;">
-        <a data-toggle="tooltip" title="Settings" data-placement="bottom"><i class="icon-cog"></i></a>
+<div class="page">
+    <div style="position:relative;">
+        <div id="cog" data-toggle="modal" href="#content-configuration" style="position:absolute; top:0; z-index:950; padding-left:220px;">
+            <a data-toggle="tooltip" title="Settings" data-placement="bottom"><i class="icon-cog"></i></a>
+        </div>
+        <div style="padding:10px;">
+            <h3>Instructor view</h3>
+        </div>
     </div>
-    <div style="z-index:10;">
-        <!-- component partial -->
-        <h3>Instructor view</h3>
+
+    <div class="leftcolm">
+    <!-- modules list -->
+    </div>
+    
+    <div class="rightcolm">
+        <button id="addTab" class="btn btn-success" type="button">+ New Unit</button>
+        <div id="tabs">
+          <ul id="tablist">
+            <li><a href="#tab_0">Unit 1</a></li>
+              <!-- Insert new tabs -->
+          </ul>
+          <div id="tab_0"><div class="tabody"></div></div>
+          <!-- Insert tab content -->
+
+        </div>
     </div>
 </div>
 
@@ -46,9 +64,11 @@
 </div>
 
 <script>
+(function() {
     
-	var configVal=[config.name];
-	var fieldIDs=['Form-field-Modulemap-name'];// modules?
+    $('.brand').hide();// in the way
+	var configVal=[config.name];// .units, .modules
+	var fieldIDs=['Form-field-Modulemap-name'];// units, modules
 	
     /* set id,course,copy in the POST they are not editable
         Add hidden input fields so they will transfer to onUpdate
@@ -74,4 +94,137 @@
         location.reload();
 	}
 	console.log('instance:'+config.id,config.name,config.course_id,config.copy_id);
+    
+    /*
+        Bird of Paradise:
+        
+        https://jqueryui.com/tabs/
+        http://api.jqueryui.com/category/interactions/
+        
+        http://stackoverflow.com/questions/14308290/jquery-draggable-and-droppable-between-two-containers-and-sortable
+        
+        
+        
+        Model:
+        units [ {name, order}, 
+        modules [ {unit_index, mod_id, mod_order, image_url, }, 
+    */
+    var units = [{'name':'Unit 1', 'order': 0}];
+    var modules = [];// modules in unit tab
+    
+    var tabTitle = $( "#tab_title" ),
+    tabContent = $( "#tab_content" ),
+    tabTemplate = "<li><a href='#{href}'>#{label}</a> <span class='ui-icon ui-icon-close' role='presentation'>Remove Tab</span></li>",
+    tabCounter = 2;// not 0 based
+    
+    // jquery-UI tabs
+	var tabs = $( "#tabs" ).tabs({
+       //event: "click"
+      //collapsible: false
+    });
+    
+    //sortable tabs : function ? as new are added
+    //var tabs = $( "#tabs" ).tabs();
+    tabs.find( ".ui-tabs-nav" ).sortable({
+        axis: "x",
+        stop: function() {
+            tabs.tabs( "refresh" );
+            // update units[].order 
+            console.log('tabs:',tabs);
+        }
+    });
+    
+    $('#addTab').on('click',function(e) {
+        e.preventDefault();
+        addTab(); 
+    });
+    
+    function addTab() {
+        var label = tabTitle.val() || "Unit " + tabCounter,
+            id = "tab_" + tabCounter,
+            li = $( tabTemplate.replace( /#\{href\}/g, "#" + id ).replace( /#\{label\}/g, label ) ),
+            tabContentHtml = tabContent.val() || "Unit " + tabCounter + " content.";
+
+        tabs.find( ".ui-tabs-nav" ).append( li );
+        tabs.append( "<div id='" + id + "'><div class='tabody'></div></div>" );
+        tabs.tabs( "refresh" );
+        tabCounter++;
+        // update arrays function?
+        units.push({'name':"Unit " + tabCounter, 'order': tabCounter-1});
+        console.log('units:',units);
+        //dropzone = $('.tabody').droppable({  drop: handleDropEvent });// Not a function
+    }
+    
+    // setup draggable module elements
+    //add elements
+    for(var i=0; i<moduledata.length; i++) {
+        var modbox = '<div id="'+moduledata[i].module_id+'" class="modbox modDraggable">';
+            modbox +='<p>'+moduledata[i].name+'</p>';
+            modbox +='<p>Items: '+moduledata[i].items_count+'</p>';
+            modbox +='</div>';
+        
+        $('.leftcolm').append(modbox);
+        $('.modbox').attr('data-locked',moduledata[i].locked);
+    }
+    
+    
+    $('.modDraggable').draggable({
+        helper: 'clone',
+        containment: '.page',
+        snap: '.page',
+        zIndex: 1100,
+        iframeFix: true,
+        distance: 10,
+        revert: true
+    });
+    
+    //current visible Unit body
+    var dropzone = $('.tabody').droppable({
+        drop: handleDropEvent
+    });
+    function handleDropEvent( event, ui ) {
+        //var offsetXPos = parseInt( ui.offset.left );
+        //var offsetYPos = parseInt( ui.offset.top );
+        //console.log( event.target.id+"drop location: (" + offsetXPos + ", " + offsetYPos + ")");
+        var id = ui.draggable.attr('id');
+        console.log( 'dropped ID "' + id + '" was dropped onto '+event.target.id );
+        
+        $(ui.draggable).detach().appendTo(this);
+        $(ui.draggable).removeClass('modbox modDraggable').addClass('moditem itemDragable');
+        
+        var el = $(this).first();//'.tabody'
+        var wit = $(el).width()+210;// original width 648
+        $(el).css({ 'width': wit, 'height':'220px', 'overflow-x':'auto' });
+        
+        var sleft = 650-wit;//sliderwidth;
+        dragcontainer=[-sleft,0,wit,0];//update slider container
+        console.log('dragcontainer='+dragcontainer);
+        
+        /*
+            remove mod from left column OK
+            change style OK
+            
+            update units & modules
+        */
+    }
+    
+    var dragcontainer=[0,0,650,0];
+    
+    $('.tabody').draggable({ axis:'x', containment:dragcontainer });
+    /* slider for tabody
+    //JQ.UI.draggable set limits with [x1, y1, x2, y2] or 'parent', 'document', 'window'
+        var bl=0;//var bt=2;
+        var sliderwidth = 650;
+        console.log('sliderwidth='+sliderwidth+' bl='+bl);// bl varies
+        var sleft = bl-sliderwidth;
+        var dragcontainer=[-sleft,0,24,0];
+        console.log('dragcontainer='+dragcontainer); 
+        if(bl>sliderwidth)
+        {
+            scr1.css({'cursor':'ew-resize'});
+            $(scr1).draggable({ axis:'x',containment:dragcontainer });
+        }  // jquery.ui.touch-punch.js worked for ipad
+    */
+    
+})();
 </script>
