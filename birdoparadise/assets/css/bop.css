@@ -60,6 +60,8 @@
 .icos {
 	font-size: 2em;
 	position:relative;
+    padding-left: 15px;
+    padding-top: 20px;
 	/*padding-top: 70px;*/
 }
 .title {
@@ -102,12 +104,12 @@
 .dropzone {
     opacity: 0.31;
     background-color: #333;
-    width: 670px;
+    width: 690px;
     height: 230px;
     display: inline-block;
     position: absolute;
     top: 95px;
-    left: 20px;
+    left: 10px;
     z-index: 800;
 }
 

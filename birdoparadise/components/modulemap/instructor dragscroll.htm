@@ -161,8 +161,9 @@
         // update arrays function?
         units.push({'name':"Unit " + tabCounter, 'order': tabCounter-1});
         console.log('units:',units);
-        ////dragcontainer.push([0,0,650,0]);//for each tab
-        ////tabscrol.draggable("option", "containment", dragcontainer[tabCounter-1]);
+        dragcontainer.push([0,0,650,0]);//for each tab
+        //tabscrol.draggable({ axis:'x', containment:dragcontainer[tabCounter-1] });
+        tabscrol.draggable("option", "containment", dragcontainer[tabCounter-1]);
         // may have to rethink this. Should have horizontal scroll anyway
     }
     
@@ -293,18 +294,32 @@
         var widt = $(nuplace).width();// increase for each new module
         if(count.length > 3) {
             widt += 200; 
-            $(nuplace).css({ 'width': widt, 'overflow-x': 'auto' });
+            $(nuplace).css({ 'width': widt });
             console.log('width:',widt);
         }
         var sleft = widt-(670*1.5);
-        ////dragcontainer[modorder-1] = [-sleft,0,280,0];//update slider container in array
-        //console.log('dragcontainer='+dragcontainer[modorder-1]);
-        ////tabscrol.draggable("option", "containment", dragcontainer[modorder-1]);//at switch tabs too?
+        dragcontainer[modorder-1] = [-sleft,0,280,0];//update slider container in array
+        //console.log('dragcontainer='+dragcontainer);
+        tabscrol.draggable("option", "containment", dragcontainer[modorder-1]);//at switch tabs too?
     }
     
-    ////var dragcontainer=[ [0,0,650,0] ];// array for each tab!
+    var dragcontainer=[ [0,0,650,0] ];// array for each tab!
     
-    ////var tabscrol = $('.tabody').draggable({ axis:'x', containment:dragcontainer[0] });
+    var tabscrol = $('.tabody').draggable({ axis:'x', containment:dragcontainer[0] });
+    /* slider for tabody
+    //JQ.UI.draggable set limits with [x1, y1, x2, y2] or 'parent', 'document', 'window'
+        var bl=0;//var bt=2;
+        var sliderwidth = 650;
+        console.log('sliderwidth='+sliderwidth+' bl='+bl);// bl varies
+        var sleft = bl-sliderwidth;
+        var dragcontainer=[-sleft,0,24,0];
+        console.log('dragcontainer='+dragcontainer); 
+        if(bl>sliderwidth)
+        {
+            scr1.css({'cursor':'ew-resize'});
+            $(scr1).draggable({ axis:'x',containment:dragcontainer });
+        }  // jquery.ui.touch-punch.js worked for ipad
+    */
     
 })();
 </script>
