@@ -116,11 +116,13 @@ class Modulemap extends ComponentBase
             }
             $this->page['role'] = $roleStr;// only one or the other
             
-            // include any css or javascript here
+        /*    // include any css or javascript here
+		php 5.5.3 wont load these on home machine
             $this->addCss("/plugins/delphinium/birdoparadise/assets/css/bootstrap.min.css");
             $this->addCss("/plugins/delphinium/birdoparadise/assets/css/font-awesome.css");
             $this->addCss("/plugins/delphinium/birdoparadise/assets/css/university-ave.css");
             $this->addCss("/plugins/delphinium/birdoparadise/assets/css/bop.css");
+		*/
         /*  $this->addJs("/plugins/delphinium/birdoparadise/assets/javascript/jquery.min.js");
             $this->addJs("/plugins/delphinium/birdoparadise/assets/javascript/jquery-ui.min.js");
             $this->addJs("/plugins/delphinium/birdoparadise/assets/javascript/bootstrap.min.js");

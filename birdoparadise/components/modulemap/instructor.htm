@@ -21,7 +21,7 @@
             <li><a href="#tab_1">Unit 1</a></li>
               <!-- Insert new tabs -->
           </ul>
-          <div id="tab_1"><div class="tabody"></div></div>
+          <div id="tab_1"><div id="tab_1body" class="tabody ui-state-default"></div></div>
           <!-- Insert tab content -->
 
         </div>
@@ -151,7 +151,7 @@
         var label = "Unit " + tabCounter,
             id = "tab_" + tabCounter,
             li = $( tabTemplate.replace( /#\{href\}/g, "#" + id ).replace( /#\{label\}/g, label ) ),
-            tabContentHtml = "<div id='" + id + "'><div class='tabody'></div></div>";
+            tabContentHtml = "<div id='" + id + "'><div id='tab_"+tabCounter+"body' class='tabody ui-state-default'></div></div>";
 
         tabs.find( ".ui-tabs-nav" ).append( li );
         tabs.append( tabContentHtml );
@@ -167,8 +167,8 @@
     // create draggable module elements
     for(var i=0; i<moduledata.length; i++) {
         var modbox = '<div id="'+moduledata[i].module_id+'" class="modbox modDraggable">';
-            modbox +='<p>'+moduledata[i].name+'</p>';
-            modbox +='<p>Items: '+moduledata[i].items_count+'</p>';
+            modbox +='<div class="title">'+moduledata[i].name+'</div>';
+            modbox +='<div class="items">Items: '+moduledata[i].items_count+'</div>';
             modbox +='</div>';
         
         $('.leftcolm').append(modbox);
@@ -197,7 +197,7 @@
     
     // sortable inside unit.tabody adjusts mod_order
     var sortlist = $('.itemDraggable').draggable({
-        /*helper: 'clone',*/
+        helper: 'clone',
         containment: '.rightcolm',
         snap: '.rightcolm',
         zIndex: 1100,
@@ -206,13 +206,13 @@
         revert: 'invalid'
     });
     //$("#sortable").sortable();
-    /* Already does this */
-    sortlist.find( ".tabody" ).sortable({
+    var sortgroups = $( ".tabody" ).sortable({
+		containment: "parent",
         axis: "x",
         stop: function() {
-            sortlist.draggable( "refresh" ); 
+            //sortlist.draggable( "refresh" ); 
             console.log('sortlist:',sortlist);
-            //update modules.mod_order
+            //update modules.mod_order by children 
             
         }
     });
@@ -233,7 +233,7 @@
         drop: handleDropEvent
     });
     function handleDropEvent( event, ui ) {
-        //var offsetXPos = parseInt( ui.offset.left );
+        //var offsetXPos = parseInt( ui.offset.left );// sorting???
         //var offsetYPos = parseInt( ui.offset.top );
         //console.log( event.target.id+"drop location: (" + offsetXPos + ", " + offsetYPos + ")");
         var modid = ui.draggable.attr('id');
@@ -244,21 +244,35 @@
         var actor = $('li.ui-state-active').attr('aria-controls');
         //console.log('Active Tab:',actor);//tab_id
         // get active tabody
-        var nuplace = $('#'+actor+' > div:first');
-        ui.helper.remove();
+        var nuplace = $('#'+actor+' > div:first');// id= actor+body
+        ui.helper.remove();// dont revert helper
         //http://stackoverflow.com/questions/1324044/how-do-i-disable-a-jquery-ui-draggable
         ui.draggable.draggable("destroy");// remove drag ability
         
-        $(ui.draggable).detach().appendTo(nuplace);// .tabody
-        $(ui.draggable).removeClass('modbox modDraggable').addClass('moditem itemDraggable');// still draggable to modules
+        $(ui.draggable).detach().appendTo(nuplace);//visible .tabody
+        $(ui.draggable).removeClass('modbox modDraggable').addClass('moditem ui-state-default');
         
+		// add view, remove, edit icons [view & edit modal forms]
+		var added = '<div class="icos center">';
+			//added +='view : X : edit';// .icon-eye : .icon-close or remove : .icon-edit or .icon-pencil-square-o
+			added +='<a data-toggle="tooltip" title="Remove Module" data-placement="bottom"><i class="icon-remove"></i></a>';
+			added +=' : <a data-toggle="tooltip" title="View Assignments" data-placement="top"><i class="icon-eye"></i></a>';
+			added +=' : <a data-toggle="tooltip" title="Settings" data-placement="top"><i class="icon-edit"></i></a>';
+			added +='</div>';
+		$(ui.draggable).append(added);
+		
         //ui.draggable.draggable("disable", 1);// no longer draggable
-        ui.draggable.draggable();
+        //ui.draggable.draggable({});// didnt add to itemDraggable
     //ui.draggable.draggable({ connectToSortable: "#my-sortable" });// as itemDraggable
     /*
         want to change these to sort modules type
         http://api.jqueryui.com/sortable/
+		http://stackoverflow.com/questions/2544143/how-to-horizontally-sort-divs-using-sortable-in-jquery
+		http://jsfiddle.net/sP3UZ/
     */
+	// append to sortable
+	sortgroups.sortable("refresh");
+	
         // update modules[]
         var modorder = $(nuplace).children().length;// child position
         
@@ -269,7 +283,7 @@
         var count = $.grep(modules, function(elem, index) {
             return elem.unit == actor;
         });
-        console.log('count: '+count.length, count);
+        console.log('count: '+count.length, count);// modules in this tab
         
         var widt = $(nuplace).width();// increase for each new module
         if(count.length > 3) {

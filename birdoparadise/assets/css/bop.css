@@ -40,7 +40,7 @@
     border: medium solid #666;
     background-color: #fff;
     color: #ababab;
-    padding: 5px;
+    /*padding: 5px;*/
     margin: 10px 0px;/* tb, lr */
     display: inline-block;
 }
@@ -50,20 +50,40 @@
     float: left;
     position: relative;
     border: medium solid #ababab;
-    background-color: #fafafa;
-    color: #ababab;
-    padding: 5px;
+    background-color: #fafafa !important;
+    color: #ababab !important;/* overide sortable */
+    /*padding: 5px;*/
+	display: inline-block;
     margin: 10px;
-    cursor: pointer;
+    cursor: move;
+}
+.icos {
+	font-size: 2em;
+	position:relative;
+	/*padding-top: 70px;*/
+}
+.title {
+	background-color: #ababab;
+	color: #fafafa;
+	padding: 5px;
+	font-size: 1.1em;
+	font-weight: 600;
+}
+.items {
+	padding: 5px;
+	font-size: 1.0em;
+	font-weight: 400;
 }
 .modDraggable {
  /* .modbox .leftcolm */
     cursor: move;
-    /*display: inline-block;*/
 }
 .modDraggable.ui-draggable-dragging { opacity: 0.6; }
+.itemDraggable.ui-draggable-dragging { opacity: 0.6; }
 .itemDraggable {
-    cursor: ew-resize;
+/*moditem .rightcolm*/
+   /*cursor: ew-resize;*/
+   
 }
 
 .rightcolm {
@@ -74,9 +94,10 @@
 }
 .tabody {
     width: 670px;
-    height: 220px; 
+    height: 230px; 
     overflow-x: auto; 
     cursor:ew-resize;
+	background-color: #efefef !important;
 }
 .dropzone {
     opacity: 0.31;
@@ -85,8 +106,8 @@
     height: 230px;
     display: inline-block;
     position: absolute;
-    top: 90px;
-    left: 10px;
+    top: 95px;
+    left: 20px;
     z-index: 800;
 }
 
