@@ -10,8 +10,11 @@
     - Drop grades table
     - drop_grades_table.php
 1.0.3:
-    - Initialize Stats
-    - create_stats_table.php
-1.0.4:
     - Add Color and course_id to Competencies
     - add_competencies_columns.php
+1.0.4:
+    - Initialize Stats
+    - create_stats_table.php
+1.0.5:
+    - Modify stats size
+    - modify_stats_table.php

@@ -1,6 +1,15 @@
 <script>
-	var statsSize = '{{statsSize}}';
-	var statsAnimate = {{statsAnimate}};
+    var role = '{{role|raw}}';
+    var statsSize = '{{statsSize}}';
+    console.log(statsSize);
+    var statsAnimate = {{statsAnimate}};
+    console.log(statsAnimate);
+    var gapObj = {{gap|raw}};
+    var milestoneSummary = {{milestoneSummary|raw}};
+    var healthObj = {{health|raw}};
+    var redLine ={{redLine}};
+    var potential = {{potential|raw}};
+    var stamina = {{stamina|raw}};
 </script>
 {% if ('Learner' in role) %}
 {% partial 'stats::studentView' %}

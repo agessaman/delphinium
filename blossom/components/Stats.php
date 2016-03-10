@@ -2,6 +2,7 @@
 
 use Cms\Classes\ComponentBase;
 use Delphinium\Blossom\Models\Experience as ExperienceModel;
+use Delphinium\Blossom\Models\Stats as StatsModel;
 use Delphinium\Blossom\Components\Experience as ExperienceComponent;
 use Delphinium\Blossom\Components\Gradebook;
 use Delphinium\Roots\Roots;
@@ -22,10 +23,19 @@ class Stats extends ComponentBase
     public function defineProperties()
     {
         return [
+            'Stats' => [
+                'title' => 'Stats instance',
+                'description' => 'Select the stats instance to display',
+                'type' => 'dropdown',
+                'validationPattern' => '^[1-9][0-9]*$',//check that they've selected an option from the drop down. The default placeholder is=0
+                'validationMessage' => 'Select an instance of stats from the dropdown'
+            ],
             'Experience' => [
                 'title' => 'Experience instance',
                 'description' => 'Select the experience instance to display the student\'s stats',
-                'type' => 'dropdown'
+                'type' => 'dropdown',
+                'validationPattern' => '^[1-9][0-9]*$',//check that they've selected an option from the drop down. The default placeholder is=0
+                'validationMessage' => 'Select an instance of Experience from the dropdown'
             ]
         ];
     }
@@ -44,13 +54,31 @@ class Stats extends ComponentBase
         }
     }
 
+    public function getStatsOptions()
+    {
+        $instances = StatsModel::all();
+
+        if (count($instances) === 0) {
+            return $array_dropdown = ["0" => "No instances available. Component won\'t work"];
+        } else {
+            $array_dropdown = ["0" => "- select Stats Instance - "];
+            foreach ($instances as $instance) {
+                $array_dropdown[$instance->id] = $instance->name;
+            }
+            return $array_dropdown;
+        }
+    }
 
     public function onRun() {
-//        try
-//        {
-            $experienceInstance = ExperienceModel::find($this->property('Experience'));
-            $this->page['statsSize'] = $experienceInstance->size;
-            $this->page['statsAnimate'] = $experienceInstance->animate;
+        try
+        {
+            $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
+            $this->addJs("/plugins/delphinium/blossom/assets/javascript/stats.js");
+            $this->addCss("/plugins/delphinium/blossom/assets/css/stats.css");
+
+            $statsInstance = StatsModel::find($this->property('Stats'));
+            $this->page['statsSize'] = $statsInstance->size;
+            $this->page['statsAnimate'] = $statsInstance->animate;
             if (!isset($_SESSION)) {
                 session_start();
             }
@@ -59,33 +87,77 @@ class Stats extends ComponentBase
             $this->page['role'] = $roleStr;
             $this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
 
-             if(stristr($roleStr, 'Learner'))
+            if(stristr($roleStr, 'Learner'))
             {
                 $this->student();
             }
+            else{
+                $this->nonStudent();
+            }
 
-//        }
-//        catch (\GuzzleHttp\Exception\ClientException $e) {
-//            return;
-//        }
-//        catch(Delphinium\Roots\Exceptions\NonLtiException $e)
-//        {
-//            if($e->getCode()==584)
-//            {
-//                return \Response::make($this->controller->run('nonlti'), 500);
-//            }
-//        }
-//        catch(\Exception $e)
-//        {
-//            if($e->getMessage()=='Invalid LMS')
-//            {
-//                return \Response::make($this->controller->run('nonlti'), 500);
-//            }
-//            return \Response::make($this->controller->run('error'), 500);
-//        }
+        }
+        catch(\Delphinium\Roots\Exceptions\InvalidRequestException $e)
+        {
+            if($e->getCode()==401)//meaning there are two professors and one is trying to access the other professor's grades
+            {
+                return;
+            }
+            else
+            {
+                return \Response::make($this->controller->run('error'), 500);
+            }
+        }
+        catch (\GuzzleHttp\Exception\ClientException $e) {
+            echo "In order for experience to work properly you must be a student, or go into 'Student View'";
+            return;
+        }
+        catch(Delphinium\Roots\Exceptions\NonLtiException $e)
+        {
+            if($e->getCode()==584)
+            {
+                return \Response::make($this->controller->run('nonlti'), 500);
+            }
+        }
+        catch(\Exception $e)
+        {
+            if($e->getMessage()=='Invalid LMS')
+            {
+                return \Response::make($this->controller->run('nonlti'), 500);
+            }
+            return \Response::make($this->controller->run('error'), 500);
+        }
     }
 
+    private function nonStudent()
+    {
+        $potential = new \stdClass();
+        $potential->bonus = 0;
+        $potential->penalties = 0;
+        $this->page['potential'] = json_encode($potential);
+        $this->page['redLine']= 0;
 
+        $milestoneSummary = new \stdClass();
+        $milestoneSummary->bonuses = 0;
+        $milestoneSummary->penalties = 0;
+        $milestoneSummary->total = 0;
+        $this->page['milestoneSummary'] = json_encode($milestoneSummary);
+
+
+        $healthObj = new \stdClass();
+        $healthObj->maxPenalties = 0;
+        $healthObj->maxBonuses = 0;
+        $this->page['health'] = json_encode($healthObj);
+
+        $gap = new \stdClass();
+        $gap->minGap = 0;
+        $gap->maxGap = 0;
+        $this->page['gap'] = json_encode($gap);
+
+        $stamina = new \stdClass();
+        $stamina->ten = 0;
+        $stamina->total = 0;
+        $this->page['stamina'] = json_encode($stamina);
+    }
     private function student()
     {
         //GAP
@@ -153,7 +225,7 @@ class Stats extends ComponentBase
         $gap->maxGap = $expTotalPoints+$maxBonus;
         $this->page['gap'] = json_encode($gap);
 
-        $this->page['stamina'] = $this->calculateStamina();
+        $this->page['stamina'] = json_encode($this->calculateStamina());
     }
 
     private function getBonusPenalties($userId = null) {
@@ -174,18 +246,32 @@ class Stats extends ComponentBase
             session_start();
         }
         $analytics = $roots->getAnalyticsStudentAssignmentData(false);
-
         $average = 0.0;
         $percentageArr = array();
+        $i=0;
+        $averageObj = new \stdClass();
+
         foreach($analytics as $item)
         {
-            if(!is_null($item->submission->score))
+            if(isset($item->submission)&&!is_null($item->submission->score)&&!is_null($item->points_possible) &&($item->points_possible>0))
             {
+                if($i==10)
+                {//take the average of the first 10 assignments
+                    $averageObj->ten = array_sum($percentageArr) / count($percentageArr);
+                }
                 $percentageArr[] = ($item->submission->score/$item->points_possible)*100;
+
+                $i++;
             }
         }
 
         $average = array_sum($percentageArr) / count($percentageArr);
-        return $average;
+        $averageObj->total = $average;
+
+        if(count($analytics)<=10)
+        {//if there were less than 10 assignments we'll show the same average for both options
+            $averageObj->ten = $average;
+        }
+        return $averageObj;
     }
 }

@@ -3,7 +3,7 @@
 use Schema;
 use October\Rain\Database\Updates\Migration;
 
-class CreateCompetenciesTable extends Migration
+class AddCompetenciesTable extends Migration
 {
     public function up()
     {

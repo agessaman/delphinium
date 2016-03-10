@@ -3,7 +3,7 @@
 use Model;
 
 /**
- * stats Model
+ * Stats Model
  */
 class Stats extends Model
 {
@@ -18,11 +18,22 @@ class Stats extends Model
      */
     protected $fillable = ['*'];
 
+    /**
+     * @var array Relations
+     */
+    public $hasOne = [];
+    public $hasMany = [];
+    public $belongsTo = [];
+    public $belongsToMany = [];
+    public $morphTo = [];
+    public $morphOne = [];
+    public $morphMany = [];
+    public $attachOne = [];
+    public $attachMany = [];
+
     public $rules = [
         'name'=>'required',
         'animate'=>'required',
         'size' => 'required'
     ];
-
-
 }
