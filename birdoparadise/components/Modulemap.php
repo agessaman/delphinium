@@ -5,6 +5,8 @@ use Delphinium\BirdoParadise\Models\Modulemap as ModulemapModel;
 use Delphinium\Roots\Roots;
 use Delphinium\Roots\Enums\ActionType;
 use Delphinium\Roots\Requestobjects\ModulesRequest;
+//parent/children
+use Delphinium\BirdoParadise\Classes\ManagerHelper as IrisClass;
 
 class Modulemap extends ComponentBase
 {
@@ -40,8 +42,8 @@ class Modulemap extends ComponentBase
     
     public function onRun()
     {
-        try
-        {
+        //try
+        //{
             /*
             is an insance set? yes show it
 
@@ -127,6 +129,7 @@ class Modulemap extends ComponentBase
             $this->addJs("/plugins/delphinium/birdoparadise/assets/javascript/jquery-ui.min.js");
             $this->addJs("/plugins/delphinium/birdoparadise/assets/javascript/bootstrap.min.js");
         */
+            
             // include the backend form with instructions here
             if($roleStr == 'Instructor')
 			{
@@ -143,17 +146,18 @@ class Modulemap extends ComponentBase
                 $this->page['instructions'] = $instructions;
                 
                 //other code specific to instructor view goes here
-                
-                
-                $moduledata = $this->getModules();// both or just instructor to create FORM entries
+                // both or just instructor
+                $moduledata = $this->getModules();
                 $this->page['moduledata'] = json_encode($moduledata);
+                
             }
             
             if($roleStr == 'Learner')
 			{
                 //code specific to the student view goes here
+                // units & modules from db
             }
-           
+      /*     
         }
         catch (\GuzzleHttp\Exception\ClientException $e) {
             return;
@@ -173,7 +177,7 @@ class Modulemap extends ComponentBase
             }
             return \Response::make($this->controller->run('error'), 500);
         }
-        
+    */
     }
     
     public function getInstanceOptions()
@@ -209,7 +213,7 @@ class Modulemap extends ComponentBase
         $config = ModulemapModel::find($did);
         //echo json_encode($config);
 		$config->name = $data['name'];
-		// add units
+		$config->units = $data['units'];
         $config->modules = $data['modules'];
 
 		$config->course_id = $data['course_id'];//hidden
@@ -217,8 +221,96 @@ class Modulemap extends ComponentBase
 		$config->save();// update original record 
 		return json_encode($config);// back to instructor
     }
-
+    
     public function getModules()
+    {
+        $moduleId = null;
+        $moduleItemId = null;
+        $includeContentDetails = true;
+        $includeContentItems = true;
+        $module = null;
+        $moduleItem = null;
+        $freshData = false;
+
+        $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems,
+            $includeContentDetails, $module, $moduleItem , $freshData);
+
+        $roots = new Roots();
+        $moduleData = $roots->modules($req);
+        $modArr = $moduleData->toArray();
+
+        $simpleModules = array();
+        foreach($modArr as $item)
+        {
+            $mod = new \stdClass();
+
+            $mod->id = $item['module_id'];
+            $mod->value=$item['name'];
+            $simpleModules[] = $mod;
+        }
+        $this->page['rawData'] = json_encode($simpleModules);
+
+        $iris = new IrisClass();// reorder for parent/children
+        $result = $iris->buildTree($modArr);
+
+        $tempArray =array();
+
+        if(count($result)<1) //there weren't any parent-child relationships
+        {
+            $parent;
+            $allChildren;
+            $final = array();
+
+            //The parent will be the first PUBLISHED item
+            $firstItem;
+            foreach($moduleData as $item)
+            {
+                if($item['published'] == "1")
+                {
+                    $firstItem = $item;
+                    break;
+                }
+            }
+
+            $newArr = $this->unsetValue($modArr, $firstItem);//remove parent from array
+            $firstParentId=$firstItem["module_id"];
+            $i=0;
+            foreach($newArr as $item)
+            {
+                $item["parent_id"] = $firstParentId;
+                //each item must have a parentId of the first module
+                $item["children"] = [];
+                $item["order"] = $i;
+                $final[] = $item;
+                $i++;
+            }
+
+            //remove the first Item (which is the parent)
+            $firstItem["parent_id"] = 1;
+            $firstItem["children"]=$final;
+            $firstItem["order"]=0;
+
+            $tempArray[] = $firstItem;
+        }
+        else
+        {
+            $tempArray = $result;
+        }
+        return $tempArray;
+    }
+
+
+    private function unsetValue(array $array, $value, $strict = TRUE)
+    {
+        if(($key = array_search($value, $array, $strict)) !== FALSE) {
+            unset($array[$key]);
+        }
+        return $array;
+    }
+
+    
+// unused now....................
+    public function OLDgetModules()
     {
         // define the request
         $moduleId = null;

@@ -1,32 +1,29 @@
 <!-- Instructor View with Settings cog -->
 <div class="page">
     <div style="position:relative;">
-        <div id="cog" data-toggle="modal" href="#content-configuration" style="position:absolute; top:0; z-index:950; padding-left:220px;">
+        <div id="cog" data-toggle="modal" href="#content-configuration" style="position:absolute; top:0; z-index:950; padding-left:180px;">
             <a data-toggle="tooltip" title="Settings" data-placement="bottom"><i class="icon-cog"></i></a>
         </div>
-        <div style="padding:10px;">
+        <div style="z-index:10;">
             <h3>Instructor view</h3>
         </div>
     </div>
 
-    <div class="leftcolm">
-    <!-- modules list -->
-    </div>
     
     <div class="rightcolm">
-        <div class="dropzone"></div>
-        <button id="addTab" class="btn btn-success" type="button">+ New Unit</button>
+        <!--div class="dropzone"></div-->
+        <!--button id="addTab" class="btn btn-success" type="button">+ New Unit</button-->
         <div id="tabs">
-          <ul id="tablist">
-            <li><a href="#tab_1">Unit 1</a></li>
-              <!-- Insert new tabs -->
-          </ul>
-          <div id="tab_1"><div id="tab_1body" class="tabody ui-state-default"></div></div>
-          <!-- Insert tab content -->
-
+            <ul id="tablist">
+                <!--li><a href="#tab_1">Unit 1</a></li-->
+                <!-- Insert new tabs -->
+            </ul>
+            <div id="tabdy">
+                <!--div id="tab_1"><div id="tab_1body" class="tabody ui-state-default"></div></div-->
+                <!-- Insert tab content -->
+            </div>
         </div>
-        <div><strong>Instructions: </strong>Drag a module from the left onto the unit. Add new units as needed.
-        </div>
+        <div><strong>Instructions: </strong></div>
     </div>
 </div>
 
@@ -66,6 +63,42 @@
     </div>
 </div>
 
+<!-- Modal: when unit is clicked edit unit[index].name -->
+<div class="control-popup modal fade" id="unitname" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div id="unit-body" class="modal-body">
+                <form role="form">
+                    <div class="form-group">
+                      <label for="nuname">Unit Name:</label>
+                      <input type="text" class="form-control" id="nuname" placeholder="Enter new name" value="">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="changeunit" type="button" class="btn btn-primary" data-dismiss="modal">Change Name</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: when module is clicked show items in module -->
+<div class="control-popup modal fade" id="itemdetails" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 id="detailed-title" class="modal-title">Item Details</h4>
+            </div>
+            <div id="detailed-body" class="modal-body">
+                <p>This displays details of module</p>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
 (function() {
@@ -87,8 +120,8 @@
    // $('#Form-field-Modulemap-Name-group').hide();// not useful
     
     //fill the form with current configuration
-    for(var i=0; i<configVal.length; i++) {
-       $('#'+fieldIDs[i]).val(configVal[i]);
+    for(var f=0; f<configVal.length; f++) {
+       $('#'+fieldIDs[f]).val(configVal[f]);
     }
     
 	function completed(data)
@@ -101,29 +134,100 @@
     /*
         Bird of Paradise:
         
-        https://jqueryui.com/tabs/
+        http://getbootstrap.com/javascript/
+        http://daftspunk.github.io/Font-Autumn/
         http://api.jqueryui.com/category/interactions/
-        
-        http://stackoverflow.com/questions/14308290/jquery-draggable-and-droppable-between-two-containers-and-sortable
-        
         https://api.jqueryui.com/draggable/
-        
+        http://api.jqueryui.com/sortable/
+        https://jqueryui.com/tabs/
         
         Model:
         units [ {name, order}, 
-        modules [ {unit_index, mod_id, mod_order, image_url, }, 
+        modules [ {unit: units[index],
+                    mod_id: id, 
+                    mod_order: order,
+                    image_url: 'http:// ?,
+                    }, 
         
         todo: construct from config
     */
     // if ! config.units
-    var units = [{'name':'Unit 1', 'order': 0}];//default first tab
+    var units = [];//{'name':'Unit 1', 'order': 0}];//default first tab
     var modules = [];// modules in unit tab
+    // store individual module objects
+    var modobjs = [];
     
-    // add, delete, edit name
+    //todo: edit {label} = units[index].name
     var tabTitle = $( "#tab_title" ),
     tabContent = $( "#tab_content" ),
-    tabTemplate = "<li><a href='#{href}'>#{label}</a></li>",
-    tabCounter = 1;// not 0 based
+    tabCounter = 0;// not 0 based
+    // cog to edit unit[].name
+    var tabTemplate = "<li><a href='#{href}'>#{label}</a>";
+        tabTemplate +="<a data-toggle='modal' href='#unitname' class='unitname' id='{tabat}'>";
+        tabTemplate +="<i class='icon-cog'></i>";
+        tabTemplate +="</a></li>";
+    
+    
+    // create units and modules from data
+    for(var m=0; m<moduledata.length; m++) {
+        
+        var chld = moduledata[m]['children'];
+        for(var c=0; c<chld.length; c++) {
+            
+            addTab();// each unit
+            // add moditem for each chld[c].module_item
+            
+            var nuplace = $('#tab_'+c+'body');
+            var widt = $(nuplace).width();// increase for each new module
+            var mods = chld[c].children;
+            
+      //do this in Modulemap after getModules in another function 
+            for(var i=0; i<mods.length; i++) {
+                // if mods has children add it to mods
+                if(mods[i].children.length > 0 ) {
+                    var len = mods[i].children.length;
+                    console.log(mods[i].name+' children: '+len);
+                    /* 
+                    $.each  http://api.jquery.com/category/utilities/
+                    
+                    //insert into array [changes original array]
+                    for(var mc=0; mc<len; mc++) {
+                        mods.splice(i,0, mods[i].children[mc]);// & child of child of child ?
+                    }
+                   */
+                }
+            }
+            // then display array
+            for(i=0; i<mods.length; i++) {
+                modobjs.push(mods[i]);// individuals
+                //is sortable 
+            var modbox = '<div id="'+mods[i].module_id+'" class="moditem" data-locked="'+mods[i].locked+'">';
+                modbox +='<div class="title">'+mods[i].name+'</div>';
+                modbox +='<div class="items">Items: '+mods[i].items_count+'</div>';
+                modbox +='<div class="items">'+mods[i].module_id+'</div>';// testing
+                modbox +='<div class="items">Locked: '+mods[i].locked+'</div>';
+                // + cog edit { image upload? }
+                modbox +='</div>';
+                
+                if(i > 2) {
+                    widt += 170;
+                    $(nuplace).css({ 'width': widt});// , 'overflow-x': 'auto' });
+                    $(nuplace).parent().css({'overflow-x': 'auto' });// id=tab_#
+                    //console.log('width:',widt);
+                }
+                
+                $(nuplace).append(modbox);
+                // construct modules
+                modules.push({"unit":"tab_"+c,
+                              "mod_id":mods[i].module_id,
+                              "mod_order": c,
+                              "image_url": ""});// +mod_name?
+                // add image later. store at /course/Files/bop/ name ?logged in?
+            }
+        }
+    }
+    console.log('units:',units);
+    console.log('modules: '+modules.length, modules); 
     
     // jquery-UI tabs
 	var tabs = $( "#tabs" ).tabs({
@@ -131,84 +235,47 @@
         //collapsible: false
     });
     
-    // are sortable sortable tabs
+    // are sortable
     tabs.find( ".ui-tabs-nav" ).sortable({
         axis: "x",
         stop: function() {
             tabs.tabs( "refresh" ); 
             console.log('tabs:',tabs);
-            //update units.order
+            //update units.order like sortgroups
             
         }
     });
     
+    
+/* UNUSED ---------------
     $('#addTab').on('click',function(e) {
         e.preventDefault();
         addTab(); 
     });
-    
+*/
     function addTab() {
-        tabCounter++;
+        
         var label = "Unit " + tabCounter,
             id = "tab_" + tabCounter,
-            li = $( tabTemplate.replace( /#\{href\}/g, "#" + id ).replace( /#\{label\}/g, label ) ),
+            li = $( tabTemplate.replace( /#\{href\}/g, "#" + id ).replace( /#\{label\}/g, label ).replace( /{tabat\}/g, 'X'+id ) ),
             tabContentHtml = "<div id='" + id + "'><div id='tab_"+tabCounter+"body' class='tabody ui-state-default'></div></div>";
-
-        tabs.find( ".ui-tabs-nav" ).append( li );
-        tabs.append( tabContentHtml );
-        tabs.tabs( "refresh" );
+        
+        $('#tablist').append(li);
+        $('#tabdy').append(tabContentHtml);
+        //tabs.find( ".ui-tabs-nav" ).append( li );
+        //tabs.append( tabContentHtml );
+       //not yet// tabs.tabs( "refresh" );
         
         // update arrays function?
-        units.push({'name':"Unit " + tabCounter, 'order': tabCounter-1});
-        console.log('units:',units);
+        units.push({'name':"Unit " + tabCounter, 'order': tabCounter});
+        //console.log('units:',units);
         ////dragcontainer.push([0,0,650,0]);//for each tab
         ////tabscrol.draggable("option", "containment", dragcontainer[tabCounter-1]);
         // may have to rethink this. Should have horizontal scroll anyway
+        tabCounter++;
     }
     
-    // if ! config.modules, else hide leftcolm?
-    // create draggable module elements
-    for(var i=0; i<moduledata.length; i++) {
-        var modbox = '<div id="'+moduledata[i].module_id+'" class="modbox modDraggable">';
-            modbox +='<div class="title">'+moduledata[i].name+'</div>';
-            modbox +='<div class="items">Items: '+moduledata[i].items_count+'</div>';
-            modbox +='</div>';
-        
-        $('.leftcolm').append(modbox);
-        $('.modbox').attr('data-locked',moduledata[i].locked);
-    }
-    
-    // all module items drag to unit tab.tabody
-    var modlist = $('.modDraggable').draggable({
-        helper: 'clone',
-        containment: '.page',
-        snap: '.page',
-        zIndex: 1100,
-        iframeFix: true,
-        distance: 10,
-        start: function( event, ui ) {
-            $('.dropzone').show();// $(ui.draggable).detach();
-        },
-        stop: function( event, ui ) {
-            $('.dropzone').hide();
-        },
-        revertDuration: 300,
-        revert: true
-    });// return clone changes 
-    
-    // if dragged from tabody & dropped on modlist
-    
-    // sortable inside unit.tabody adjusts mod_order
-    var sortlist = $('.itemDraggable').draggable({
-        helper: 'clone',
-        containment: '.rightcolm',
-        snap: '.rightcolm',
-        zIndex: 1100,
-        iframeFix: true,
-        distance: 10,
-        revert: 'invalid'
-    });
-    //$("#sortable").sortable();
+    //if instructor
     var sortgroups = $( ".tabody" ).sortable({
 		containment: "parent",
         axis: "x",
@@ -236,13 +303,78 @@
             console.log('order:',mods);
         }
     });
-   
-    // transparent zone over tab body
+    
+    /*  unit tab cog clicked
+        insert which tab to edit in modal input
+        clear value and XXXfocus
+    */
+    $('.unitname').on('click', function(e) {
+        //console.log(e.currentTarget.id);
+        $('#nuname').attr('data-unit', e.currentTarget.id ).val("");
+        $('#nuname').triggerHandler('focus');// .focus();// not happening
+    });
+    /* retrieve input value
+        change unit tab label
+        update units
+    */
+    $('#changeunit').on('click', function() {
+        
+        //console.log( 'nuname:', $('#nuname').attr('data-unit'), $('#nuname').val() );
+        var temp = $('#nuname').attr('data-unit').split('_');
+        var tabnum = parseInt(temp[1])+1;// 1,2,3,...
+        var newname = $('#nuname').val();
+        //console.log(tabnum, newname);
+        $('#ui-id-'+tabnum).text(newname);
+        units[tabnum-1].name = newname;// 0 based
+        console.log('units:',units);
+    });
+    
+    /* click module #title */
+    $('.moditem').on('click', function(){
+        console.log( $(this).attr('id') );
+        
+        var modid = $(this).attr('id');
+        var mod = $.grep(modobjs, function(elem,index){
+            return elem.module_id == modid;
+        });
+        console.log(modid, mod[0].name, mod);
+        var moditems= mod[0].module_items;
+        //console.log(modobjs);
+        console.log('moditems:',moditems);
+        // display in modal detailed-body
+        
+        $('#detailed-body').empty();
+        for(var i=0; i<moditems.length; i++) {
+            
+            var item='<div class="">';// create one still
+                //item+='<a target="_blank" href="'+moditems[i].html_url+'?module_item_id='+moditems[i].module_item_id+'" target="_blank">'+moditems[i].title+'</a>';
+                item+='<a target="_blank" href="'+moditems[i].html_url+'" target="_blank">'+moditems[i].title+'</a>';
+                if(moditems[i].content.length > 0) {
+                    item+=' worth: '+moditems[i].content[0].points_possible;
+                }
+                item+='</div>';
+            $('#detailed-body').append(item);
+            
+        }
+        
+        // trigger modal
+        $('#detailed-title').html(mod[0].name);
+        $('#itemdetails').modal('show');
+    });
+    
+    
+    
+    
+    
+    
+    
+/* transparent zone over tab body UNUSED ---------------
     $('.dropzone').hide();// show when dragging module
     var dropzone = $('.dropzone').droppable({
         accept: '.modDraggable',
         drop: handleDropEvent
     });
+    */
     function handleDropEvent( event, ui ) {
         //var offsetXPos = parseInt( ui.offset.left );// sorting???
         //var offsetYPos = parseInt( ui.offset.top );
@@ -274,8 +406,7 @@
 			added +='</div>';
 		$(ui.draggable).append(added);
 
-        /** change moditem to sort modules order
-            http://api.jqueryui.com/sortable/   **/
+        /** change moditem to sort modules order **/
         sortgroups.sortable("refresh");
 	
         // update modules[]
@@ -296,14 +427,12 @@
             $(nuplace).css({ 'width': widt, 'overflow-x': 'auto' });
             console.log('width:',widt);
         }
-        var sleft = widt-(670*1.5);
+        ////var sleft = widt-(670*1.5);
         ////dragcontainer[modorder-1] = [-sleft,0,280,0];//update slider container in array
-        //console.log('dragcontainer='+dragcontainer[modorder-1]);
+          //console.log('dragcontainer='+dragcontainer[modorder-1]);
         ////tabscrol.draggable("option", "containment", dragcontainer[modorder-1]);//at switch tabs too?
     }
-    
     ////var dragcontainer=[ [0,0,650,0] ];// array for each tab!
-    
     ////var tabscrol = $('.tabody').draggable({ axis:'x', containment:dragcontainer[0] });
     
 })();

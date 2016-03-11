@@ -54,8 +54,8 @@
     color: #ababab !important;/* overide sortable */
     /*padding: 5px;*/
 	display: inline-block;
-    margin: 10px;
-    cursor: move;
+    margin: 5px 5px 5px 5px;/* T,R,B,L */
+    cursor: pointer;/* click to show items */
 }
 .icos {
 	font-size: 2em;
@@ -68,12 +68,13 @@
 	background-color: #ababab;
 	color: #fafafa;
 	padding: 5px;
-	font-size: 1.1em;
+	font-size: 1em;
 	font-weight: 600;
+    cursor: move;/* instructor can drag to sort */
 }
 .items {
 	padding: 5px;
-	font-size: 1.0em;
+	font-size: 0.8em;
 	font-weight: 400;
 }
 .modDraggable {
@@ -96,7 +97,7 @@
 }
 .tabody {
     width: 670px;
-    height: 230px; 
+    height: 200px; 
     overflow-x: auto; 
     cursor:ew-resize;
 	background-color: #efefef !important;
