@@ -20,11 +20,12 @@
 	display: block;
 	position: relative;
 	overflow: hidden;
-	width: 100%; height: 500px;
+	width: 100%; height: 380px;
 }
+/** UNUSED
 .leftcolm {
     float:left;
-    margin: 0px 5px 0px 10px;/* T,R,B,L */
+    margin: 0px 5px 0px 10px;
     padding: 0px 10px 0px 10px;
     width: 245px; height: 400px;
     overflow-y: auto;
@@ -40,13 +41,12 @@
     border: medium solid #666;
     background-color: #fff;
     color: #ababab;
-    /*padding: 5px;*/
-    margin: 10px 0px;/* tb, lr */
+    margin: 10px 0px;
     display: inline-block;
-}
+}*/
 .moditem {
-    width: 180px !important;
-    height: 180px !important;
+    width: 180px;
+    height: 130px;
     float: left;
     position: relative;
     border: medium solid #ababab;
@@ -68,13 +68,12 @@
 	background-color: #ababab;
 	color: #fafafa;
 	padding: 5px;
-	font-size: 1em;
-	font-weight: 600;
-    cursor: move;/* instructor can drag to sort */
+	font-size: 0.9em;
+	font-weight: 400;
 }
 .items {
 	padding: 5px;
-	font-size: 0.8em;
+	font-size: 0.9em;
 	font-weight: 400;
 }
 .modDraggable {
@@ -91,15 +90,14 @@
 
 .rightcolm {
     float: left;
-    width: 700px; height: 400px;
+    width: 600px; height: 320px;
     overflow: hidden;
     position: relative;
 }
 .tabody {
     width: 670px;
-    height: 200px; 
+    height: 150px; 
     overflow-x: auto; 
-    cursor:ew-resize;
 	background-color: #efefef !important;
 }
 .dropzone {
@@ -113,4 +111,22 @@
     left: 10px;
     z-index: 800;
 }
-
+.arol, .aror {
+    display: block;
+    position: absolute;
+    top: 59px;
+    /* size of arrow element */
+    width: 50px;
+    height: 200px;
+    cursor: pointer;
+    background: url('../images/aroos.png') center center no-repeat;
+    overflow: hidden;
+}
+.arol { left: 1px; }
+.aror { right: 1px; }
+.arol { background-position: 0px 0px; opacity: 0.1; }
+.aror { background-position: -50px 0px; opacity: 0.1; }
+.arol:hover { background-position: 0px 0px; opacity: 0.6; }
+.aror:hover { background-position: -50px 0px; opacity: 0.6; }
+.arol.arodn { opacity: 0.3; }
+.aror.arordn { opacity: 0.3; }

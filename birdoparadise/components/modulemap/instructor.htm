@@ -1,29 +1,28 @@
 <!-- Instructor View with Settings cog -->
 <div class="page">
     <div style="position:relative;">
-        <div id="cog" data-toggle="modal" href="#content-configuration" style="position:absolute; top:0; z-index:950; padding-left:180px;">
+        <div id="cog" data-toggle="modal" href="#content-configuration" style="position:absolute; top:10; z-index:950; padding-left:10px;">
             <a data-toggle="tooltip" title="Settings" data-placement="bottom"><i class="icon-cog"></i></a>
         </div>
-        <div style="z-index:10;">
+        <div style="z-index:10; padding-left:30px;">
             <h3>Instructor view</h3>
         </div>
     </div>
 
     
     <div class="rightcolm">
-        <!--div class="dropzone"></div-->
-        <!--button id="addTab" class="btn btn-success" type="button">+ New Unit</button-->
         <div id="tabs">
             <ul id="tablist">
-                <!--li><a href="#tab_1">Unit 1</a></li-->
                 <!-- Insert new tabs -->
             </ul>
             <div id="tabdy">
-                <!--div id="tab_1"><div id="tab_1body" class="tabody ui-state-default"></div></div-->
-                <!-- Insert tab content -->
+                <!-- Insert tab body content -->
+            </div>
+            <div><!-- scroll arrows -->
+                <span id="arrowleft" class="arol"></span>
+                <span id="arrowright" class="aror"></span>
             </div>
         </div>
-        <div><strong>Instructions: </strong></div>
     </div>
 </div>
 
@@ -63,28 +62,6 @@
     </div>
 </div>
 
-<!-- Modal: when unit is clicked edit unit[index].name -->
-<div class="control-popup modal fade" id="unitname" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-sm">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            </div>
-            <div id="unit-body" class="modal-body">
-                <form role="form">
-                    <div class="form-group">
-                      <label for="nuname">Unit Name:</label>
-                      <input type="text" class="form-control" id="nuname" placeholder="Enter new name" value="">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button id="changeunit" type="button" class="btn btn-primary" data-dismiss="modal">Change Name</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- Modal: when module is clicked show items in module -->
 <div class="control-popup modal fade" id="itemdetails" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg">
@@ -103,8 +80,8 @@
 <script>
 (function() {
     
-	var configVal=[config.name,config.units,config.modules];
-	var fieldIDs=['Form-field-Modulemap-name','Form-field-Modulemap-units','Form-field-Modulemap-modules'];
+	var configVal=[config.name];
+	var fieldIDs=['Form-field-Modulemap-name'];
 	
     /* set id,course,copy in the POST they are not editable
         Add hidden input fields so they will transfer to onUpdate
@@ -113,11 +90,6 @@
     $('#Form-outsideTabs').append('<input type="hidden" name="Modulemap[id]" value="'+config.id+'" /> ');
     $('#Form-outsideTabs').append('<input type="hidden" name="Modulemap[course_id]" value="'+config.course_id+'" /> ');
     $('#Form-outsideTabs').append('<input type="hidden" name="Modulemap[copy_id]" value="'+config.copy_id+'" /> ');
-    
-    // Fix Animate checkbox switch
-    $('<div style="height:90px;" class="clearfix"></div>').insertBefore('.checkbox-field').parent;
-	$('.checkbox-field').attr('style','margin-left:20px').removeClass('span-right').addClass('span-left');
-   // $('#Form-field-Modulemap-Name-group').hide();// not useful
     
     //fill the form with current configuration
     for(var f=0; f<configVal.length; f++) {
@@ -129,31 +101,27 @@
         /* updated record is returned */
         location.reload();
 	}
-	console.log('instance:'+config.id,config.name,config.course_id,config.copy_id);
-    
+	//console.log('instance:'+config.id,config.name,config.course_id,config.copy_id);
+    //  DONT NEED TO EDIT FORM - REMOVE? ONLY Instructions needed! which is part of FORM partial?
     /*
         Bird of Paradise:
         
         http://getbootstrap.com/javascript/
-        http://daftspunk.github.io/Font-Autumn/
+        http://getbootstrap.com/components/#nav
+        
+        http://daftspunk.github.io/Font-Autumn/    icon-star, star-half-o, star-o, icon-lock
         http://api.jqueryui.com/category/interactions/
         https://api.jqueryui.com/draggable/
         http://api.jqueryui.com/sortable/
-        https://jqueryui.com/tabs/
+        Change to Bootstrap nav ... https://jqueryui.com/tabs/
         
-        Model:
-        units [ {name, order}, 
-        modules [ {unit: units[index],
-                    mod_id: id, 
-                    mod_order: order,
-                    image_url: 'http:// ?,
-                    }, 
+        todo: Deep search, Scroll arrows, Locked, 
+        Tooltip? for reason locked prerequisites
+        Stars, images?
         
-        todo: construct from config
+        assignment links in locked modules are disabled for student view
     */
-    // if ! config.units
-    var units = [];//{'name':'Unit 1', 'order': 0}];//default first tab
-    var modules = [];// modules in unit tab
+
     // store individual module objects
     var modobjs = [];
     
@@ -163,9 +131,7 @@
     tabCounter = 0;// not 0 based
     // cog to edit unit[].name
     var tabTemplate = "<li><a href='#{href}'>#{label}</a>";
-        tabTemplate +="<a data-toggle='modal' href='#unitname' class='unitname' id='{tabat}'>";
-        tabTemplate +="<i class='icon-cog'></i>";
-        tabTemplate +="</a></li>";
+        tabTemplate +="</li>";
     
     
     // create units and modules from data
@@ -173,163 +139,88 @@
         
         var chld = moduledata[m]['children'];
         for(var c=0; c<chld.length; c++) {
-            
-            addTab();// each unit
+            var tabname=chld[c].name;
+            addTab(tabname);// each unit
             // add moditem for each chld[c].module_item
             
             var nuplace = $('#tab_'+c+'body');
             var widt = $(nuplace).width();// increase for each new module
             var mods = chld[c].children;
-            
-      //do this in Modulemap after getModules in another function 
-            for(var i=0; i<mods.length; i++) {
-                // if mods has children add it to mods
+            var leng = mods.length;
+            var modlist = [];// modules in this tab
+    //do this in Modulemap after getModules in another function ?
+            for(var i=0; i<leng; i++) {
+                // individual module objects for searching items
+                modobjs.push(mods[i]);// all
+                modlist.push(mods[i]);// modules in this tab
+                // if module has children add it
                 if(mods[i].children.length > 0 ) {
                     var len = mods[i].children.length;
                     console.log(mods[i].name+' children: '+len);
-                    /* 
-                    $.each  http://api.jquery.com/category/utilities/
+                     
+                    //DEEP CHILDREN: $.each(  http://api.jquery.com/category/utilities/
                     
-                    //insert into array [changes original array]
+                    //insert into other array
                     for(var mc=0; mc<len; mc++) {
-                        mods.splice(i,0, mods[i].children[mc]);// & child of child of child ?
+                        // & child of child of child ?
+                        modobjs.push(mods[i].children[mc]);
+                        modlist.push(mods[i].children[mc]);
                     }
-                   */
                 }
             }
             // then display array
-            for(i=0; i<mods.length; i++) {
-                modobjs.push(mods[i]);// individuals
+            for(i=0; i<modlist.length; i++) {
+                
                 //is sortable 
-            var modbox = '<div id="'+mods[i].module_id+'" class="moditem" data-locked="'+mods[i].locked+'">';
-                modbox +='<div class="title">'+mods[i].name+'</div>';
-                modbox +='<div class="items">Items: '+mods[i].items_count+'</div>';
-                modbox +='<div class="items">'+mods[i].module_id+'</div>';// testing
-                modbox +='<div class="items">Locked: '+mods[i].locked+'</div>';
+            var modbox = '<div id="'+modlist[i].module_id+'" class="moditem" data-locked="'+modlist[i].locked+'">';
+                modbox +='<div class="title">'+modlist[i].name+'</div>';
+                modbox +='<div class="items">Items: '+modlist[i].items_count+'</div>';
+                modbox +='<div class="items">'+modlist[i].module_id+'</div>';// testing
+                modbox +='<div class="items">Locked: '+modlist[i].locked+'</div>';
                 // + cog edit { image upload? }
                 modbox +='</div>';
                 
                 if(i > 2) {
-                    widt += 170;
+                    widt += 170;// width of moditem Constant
                     $(nuplace).css({ 'width': widt});// , 'overflow-x': 'auto' });
                     $(nuplace).parent().css({'overflow-x': 'auto' });// id=tab_#
                     //console.log('width:',widt);
                 }
                 
                 $(nuplace).append(modbox);
-                // construct modules
-                modules.push({"unit":"tab_"+c,
-                              "mod_id":mods[i].module_id,
-                              "mod_order": c,
-                              "image_url": ""});// +mod_name?
-                // add image later. store at /course/Files/bop/ name ?logged in?
             }
         }
     }
-    console.log('units:',units);
-    console.log('modules: '+modules.length, modules); 
     
-    // jquery-UI tabs
+    
+    // jquery-UI tabs use bootstrap nav-tabs
 	var tabs = $( "#tabs" ).tabs({
         //event: "click"
         //collapsible: false
     });
     
-    // are sortable
-    tabs.find( ".ui-tabs-nav" ).sortable({
-        axis: "x",
-        stop: function() {
-            tabs.tabs( "refresh" ); 
-            console.log('tabs:',tabs);
-            //update units.order like sortgroups
-            
-        }
-    });
+    var activeTab='tab_0';
     
-    
-/* UNUSED ---------------
-    $('#addTab').on('click',function(e) {
-        e.preventDefault();
-        addTab(); 
-    });
-*/
-    function addTab() {
+    function addTab(tabname) {
         
-        var label = "Unit " + tabCounter,
+        var label = tabname;
             id = "tab_" + tabCounter,
-            li = $( tabTemplate.replace( /#\{href\}/g, "#" + id ).replace( /#\{label\}/g, label ).replace( /{tabat\}/g, 'X'+id ) ),
-            tabContentHtml = "<div id='" + id + "'><div id='tab_"+tabCounter+"body' class='tabody ui-state-default'></div></div>";
+            li = $( tabTemplate.replace( /#\{href\}/g, "#" + id ).replace( /#\{label\}/g, label ) ),
+            tabContentHtml = "<div id='" + id + "'><div id='tab_"+tabCounter+"body' class='tabody'></div></div>";
         
         $('#tablist').append(li);
         $('#tabdy').append(tabContentHtml);
-        //tabs.find( ".ui-tabs-nav" ).append( li );
-        //tabs.append( tabContentHtml );
-       //not yet// tabs.tabs( "refresh" );
         
-        // update arrays function?
-        units.push({'name':"Unit " + tabCounter, 'order': tabCounter});
-        //console.log('units:',units);
         ////dragcontainer.push([0,0,650,0]);//for each tab
         ////tabscrol.draggable("option", "containment", dragcontainer[tabCounter-1]);
         // may have to rethink this. Should have horizontal scroll anyway
         tabCounter++;
+        
+        // (do bootstrap version)
+        
     }
     
-    //if instructor
-    var sortgroups = $( ".tabody" ).sortable({
-		containment: "parent",
-        axis: "x",
-        stop: function() {
-            //update modules.mod_order by children
-            // get active tab
-            var actor = $('li.ui-state-active').attr('aria-controls');
-            // get active tabody
-            var nuplace = $('#'+actor+' > div:first');// id= actor+body
-            console.log('Active Tab:',actor);//tab_id
-            // find all children for tab
-            var nuorder = $(nuplace).find('.moditem');
-            // get modules in this tab
-            var mods = $.grep(modules, function(elem, index) {
-                return elem.unit == actor;
-            });
-            for(var i=0; i<nuorder.length; i++){
-                var orderid = nuorder[i].id;
-                var item = $.grep(mods, function(elem, index) {
-                    return elem.mod_id == orderid;
-                });
-                item[0].mod_order = i+1;
-                //console.log(item.length, item, orderid);
-            }
-            console.log('order:',mods);
-        }
-    });
-    
-    /*  unit tab cog clicked
-        insert which tab to edit in modal input
-        clear value and XXXfocus
-    */
-    $('.unitname').on('click', function(e) {
-        //console.log(e.currentTarget.id);
-        $('#nuname').attr('data-unit', e.currentTarget.id ).val("");
-        $('#nuname').triggerHandler('focus');// .focus();// not happening
-    });
-    /* retrieve input value
-        change unit tab label
-        update units
-    */
-    $('#changeunit').on('click', function() {
-        
-        //console.log( 'nuname:', $('#nuname').attr('data-unit'), $('#nuname').val() );
-        var temp = $('#nuname').attr('data-unit').split('_');
-        var tabnum = parseInt(temp[1])+1;// 1,2,3,...
-        var newname = $('#nuname').val();
-        //console.log(tabnum, newname);
-        $('#ui-id-'+tabnum).text(newname);
-        units[tabnum-1].name = newname;// 0 based
-        console.log('units:',units);
-    });
-    
-    /* click module #title */
+    /* click module */
     $('.moditem').on('click', function(){
         console.log( $(this).attr('id') );
         
@@ -361,79 +252,85 @@
         $('#detailed-title').html(mod[0].name);
         $('#itemdetails').modal('show');
     });
-    
-    
-    
-    
-    
-    
-    
-/* transparent zone over tab body UNUSED ---------------
-    $('.dropzone').hide();// show when dragging module
-    var dropzone = $('.dropzone').droppable({
-        accept: '.modDraggable',
-        drop: handleDropEvent
-    });
-    */
-    function handleDropEvent( event, ui ) {
-        //var offsetXPos = parseInt( ui.offset.left );// sorting???
-        //var offsetYPos = parseInt( ui.offset.top );
-        //console.log( event.target.id+"drop location: (" + offsetXPos + ", " + offsetYPos + ")");
-        var modid = ui.draggable.attr('id');
-        //console.log( 'dropped ID "' + modid + '" was dropped onto '+event.target.id );
-        
-        //remove mod from left column, add to active tab.tabody, change style
-        // get active tab 
-        var actor = $('li.ui-state-active').attr('aria-controls');
-        //console.log('Active Tab:',actor);//tab_id
-        // get active tabody
-        var nuplace = $('#'+actor+' > div:first');// id= actor+body
-        ui.helper.remove();// dont revert helper
-        //http://stackoverflow.com/questions/1324044/how-do-i-disable-a-jquery-ui-draggable
-        ui.draggable.draggable("destroy");// remove drag ability
-        
-        $(ui.draggable).detach().appendTo(nuplace);//visible .tabody
-        $(ui.draggable).removeClass('modbox modDraggable').addClass('moditem ui-state-default');
-        
-        // add id to text for testing sort
-        $(ui.draggable).append('<div>'+modid+'</div>');
-        
-		// add remove, view, edit icons [view & edit modal forms] http://daftspunk.github.io/Font-Autumn/
-		var added = '<div class="icos center btn-group">';
-			added +='<a data-toggle="tooltip" title="Remove Module" data-placement="right" class="btn btn-small btn-info"><i class="icon-remove"></i></a>';
-			added +='<a data-toggle="tooltip" title="View Assignments" data-placement="bottom" class="btn btn-small btn-info"><i class="icon-map-marker"></i></a>';
-			added +='<a data-toggle="tooltip" title="Edit Settings" data-placement="top" class="btn btn-small btn-info"><i class="icon-edit"></i></a>';
-			added +='</div>';
-		$(ui.draggable).append(added);
 
-        /** change moditem to sort modules order **/
-        sortgroups.sortable("refresh");
-	
-        // update modules[]
-        var modorder = $(nuplace).children().length;// child position
-        
-        modules.push({"unit":actor, "mod_id":modid, "mod_order": modorder, "image_url": ""});//mod_name?
-        //console.log('dropped modules: '+modules.length, modules);
-        
-        // if > 3 items on tab adjust width of tabody
-        var count = $.grep(modules, function(elem, index) {
-            return elem.unit == actor;
-        });
-        console.log('count: '+count.length, count);// modules in this tab
-        
-        var widt = $(nuplace).width();// increase for each new module
-        if(count.length > 3) {
-            widt += 200; 
-            $(nuplace).css({ 'width': widt, 'overflow-x': 'auto' });
-            console.log('width:',widt);
+    
+    $('.aror').on('mouseenter', function(){
+        var activeTab = $('li.ui-state-active').attr('aria-controls');
+        var sat = $('#'+activeTab).scrollLeft();
+        $('#'+activeTab).animate({ scrollLeft:sat+150 });
+    
+    });
+    $('.arol').on('mouseenter', function(){
+        var activeTab = $('li.ui-state-active').attr('aria-controls');
+        var sat = $('#'+activeTab).scrollLeft();
+        $('#'+activeTab).animate({ scrollLeft:sat-150 });
+    });
+// test:
+/*
+    var chmods = [];
+    findNested(moduledata[0].children, 'children', chmods );
+    function findNested(obj, key, memo) {
+      var i,
+          proto = Object.prototype,
+          ts = proto.toString,
+          hasOwn = proto.hasOwnProperty.bind(obj);
+
+      if ('[object Array]' !== ts.call(memo)) memo = [];
+
+      for (i in obj) {
+        if (hasOwn(i)) {
+          if (i === key) {
+            memo.push(obj[i]);
+          } else if ('[object Array]' === ts.call(obj[i]) || '[object Object]' === ts.call(obj[i])) {
+            findNested(obj[i], key, memo);
+          }
         }
-        ////var sleft = widt-(670*1.5);
-        ////dragcontainer[modorder-1] = [-sleft,0,280,0];//update slider container in array
-          //console.log('dragcontainer='+dragcontainer[modorder-1]);
-        ////tabscrol.draggable("option", "containment", dragcontainer[modorder-1]);//at switch tabs too?
+      }
+
+      return memo;
     }
-    ////var dragcontainer=[ [0,0,650,0] ];// array for each tab!
-    ////var tabscrol = $('.tabody').draggable({ axis:'x', containment:dragcontainer[0] });
+console.log('chmods:',chmods);
+*/
+/*
+//http://stackoverflow.com/questions/15642494/find-property-by-name-in-a-deep-object
+//this will deep search an array of objects (hay) for a value (needle) then return an array with the results.
+    var cnmods = [];// 0
+    search(moduledata[0], 'children', cnmods);
+    //search = function(moduledata, 'children', cmods) {
+    function search(hay,needle,accumulator) {
+      var accumulator = accumulator || [];
+        //console.log('type: '+typeof hay);// object,number or string
+      if (typeof hay == 'object') {
+        for (var i in hay) {
+          search(hay[i], needle, accumulator) == true ? accumulator.push(hay) : 1;
+        }
+      }
+      //return new RegExp(needle).test(hay) || accumulator;
+        return accumulator;
+    }
+   console.log('cnmods:', cnmods.length, cnmods); 
+*/
+    
+//http://stackoverflow.com/questions/15523514/find-by-key-deep-in-nested-json-object
+    var cmods = [];
+    getChildren(moduledata);// close: refine this
+    
+    function getChildren(theObj) {
+        var result = null;
+        for(var i=0; i<theObj.length; i++) {
+            var cobj = theObj[i].children;
+            if(cobj.length > 0) {
+                console.log('children: '+cobj.length);
+                cmods.push(theObj[i].children);// to global
+                result = getChildren(theObj[i].children);
+                if(result) { break; }
+            }
+            
+        }
+        return result;
+    }
+    
+    console.log('cmods:', cmods.length, cmods);
     
 })();
 </script>

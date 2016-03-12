@@ -128,6 +128,8 @@ class Vanilla extends ComponentBase
 				
 				// Append the formController to the page
 				$this->page['form'] = $formController;
+                //this is the primary key of the record you want to update
+                $this->page['recordId'] = $config->id;
                 
                 // Instructions page
                 $instructions = $formController->makePartial('instructions');
@@ -190,11 +192,12 @@ class Vanilla extends ComponentBase
 	*/
 	public function onUpdate()
     {
-        $data = post('Competencies');
+        $data = post('Vanilla');//('Competencies');
         $did = intval($data['id']);
-        $config = CompetenceModel::find($did);
-        //echo json_encode($config);
-		$config->name = $data['name'];
+        $config = VanillaModel::find($did);
+        $config->name = $data['name'];
+        //echo json_encode($config);//($data);//
+        
 		// add your fields to update
         //$config->Size = $data['Size'];
 
@@ -202,6 +205,7 @@ class Vanilla extends ComponentBase
         $config->copy_id = $data['copy_id'];//hidden
 		$config->save();// update original record 
 		return json_encode($config);// back to instructor
+        
     }
     /* End of class */
 }

@@ -29,6 +29,7 @@
                     <form role="form" id="updateForm"
                       data-request="{{ __SELF__ }}::onUpdate"
                       data-request-success="$el.hide();completed(data);">
+                        {{ form.update(recordId)|raw }}
                         {{ form.formRender()|raw }}
                       <div class="form-group">
                          <button class="btn btn-primary btn-block btn-md" type="submit" value="register">Update Component</button>
@@ -47,31 +48,21 @@
 
 <script>
     
-	var configVal=[config.Name];
-	var fieldIDs=['Form-field-Vanilla-Name'];
-	
-    /* set id,course,copy in the POST they are not editable
+    /* set id,course,copy in the POST if they are hidden in fields.yaml
         Add hidden input fields so they will transfer to onUpdate
-        fields.yaml is set to hidden: true so they do not appear at all
+        fields.yaml is set to hidden: true do not appear in the form at all
+        
+        in Vanilla I only have id hidden
     */
+    
     $('#Form-outsideTabs').append('<input type="hidden" name="Vanilla[id]" value="'+config.id+'" /> ');
-    $('#Form-outsideTabs').append('<input type="hidden" name="Vanilla[course_id]" value="'+config.course_id+'" /> ');
-    $('#Form-outsideTabs').append('<input type="hidden" name="Vanilla[copy_id]" value="'+config.copy_id+'" /> ');
-    
-    // Fix Animate checkbox switch
-    $('<div style="height:90px;" class="clearfix"></div>').insertBefore('.checkbox-field').parent;
-	$('.checkbox-field').attr('style','margin-left:20px').removeClass('span-right').addClass('span-left');
-    $('#Form-field-Vanilla-Name-group').hide();// not useful
-    
-    //fill the form with current configuration
-    for(var i=0; i<configVal.length; i++) {
-       $('#'+fieldIDs[i]).val(configVal[i]);
-    }
+    //$('#Form-outsideTabs').append('<input type="hidden" name="Vanilla[course_id]" value="'+config.course_id+'" /> ');
+    //$('#Form-outsideTabs').append('<input type="hidden" name="Vanilla[copy_id]" value="'+config.copy_id+'" /> ');
     
 	function completed(data)
 	{
         /* updated record is returned */
         location.reload();
 	}
-	console.log('instance:'+config.id,config.name,config.course_id,config.copy_id);
+	console.log('instance: id='+config.id,config.name,config.course_id,config.copy_id);
 </script>
