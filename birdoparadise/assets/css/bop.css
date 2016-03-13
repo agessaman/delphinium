@@ -43,6 +43,13 @@
 	left: 10px;
 }
 /* for testing */
+.locked {
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	z-index: 800;
+	color: #ff0000;
+}
 .items {
 	padding: 5px;
 	font-size: 0.9em;
@@ -75,3 +82,18 @@
 .arol:hover { background-position: 0px 0px; opacity: 0.6; }
 .aror:hover { background-position: -50px 0px; opacity: 0.6; }
 .arol:active, .aror:active { opacity: 0.8; }
+
+/*styles for module_items.type match iris*/
+.prereq {
+	padding: 3px;
+	/*margin-bottom: 3px;*/
+	border: thin solid #ababab;
+	background-color: #f1edc6;
+}
+.assignment {
+	padding: 3px;
+	margin-bottom: 1px;
+	border: thin solid #ababab;
+	background-color: #fff;
+}
+

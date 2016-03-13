@@ -43,7 +43,7 @@ class Competencies extends ComponentBase
         also in backend New form!!!
     */
     //The CMS controller executes this method before the default markup is rendered.
-    public function onRender()
+	public function onRun()
     {
     /*
         is an insance set? yes show it
@@ -121,10 +121,7 @@ class Competencies extends ComponentBase
             $roleStr = 'Instructor';
         }
         $this->page['role'] = $roleStr;// only one or the other
-    }
-    
-    public function onRun()
-    {
+
 		try
         {
 			/*get Assignments & Submissions ***** & enrolled students?
@@ -154,7 +151,8 @@ class Competencies extends ComponentBase
 				
 				// Append the formController to the page
 				$this->page['form'] = $formController;
-                
+                //this is the primary key of the record you want to update
+                $this->page['recordId'] = $config->id;
                 // Instructions page
                 $instructions = $formController->makePartial('instructions');
                 $this->page['instructions'] = $instructions;

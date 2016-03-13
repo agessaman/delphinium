@@ -5,6 +5,8 @@ use Delphinium\BirdoParadise\Models\Modulemap as ModulemapModel;
 use Delphinium\Roots\Roots;
 use Delphinium\Roots\Enums\ActionType;
 use Delphinium\Roots\Requestobjects\ModulesRequest;
+use Delphinium\Roots\Requestobjects\AssignmentsRequest;// for submissions
+use Delphinium\Roots\Requestobjects\SubmissionsRequest;// student progress
 //parent/children
 use Delphinium\BirdoParadise\Classes\ManagerHelper as IrisClass;
 
@@ -144,9 +146,10 @@ class Modulemap extends ComponentBase
             if($roleStr == 'Learner')
 			{
                 //code specific to the student view goes here
-                // units & modules from db
+				// assignments & submissions
+                $this->getStudentSubmissions();
             }
-			
+			// for both 
 			$moduledata = $this->getModules();
 			$this->page['moduledata'] = json_encode($moduledata);
         }
@@ -296,5 +299,33 @@ class Modulemap extends ComponentBase
         return $array;
     }
 
+	public function getStudentSubmissions()
+	{
+		$req = new AssignmentsRequest(ActionType::GET);
+		$res = $roots->assignments($req);
+
+		$assignmentIds = array();// for submissionsRequest
+		$assignments = array();// for points_possible
+		foreach ($res as $assignment) {
+			array_push($assignmentIds, $assignment["assignment_id"]);
+			array_push($assignments, $assignment);
+		}
+		
+		$this->page['assignments']=json_encode($assignments);
+		
+		$studentIds = null;//['1604486'];//Test Student
+		$allStudents = true;
+		$allAssignments = true;
+		$multipleStudents = false;
+		$multipleAssignments = true;
+		$includeTags = true;
+		$grouped = true;
+
+		$req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, $assignmentIds, $allAssignments, $multipleAssignments, $includeTags, $includeTags, $grouped);
+
+		$submissions = $roots->submissions($req);
+		$this->page['submissions']=json_encode($submissions);// score
+	}
+	
 /* End of class */
 }
