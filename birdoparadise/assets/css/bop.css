@@ -9,124 +9,69 @@
 .right{
     float: right;
 }
-.colm{
-    width: 49%;
-    padding: 5px;
-    margin: 2px;
-    border: 1px solid #888;
-}
-
 .page {
 	display: block;
 	position: relative;
 	overflow: hidden;
 	width: 100%; height: 380px;
 }
-/** UNUSED
-.leftcolm {
-    float:left;
-    margin: 0px 5px 0px 10px;
-    padding: 0px 10px 0px 10px;
-    width: 245px; height: 400px;
-    overflow-y: auto;
-    line-height: 1.3em;
-    border: 2px dashed #888;
-    background-color: #e0e0e0;
-}
-.modbox {
-    width: 200px;
-    height: 100px;
-    float: left;
-    position:relative;
-    border: medium solid #666;
-    background-color: #fff;
-    color: #ababab;
-    margin: 10px 0px;
-    display: inline-block;
-}*/
 .moditem {
     width: 180px;
     height: 130px;
     float: left;
     position: relative;
     border: medium solid #ababab;
-    background-color: #fafafa !important;
-    color: #ababab !important;/* overide sortable */
-    /*padding: 5px;*/
+    background-color: #fafafa;
+    color: #ababab;
 	display: inline-block;
     margin: 5px 5px 5px 5px;/* T,R,B,L */
-    cursor: pointer;/* click to show items */
-}
-.icos {
-	font-size: 2em;
-	position:relative;
-    padding-left: 15px;
-    padding-top: 20px;
-	/*padding-top: 70px;*/
+    cursor: pointer;/* click to show module_items */
+	-webkit-box-shadow: 3px 3px 5px 0px rgba(50, 50, 50, 0.8);
+	-moz-box-shadow:    3px 3px 5px 0px rgba(50, 50, 50, 0.8);
+	box-shadow:         3px 3px 5px 0px rgba(50, 50, 50, 0.8);
 }
 .title {
-	background-color: #ababab;
+	background-color: #ababab;/* user defined? */
 	color: #fafafa;
 	padding: 5px;
 	font-size: 0.9em;
 	font-weight: 400;
 }
+.stars {
+	position: absolute;
+	bottom: 3px;
+	left: 10px;
+}
+/* for testing */
 .items {
 	padding: 5px;
 	font-size: 0.9em;
 	font-weight: 400;
 }
-.modDraggable {
- /* .modbox .leftcolm */
-    cursor: move;
-}
-.modDraggable.ui-draggable-dragging { opacity: 0.6; }
-.itemDraggable.ui-draggable-dragging { opacity: 0.6; }
-.itemDraggable {
-/*moditem .rightcolm*/
-   /*cursor: ew-resize;*/
-   
-}
 
-.rightcolm {
-    float: left;
-    width: 600px; height: 320px;
-    overflow: hidden;
-    position: relative;
-}
+.tab-pane { overflow: hidden; }
 .tabody {
-    width: 670px;
-    height: 150px; 
-    overflow-x: auto; 
-	background-color: #efefef !important;
+    width: 0px;/* add for each moditem */
+    height: 140px; 
+	overflow: auto;
+	/*background-color: #efefef;*/
 }
-.dropzone {
-    opacity: 0.31;
-    background-color: #333;
-    width: 690px;
-    height: 230px;
-    display: inline-block;
-    position: absolute;
-    top: 95px;
-    left: 10px;
-    z-index: 800;
-}
+.scrollnav { position:relative; z-index:100; }
 .arol, .aror {
     display: block;
     position: absolute;
-    top: 59px;
+    top: 0px;
     /* size of arrow element */
     width: 50px;
-    height: 200px;
+    height: 140px;/* same as tabody */
     cursor: pointer;
     background: url('../images/aroos.png') center center no-repeat;
     overflow: hidden;
 }
-.arol { left: 1px; }
-.aror { right: 1px; }
+.arol { left: 0px; }
+.aror { right: 0px; }
 .arol { background-position: 0px 0px; opacity: 0.1; }
 .aror { background-position: -50px 0px; opacity: 0.1; }
 .arol:hover { background-position: 0px 0px; opacity: 0.6; }
 .aror:hover { background-position: -50px 0px; opacity: 0.6; }
-.arol.arodn { opacity: 0.3; }
-.aror.arordn { opacity: 0.3; }
+.arol:active, .aror:active { opacity: 0.8; }

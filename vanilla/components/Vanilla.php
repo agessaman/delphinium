@@ -40,14 +40,14 @@ class Vanilla extends ComponentBase
         try
         {
             /*
-            is an insance set? yes show it
+            is an instance set? yes show it
 
             else get all instances
                 is copy set?
                 -yes check for an instance that matches copy + course show it
 
                 is there an instance with this course? yes use it
-            else create dynamicInstance, save new instance show it
+            else create dynamicInstance, save new instance, show it
             
             Dont forget have the component set up from Here:
             https://github.com/ProjectDelphinium/delphinium/wiki/3.-Setting-up-a-Project-Delphinium-Dev-environment-on-localhost
@@ -103,7 +103,7 @@ class Vanilla extends ComponentBase
             }
 
             $this->page['config'] = json_encode($config);
-            // comma delimited string ?
+            // comma delimited string
             $roleStr = $_SESSION['roles'];
 
             if(stristr($roleStr, 'Learner')) {

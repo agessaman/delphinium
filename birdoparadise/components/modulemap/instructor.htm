@@ -1,29 +1,21 @@
 <!-- Instructor View with Settings cog -->
 <div class="page">
-    <div style="position:relative;">
-        <div id="cog" data-toggle="modal" href="#content-configuration" style="position:absolute; top:10; z-index:950; padding-left:10px;">
-            <a data-toggle="tooltip" title="Settings" data-placement="bottom"><i class="icon-cog"></i></a>
-        </div>
-        <div style="z-index:10; padding-left:30px;">
-            <h3>Instructor view</h3>
-        </div>
-    </div>
+	<div id="cog" data-toggle="modal" href="#content-configuration" style="position:absolute; top:10px; right:50px; z-index:950;">
+		<a data-toggle="tooltip" title="Settings" data-placement="bottom"><i class="icon-cog"></i></a>
+	</div>
 
-    
-    <div class="rightcolm">
-        <div id="tabs">
-            <ul id="tablist">
-                <!-- Insert new tabs -->
-            </ul>
-            <div id="tabdy">
-                <!-- Insert tab body content -->
-            </div>
-            <div><!-- scroll arrows -->
-                <span id="arrowleft" class="arol"></span>
-                <span id="arrowright" class="aror"></span>
-            </div>
-        </div>
-    </div>
+	<div id="tabs">
+		<ul id="tablist" role="tablist" class="nav nav-tabs">
+			<!-- Insert new tabs -->
+		</ul>
+		<div class="scrollnav"><!-- scroll arrows -->
+			<span class="arol"></span>
+			<span class="aror"></span>
+		</div>
+		<div id="tabdy" class="tab-content">
+			<!-- Insert tab body content -->
+		</div>
+	</div>
 </div>
 
 <!-- Configuration modal with Front End Form and Instructions in tabs -->
@@ -37,12 +29,12 @@
             <div class="modal-body">
                 <!-- Tabs -->
                 <ul class="nav nav-tabs">
-                  <li class="active"><a data-toggle="tab" href="#configure">Configure</a></li>
-                  <li><a data-toggle="tab" href="#instruct">Instructions</a></li>
+                  <li><a data-toggle="tab" href="#configure">Configure</a></li>
+                  <li class="active"><a data-toggle="tab" href="#instruct">Instructions</a></li>
                 </ul>
                 <div class="tab-content">
                 <!-- Configure instance -->
-                  <div id="configure" class="tab-pane fade in active" style="padding: 5px 0px;">
+                  <div id="configure" class="tab-pane fade in" style="padding: 5px 0px;">
                     <form role="form" id="updateForm"
                       data-request="{{ __SELF__ }}::onUpdate"
                       data-request-success="$el.hide();completed(data);">
@@ -53,7 +45,7 @@
                     </form>
                   </div>
                 <!-- Instructions -->
-                  <div id="instruct" class="tab-pane fade in" style="padding: 0px 20px;">
+                  <div id="instruct" class="tab-pane fade in active" style="padding: 0px 20px;">
                       {{ instructions|raw }}
                   </div>
                 </div>
@@ -95,7 +87,7 @@
     for(var f=0; f<configVal.length; f++) {
        $('#'+fieldIDs[f]).val(configVal[f]);
     }
-    
+    // wont need form update configure set instruct active
 	function completed(data)
 	{
         /* updated record is returned */
@@ -110,29 +102,19 @@
         http://getbootstrap.com/components/#nav
         
         http://daftspunk.github.io/Font-Autumn/    icon-star, star-half-o, star-o, icon-lock
-        http://api.jqueryui.com/category/interactions/
-        https://api.jqueryui.com/draggable/
-        http://api.jqueryui.com/sortable/
-        Change to Bootstrap nav ... https://jqueryui.com/tabs/
         
         todo: Deep search, Scroll arrows, Locked, 
-        Tooltip? for reason locked prerequisites
-        Stars, images?
-        
+        Tooltip popover for reason locked prerequisites
+        Stars, images
         assignment links in locked modules are disabled for student view
     */
 
-    // store individual module objects
-    var modobjs = [];
-    
-    //todo: edit {label} = units[index].name
-    var tabTitle = $( "#tab_title" ),
-    tabContent = $( "#tab_content" ),
-    tabCounter = 0;// not 0 based
-    // cog to edit unit[].name
-    var tabTemplate = "<li><a href='#{href}'>#{label}</a>";
+    var tabCounter = 0;
+    var tabTemplate = "<li role='presentation'>";
+		tabTemplate +="<a role='tab' data-toggle='tab' href='#{href}' aria-controls='#{href}'>#{label}</a>";
         tabTemplate +="</li>";
-    
+    // store individual module objects for display when moditem clicked
+    var modobjs = [];
     
     // create units and modules from data
     for(var m=0; m<moduledata.length; m++) {
@@ -170,22 +152,19 @@
             }
             // then display array
             for(i=0; i<modlist.length; i++) {
-                
-                //is sortable 
+                //Module box with title & image
             var modbox = '<div id="'+modlist[i].module_id+'" class="moditem" data-locked="'+modlist[i].locked+'">';
                 modbox +='<div class="title">'+modlist[i].name+'</div>';
-                modbox +='<div class="items">Items: '+modlist[i].items_count+'</div>';
-                modbox +='<div class="items">'+modlist[i].module_id+'</div>';// testing
-                modbox +='<div class="items">Locked: '+modlist[i].locked+'</div>';
+                modbox +='<div class="items">'+modlist[i].module_id+' Items: '+modlist[i].items_count+'</div>';// testing
+                modbox +='<div class="items">Locked: '+modlist[i].locked+'</div>';//testing
+				modbox +='<div class="stars">5 stars here</div>';//todo
                 // + cog edit { image upload? }
                 modbox +='</div>';
                 
-                if(i > 2) {
-                    widt += 170;// width of moditem Constant
-                    $(nuplace).css({ 'width': widt});// , 'overflow-x': 'auto' });
-                    $(nuplace).parent().css({'overflow-x': 'auto' });// id=tab_#
-                    //console.log('width:',widt);
-                }
+				widt += 190;// add for each moditem
+                $(nuplace).css({ 'width': widt});
+				//$(nuplace).parent().css({'overflow': 'hidden' });// id=tab_# class=tab-pane
+                //console.log('width:',widt);
                 
                 $(nuplace).append(modbox);
             }
@@ -193,50 +172,39 @@
     }
     
     
-    // jquery-UI tabs use bootstrap nav-tabs
-	var tabs = $( "#tabs" ).tabs({
-        //event: "click"
-        //collapsible: false
-    });
-    
-    var activeTab='tab_0';
-    
+    //bootstrap nav-tabs 
+/*	$('#tabs a').click(function (e) {
+	  e.preventDefault();
+	  $(this).tab('show');
+	});*/
+	// activate first tab
+	$('#tabs a:first').tab('show');
+   
     function addTab(tabname) {
-        
         var label = tabname;
             id = "tab_" + tabCounter,
             li = $( tabTemplate.replace( /#\{href\}/g, "#" + id ).replace( /#\{label\}/g, label ) ),
-            tabContentHtml = "<div id='" + id + "'><div id='tab_"+tabCounter+"body' class='tabody'></div></div>";
+            tabContentHtml = "<div id='" + id + "' role='tabpanel' class='tab-pane'>";
+			tabContentHtml +="<div id='"+id+"body' class='tabody'></div></div>";
         
         $('#tablist').append(li);
         $('#tabdy').append(tabContentHtml);
-        
-        ////dragcontainer.push([0,0,650,0]);//for each tab
-        ////tabscrol.draggable("option", "containment", dragcontainer[tabCounter-1]);
-        // may have to rethink this. Should have horizontal scroll anyway
-        tabCounter++;
-        
-        // (do bootstrap version)
-        
+        tabCounter++; 
     }
     
     /* click module */
     $('.moditem').on('click', function(){
-        console.log( $(this).attr('id') );
-        
         var modid = $(this).attr('id');
         var mod = $.grep(modobjs, function(elem,index){
             return elem.module_id == modid;
         });
         console.log(modid, mod[0].name, mod);
         var moditems= mod[0].module_items;
-        //console.log(modobjs);
         console.log('moditems:',moditems);
         // display in modal detailed-body
         
         $('#detailed-body').empty();
         for(var i=0; i<moditems.length; i++) {
-            
             var item='<div class="">';// create one still
                 //item+='<a target="_blank" href="'+moditems[i].html_url+'?module_item_id='+moditems[i].module_item_id+'" target="_blank">'+moditems[i].title+'</a>';
                 item+='<a target="_blank" href="'+moditems[i].html_url+'" target="_blank">'+moditems[i].title+'</a>';
@@ -245,27 +213,25 @@
                 }
                 item+='</div>';
             $('#detailed-body').append(item);
-            
         }
-        
         // trigger modal
         $('#detailed-title').html(mod[0].name);
         $('#itemdetails').modal('show');
     });
 
-    
-    $('.aror').on('mouseenter', function(){
-        var activeTab = $('li.ui-state-active').attr('aria-controls');
+    // scroll 1 module item per hover and click
+    $('.aror').on('mouseenter click', function(){
+        var activeTab = $('div.active').attr('id');//console.log('rightscroll:',activeTab);
         var sat = $('#'+activeTab).scrollLeft();
-        $('#'+activeTab).animate({ scrollLeft:sat+150 });
-    
+        $('#'+activeTab).animate({ scrollLeft:sat+200 });
     });
-    $('.arol').on('mouseenter', function(){
-        var activeTab = $('li.ui-state-active').attr('aria-controls');
+    $('.arol').on('mouseenter click', function(){
+        var activeTab = $('div.active').attr('id');
         var sat = $('#'+activeTab).scrollLeft();
-        $('#'+activeTab).animate({ scrollLeft:sat-150 });
+        $('#'+activeTab).animate({ scrollLeft:sat-200 });
     });
-// test:
+	
+// test: deep search for module children
 /*
     var chmods = [];
     findNested(moduledata[0].children, 'children', chmods );
@@ -324,12 +290,10 @@ console.log('chmods:',chmods);
                 cmods.push(theObj[i].children);// to global
                 result = getChildren(theObj[i].children);
                 if(result) { break; }
-            }
-            
+            } 
         }
         return result;
     }
-    
     console.log('cmods:', cmods.length, cmods);
     
 })();

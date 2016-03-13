@@ -42,10 +42,10 @@ class Modulemap extends ComponentBase
     
     public function onRun()
     {
-        //try
-        //{
+        try
+        {
             /*
-            is an insance set? yes show it
+            is an instance set? yes show it
 
             else get all instances
                 is copy set?
@@ -108,7 +108,7 @@ class Modulemap extends ComponentBase
             }
 
             $this->page['config'] = json_encode($config);
-            // comma delimited string ?
+            // comma delimited string
             $roleStr = $_SESSION['roles'];
 
             if(stristr($roleStr, 'Learner')) {
@@ -118,19 +118,13 @@ class Modulemap extends ComponentBase
             }
             $this->page['role'] = $roleStr;// only one or the other
             
-        /*    // include any css or javascript here
-		php 5.5.3 wont load these on home machine
+        /*    // include any css or javascript here: loaded in default.htm
             $this->addCss("/plugins/delphinium/birdoparadise/assets/css/bootstrap.min.css");
-            $this->addCss("/plugins/delphinium/birdoparadise/assets/css/font-awesome.css");
-            $this->addCss("/plugins/delphinium/birdoparadise/assets/css/university-ave.css");
             $this->addCss("/plugins/delphinium/birdoparadise/assets/css/bop.css");
-		*/
-        /*  $this->addJs("/plugins/delphinium/birdoparadise/assets/javascript/jquery.min.js");
-            $this->addJs("/plugins/delphinium/birdoparadise/assets/javascript/jquery-ui.min.js");
+			$this->addJs("/plugins/delphinium/birdoparadise/assets/javascript/jquery.min.js");
             $this->addJs("/plugins/delphinium/birdoparadise/assets/javascript/bootstrap.min.js");
         */
-            
-            // include the backend form with instructions here
+            // include the backend form with instructions
             if($roleStr == 'Instructor')
 			{
 				//https://medium.com/@matissjanis/octobercms-using-backend-forms-in-frontend-component-fe6c86f9296b#.ge50nlmtc
@@ -146,18 +140,15 @@ class Modulemap extends ComponentBase
                 $this->page['instructions'] = $instructions;
                 
                 //other code specific to instructor view goes here
-                // both or just instructor
-                $moduledata = $this->getModules();
-                $this->page['moduledata'] = json_encode($moduledata);
-                
             }
-            
             if($roleStr == 'Learner')
 			{
                 //code specific to the student view goes here
                 // units & modules from db
             }
-      /*     
+			
+			$moduledata = $this->getModules();
+			$this->page['moduledata'] = json_encode($moduledata);
         }
         catch (\GuzzleHttp\Exception\ClientException $e) {
             return;
@@ -177,7 +168,6 @@ class Modulemap extends ComponentBase
             }
             return \Response::make($this->controller->run('error'), 500);
         }
-    */
     }
     
     public function getInstanceOptions()
@@ -248,8 +238,7 @@ class Modulemap extends ComponentBase
             $mod->value=$item['name'];
             $simpleModules[] = $mod;
         }
-        $this->page['rawData'] = json_encode($simpleModules);
-
+        //$this->page['rawData'] = json_encode($simpleModules);
         $iris = new IrisClass();// reorder for parent/children
         $result = $iris->buildTree($modArr);
 
@@ -299,56 +288,12 @@ class Modulemap extends ComponentBase
         return $tempArray;
     }
 
-
     private function unsetValue(array $array, $value, $strict = TRUE)
     {
         if(($key = array_search($value, $array, $strict)) !== FALSE) {
             unset($array[$key]);
         }
         return $array;
-    }
-
-    
-// unused now....................
-    public function OLDgetModules()
-    {
-        // define the request
-        $moduleId = null;
-        $moduleItemId = null;
-        $includeContentDetails = true;
-        $includeContentItems = true;
-        $module = null;
-        $moduleItem = null;
-        $freshData = false;
-
-        $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems, $includeContentDetails, $module, $moduleItem , $freshData);
-        
-        $roots = new Roots();
-        $moduleData = $roots->modules($req);
-        
-        $modArr = $moduleData->toArray();
-        
-        $simpleModules = array();// simplified module data?
-        
-        foreach($modArr as $item)
-        {
-            $mod = new \stdClass();
-
-            $mod->id = $item['module_id'];
-            $mod->title=$item['name'];
-            $mod->locked=$item['locked'];
-            $mod->items =$item['module_items'];//REPLACES assignments
-
-            // items contain:
-            //module_items[i].content[0].title & .url, maybe .type
-            //module_items[i].content[0].points_possible & .tags
-
-            $simpleModules[] = $mod;
-        }
-        
-        //$this->page['simpleMods'] = json_encode($simpleModules);
-        //$this->page['modata'] = json_encode($moduleData);// complete array remove when done
-        return $modArr;//$simpleModules;//
     }
 
 /* End of class */

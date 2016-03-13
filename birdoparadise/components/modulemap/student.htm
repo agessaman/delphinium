@@ -1,9 +1,166 @@
-<!-- Student View :-->
+<!-- Student View -->
+<div class="page">
+	<div id="tabs">
+		<ul id="tablist" role="tablist" class="nav nav-tabs">
+			<!-- Insert new tabs -->
+		</ul>
+		<div class="scrollnav"><!-- scroll arrows -->
+			<span class="arol"></span>
+			<span class="aror"></span>
+		</div>
+		<div id="tabdy" class="tab-content">
+			<!-- Insert tab body content -->
+		</div>
+	</div>
+</div>
+
+<!-- Modal: when module is clicked show items in module -->
+<div class="control-popup modal fade" id="itemdetails" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 id="detailed-title" class="modal-title">Item Details</h4>
+            </div>
+            <div id="detailed-body" class="modal-body">
+                <p>This displays details of module</p>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
+(function() {
     
+    /*
+        Bird of Paradise:
+        
+        http://getbootstrap.com/javascript/
+        http://getbootstrap.com/components/#nav
+        http://daftspunk.github.io/Font-Autumn/    icon-star, star-half-o, star-o, icon-lock
+        
+        todo: Deep search, Scroll arrows, Locked, 
+        Tooltip popover for reason locked prerequisites
+        Stars, images
+        assignment links in locked modules are disabled for student view
+    */
+
+    var tabCounter = 0;
+    var tabTemplate = "<li role='presentation'>";
+		tabTemplate +="<a role='tab' data-toggle='tab' href='#{href}' aria-controls='#{href}'>#{label}</a>";
+        tabTemplate +="</li>";
+    // store individual module objects for display when moditem clicked
+    var modobjs = [];
+    
+    // create units and modules from data
+    for(var m=0; m<moduledata.length; m++) {
+        
+        var chld = moduledata[m]['children'];
+        for(var c=0; c<chld.length; c++) {
+            var tabname=chld[c].name;
+            addTab(tabname);// each unit
+            // add moditem for each chld[c].module_item
+            
+            var nuplace = $('#tab_'+c+'body');
+            var widt = $(nuplace).width();// increase for each new module
+            var mods = chld[c].children;
+            var leng = mods.length;
+            var modlist = [];// modules in this tab
+    //do this in Modulemap after getModules in another function ?
+            for(var i=0; i<leng; i++) {
+                // individual module objects for searching items
+                modobjs.push(mods[i]);// all
+                modlist.push(mods[i]);// modules in this tab
+                // if module has children add it
+                if(mods[i].children.length > 0 ) {
+                    var len = mods[i].children.length;
+                    console.log(mods[i].name+' children: '+len);
+                     
+                    //DEEP CHILDREN: $.each(  http://api.jquery.com/category/utilities/
+                    
+                    //insert into other array
+                    for(var mc=0; mc<len; mc++) {
+                        // & child of child of child ?
+                        modobjs.push(mods[i].children[mc]);
+                        modlist.push(mods[i].children[mc]);
+                    }
+                }
+            }
+            // then display array
+            for(i=0; i<modlist.length; i++) {
+                //Module box with title & image
+            var modbox = '<div id="'+modlist[i].module_id+'" class="moditem" data-locked="'+modlist[i].locked+'">';
+                modbox +='<div class="title">'+modlist[i].name+'</div>';
+                modbox +='<div class="items">'+modlist[i].module_id+' Items: '+modlist[i].items_count+'</div>';// testing
+                modbox +='<div class="items">Locked: '+modlist[i].locked+'</div>';//testing
+				modbox +='<div class="stars">5 stars here</div>';//todo
+                // + cog edit { image upload? }
+                modbox +='</div>';
+                
+				widt += 190;// add for each moditem
+                $(nuplace).css({ 'width': widt});
+                $(nuplace).append(modbox);
+            }
+        }
+    }
+    
+    //bootstrap nav-tabs 
+/*	$('#tabs a').click(function (e) {
+	  e.preventDefault();
+	  $(this).tab('show');
+	});*/
+	// activate first tab
+	$('#tabs a:first').tab('show');
+   
+    function addTab(tabname) {
+        var label = tabname;
+            id = "tab_" + tabCounter,
+            li = $( tabTemplate.replace( /#\{href\}/g, "#" + id ).replace( /#\{label\}/g, label ) ),
+            tabContentHtml = "<div id='" + id + "' role='tabpanel' class='tab-pane'>";
+			tabContentHtml +="<div id='"+id+"body' class='tabody'></div></div>";
+        
+        $('#tablist').append(li);
+        $('#tabdy').append(tabContentHtml);
+        tabCounter++; 
+    }
+    
+    /* click module */
+    $('.moditem').on('click', function(){
+        var modid = $(this).attr('id');
+        var mod = $.grep(modobjs, function(elem,index){
+            return elem.module_id == modid;
+        });
+        console.log(modid, mod[0].name, mod);
+        var moditems= mod[0].module_items;
+        console.log('moditems:',moditems);
+        // display in modal detailed-body
+        
+        $('#detailed-body').empty();
+        for(var i=0; i<moditems.length; i++) {
+            var item='<div class="">';// create one still
+                //item+='<a target="_blank" href="'+moditems[i].html_url+'?module_item_id='+moditems[i].module_item_id+'" target="_blank">'+moditems[i].title+'</a>';
+                item+='<a target="_blank" href="'+moditems[i].html_url+'" target="_blank">'+moditems[i].title+'</a>';
+                if(moditems[i].content.length > 0) {
+                    item+=' worth: '+moditems[i].content[0].points_possible;
+                }
+                item+='</div>';
+            $('#detailed-body').append(item);
+        }
+        // trigger modal
+        $('#detailed-title').html(mod[0].name);
+        $('#itemdetails').modal('show');
+    });
+
+    // scroll 1 module item per hover and click
+    $('.aror').on('mouseenter click', function(){
+        var activeTab = $('div.active').attr('id');//console.log('rightscroll:',activeTab);
+        var sat = $('#'+activeTab).scrollLeft();
+        $('#'+activeTab).animate({ scrollLeft:sat+200 });
+    });
+    $('.arol').on('mouseenter click', function(){
+        var activeTab = $('div.active').attr('id');
+        var sat = $('#'+activeTab).scrollLeft();
+        $('#'+activeTab).animate({ scrollLeft:sat-200 });
+    });
+})();
 </script>
-
-<!-- component partial -->
-<h3>Student Learner view</h3>
-
-<p>Add your awesome stuff goes here ...</p>

@@ -41,12 +41,23 @@ assets/javascript/ygt_game.js
 	timer
 	gameOver();
 */
-var current=0;
+var scoreis=0, misses=0;
+var current=0;// questnum
 var gameQuest=[];
 
 function showIntro()
 {
-    $('gameplay').hide();
+	// reset intro elements
+	$('#you').css({'left':11,'opacity':0});
+	$('#got').css({'top':1,'opacity':0});
+	$('#this').css({'left':555,'opacity':0});
+	$('#yep').css({'top':555,'opacity':0});
+	current=scoreis=misses=0;
+	$('#nextaro').hide();
+	$('gameplay').hide();
+	$('title').show();
+	
+	console.log('show intro');
 	/*
 		animated title as js file ???
 		click Play Now #gobtn
@@ -99,23 +110,18 @@ $('#star').sprite({fps:6, no_of_frames:6}).active();
 $('#star').hide();
 function showStar() {
     $('#star').show();
-   // $('#star').sprite({fps: 6, no_of_frames: 6, on_last_frame: function(obj) { obj.stop(true); } }).active();
     $('#star').css({'left':350,'top':120, opacity:1})
         .animate({ left: 200, top: 20, opacity: 0 }, 1000, function(){ //$('#star').destroy(); 
-		});
+	});
 }
 
 $('#wrong').sprite({fps: 6, no_of_frames: 6}).active();
 $('#wrong').hide();
 function shoWrong() {
     $('#wrong').show();
-/*   $('#wrong').sprite({fps: 6, no_of_frames: 6,
-            on_last_frame: function(obj) { obj.stop(true); }
-            }).active();
-*/
     $('#wrong').css({'left':450,'top':150, opacity:1})
         .animate({ top: 20, opacity: 0 }, 1000, function(){ //$('#wrong').spStop(true); 
-		});
+	});
 }
 
 $('#nextaro').sprite({fps: 6, no_of_frames: 4}).active();
@@ -126,31 +132,41 @@ function showNextaro() {
 }
 $('#nextaro').on('click', function(){
     $('#nextaro').hide();
-	$('.valid').empty();
-	// animate question OFF screen or fade
 	current++;
 	if(current==gameitems.length){ 
 		current=0;
 		//gameOver
 	}
     showQuestion(current);//show next question
-	$('.makeDraggable').show();// all answers
+	//$('.makeDraggable').show();// all answers
 });
 
 //animate onto screen from top?
 function showQuestion(index) {
-	$('.questbox').html(gameQuest[index][0].text);
+	$('.valid').empty();
+	$('.makeDraggable').hide();// all answers
+	// animate question onto screen or fade in
+	$('.questbox').attr('data-points', gameQuest[index][0].points_possible)
+		.html(gameQuest[index][0].text);
 	var answers= $.parseJSON(gameQuest[index][0].answers);
-	var ansdiv='';
 	//console.log(answers);
 	// animate answers onto screen from bottom?
 	for(var i=0; i<answers.length; i++){
 		$('#a'+i).html(answers[i].text)
-			.attr('weight', answers[i].weight);// or hide?
+			.attr('weight', answers[i].weight)
+			.addClass('shado')
+			.show();// only answers with content
 	}
 }
-// updateScore, gameOver, timer
-
+// ToDo: score, missed, timer, gameOver
+function updateScore() {
+	scoreis += parseInt($('.questbox').attr('data-points'));
+	$('.score').html('Score: '+scoreis);
+}
+function updateMissed() {
+	misses ++;
+	$('.missd').html('oops: '+misses);
+}
 /*
     http://www.elated.com/articles/drag-and-drop-with-jquery-your-essential-guide/
     http://api.jqueryui.com/draggable/
@@ -162,28 +178,29 @@ $('.makeDraggable').draggable({
     zIndex: 500,
     iframeFix: true,
     distance: 10,
-	revert: true
+	revert: true,
+	start: function(){ $(this).removeClass('shado'); }
 });
 
 $('.questbox').droppable({
     drop: handleDropEvent
 });
 function handleDropEvent( event, ui ) {
-    var offsetXPos = parseInt( ui.offset.left );
-    var offsetYPos = parseInt( ui.offset.top );
-    console.log( event.target.id+" Offset: (" + offsetXPos + ", " + offsetYPos + ")");
-    
+        
     var id = ui.draggable.attr('weight');
     //console.log( 'dropped ID "' + id + '" was dropped onto me!' );
 	//multiple answers points/weight = score: totalWeight=100 = done
+	// if id>0 valid append ui.draggable.hide if wcnt == 100
     if(id == '100') {
         showStar();//play correct sprite
-        //console.log("correct");
+        updateScore();//console.log("correct");
         $('.makeDraggable').hide();// all answers
-        $('.valid').append($('#'+id).html());// show answer
+        $('.valid').append($(ui.draggable).html());// show answer
+		$('.valid').show();
+		
         showNextaro();
     } else {
-        
+       updateMissed(); 
        shoWrong();//play wrong
     }
 }

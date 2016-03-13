@@ -1,12 +1,13 @@
-<div class="center">
+<div class="container center">
 <div class="accordion">
     <div class="accordion-section">
         <a class="accordion-section-title" href="#accordion-1">All Quizzes</a>
         <div id="accordion-1" class="accordion-section-content">
 			<!-- http://getbootstrap.com/css/   .col-xs-6 .col-md-4 -->
-            <div id="col_0" class="thirds left"></div>
-			<div id="col_1" class="thirds left"></div>
-			<div id="col_2" class="thirds left"></div>
+            <!--div id="col_0" class="thirds left"></div-->
+			<div id="col_0" class="col-md-4"></div>
+			<div id="col_1" class="col-md-4"></div>
+			<div id="col_2" class="col-md-4"></div>
 			<div class="clear"></div>
 			
         </div><!--end .accordion-section-content-->
@@ -195,7 +196,12 @@
 		// check: if saved yet, if changed since save
 		gameQuest=gameitems;// gameQuest is var in game
 		// or send to function in game?
-    });
+		close_accordion_section();
+		$('#accordion-5').addClass('active');
+		// Open up the hidden content panel
+		$('.accordion #accordion-5').slideDown(300).addClass('open');
+		showIntro();// restart game
+	});
 
     // need to be able to see question with answers
     //see details of questions in modal next btn?
