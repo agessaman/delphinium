@@ -46,7 +46,6 @@ class Plugin extends PluginBase
             '\Delphinium\Blossom\Components\StudentsGraph' => 'studentsgraph',
             '\Delphinium\Blossom\Components\Timer' => 'timer',
             '\Delphinium\Blossom\Components\Progress' => 'progress',
-            '\Delphinium\Blossom\Components\ExperienceManager' => 'experiencemanager',
             '\Delphinium\Blossom\Components\Gradebook' => 'gradebook',
             '\Delphinium\Blossom\Components\EasterEggs' => 'eastereggs',
             '\Delphinium\Blossom\Components\Stats' => 'stats',
@@ -100,39 +99,6 @@ class Plugin extends PluginBase
                     'url' => Backend::url('delphinium/blossom/leaderboard'),
                     'group'       => 'Blossom',
                 ],
-
-                'StudentsGraph' => [
-                    'label' => 'StudentsGraph',
-                    'icon' => 'icon-bar-chart',
-                    'owner' => 'Delphinium.Greenhouse',
-                    'url' => Backend::url('delphinium/blossom/studentsgraph'),
-                    'group'       => 'Blossom',
-                ],
-
-                'Timer' => [
-                    'label' => 'Timer',
-                    'icon' => 'icon-bar-chart',
-                    'owner' => 'Delphinium.Greenhouse',
-                    'url' => Backend::url('delphinium/blossom/timer'),
-                    'group'       => 'Blossom',
-                ],
-
-                'Progress' => [
-                    'label' => 'Progress',
-                    'icon' => 'icon-bar-chart',
-                    'owner' => 'Delphinium.Greenhouse',
-                    'url' => Backend::url('delphinium/blossom/progress'),
-                    'group'       => 'Blossom',
-                ],
-
-                'Easter Eggs' => [
-                    'label' => 'Easter Eggs',
-                    'icon' => 'icon-bar-chart',
-                    'owner' => 'Delphinium.Greenhouse',
-                    'url' => Backend::url('delphinium/blossom/eastereggs'),
-                    'group' =>'Blossom',
-                ],
-
                 'Stats' => [
                     'label' => 'Stats',
                     'icon' => 'icon-bar-chart',

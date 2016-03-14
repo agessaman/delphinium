@@ -40,21 +40,22 @@
     <div id="blocker" class="hidden"></div>	
 
 <script type="text/javascript">
-    function Iris (graphData, rawData, filter) {
-        this.filter = filter;
-        this.graphData = graphData;
-        this.name = "iris"+filter;
-        this.chartNumber = 0;
-    }
-    var studentId = {{userId}};
-    var courseId = {{courseId}}
-    var graphData = {{ graphData|raw}};
-    var rawData = {{ rawData|raw}};
-    var filter = {{filter}};
-    var chartName = 'graphData'+filter;
-    window['chartName'] = chartName;
-    var irisChartName = 'iris'+filter;
-    var iris = new Iris(graphData, rawData, filter);
-    window['delphinium_iris'+filter] = iris;
+//    function Iris (graphData, rawData, filter) {
+//        this.filter = filter;
+//        this.graphData = graphData;
+//        this.name = "iris"+filter;
+//        this.chartNumber = 0;
+//    }
+//    var studentId = {{userId}};
+//    var courseId = {{courseId}}
+//    var graphData = {{ graphData|raw}};
+//
+//    var rawData = {{ rawData|raw}};
+//    var filter = {{filter}};
+//    var chartName = 'graphData'+filter;
+//    window['chartName'] = chartName;
+//    var irisChartName = 'iris'+filter;
+//    var iris = new Iris(graphData, rawData, filter);
+//    window['delphinium_iris'+filter] = iris;
 
 </script>

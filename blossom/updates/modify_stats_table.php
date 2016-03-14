@@ -11,6 +11,7 @@ class ModifyStatsTable extends Migration
         Schema::table('delphinium_blossom_stats', function($table)
         {
             $table->string('size')->change();
+
         });
     }
 
@@ -18,7 +19,7 @@ class ModifyStatsTable extends Migration
     {
         Schema::table('delphinium_blossom_stats', function($table)
         {
-            $table->integer('points_possible')->change();
+            $table->integer('size')->change();
         });
     }
 }

@@ -18,3 +18,6 @@
 1.0.5:
     - Modify stats size
     - modify_stats_table.php
+1.0.6:
+    - Add course to stats and experiences tables
+    - add_course.php

@@ -29,7 +29,8 @@ class Experience extends CustomModel
         'bonus_days' => 'required',
         'penalty_days' => 'required',
         'animate'=>'required',
-        'size' => 'required'
+        'size' => 'required',
+        'course_id' => 'required'
     ];
     
     public $hasMany = [

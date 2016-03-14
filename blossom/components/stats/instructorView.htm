@@ -1,70 +1,72 @@
-<script>
-    function updateComponent(){
-        $( "#loading" ).show( "slow", function() {});
-        $('#updateForm').request('onUpdate', {
-            success: function(data) {
-                location.reload();
-            }
-        })
-    }
-</script>
 {% partial 'stats::display' %}
 
-<a data-toggle="modal" href="#content-confirmation" class="settings"><i class="icon-cog"></i></a>
-
-<div class="control-popup modal fade" id="content-confirmation" tabindex="-1" role="dialog">
+<div class="">
+    <a data-toggle="modal"  data-keyboard="true" data-backdrop="true" onclick="showModal()"><i class="icon-cog"></i> Settings</a>
+</div>
+<div class="control-popup modal fade" id="modalWindow" tabindex="-1" role="dialog">
     <div class="modal-dialog">
-        <div class="modal-content" style="width:260px">
+        <div class="modal-content" style="width:490px">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Configure Stats Settings</h4>
             </div>
             <div class="modal-body">
-                <i id="loading" class="icon-refresh"></i>
-                <form class="form-elements" role="form" id="updateForm">
-                    <div class="form-group span-full">
-                        <label data-toggle="tooltip" title="Input the name to identify this
-						 meter">Name</label>
-                        <input type="text" name="name" value="{{name}}" class="form-control" />
-                    </div>
+                <div class="confirm-container bg-success hide">
+                    <p style="text-align:center;">Successfully Updated Entry!</p>
+                </div>
 
-                    <div style="width:7em; float:left; margin-right:2em;">
-                        <label data-toggle="tooltip" title="Select the size of the stats meter">Size</label>
-                        <select id="selectSize" name="size" class="form-control custom-select">
-                            <option value="1">Small</option>
-                            <option value="2">Medium</option>
-                            <option value="3">Large</option>
-                        </select>
+                <!-- Tabs -->
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#configure">Configure</a></li>
+                    <li><a data-toggle="tab" href="#instruct">Instructions</a></li>
+                </ul>
+                <div class="tab-content">
+                    <!-- Configure instance -->
+                    <div id="configure" class="tab-pane fade in active" style="padding: 5px 0px;">
+                        <form role="form" id="updateForm"
+                              data-request="{{ __SELF__ }}::onSave"
+                              data-request-success="$el.hide();completed(data);">
+                            {{ form.update(recordId)|raw }}
+                            {{ form.formRender()|raw }}
+                            <div class="form-group">
+                                <button class="btn btn-primary" type="submit" value="register" data-load-indicator="Saving Stats..." >Update Component</button>
+                                <button type="button" onclick="hideModal()" class="btn btn-default" data-disposable="">Close</button>
+                            </div>
+                        </form>
                     </div>
-                    <div style="width:7em; float:left;">
-                        <label data-toggle="tooltip" title="Select whether or not to animate the stats meter when the page loads">Animate</label>
-                        <select id="selectAnimate" name="animate" class="form-control custom-select">
-                            <option value="true">True</option>
-                            <option value="false">False</option>
-                        </select>
+                    <!-- Instructions -->
+                    <div id="instruct" class="tab-pane fade in" style="padding: 0px 20px;">
+                        {{ instructions|raw }}
                     </div>
-                </form>
+                </div>
+            </div>
+
             </div>
             <div style="clear:both; height:1.5em"></div>
-            <div class="modal-footer">
+            <!--div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="updateComponent()">Update</button>
-            </div>
+            </div-->
         </div>
     </div>
 </div>
 
+
 <script>
-    var s = document.getElementById("selectSize");
-    for ( var i = 0; i < s.options.length; i++ ) {
-        if ( s.options[i].value == "{{statsSize}}" ) {
-            s.options[i].selected = true;
-        }
+
+    function showModal()
+    {
+        $("#modalWindow").on("shown.bs.modal", function () {
+            //disable the course id and the copy name
+            var modal = $(this);
+            document.getElementById('Form-field-Stats-name').readOnly=true;
+            document.getElementById('Form-field-Stats-course_id').readOnly=true;
+
+            //make the window wider
+            $('.modal-content').css('width',$( window ).width()*0.8);
+        }).modal('show');
     }
-    var s = document.getElementById("selectAnimate");
-    for ( var i = 0; i < s.options.length; i++ ) {
-        if ( s.options[i].value == "{{statsAnimate}}" ) {
-            s.options[i].selected = true;
-        }
+
+    function hideModal()
+    {
+        $('#modalWindow').modal('hide');
     }
 </script>
