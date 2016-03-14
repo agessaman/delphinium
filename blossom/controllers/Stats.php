@@ -23,10 +23,6 @@ class Stats extends Controller
         parent::__construct();
 
         BackendMenu::setContext('Delphinium.Greenhouse', 'greenhouse', 'greenhouse');
-
-        Event::listen('backend.page.beforeDisplay', function($controller, $action, $params) {
-//            $controller->addJs("/plugins/delphinium/blossom/assets/javascript/jquery.min.js");
-        });
     }
 
     public function index_onDelete()
