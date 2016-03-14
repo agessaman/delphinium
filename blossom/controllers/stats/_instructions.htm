@@ -1,11 +1,12 @@
-<div>
+<div id="loader">
     <h2>Stats Component</h2>
-    <p>The stats component is tightly related to the experience component. In order for stats to work, an instance of experience must be configured in the
+    <p>The stats component is tightly related to the experience component. In order for stats to work, an instance of
+        experience must be configured in the
         greenhouse backend. A backend instance of stats must also be configured in greenhouse:
         <br/><b>Greenhouse-->Blossom-->Stats-->New Stats Instance</b>
     </p>
     Fill out the form accordingly:
-    <img class="img" id="image4"  src="" title="Stamina" alt="Quality of work"/>
+    <br/><img class="img" id="image4" src="" title="Stamina" alt="Quality of work"/>
     <hr/>
 </div>
 
@@ -14,70 +15,111 @@
     <h3>Pace</h3>
     <div>
         <p>
-            Pace shows bonuses and penalties --a measure of how well students are keeping up with the red line as it crosses milestones. It also shows what their potential
-            penalty points are if they cross the next milestone, and the potential bonuses they could earn by crossing the next milestone.
-            <br/>Bonuses are green, and penalties are red. Potential bonuses and penalties are also green red, but are slightly grayed out.
-            <br/>Locked in bonus and penalties use a lock icon <i class="fa fa-lock"></i>, whereas potential bonus/penalties are denoted by a clock icon <i class="fa fa-clock-o"></i>.
+            Pace shows bonuses and penalties --a measure of how well students are keeping up with the red line as it
+            crosses milestones. It also shows what their potential
+            penalty points are if they cross the next milestone, and the potential bonuses they could earn by crossing
+            the next milestone.
+            <br/>Bonuses are green, and penalties are red. Potential bonuses and penalties are also green red, but are
+            slightly grayed out.
+            <br/>Locked in bonus and penalties use a lock icon <i class="fa fa-lock"></i>, whereas potential
+            bonus/penalties are denoted by a clock icon <i class="fa fa-clock-o"></i>.
             <br/>
         </p>
-        <div class="col-sm-12"><img class="img" id="image0"  src="" title="Pace" alt="Pace- bonus and penalties"/></div>
+        <div class="col-sm-12"><img class="img" id="image0" src="" title="Pace" alt="Pace- bonus and penalties"/></div>
     </div>
     <h3>Health</h3>
     <div>
         <p>
-            Health shows students' current, locked-in penalty/bonus balance. If the overall balance is positive, the bar will be green. If the balance is
+            Health shows students' current, locked-in penalty/bonus balance. If the overall balance is positive, the bar
+            will be green. If the balance is
             negative, the bar will be red.
         </p>
-        <div class="col-sm-12"><img class="img" id="image1"  src="" title="Health" alt="Total bonus and penalties balance"/></div>
+        <div class="col-sm-12"><img class="img" id="image1" src="" title="Health"
+                                    alt="Total bonus and penalties balance"/></div>
     </div>
     <h3>Gap</h3>
     <div>
         <p>
-            Gap shows how many points students are ahead or behind the red line. If they are ahead of the line, the bar will be green.
+            Gap shows how many points students are ahead or behind the red line. If they are ahead of the line, the bar
+            will be green.
             If they are behind of the line, the bar will be red.
         </p>
-        <div class="col-sm-12"><img class="img" id="image2"  src="" title="Gap" alt="Gap relative to red line"/></div>
+        <div class="col-sm-12"><img class="img" id="image2" src="" title="Gap" alt="Gap relative to red line"/></div>
     </div>
     <h3>Stamina</h3>
     <div>
         <p>
-            Stamina is a measure of the quality of students' work. If their work quality is low, they will "run out of gas" early and
-            not be able to reach higher milestones because they will run out of points to earn. Students can select to view the percent of points
+            Stamina is a measure of the quality of students' work. If their work quality is low, they will "run out of
+            gas" early and
+            not be able to reach higher milestones because they will run out of points to earn. Students can select to
+            view the percent of points
             earned for all assignments they have completed so far, or just the last 10 assignments.
         </p>
-        <div class="col-sm-12"><img class="img" id="image3"  src="" title="Stamina" alt="Quality of work"/></div>
+        <div class="col-sm-12"><img class="img" id="image3" src="" title="Stamina" alt="Quality of work"/></div>
     </div>
 </div>
 
-
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+<!--<script   src="http://code.jquery.com/jquery-1.12.1.min.js" integrity="sha256-I1nTg78tSrZev3kjvfdM5A5Ak/blglGzlaZANLPDl3I=" crossorigin="anonymous"></script>-->
 <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script   src="http://code.jquery.com/ui/1.11.4/jquery-ui.min.js" integrity="sha256-xNjb53/rY+WmG+4L6tTl9m6PpqknWZvRt0rO1SRnJzw=" crossorigin="anonymous"></script>
+<!--<script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>-->
+
 
 <script>
+//    if (!window.jQuery) {
+//        console.log("jquery was undefined");
+//            var e = document.createElement('script'); e.async = true;
+//            e.src = 'http://code.jquery.com/jquery-1.12.1.min.js';
+//            document.getElementById('loader').appendChild(e);
+//        }
     $(function() {
-        $( "#accordion" ).accordion({
+        $("#accordion").accordion({
+            autoHeight: true,
             heightStyle: "content",
             active: false,
-            collapsible:true
+            collapsible: true
         });
     });
-    $('#image0').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/stats_pace.png');
-    $('#image1').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/stats_health.png');
-    $('#image2').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/stats_gap.png');
-    $('#image3').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/stats_stamina.png');
-    $('#image4').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/stats_new.png');
+
+    $('#image0').attr('src', '<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/stats_pace.png');
+    $('#image1').attr('src', '<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/stats_health.png');
+    $('#image2').attr('src', '<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/stats_gap.png');
+    $('#image3').attr('src', '<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/stats_stamina.png');
+    $('#image4').attr('src', '<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/stats_new.png');
 </script>
 
 <style>
-    .row{margin-bottom:40px;}
-    div.panel{padding:0px !important;}
-    .img{margin-top:15px;}
-    #image4{ margin-left: 25px;}
+    .row {
+        margin-bottom: 40px;
+    }
 
-    #accordion{font-family: 'Open Sans',Arial,sans-serif;margin-bottom:40px;}
-    #accordion .ui-icon { display: none; }
-    #accordion .ui-accordion-header a { padding-left: 0; }
-    #accordion .ui-accordion .ui-accordion-icons {padding:0;}
+    div.panel {
+        padding: 0px !important;
+    }
+
+    .img {
+        margin-top: 15px;
+    }
+
+    #image4 {
+        margin-left: 25px;
+    }
+
+    #accordion {
+        font-family: 'Open Sans', Arial, sans-serif;
+        margin-bottom: 40px;
+    }
+
+    #accordion .ui-icon {
+        display: none;
+    }
+
+    #accordion .ui-accordion-header a {
+        padding-left: 0;
+    }
+
+    #accordion .ui-accordion .ui-accordion-icons {
+        padding: 0;
+    }
 </style>

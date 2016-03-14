@@ -1,19 +1,18 @@
 {% partial 'stats::display' %}
 
+<div class="confirm-container bg-success hide">
+    <p style="text-align:center;">Successfully Updated Entry!</p>
+</div>
 <div class="">
     <a data-toggle="modal"  data-keyboard="true" data-backdrop="true" onclick="showModal()"><i class="icon-cog"></i> Settings</a>
 </div>
 <div class="control-popup modal fade" id="modalWindow" tabindex="-1" role="dialog">
-    <div class="modal-dialog">
-        <div class="modal-content" style="width:490px">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="confirm-container bg-success hide">
-                    <p style="text-align:center;">Successfully Updated Entry!</p>
-                </div>
-
                 <!-- Tabs -->
                 <ul class="nav nav-tabs">
                     <li class="active"><a data-toggle="tab" href="#configure">Configure</a></li>
@@ -24,7 +23,8 @@
                     <div id="configure" class="tab-pane fade in active" style="padding: 5px 0px;">
                         <form role="form" id="updateForm"
                               data-request="{{ __SELF__ }}::onSave"
-                              data-request-success="$el.hide();completed(data);">
+
+                              data-request-success="$el.hide();$('.confirm-container').removeClass('hide');completed(data);">
                             {{ form.update(recordId)|raw }}
                             {{ form.formRender()|raw }}
                             <div class="form-group">
@@ -60,13 +60,18 @@
             document.getElementById('Form-field-Stats-name').readOnly=true;
             document.getElementById('Form-field-Stats-course_id').readOnly=true;
 
-            //make the window wider
-            $('.modal-content').css('width',$( window ).width()*0.8);
         }).modal('show');
     }
 
     function hideModal()
     {
         $('#modalWindow').modal('hide');
+    }
+
+
+    function completed(data)
+    {
+        hideModal();
+        location.reload();//reload component with new configuration
     }
 </script>

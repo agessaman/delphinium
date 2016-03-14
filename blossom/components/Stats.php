@@ -81,16 +81,22 @@ class Stats extends ComponentBase
 
     public function onRun() {
 //        try
-//        {
-            //if no instance exists of this component, create a new one. It will be tied to the experience component they have selected
+//        {//load scripts
+//        $this->addJs("/plugins/delphinium/blossom/assets/javascript/jquery-ui.min.js");
+//        $this->addJs("/plugins/delphinium/blossom/assets/javascript/jquery.min.js");
             $statsInstance = $this->firstOrNewCourseInstance();
+
+            $this->statsInstanceId = $statsInstance->id;
+            //if no instance exists of this component, create a new one. It will be tied to the experience component they have selected
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/stats.js");
+        //add jquery stuff
+//        $this->addJs("/plugins/delphinium/blossom/assets/javascript/bootstrap.min.js");
             $this->addCss('/modules/system/assets/ui/storm.css', 'core');
             $this->addCss("/plugins/delphinium/blossom/assets/css/stats.css");
 
 
-
+            $statsInstance = StatsModel::find($this->statsInstanceId);
             $this->page['statsSize'] = $statsInstance->size;
             $this->page['statsAnimate'] = $statsInstance->animate;
 
@@ -307,8 +313,9 @@ class Stats extends ComponentBase
 
     public function onSave()
     {
-        $statsInstance = StatsModel::where(array('id' => $this->statsInstanceId))->first();
         $data = post('Stats');
+        $statsInstance = $this->firstOrNewCourseInstance($data['name']);//get the instance
+        $statsInstance = StatsModel::where(array('id' => $statsInstance->id))->first();
         $statsInstance->name = $data['name'];
         $statsInstance->size = $data['size'];
         $statsInstance->animate = $data['animate'];
@@ -317,14 +324,23 @@ class Stats extends ComponentBase
         return json_encode($statsInstance);
     }
 
-    private function firstOrNewCourseInstance()
+    private function firstOrNewCourseInstance($copyName=null)
     {
         if (!isset($_SESSION)) {
             session_start();
         }
         $courseId = $_SESSION['courseID'];
         $this->courseId = $courseId;
-        if(!is_null($this->property('Copy')))
+
+        //first use the copy name passed to this method, if any
+        //if null, then use the property defined in the component
+        //if null, just get the instance using the course id
+        if(is_null($copyName) && !is_null($this->property('Copy')))
+        {
+            $copyName =$this->property('Copy');
+        }
+
+        if(!is_null($copyName))
         {
             $courseInstance =StatsModel::firstOrNew(array('course_id' => $courseId,'name'=>$this->property('Copy')));
             if(is_null($courseInstance->name)){$courseInstance->name=$this->property('Copy');}
