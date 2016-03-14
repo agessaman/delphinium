@@ -21,3 +21,6 @@
 1.0.6:
     - Add course to stats and experiences tables
     - add_course.php
+1.0.7:
+    - Initialize EasterEggs
+    - create_easter_eggs_table.php

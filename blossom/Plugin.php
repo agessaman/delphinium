@@ -99,6 +99,14 @@ class Plugin extends PluginBase
                     'url' => Backend::url('delphinium/blossom/leaderboard'),
                     'group'       => 'Blossom',
                 ],
+
+                'Easter Eggs' => [
+                    'label' => 'Easter Eggs',
+                    'icon' => 'icon-lemon-o',
+                    'owner' => 'Delphinium.Greenhouse',
+                    'url' => Backend::url('delphinium/blossom/eastereggs'),
+                    'group' =>'Blossom',
+                ],
                 'Stats' => [
                     'label' => 'Stats',
                     'icon' => 'icon-bar-chart',
