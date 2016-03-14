@@ -1,25 +1,11 @@
 * { margin: 0; padding: 0; }
-html {
-	height: 100%;
-}
 body {
-	color: #fff;
-	font-size: 16px;
-	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
 	background-image: url("http://localhost/delphinium/plugins/delphinium/blossom/assets/images/flower.jpg");
 	background-size: cover;
 	background-position: 50% 0;
 	height: 100%;
-	text-align: center;
 }
 
-body:before {
-	content: '';
-	display: inline-block;
-	vertical-align: middle;
+html{
 	height: 100%;
-}
-
-.eggs{
-	color: white;
 }

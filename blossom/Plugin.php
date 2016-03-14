@@ -127,7 +127,7 @@ class Plugin extends PluginBase
 
                 'Easter Eggs' => [
                     'label' => 'Easter Eggs',
-                    'icon' => 'icon-bar-chart',
+                    'icon' => 'icon-lemon-o',
                     'owner' => 'Delphinium.Greenhouse',
                     'url' => Backend::url('delphinium/blossom/eastereggs'),
                     'group' =>'Blossom',

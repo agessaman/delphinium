@@ -1,0 +1,27 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: EasterEggs
+
+# Model Form Field configuration
+form: $/delphinium/blossom/models/eastereggs/fields.yaml
+
+# Model Class name
+modelClass: Delphinium\Blossom\Models\EasterEggs
+
+# Default redirect location
+defaultRedirect: delphinium/blossom/eastereggs
+
+# Create page
+create:
+    title: Create EasterEggs
+    redirect: delphinium/blossom/eastereggs/update/:id
+    redirectClose: delphinium/blossom/eastereggs
+
+# Update page
+update:
+    title: Edit EasterEggs
+    redirect: delphinium/blossom/eastereggs
+    redirectClose: delphinium/blossom/eastereggs
