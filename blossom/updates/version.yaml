@@ -15,3 +15,6 @@
 1.0.4:
     - Add Color and course_id to Competencies
     - add_competencies_columns.php
+1.0.5:
+    - Initialize EasterEggs
+    - create_easter_eggs_table.php
