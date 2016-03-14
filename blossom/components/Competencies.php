@@ -45,85 +45,85 @@ class Competencies extends ComponentBase
     //The CMS controller executes this method before the default markup is rendered.
 	public function onRun()
     {
-    /*
-        is an insance set? yes show it
-        
-        else get all instances
-            is copy set?
-            -yes check for an instance that matches copy + course show it
-            
-            is there an instance with this course? yes use it
-        else create dynamicInstance, save new instance show it
-    */
-        if (!isset($_SESSION)) { session_start(); }
-    
-        $courseID = $_SESSION['courseID'];
-		// if instance has been set
-        if( $this->property('instance') )
-        {
-            //instance set in CMS getInstanceOptions()
-            $config = CompetenceModel::find($this->property('instance'));
-            //add $course->id to $config for form field
-            $config->course_id = $_SESSION['courseID'];//$course->id;
-            $config->save();//update original record now in case it did not have course
-            
-        } else {
-            // if copy has a name 
-            $copyLength = strlen($this->property('copy_id'));
-            if($copyLength > 0 )
-            {
-                // find all matching course 
-                $instances = CompetenceModel::where('course_id','=', $courseID)->get();
-                $instCount = count($instances);
-                if($instCount == 0) { 
-                    $copyLength = 0;// none found
-                } else {
-                    // find instance with copy
-                    $flag=false;
-                    foreach ($instances as $instance)
-                    {
-                       if($instance->copy_id == $this->property('copy_id') )
-                       {
-                           $config = $instance;
-                           $flag=true;
-                           break;// got first found
-                       }
-                    }
-                    
-                    //yes found courses but not matching copy. use the first one found with course id
-                    if( !$flag ) { $config = $instances[0]; }
-                }
-            }
-            // no match found so create new one
-            if($copyLength == 0 )
-            {
-                //$config = dynamicInstance();// undefined use onRun?
-                $config = new CompetenceModel;// db record
-                $config->Name = 'dynamic_';//+ total records count?
-                $config->Size = 'Medium';
-                $config->Color = '#4d7123';//uvu green
-                $config->Animate = '1';//true
-                $config->course_id = $_SESSION['courseID'];// or null
-                $config->copy_id = $this->property('copy_id');//
-                $config->save();// create new record
-                ///$this->property('instance', $config->id);// instance=id#
-                //dont need to set for onSave
-            }
-        }
-        
-		$this->page['config'] = json_encode($config);
-		// comma delimited string ?
-        $roleStr = $_SESSION['roles'];
-        
-        if(stristr($roleStr, 'Learner')) {
-            $roleStr = 'Learner';
-        } else { 
-            $roleStr = 'Instructor';
-        }
-        $this->page['role'] = $roleStr;// only one or the other
-
 		try
         {
+        /*
+            is an insance set? yes show it
+
+            else get all instances
+                is copy set?
+                -yes check for an instance that matches copy + course show it
+
+                is there an instance with this course? yes use it
+            else create dynamicInstance, save new instance show it
+        */
+            if (!isset($_SESSION)) { session_start(); }
+
+            $courseID = $_SESSION['courseID'];
+            // if instance has been set
+            if( $this->property('instance') )
+            {
+                //instance set in CMS getInstanceOptions()
+                $config = CompetenceModel::find($this->property('instance'));
+                //add $course->id to $config for form field
+                $config->course_id = $_SESSION['courseID'];//$course->id;
+                $config->save();//update original record now in case it did not have course
+
+            } else {
+                // if copy has a name 
+                $copyLength = strlen($this->property('copy_id'));
+                if($copyLength > 0 )
+                {
+                    // find all matching course 
+                    $instances = CompetenceModel::where('course_id','=', $courseID)->get();
+                    $instCount = count($instances);
+                    if($instCount == 0) { 
+                        $copyLength = 0;// none found
+                    } else {
+                        // find instance with copy
+                        $flag=false;
+                        foreach ($instances as $instance)
+                        {
+                           if($instance->copy_id == $this->property('copy_id') )
+                           {
+                               $config = $instance;
+                               $flag=true;
+                               break;// got first found
+                           }
+                        }
+
+                        //yes found courses but not matching copy. use the first one found with course id
+                        if( !$flag ) { $config = $instances[0]; }
+                    }
+                }
+                // no match found so create new one
+                if($copyLength == 0 )
+                {
+                    //$config = dynamicInstance();// undefined use onRun?
+                    $config = new CompetenceModel;// db record
+                    $config->Name = 'dynamic_';//+ total records count?
+                    $config->Size = 'Medium';
+                    $config->Color = '#4d7123';//uvu green
+                    $config->Animate = '1';//true
+                    $config->course_id = $_SESSION['courseID'];// or null
+                    $config->copy_id = $this->property('copy_id');//
+                    $config->save();// create new record
+                    ///$this->property('instance', $config->id);// instance=id#
+                    //dont need to set for onSave
+                }
+            }
+
+            $this->page['config'] = json_encode($config);
+            // comma delimited string ?
+            $roleStr = $_SESSION['roles'];
+
+            if(stristr($roleStr, 'Learner')) {
+                $roleStr = 'Learner';
+            } else { 
+                $roleStr = 'Instructor';
+            }
+            $this->page['role'] = $roleStr;// only one or the other
+
 			/*get Assignments & Submissions ***** & enrolled students?
 				submissions data is only available if viewed by a Learner
 				Module Items data is used if Instructor
@@ -212,20 +212,21 @@ class Competencies extends ComponentBase
 					instructor chooses an enrolled student from a dropdown
 					to see how that students competencies?
 				*/
-				$studentIds = null;//['1604486'];//Test Student
+				$studentIds = array($_SESSION['userID']);
 				$allStudents = true;
 				$allAssignments = true;
-				$multipleStudents = false;
+                //$assignmentIds array above
+				$multipleStudents = true;
 				$multipleAssignments = true;
 				$includeTags = true;
 				$grouped = true;
 
-				$req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, $assignmentIds, $allAssignments, $multipleAssignments, $includeTags, $includeTags, $grouped);
+				$req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments, $includeTags, $grouped);
 
 				$submissions = $roots->submissions($req);
 				$this->page['submissions']=json_encode($submissions);// score
             }
-        }
+       }
         catch (\GuzzleHttp\Exception\ClientException $e) {
             return;
         }
@@ -244,6 +245,7 @@ class Competencies extends ComponentBase
             }
             return \Response::make($this->controller->run('error'), 500);
         }
+
     }
 
     public function getInstanceOptions()
@@ -253,7 +255,7 @@ class Competencies extends ComponentBase
 		*  where Property is the property name
         * Fill the Competencies Configuration [dropdown] in CMS
 		*/
-		$instances = CompetenceModel::all();//where("Name","!=","")->get();
+		$instances = CompetenceModel::all();
         $array_dropdown = ['0'=>'- select Instance - '];//id, text in dropdown
 
         foreach ($instances as $instance)
@@ -295,17 +297,4 @@ class Competencies extends ComponentBase
         return $config;
 	}
     
-    //onRender() undefined
-    public function dynamicInstance()
-    {
-        $config = new CompetenceModel;// db record
-        $config->Name = 'New Instance';//+ total records count?
-        $config->Size = 'Medium';
-        $config->Color = '#4d7123';//uvu green
-        $config->Animate = '1';//true
-        $config->course_id = $_SESSION['courseID'];// or null
-        $config->copy_id = '';
-        $config->save();// create new record
-        return $config;
-    }
 }

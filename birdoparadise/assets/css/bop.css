@@ -13,7 +13,7 @@
 	display: block;
 	position: relative;
 	overflow: hidden;
-	width: 100%; height: 380px;
+	width: 100%; height: 290px;
 }
 .moditem {
     width: 180px;
@@ -41,14 +41,17 @@
 	position: absolute;
 	bottom: 3px;
 	left: 10px;
+    font-size: 1.5em;
+    color: #ddbb31;/* gold */
 }
 /* for testing */
 .locked {
 	position: absolute;
-	top: 5px;
-	right: 5px;
+	top: -17px;
+	right: -9px;
 	z-index: 800;
-	color: #ff0000;
+    font-size: 2.2em;
+	color: #666666;
 }
 .items {
 	padding: 5px;
@@ -59,7 +62,7 @@
 .tab-pane { overflow: hidden; }
 .tabody {
     width: 0px;/* add for each moditem */
-    height: 140px; 
+    height: 145px; 
 	overflow: auto;
 	/*background-color: #efefef;*/
 }
@@ -70,7 +73,7 @@
     top: 0px;
     /* size of arrow element */
     width: 50px;
-    height: 140px;/* same as tabody */
+    height: 145px;/* same as tabody */
     cursor: pointer;
     background: url('../images/aroos.png') center center no-repeat;
     overflow: hidden;
@@ -87,8 +90,8 @@
 .prereq {
 	padding: 3px;
 	/*margin-bottom: 3px;*/
-	border: thin solid #ababab;
-	background-color: #f1edc6;
+	border: thin solid #f6661d;
+	color: #f6661d;
 }
 .assignment {
 	padding: 3px;

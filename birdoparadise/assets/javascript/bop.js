@@ -13,7 +13,10 @@ $(document).ready(function() {
 		module bkg images
         assignment links in locked modules are disabled for student view
     */
-	
+	var stateColors = {locked: "#8F8F8F", unlocked: "#588238", started: "#5eacd4", completed: "#143D55"};
+    var backColors = {locked: "#DDDDDD", unlocked: "#588238", started: "#5eacd4", completed: "#133D55"};
+    // colors from iris
+    
     var tabCounter = 0;
     var tabTemplate = "<li role='presentation'>";
 		tabTemplate +="<a role='tab' data-toggle='tab' href='#{href}' aria-controls='#{href}'>#{label}</a>";
@@ -33,10 +36,9 @@ $(document).ready(function() {
             var nuplace = $('#tab_'+c+'body');
             var widt = $(nuplace).width();// increase for each new module
             var mods = chld[c].children;
-            var leng = mods.length;
             var modlist = [];// modules in this tab
     //do this in Modulemap after getModules in another function ?
-            for(var i=0; i<leng; i++) {
+            for(var i=0; i<mods.length; i++) {
                 // individual module objects for searching items
                 modobjs.push(mods[i]);// all
                 modlist.push(mods[i]);// modules in this tab
@@ -47,7 +49,7 @@ $(document).ready(function() {
                      
                     //DEEP CHILDREN: $.each(  http://api.jquery.com/category/utilities/
                     
-                    //insert into other array
+                    //add to other array
                     for(var mc=0; mc<len; mc++) {
                         // & child of child of child ?
                         modobjs.push(mods[i].children[mc]);
@@ -55,20 +57,45 @@ $(document).ready(function() {
                     }
                 }
             }
-            // then display array
+            // now display modlist array, gets reset for each tab
             for(i=0; i<modlist.length; i++) {
-                //Module box with title & image
+                //Module box with title, lock, stars & image
             var modbox = '<div id="'+modlist[i].module_id+'" class="moditem" data-locked="'+modlist[i].locked+'">';
                 modbox +='<div class="title">'+modlist[i].name+'</div>';
+                //var lock = modlist[i].state;
+                //console.log('locked:',modlist[i].state);//null,locked,unlocked,completed
+                if(modlist[i].state == 'locked') {
+                    var prereqids = modlist[i].prerequisite_module_ids;
+                    var prename = '';// can have multiple. comma delimited string.
+                    var preids = prereqids.split(',');
+                    console.log(modlist[i],': preids:',preids); 
+        
+                    for(var pid=0; pid<preids.length; pid++) {
+                        //var itm = $.grep(modobjs, function(elem,index){
+                        //  return elem.module_id == preids[pid];
+                        //});
+                        //console.log('prename:',itm[0].name);
+                        //if(itm.length>0) { prename += itm[0].name; }
+                        if(pid>0) { prename+=' & '; }
+                        prename += preids[pid];// maybe just id
+                    }
+        
+				modbox +='<div class="locked" data-toggle="tooltip" data-placement="bottom" title="'+prename+'"><i class="icon-lock"></i></div>';   
+                }
                 
-				modbox +='<div class="locked" data-toggle="tooltip" data-placement="bottom" title="'+modlist[i].prerequisite_module_ids+'">L:'+modlist[i].locked+'</div>';//testing
-				
 				modbox +='<div class="items">'+modlist[i].module_id+' Items: '+modlist[i].items_count+'</div>';// testing
+                
                 // progress bar or stars
-				//modbox +='<div class="stars">5 stars here</div>';
-				modbox +='<div class="stars"><div class="progress-label">0%</div></div>';
-				// if Learner fill progress bar
-
+                // if modlist[i].state=='completed' ? 5 stars
+				//modbox +='<div class="stars"><div class="progress-label">0%</div></div>';
+                if(role == 'Learner') {
+                    // if Learner calc filled stars from submissions
+                    
+                    
+                } else {
+                    modbox +='<div class="stars"><i class="icon-star"></i><i class="icon-star-o"></i><i class="icon-star-half-o"></i><i class="icon-star-half"></i><i class="icon-star"></i></div>';
+                }
+                
                 // + cog edit { image upload? }
                 modbox +='</div>';
                 
@@ -82,13 +109,14 @@ $(document).ready(function() {
         }
     }
     
+    console.log('modobjs:', modobjs);// to search from
+    
+
 	//all progress bars// jqui : Err: not a function
 	// works in instructor.htm but not built yet
 	//$('.stars').progressbar({ value: false });
 	// had this same problem in poppies!
-	if(role == 'Learner') {
-		//for each modobjs calculate % complete from submissions
-	}
+	
 	
     //bootstrap nav-tabs already activated
 /*	$('#tabs a').click(function (e) {
@@ -124,19 +152,24 @@ $(document).ready(function() {
         $('#detailed-body').empty();
 		//append prerequisite_module_ids 
 		if(mod[0].prerequisite_module_ids != '') {
-			var preid=mod[0].prerequisite_module_ids;
-			var prer = $.grep(modobjs, function(elem,index){
-				return elem.module_id == preid;
-			});
-			if(prer.length > 0) { preid = prer[0].name; }
-			console.log('preid:',preid,'prer:',prer);
+			var prereqids=mod[0].prerequisite_module_ids;
+            var prename = '';
+            var preids = prereqids.split(',');
+            for(var pid=0; pid<preids.length; pid++) {
+                var itm = $.grep(modobjs, function(elem,index){
+                    return elem.module_id == preids[pid];
+                });
+                
+                if(itm.length>0) { prename = itm[0].name; }
+                //console.log('pid:',pid,'prename:',prename);
 			var prereq = '<div class="prereq">';
 				prereq +='<i class="icon-exclamation"></i> ';
 				// stupid First is not here!
-				prereq +='Prerequite: '+preid+'</div>';
-				
-			// get name of prereq & ??
-			$('#detailed-body').append(prereq).append('<hr/>');
+				prereq +='Prerequisite: '+preids[pid]+'-'+prename+'</div>';
+                
+                $('#detailed-body').append(prereq);//.append('<hr/>');
+            }
+            
 		}
         for(var i=0; i<moditems.length; i++) {
 			// style by moditems.type? with icon?
@@ -240,5 +273,30 @@ console.log('chmods:',chmods);
         return result;
     }
     console.log('cmods:', cmods.length, cmods);
+    
+/**** TEST ****/   
+function filterSubms(){
+
+    console.log('role:',role);
+
+    if(role=='Learner') {
+        
+        console.log('assignments:',assignments);
+        console.log('subms:',subms);
+        //sumbissions=null;// no longer needed
+        console.log('-----TEST-----');
+        
+        var subm1 = subms[0].assignment_id;
+        console.log('subm1:',subms[0]);
+        var asgn1 = $.grep(assignments, function(elem,index){
+            return elem.assignment_id == subm1;
+        });
+        console.log('asgn1:',asgn1);
+        // search all moduleitems for match?
+    }
+}
+/**** TEST ****/ 
+$('.page').append('<button id="test" type="button">TEST</button>');
+$('#test').on('click', filterSubms);
 
 });

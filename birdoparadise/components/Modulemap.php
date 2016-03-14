@@ -44,8 +44,8 @@ class Modulemap extends ComponentBase
     
     public function onRun()
     {
-        try
-        {
+//        try
+//        {
             /*
             is an instance set? yes show it
 
@@ -150,9 +150,10 @@ class Modulemap extends ComponentBase
                 $this->getStudentSubmissions();
             }
 			// for both 
+        //NEW $moduledata = $roots->getModuleTree(false);
 			$moduledata = $this->getModules();
 			$this->page['moduledata'] = json_encode($moduledata);
-        }
+ /*       }
         catch (\GuzzleHttp\Exception\ClientException $e) {
             return;
         }
@@ -171,6 +172,7 @@ class Modulemap extends ComponentBase
             }
             return \Response::make($this->controller->run('error'), 500);
         }
+*/
     }
     
     public function getInstanceOptions()
@@ -301,7 +303,8 @@ class Modulemap extends ComponentBase
 
 	public function getStudentSubmissions()
 	{
-		$req = new AssignmentsRequest(ActionType::GET);
+		$roots = new Roots();
+        $req = new AssignmentsRequest(ActionType::GET);
 		$res = $roots->assignments($req);
 
 		$assignmentIds = array();// for submissionsRequest
@@ -313,17 +316,18 @@ class Modulemap extends ComponentBase
 		
 		$this->page['assignments']=json_encode($assignments);
 		
-		$studentIds = null;//['1604486'];//Test Student
+		$studentIds = array($_SESSION['userID']);//['1604486'];//Test Student
 		$allStudents = true;
+        // $assignmentIds from above
 		$allAssignments = true;
-		$multipleStudents = false;
+		$multipleStudents = true;
 		$multipleAssignments = true;
 		$includeTags = true;
 		$grouped = true;
 
-		$req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, $assignmentIds, $allAssignments, $multipleAssignments, $includeTags, $includeTags, $grouped);
-
-		$submissions = $roots->submissions($req);
+        $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments, $includeTags, $grouped);
+        
+        $submissions = $roots->submissions($req);
 		$this->page['submissions']=json_encode($submissions);// score
 	}
 	
