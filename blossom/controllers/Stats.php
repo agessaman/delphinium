@@ -4,7 +4,7 @@ use BackendMenu;
 use Backend\Classes\Controller;
 use Delphinium\Blossom\Models\Stats as StatsModel;
 use Flash;
-
+use Event;
 /**
  * Stats Back-end Controller
  */

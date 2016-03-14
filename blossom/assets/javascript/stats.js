@@ -21,7 +21,7 @@ var negativePaceX = halfWidth - (negativePaceWidth / 2);
 //also draw potential bonus and penalties
 var positivePotential = potential.bonus;//40;//
 console.log("potential bonuses: "+positivePotential);
-var negativePotential = -potential.penalties;//-10;// (must be positive value)
+var negativePotential =-potential.penalties;//-10;// (must be positive value)
 console.log("potential penalties: "+negativePotential);
 var posPotentialWidth = positivePotential / maxPace * halfWidth;
 var negPotentialWidth = negativePotential/ minPace * halfWidth;
@@ -71,18 +71,29 @@ drawStats();
 function scaleStats() {
     var statsView = d3.select("#statsView");
     var statsSVG = d3.select("#statsSVG");
+    var switchComp = d3.select("#switch");
+    var lis = d3.selectAll(".switch-li");
+    var switchTop = switchComp.style("top").replace("px", "");
 
     if (statsSize == "small") {
-        statsSVG.attr('width', halfWidth + 40)
-            .attr('height', trueHeight / 2 + 40);
-        statsView.attr('transform', "scale(.5)");
+        statsSVG.attr('width', halfWidth + 100)
+            .attr('height', trueHeight / 2 + 100);
+        statsView.attr('transform', "scale(.8)");
+        switchComp.style('left', "120px")
+            .style('top', "151px");
+        lis.classed('smallLi',true);
     } else if (statsSize == "medium") {
         statsSVG.attr('width', statsWidth)
             .attr('height', statsHeight);
+        switchComp.style('left', "135px")
+            .style('top', "184px");
     } else {
         statsSVG.attr('width', trueWidth * 1.5 + 40)
             .attr('height', trueHeight * 1.5 + 40);
         statsView.attr('transform', "scale(1.5)");
+        switchComp.style('left', "177px")
+            .style('top', "265px");
+        lis.classed('largeLi',true);
     }
 }
 
@@ -91,8 +102,8 @@ function drawStats() {
     var view = d3.select("#statsView");
 
     drawPace();
-    drawHealth();
     drawGap();
+    drawHealth();
     drawStamina();
 
     function drawPace()
@@ -105,14 +116,15 @@ function drawStats() {
 
         //BONUS
         if (positivePace > 0) {
-            drawPositive(0, positivePaceWidth);
+            drawPositive(count, positivePaceWidth);
+            drawNumber(count, positivePaceX, roundToTwo(positivePace), "paceVars");
             //apend the lock icon (must be text. inside of svg we can't add span or i)
             view.append("svg:text")
                 .attr("x",function(d)
                 {
                     return positivePaceX;
                 })
-                .attr("y",  0*50+30)
+                .attr("y", count*50+30)
                 .attr('font-family', 'FontAwesome')
                 .attr('font-size', '8px')
                 .attr("cursor", "pointer")
@@ -130,20 +142,18 @@ function drawStats() {
                 .text(function (d) {
                     return '\uf023';
                 });
-
-
-            drawNumber(count, positivePaceX, roundToTwo(positivePace), "paceVars");
         }
 
         //PENALTIES
         if (negativePace > 0) {
-            box = drawNegative(0, negativePaceWidth);
+            box = drawNegative(count, negativePaceWidth);
+            drawNumber(count, negativePaceX, roundToTwo(-negativePace),"paceVars");
             view.append("svg:text")
                 .attr("x",function(d)
                 {
                     return negativePaceX;
                 })
-                .attr("y",  0*50+30)
+                .attr("y", count*50+30)
                 .attr('font-family', 'FontAwesome')
                 .attr('font-size', '8px')
                 .attr("cursor", "pointer")
@@ -161,20 +171,20 @@ function drawStats() {
                 .text(function (d) {
                     return '\uf023';
                 });
-
-            drawNumber(count, negativePaceX, roundToTwo(-negativePace),"paceVars");
         }
 
 
         //POTENTIAL BONUSES
         if (positivePotential > 0) {
-            drawPositive(0, posPotentialWidth, positivePaceWidth, 0.4);
+
+            drawNumber(count, posPotentialX, roundToTwo(positivePotential), "paceVars");
+            drawPositive(count, posPotentialWidth, positivePaceWidth, 0.4);
             view.append("svg:text")
                 .attr("x",function(d)
                 {
                     return posPotentialX;
                 })
-                .attr("y",  0*50+30)
+                .attr("y",  count*50+30)
                 .attr('font-family', 'FontAwesome')
                 .attr('font-size', '8px')
                 .attr("cursor", "pointer")
@@ -192,20 +202,20 @@ function drawStats() {
                 .text(function (d) {
                     return '\uf017';
                 });
-
-            drawNumber(count, posPotentialX, roundToTwo(positivePotential), "paceVars");
         }
 
         //POTENTIAL PENALTIES
         if (negativePotential > 0) {
-            drawNegative(0, negPotentialWidth, negativePaceWidth, 0.4);
+
+            drawNumber(count, negPotentialX, roundToTwo(-negativePotential),"paceVars");
+            drawNegative(count, negPotentialWidth, negativePaceWidth, 0.4);
 
             view.append("svg:text")
                 .attr("x",function(d)
                 {
                     return negPotentialX;
                 })
-                .attr("y",  0*50+30)
+                .attr("y",  count*50+30)
                 .attr('font-family', 'FontAwesome')
                 .attr('font-size', '8px')
                 .attr("cursor", "pointer")
@@ -223,8 +233,6 @@ function drawStats() {
                 .text(function (d) {
                     return '\uf017';
                 });
-
-            drawNumber(count, negPotentialX, roundToTwo(-negativePotential),"paceVars");
         }
 
         if (positivePace == 0&&negativePace==0&&positivePotential==0&&negativePotential==0) {
@@ -235,31 +243,31 @@ function drawStats() {
     }
 
     function drawHealth() {
-        var count = 1;
+        var count = 2;
         drawText(count, "Health");
 
         var text = getExplanation("health");
         y=count* 50 + 10;
         drawIcon('\uf05a', 0, y, text, "14px", '#444444');
         if (health > 0)
-            drawPositive(1, healthWidth);
+            drawPositive(count, healthWidth);
         else
-            drawNegative(1, healthWidth);
+            drawNegative(count, healthWidth);
         drawBox(count, "health");
         drawCenter(count);
         drawNumber(count, healthX, roundToTwo(health), "healthVars");
     }
 
     function drawGap() {
-        var count = 2;
+        var count = 1;
         drawText(count, "Gap");
         var text = getExplanation("gap");
         y=count* 50 + 10;
         drawIcon('\uf05a', 0, y, text, "14px", '#444444');
         if (gap > 0)
-            drawPositive(2, gapWidth);
+            drawPositive(count, gapWidth);
         else
-            drawNegative(2, gapWidth);
+            drawNegative(count, gapWidth);
         drawBox(count, "gap");
         drawCenter(count);
         drawNumber(count, gapX, roundToTwo(gap, "gapVars"));
@@ -337,6 +345,7 @@ function drawStats() {
     }
 
     function drawPositive(count, value, startingX, opacity) {
+        if(nonstudent){return;}
         startingX = startingX || 0;
         var color = color || "green";
         opacity = opacity || 1;
@@ -372,6 +381,7 @@ function drawStats() {
     }
 
     function drawNegative(count, value, substract, opacity) {
+        if(nonstudent){return;}
         substract = substract || 0;
         var color = "red";
         opacity = opacity || 1;
@@ -539,8 +549,10 @@ function getExplanation(component)
                 ' points by getting ahead of the red line. ';
             break;
         case 'pace':
-            explanation = 'Pace shows how well you have been keeping up with the red line as it crosses milestones. It also shows what you can limit ' +
-                'penalty points to if you catch up to the red line now, and it shows how many bonuses you could earn if you get ahead of the red line.';
+            explanation = 'Pace shows how well you have been keeping up with the red line as it crosses milestones. Dark colors show how many bonus ' +
+                'and penalty points you currently have locked in. Light colors show potential bonus and penalty points you may earn. If you are behind ' +
+                'the red line, light red shows what you can limit penalty points to if you catch up now, and light green shows how many bonuses you ' +
+                'could still earn if you stay ahead of the red line.';
             break;
         default:
             explanation = 'Statistics';

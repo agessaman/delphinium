@@ -60,8 +60,17 @@ class SubmissionsRequest extends RootsRequest
         $this->grouped = $grouped;
     }
 
-    /*
-     * Constructor 
+    /**
+     * SubmissionsRequest constructor.
+     * @param $actionType An http verb from the ActionType enum
+     * @param array|null $studentIds An array with student ids; if empty, all students will be retrieved
+     * @param bool $allStudents Whether to return all arrays
+     * @param array $assignmentIds An array of assignment ids
+     * @param bool $allAssignments Whether to return all assignments
+     * @param bool $multipleStudents Whether to return more than one student
+     * @param bool $multipleAssignments Whether to return more than one assignment
+     * @param bool $includeTags Whether to return tags
+     * @param bool $grouped Whether to return the submissions grouped by student
      */
     function __construct($actionType, array $studentIds = null, $allStudents = false, array $assignmentIds = array(), $allAssignments = false, 
             $multipleStudents = false, $multipleAssignments = false, $includeTags = false, $grouped = false) 

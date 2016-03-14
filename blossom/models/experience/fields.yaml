@@ -16,6 +16,13 @@ tabs:
             comment: Enter the name of this instance
             tab: Settings
 
+
+        course_id:
+            label: Course id
+            span: auto
+            comment: Enter the course id to which this component will be tied
+            tab: Settings
+
         total_points:
             label: Total Points
             span: auto
@@ -65,7 +72,8 @@ tabs:
         animate:
             label: Animate
             span: auto
-            comment: Enter 1 if you want this component to be animated, 0 if not
+            type: switch
+            comment: On = component will be animated.
             tab: Settings
 
         size:

@@ -11,6 +11,10 @@ columns:
         label: Name
         searchable: true
 
+    course_id:
+        label: Course Id
+        searchable: true
+
     total_points:
         label: Total Points
         searchable: true
