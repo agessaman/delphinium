@@ -1,36 +1,56 @@
-<div class="control-breadcrumb">
+<?php Block::put('breadcrumb') ?>
     <ul>
-        <li><a href="<?= Backend::url('delphinium/blossom/stats') ?>">Stats Instances</a></li>
+        <li><a href="<?= Backend::url('delphinium/blossom/stats') ?>">Stats</a></li>
         <li><?= e($this->pageTitle) ?></li>
     </ul>
-</div>
+<?php Block::endPut() ?>
 
-<?= Form::open(['class'=>'layout-item stretch layout-column']) ?>
+<?php if (!$this->fatalError): ?>
 
-    <?= $this->formRender() ?>
+    <?= Form::open(['class' => 'layout']) ?>
 
-    <div class="form-buttons layout-item fix">
-        <div class="loading-indicator-container">
-            <button 
-                type="button" 
-                data-request="onSave" 
-                data-request-data="close:true" 
-                data-hotkey="ctrl+enter"
-                data-hotkey-mac="cmd+enter"
-                data-load-indicator="Saving Stats Instance..." 
-                class="btn btn-default">
-                Save and Close
-            </button>
-            <button 
-                type="button" 
-                class="oc-icon-trash-o btn-icon danger pull-right" 
-                data-request="onDelete" 
-                data-load-indicator="Deleting Stats Instance..." 
-                data-request-confirm="Do you really want to delete this Stats Instance?">
-            </button>
-
-            <span class="btn-text"> or 
-            <a href="<?= Backend::url('delphinium/blossom/stats') ?>">Cancel</a></span>
+        <div class="layout-row">
+            <?= $this->formRender() ?>
         </div>
-    </div>
-<?= Form::close() ?>
+
+        <div class="form-buttons">
+            <div class="loading-indicator-container">
+                <button
+                    type="submit"
+                    data-request="onSave"
+                    data-request-data="redirect:0"
+                    data-hotkey="ctrl+s, cmd+s"
+                    data-load-indicator="Saving Stats..."
+                    class="btn btn-primary">
+                    <u>S</u>ave
+                </button>
+                <button
+                    type="button"
+                    data-request="onSave"
+                    data-request-data="close:1"
+                    data-hotkey="ctrl+enter, cmd+enter"
+                    data-load-indicator="Saving Stats..."
+                    class="btn btn-default">
+                    Save and Close
+                </button>
+                <button
+                    type="button"
+                    class="oc-icon-trash-o btn-icon danger pull-right"
+                    data-request="onDelete"
+                    data-load-indicator="Deleting Stats..."
+                    data-request-confirm="Do you really want to delete this stats instance?">
+                </button>
+                <span class="btn-text">
+                    or <a href="<?= Backend::url('delphinium/blossom/stats') ?>">Cancel</a>
+                </span>
+            </div>
+        </div>
+
+    <?= Form::close() ?>
+
+<?php else: ?>
+
+    <p class="flash-message static error"><?= e($this->fatalError) ?></p>
+    <p><a href="<?= Backend::url('delphinium/blossom/stats') ?>" class="btn btn-default">Return to stats list</a></p>
+
+<?php endif ?>

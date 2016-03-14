@@ -1,4 +1,3 @@
-//statsAnimate = false;
 //tooltip
 div = d3.select(".tooltip");
 
@@ -10,7 +9,7 @@ var halfWidth = trueWidth / 2;
 
 var positivePace = milestoneSummary.bonuses;//10;//
 console.log("locked bonuses: "+positivePace);
-var negativePace = 10;//-milestoneSummary.penalties;//-10;// (must be positive value)
+var negativePace = -milestoneSummary.penalties;//-10;// (must be positive value)
 console.log("locked penalties: "+negativePace);
 var maxPace = healthObj.maxBonuses;
 var minPace = healthObj.maxPenalties;
@@ -55,10 +54,16 @@ if (gap > 0) {
     gapX = halfWidth - (gapWidth / 2);
 }
 
-var multiplier = stamina>100?stamina:100;//if for some weird reason a student were to get over a 100% in an assignment, their stamina could potentially be above 100,
+//STAMINA VARS
+var lastTen=false;
+var multiplier = stamina.total>100?stamina.total:100;//if for some weird reason a student were to get over a 100% in an assignment, their stamina could potentially be above 100,
 // so we must adjust the multiplier
-var staminaWidth = stamina / multiplier * trueWidth;
-var staminaX = (staminaWidth / 2) + 10;
+var staminaWidth = stamina.total / multiplier * trueWidth;
+var staminaX = 6;
+if(stamina.total>0)
+{
+    staminaX = (staminaWidth / 2) + 10;
+}
 
 scaleStats();
 drawStats();
@@ -96,7 +101,7 @@ function drawStats() {
         drawText(count, "Pace");
         var text = getExplanation("pace");
         y=count* 50 + 10;
-        drawIcon('\uf05a', 0, y, text, "11px", '#444444');
+        drawIcon('\uf05a', 0, y, text, "14px", '#444444');
 
         //BONUS
         if (positivePace > 0) {
@@ -110,6 +115,7 @@ function drawStats() {
                 .attr("y",  0*50+30)
                 .attr('font-family', 'FontAwesome')
                 .attr('font-size', '8px')
+                .attr("cursor", "pointer")
                 .attr("fill", function(d)
                 {
                     var x = positivePace>0?"white":"gray";
@@ -126,7 +132,7 @@ function drawStats() {
                 });
 
 
-            drawNumber(count, positivePaceX, roundToTwo(positivePace));
+            drawNumber(count, positivePaceX, roundToTwo(positivePace), "paceVars");
         }
 
         //PENALTIES
@@ -140,6 +146,7 @@ function drawStats() {
                 .attr("y",  0*50+30)
                 .attr('font-family', 'FontAwesome')
                 .attr('font-size', '8px')
+                .attr("cursor", "pointer")
                 .attr("fill", function(d)
                 {
                     var x = negativePace>0?"white":"gray";
@@ -155,7 +162,7 @@ function drawStats() {
                     return '\uf023';
                 });
 
-            drawNumber(count, negativePaceX, roundToTwo(-negativePace));
+            drawNumber(count, negativePaceX, roundToTwo(-negativePace),"paceVars");
         }
 
 
@@ -170,6 +177,7 @@ function drawStats() {
                 .attr("y",  0*50+30)
                 .attr('font-family', 'FontAwesome')
                 .attr('font-size', '8px')
+                .attr("cursor", "pointer")
                 .attr("fill", function(d)
                 {
                     var x = positivePotential>0?"white":"gray";
@@ -185,7 +193,7 @@ function drawStats() {
                     return '\uf017';
                 });
 
-            drawNumber(count, posPotentialX, roundToTwo(positivePotential));
+            drawNumber(count, posPotentialX, roundToTwo(positivePotential), "paceVars");
         }
 
         //POTENTIAL PENALTIES
@@ -200,6 +208,7 @@ function drawStats() {
                 .attr("y",  0*50+30)
                 .attr('font-family', 'FontAwesome')
                 .attr('font-size', '8px')
+                .attr("cursor", "pointer")
                 .attr("fill", function(d)
                 {
                     var x = negativePotential>0?"white":"gray";
@@ -215,9 +224,12 @@ function drawStats() {
                     return '\uf017';
                 });
 
-            drawNumber(count, negPotentialX, roundToTwo(-negativePotential));
+            drawNumber(count, negPotentialX, roundToTwo(-negativePotential),"paceVars");
         }
 
+        if (positivePace == 0&&negativePace==0&&positivePotential==0&&negativePotential==0) {
+            drawNumber(count, 0, 0,"paceVars");
+        }
         drawBox(count, "pace");
         drawCenter(count);
     }
@@ -228,14 +240,14 @@ function drawStats() {
 
         var text = getExplanation("health");
         y=count* 50 + 10;
-        drawIcon('\uf05a', 0, y, text, "11px", '#444444');
+        drawIcon('\uf05a', 0, y, text, "14px", '#444444');
         if (health > 0)
             drawPositive(1, healthWidth);
         else
             drawNegative(1, healthWidth);
         drawBox(count, "health");
         drawCenter(count);
-        drawNumber(count, healthX, roundToTwo(health));
+        drawNumber(count, healthX, roundToTwo(health), "healthVars");
     }
 
     function drawGap() {
@@ -243,14 +255,14 @@ function drawStats() {
         drawText(count, "Gap");
         var text = getExplanation("gap");
         y=count* 50 + 10;
-        drawIcon('\uf05a', 0, y, text, "11px", '#444444');
+        drawIcon('\uf05a', 0, y, text, "14px", '#444444');
         if (gap > 0)
             drawPositive(2, gapWidth);
         else
             drawNegative(2, gapWidth);
         drawBox(count, "gap");
         drawCenter(count);
-        drawNumber(count, gapX, roundToTwo(gap));
+        drawNumber(count, gapX, roundToTwo(gap, "gapVars"));
     }
 
     function drawStamina() {
@@ -259,39 +271,20 @@ function drawStats() {
         //draw info icon
         var text = getExplanation("stamina");
         y=count* 50 + 10;
-        drawIcon('\uf05a', 0, y, text, "11px", '#444444');
+        drawIcon('\uf05a', 0, y, text, "14px", '#444444');
 
-        if (statsAnimate) {
-            view.append('rect')
-                .attr('rx', 3)
-                .attr('ry', 3)
-                .attr('height', 25)
-                .attr('width', 0)
-                .attr('fill', "white")
-                .attr('y', 3 * 50 + 20)
-                .transition()
-                .delay(4000)
-                .duration(1000)
-                .attr('width', staminaWidth)
-                .attr('fill', "green")
-                .ease('bounce');
-        } else {
-            view.append('rect')
-                .attr('rx', 3)
-                .attr('ry', 3)
-                .attr('height', 25)
-                .attr('width', staminaWidth)
-                .attr('fill', "green")
-                .attr('y', 3 * 50 + 20);
-        }
+        //draw stamina bar
+        variableStamina(stamina.total, staminaWidth, count, true);
+        //add a checkbox so students can select if they want to see their averages for the last 10 assignments or all their assignments
+        var options = ['All','Last 10'];
+
+
         drawBox(count, "stamina");
-        drawNumber(count, staminaX, roundToTwo(stamina)+"%");
     }
-
     function drawText(count, text) {
         view.append('text')
             .text(text)
-            .attr('x',13)
+            .attr('x',15)
             .attr('y', count * 50 + 10)
             .attr("fill",'#444444')
             .attr('transform', "translate(0,7)");
@@ -305,10 +298,11 @@ function drawStats() {
             .attr('font-family', 'FontAwesome')
             .attr('font-size', fontSize)
             .attr("fill",color)
-            .on("mouseover", function (d) {
+            .attr("cursor", "pointer")
+            .on("mouseenter", function (d) {
                 addTooltipStats(mouseInText);
             })
-            .on("mouseout", function (d) {
+            .on("mouseleave", function (d) {
                 removeTooltipStats();
             })
             .text(function (d) {
@@ -414,35 +408,111 @@ function drawStats() {
             return box;
         }
     }
-
-    function drawNumber(count, x, text) {
-        var text = d3.select('#statsView').append("text")
-            .attr("fill", "none")
-            .style("text-anchor", "middle")
-            .attr('font-size', "16px")
-            .attr('x', x)
-            .attr('y', count * 50 + 40)
-            .text((text));
-
-        text.transition()
-            .delay(count * 1000 + 1500)
-            .attr("fill", "black");
-    }
 }
 
+
+function drawNumber(count, x, text, className, delay) {
+    delayValue= count * 1000 + 1500;
+    if(delay!=undefined && !delay )//if defined and set to false
+    {
+        delayValue=100;
+    }
+    var text = d3.select('#statsView').append("text")
+        .attr("fill", "none")
+        .style("text-anchor", "middle")
+        .attr('font-size', "16px")
+        .attr('x', x)
+        .attr('y', count * 50 + 40)
+        .attr('class',className)
+        .text((text));
+
+    //if (statsAnimate) {
+    text.transition()
+        .delay(delayValue)
+        .attr("fill", "black");
+    //}
+}
+
+function variableStamina(number, width, count, delay)
+{
+    delayValue=0;
+    if(delay)
+    {
+        delayValue=4000;
+    }
+    var view = d3.select("#statsView");
+    if (statsAnimate) {
+        view.append('rect')
+            .attr({
+                class:'staminaVars',
+                rx:3,
+                ry:3,
+                height:25,
+                width:0,
+                fill:'white',
+                y:3 * 50 + 20
+            })
+            .transition()
+            .delay(delayValue)
+            .duration(1000)
+            .attr({
+                width:width,
+                fill:'green'
+            })
+            .ease('bounce');
+    } else {
+        view.append('rect')
+            .attr({
+                class:'staminaVars',
+                rx:3,
+                ry:3,
+                height:25,
+                width:width,
+                fill:'green',
+                y:3 * 50 + 20,
+                class:'staminaVars'
+            });
+    }
+    drawNumber(count, staminaX, roundToTwo(number)+"%","staminaVars", delay);
+}
+
+function toggleStamina(value)
+{
+    lastTen=value==10?true:false;
+    d3.select(".all")
+        .classed("on", !lastTen);
+    d3.select(".ten")
+        .classed("on", lastTen);
+
+    //remove stamina
+    d3.selectAll(".staminaVars").remove();
+
+    staminaX = 6;
+    var staminaValue = lastTen?stamina.ten:stamina.total;
+    //recalculate and draw it again
+    staminaWidth = staminaValue / multiplier * trueWidth;
+    if(staminaValue>0)
+    {
+        staminaX = (staminaWidth / 2) + 10;
+    }
+
+    variableStamina(staminaValue, staminaWidth, 3, false);
+}
 
 function addTooltipStats(text) {
     div.transition()
         .duration(200)
-        .style("opacity", .9)
-        .style("left", (d3.event.pageX) + "px")
-        .style("top", (d3.event.pageY - 28) + "px");
+        .style("opacity", 1)
+        .style("display","block")
+        .style("left", (d3.event.pageX + 10) + "px")
+        .style("top", (d3.event.pageY) + "px");
     div.html(text);
 }
 
 function removeTooltipStats() {
     div.transition()
         .duration(100)
+        .style("display","none")
         .style("opacity", 0);
 }
 

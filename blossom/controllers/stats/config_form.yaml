@@ -16,13 +16,13 @@ defaultRedirect: delphinium/blossom/stats
 
 # Create page
 create:
-    title: Create Stats Instance
+    title: Create Stats
     redirect: delphinium/blossom/stats/update/:id
     redirectClose: delphinium/blossom/stats
 
 # Update page
 update:
-    title: Edit Stats Instance
+    title: Edit Stats
     redirect: delphinium/blossom/stats
     redirectClose: delphinium/blossom/stats
 

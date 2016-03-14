@@ -49,7 +49,7 @@ class Plugin extends PluginBase
             '\Delphinium\Blossom\Components\ExperienceManager' => 'experiencemanager',
             '\Delphinium\Blossom\Components\Gradebook' => 'gradebook',
             '\Delphinium\Blossom\Components\EasterEggs' => 'eastereggs',
-            '\Delphinium\Blossom\Components\Stats' => 'stats'
+            '\Delphinium\Blossom\Components\Stats' => 'stats',
         ];
     }
 	

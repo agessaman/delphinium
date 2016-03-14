@@ -29,5 +29,4 @@ class CreateStatsTable extends Migration
             Schema::dropIfExists('delphinium_blossom_stats');
         }
     }
-
 }

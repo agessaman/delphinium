@@ -107,6 +107,8 @@ class Experience extends ComponentBase {
                 'title' => 'Instance',
                 'description' => 'Select the Experience instance',
                 'type' => 'dropdown',
+                'validationPattern' => '^[1-9][0-9]*$',//check that they've selected an option from the drop down. The default placeholder is=0
+                'validationMessage' => 'Select an instance of Experience from the dropdown'
             ]
         ];
     }

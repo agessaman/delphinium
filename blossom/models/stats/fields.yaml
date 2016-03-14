@@ -19,8 +19,8 @@ fields:
         span: auto
         type: dropdown
         options:
-            true: True
-            false: False
+            true: true
+            false: false
         comment: Enter if you want this component to be animated
         tab: Settings
 
