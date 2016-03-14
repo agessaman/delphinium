@@ -4,7 +4,7 @@ use Cms\Classes\ComponentBase;
 use Delphinium\Roots\Roots;
 use Delphinium\Roots\RequestObjects\ModulesRequest;
 use Delphinium\Roots\Enums\ActionType;
-use Delphinium\Stem\Classes\ManagerHelper as IrisClass;
+use Delphinium\Stem\Classes\ManagerHelper;
 use Delphinium\Roots\Enums\Lms;
 
 class Manager extends ComponentBase
@@ -129,8 +129,8 @@ class Manager extends ComponentBase
         }
         $this->page['rawData'] = json_encode($simpleModules);
 
-        $iris = new IrisClass();
-        $result = $iris->buildTree($modArr);
+        $roots = new Roots();
+        $result = $roots->buildTree($modArr);
 
         $tempArray =array();
 
