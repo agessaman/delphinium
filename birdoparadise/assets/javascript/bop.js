@@ -84,16 +84,13 @@ $(document).ready(function() {
                 }
                 
 				modbox +='<div class="items">'+modlist[i].module_id+' Items: '+modlist[i].items_count+'</div>';// testing
-                
-                // progress bar or stars
-                // if modlist[i].state=='completed' ? 5 stars
-				//modbox +='<div class="stars"><div class="progress-label">0%</div></div>';
+                       
                 if(role == 'Learner') {
                     // if Learner calc filled stars from submissions
-                    
-                    
+                    var starset = getStars(modlist[i].module_id);//find items
+                    modbox += starset;
                 } else {
-                    modbox +='<div class="stars"><i class="icon-star"></i><i class="icon-star-o"></i><i class="icon-star-half-o"></i><i class="icon-star-half"></i><i class="icon-star"></i></div>';
+                    modbox +='<div class="stars"><i class="icon-star"></i><i class="icon-star"></i><i class="icon-star-half-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i></div>';
                 }
                 
                 // + cog edit { image upload? }
@@ -109,23 +106,30 @@ $(document).ready(function() {
         }
     }
     
-    console.log('modobjs:', modobjs);// to search from
+    //console.log('modobjs:', modobjs);// to search from
     
-
-	//all progress bars// jqui : Err: not a function
-	// works in instructor.htm but not built yet
-	//$('.stars').progressbar({ value: false });
-	// had this same problem in poppies!
-	
-	
-    //bootstrap nav-tabs already activated
+    //bootstrap nav-tabs already active
 /*	$('#tabs a').click(function (e) {
 	  e.preventDefault();
 	  $(this).tab('show');
 	});*/
 	// activate first tab
 	$('#tabs a:first').tab('show');
-   
+    
+    //if component width > any single tab width, turn off scroll arrows.
+    arrowsNeeded();
+    function arrowsNeeded() {
+        var docWidth = $( document ).width();
+        var needArrows=false;
+        //var nuplace = $('#tab_'+c+'body');
+        for(var i=0; i<tabCounter; i++) {
+            if($('#tab_'+i+'body').width() > docWidth) { needArrows=true; }
+        }
+        if( !needArrows ) {
+            $('.arol, .aror').hide();
+        }
+    }
+    
     function addTab(tabname) {
         var label = tabname;
             id = "tab_" + tabCounter,
@@ -173,19 +177,23 @@ $(document).ready(function() {
             
 		}
         for(var i=0; i<moditems.length; i++) {
-			// style by moditems.type? with icon?
-            var item='<div class="assignment">';// create one still
-                //item+='<a target="_blank" href="'+moditems[i].html_url+'?module_item_id='+moditems[i].module_item_id+'" target="_blank">'+moditems[i].title+'</a>';
-                item +='<i class="icon-file-text"></i> ';
-				item +=' c_id: '+moditems[i].content_id+' ';//.module_item_id .title
-				item+='<a href="javascript:void(0);" onClick="findRelation('+modid+','+moditems[i].content_id+');">'+moditems[i].title+'</a>';
-                //item+='<a target="_blank" href="'+moditems[i].html_url+'" target="_blank">'+moditems[i].title+'</a>';
-				item+=' mi_id: '+moditems[i].module_item_id;
+			
+            var item='<div class="assignment">';
+            var ico = getIcon(moditems[i].type);
+                item +=ico;//'<i class="icon-file-text"></i> ';
+				item +=' Type: '+moditems[i].type;// determine icon    
+//test: link sends module id, item content_id to find submission
+item+=' <a href="javascript:void(0);" onClick="findRelation('+modid+','+moditems[i].content_id+');"> '+moditems[i].title+'</a>';
+                
+                //item+=' <a target="_blank" href="'+moditems[i].html_url+'" target="_blank">'+moditems[i].title+'</a>';
+				//item+='<a target="_blank" href="'+moditems[i].html_url+'?module_item_id='+moditems[i].module_item_id+'" target="_blank">'+moditems[i].title+'</a>';
 				if(moditems[i].content.length > 0) {
-                    item+=' worth: '+moditems[i].content[0].points_possible;
+                    if(moditems[i].content[0].points_possible > 0){
+                        item+=' worth: '+moditems[i].content[0].points_possible;
+                    }
 					item+=' '+moditems[i].content[0].lock_explanation;
                 }
-                item+='</div>';// c_id: 464884 6: Pre-class Quiz worth: 60 mi_id: 2368118
+                item+='</div>';
             $('#detailed-body').append(item);
         }
         // trigger modal
@@ -205,7 +213,145 @@ $(document).ready(function() {
         $('#'+activeTab).animate({ scrollLeft:sat-200 });
     });
 
-	
+function getIcon(type) {
+    //console.log('type:',type);
+    var ico = 'icon-book';
+    
+    switch(type){
+        case 'Assignment':
+            ico='icon-pencil-square';
+            break;
+        case 'ExternalUrl':
+            ico='icon-link';
+            break;
+        case 'ExternalTool':
+            ico='icon-wrench';
+            break;
+        case 'File':
+            ico='icon-cloud-download';
+            break;
+        case 'Quiz':
+            ico='icon-question-circle';
+            break;
+        case 'SubHeader':
+            ico='icon-file-text-o';
+            break;
+    }
+    return '<i class='+ico+'></i>';
+}
+ /*
+    for each module
+        total = each item points_possible
+
+        if submission
+            earned = each item subm score
+
+    5 stars = percent completed
+    each star = 20% round to nearest 10%
+    filled=20, half=10, open=0
+
+    return stars config
+*/
+function getStars(modid){
+    // construct from modid
+    var mod1 = $.grep(modobjs, function(elem,index){ return elem.module_id == modid; });
+    //console.log('mod1:',modid, mod1);
+    var total=0, score=0;
+    var moditems = mod1[0].module_items;
+    for(var i=0; i<moditems.length; i++) {
+        
+        // find a submission for moditem
+        var title=moditems[i].title;
+        var asgn1 = $.grep(assignments, function(elem,index){ return elem.name == title; });
+        
+        if(asgn1.length>0) {
+            if(moditems[i].content.length>0){
+                total += moditems[i].content[0].points_possible;
+                var asgnid = asgn1[0].assignment_id;
+                //console.log(modid,'asgn1.assignment_id:',asgnid);
+                var subm1 = $.grep(subms, function(elem,index) {
+                    return elem.assignment_id == asgnid;
+                });
+                //console.log('subm1:',subm1);
+                if(subm1.length>0) {
+                    score += subm1[0].score;
+                }
+            }
+        }
+    }
+    
+    var starset = '<div class="stars"><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i></div>';//no score
+    
+    if(score > 0) {
+        console.log(modid, 'score:',score, 'total:',total);
+        // calc percent (ex: 15/70, 30/65 )
+        var percent = (score/total) *100; //console.log('percent=',percent);
+        // build star set
+        starset='<div class="stars">';
+        for(var s=1; s<6; s++) {
+            // 1-10 ?
+            
+            
+            
+            if(percent > s*20) {
+                starset += '<i class="icon-star"></i>';
+            } else if(percent < (s*20) && percent >= (s*20)-10) {
+                starset += '<i class="icon-star-half-o"></i>';
+            } else {
+                starset += '<i class="icon-star-o"></i>';
+            }
+            
+        }
+        starset += '</div>';
+    }
+    
+    return starset;
+}
+    
+/**** TEST ****/  
+/* module item clicked sends module id, module_item id
+    first find module item
+ see if it matches a submission
+ item.title == assignments.name 
+    assignment_id == submissions.assignment_id
+*/
+	findRelation= function(mod,item) {
+		console.log('modobj',mod,'content_id:',item);
+		//console.log('module_item_id:',id);
+		//console.log('module item:',id);
+		if(role=='Learner') {
+			var mod1 = $.grep(modobjs, function(elem,index){
+				return elem.module_id == mod;
+			});
+			console.log('mod1:',mod1);
+			
+			var item1 = $.grep(mod1[0].module_items, function(elem,index){
+				return elem.content_id == item;
+			});
+			console.log('item1:',item1);
+		//get title, match assignment, match assgnid with submissions assgnid
+			var title=item1[0].title;
+            console.log('item1.title:',title);
+			var asgn1 = $.grep(assignments, function(elem,index){
+				//return elem.assignment_id == id;
+				return elem.name == title;
+			});// if type:quiz quiz_id ?
+			
+			console.log('asgn1:',asgn1);
+			
+			if(asgn1.length>0){
+				
+                var anid = asgn1[0].assignment_id;
+                console.log('asgn1.assignment_id:',anid);
+                var subm1 = $.grep(subms, function(elem,index){
+                    return elem.assignment_id == anid;
+                });//grader_id?
+                console.log('subm1:',subm1);
+			}
+		}
+	} 
+    
+
 /* not needed, used tooltip to show prerequisite_module_ids
 Figure out Locked
 	$('.locked').on('mouseenter', function(e){
@@ -278,64 +424,4 @@ console.log('chmods:',chmods);
     }
     console.log('cmods:', cmods.length, cmods);
     
-/**** TEST ****/  
-// module item clicked sends content_id or module_item_id
-// see if it matches 
-// weird err if .title Send module, module_item
-	findRelation= function(mod,item) {
-		console.log('modobj',mod,'content_id:',item);
-		//console.log('module_item_id:',id);
-		//console.log('module item:',id);
-		if(role=='Learner') {
-			var mod1 = $.grep(modobjs, function(elem,index){
-				return elem.module_id == mod;
-			});
-			console.log('mod1:',mod1);
-			
-			var item1 = $.grep(mod1[0].module_items, function(elem,index){
-				return elem.content_id == item;
-			});
-			console.log('item1:',item1);
-		//get title, match assignment, match assgnid with submissions assgnid
-			var title=item1[0].title;
-			var asgn1 = $.grep(assignments, function(elem,index){
-				//return elem.assignment_id == id;
-				return elem.title == title;
-			});// if type:quiz quiz_id ?
-			
-			console.log('asgn1:',asgn1);
-			
-			if(asgn1.length>0){
-				
-			var anid = asgn1[0].assignment_id;
-			var subm1 = $.grep(subms, function(elem,index){
-				return elem.assignment_id == anid;
-			});//grader_id?
-			console.log('subm1:',subm1);
-			}
-		}
-	} 
-function filterSubms(){
-
-    console.log('role:',role);
-
-    if(role=='Learner') {
-        
-        console.log('assignments:',assignments);
-		console.log('subms:',subms);
-        console.log('-----TEST-----');
-        
-        var subm1 = subms[0].assignment_id;
-        console.log('subm1:',subms[0]);
-        var asgn1 = $.grep(assignments, function(elem,index){
-            return elem.assignment_id == subm1;
-        });
-        console.log('asgn1:',asgn1);
-        // search all moduleitems for match?
-    }
-}
-/**** TEST ****/ 
-$('.page').append('<button id="test" type="button">TEST</button>');
-$('#test').on('click', filterSubms);
-
 });
