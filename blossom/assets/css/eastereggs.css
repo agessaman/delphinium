@@ -1,6 +1,6 @@
 * { margin: 0; padding: 0; }
 body {
-	background-image: url("http://localhost/delphinium/plugins/delphinium/blossom/assets/images/flower.jpg");
+	background-image: url("/delphinium/plugins/delphinium/blossom/assets/images/flower.jpg");
 	background-size: cover;
 	background-position: 50% 0;
 	height: 100%;
