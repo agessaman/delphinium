@@ -522,8 +522,7 @@ class Gradebook extends ComponentBase {
     }
 
     public function getSetOfUsersMilestoneInfo($experienceInstanceId, $userIds)
-    {
-        //init experience variables
+    {//init experience variables
         $experienceInstance = ExperienceModel::find($experienceInstanceId);
         $maxExperiencePts = $experienceInstance->total_points;
 
@@ -549,22 +548,18 @@ class Gradebook extends ComponentBase {
         $grading_scheme = $standards[0]->grading_scheme;
 
         //get all students in course
-        $dbHelper = new DbHelper();
-        if (!isset($_SESSION)) {
-            session_start();
-        }
-        $courseId = $_SESSION['courseID'];
-        $users = $dbHelper->getUsersInCourseWithRole($courseId, 'Learner');
+
+        $roots = new Roots();
+        $users = $roots->getStudentsInCourse();
 
         $filteredUsers = array();
         foreach($userIds as $userId)
         {
-            $res = array_values(array_filter($users->toArray(), function($elem) use($userId) {
+            $res = array_values(array_filter($users, function($elem) use($userId) {
                 return intval($elem['user']['user_id']) === intval($userId);
             }));
             $filteredUsers = array_merge($filteredUsers,$res);
         }
-
         $masterArr=array();
         foreach($filteredUsers as $user)
         {
@@ -578,6 +573,7 @@ class Gradebook extends ComponentBase {
     private function getUserMilestoneInfo($user,$milestonesOrderedByPointsDesc, $ptsPerSecond, $stDate, $endDate, $bonusPerSecond, $bonusSeconds,
                                           $penaltyPerSecond, $penaltySeconds, $maxExperiencePts, $grading_scheme)
     {
+
         //get User submissions
         $studentIds = array($user['user_id']);
         $assignmentIds = array();

@@ -21,15 +21,15 @@ Created by @JohnieHjelm.*/
 
 .switch-li
 {
-    font-size:11px;
+    font-size:9px;
 }
 .smallLi{
-    font-size:10px;
+    font-size:8px;
     line-height:12px;
     height:15px;
 }
 .largeLi {
-    font-size:18px;
+    font-size:15px;
     line-height:23px;
     height:24px;
 }
@@ -37,7 +37,6 @@ Created by @JohnieHjelm.*/
 #switch span a{
     text-decoration: none;
     font-family:"lato", sans-serif;
-    text-transform:uppercase;
     color:gray;
 }
 

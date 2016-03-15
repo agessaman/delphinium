@@ -92,7 +92,6 @@ class Stats extends ComponentBase
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/stats.js");
         //add jquery stuff
 //        $this->addJs("/plugins/delphinium/blossom/assets/javascript/bootstrap.min.js");
-            $this->addCss('/modules/system/assets/ui/storm.css', 'core');
             $this->addCss("/plugins/delphinium/blossom/assets/css/stats.css");
 
 
@@ -154,7 +153,8 @@ class Stats extends ComponentBase
     }
 
     private function instructor()
-    {
+    {//add backend styles
+        $this->addCss('/modules/system/assets/ui/storm.css', 'core');
         $this->page['nonstudent']=1;
         $formController = new \Delphinium\Blossom\Controllers\Stats();
         $formController->create('frontend');
@@ -166,6 +166,7 @@ class Stats extends ComponentBase
         $instructions = $formController->makePartial('instructions');
         $this->page['instructions'] = $instructions;
     }
+
     private function nonStudent(){
         $this->page['nonstudent']=1;
         $potential = new \stdClass();
@@ -204,7 +205,6 @@ class Stats extends ComponentBase
             session_start();
         }
         $studentId = $_SESSION['userID'];
-
         //get min and max gap =
         // MAX = experience points + max bonus points
         //MIN = experience points + max penalty points
@@ -217,9 +217,10 @@ class Stats extends ComponentBase
         $experienceComp = new ExperienceComponent();
         $redLine = $experienceComp->getRedLinePoints($this->property('Experience'));
         $milestoneClearanceInfo = $experienceComp->getMilestoneClearanceInfo($this->property('Experience'));
-
         $potentialBonus =0.0;
         $potentialPenalties=0.0;
+
+        echo json_encode($milestoneClearanceInfo);
         foreach($milestoneClearanceInfo as $mileInfo)
         {
             if($mileInfo->cleared)
@@ -252,7 +253,6 @@ class Stats extends ComponentBase
             $milestoneSummary = $milestoneSummary[0];
         }
         $this->page['milestoneSummary'] = json_encode($milestoneSummary);
-
         $milestoneNum = count($experience->milestones);
         $healthObj = new \stdClass();
         $healthObj->maxPenalties = $maxPenalties*$milestoneNum;

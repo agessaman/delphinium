@@ -7,10 +7,10 @@ var trueHeight = 200;
 var trueWidth = 250;
 var halfWidth = trueWidth / 2;
 
-var positivePace = milestoneSummary.bonuses;//10;//
-console.log("locked bonuses: "+positivePace);
-var negativePace = -milestoneSummary.penalties;//-10;// (must be positive value)
-console.log("locked penalties: "+negativePace);
+var positivePace = milestoneSummary.bonuses;
+//console.log("locked bonuses: "+positivePace);
+var negativePace = -milestoneSummary.penalties;// (must be positive value)
+//console.log("locked penalties: "+negativePace);
 var maxPace = healthObj.maxBonuses;
 var minPace = healthObj.maxPenalties;
 var positivePaceWidth = positivePace / maxPace * halfWidth;
@@ -19,10 +19,10 @@ var positivePaceX = halfWidth + (positivePaceWidth / 2);
 var negativePaceX = halfWidth - (negativePaceWidth / 2);
 
 //also draw potential bonus and penalties
-var positivePotential = potential.bonus;//40;//
-console.log("potential bonuses: "+positivePotential);
-var negativePotential =-potential.penalties;//-10;// (must be positive value)
-console.log("potential penalties: "+negativePotential);
+var positivePotential = potential.bonus;
+//console.log("potential bonuses: "+positivePotential);
+var negativePotential =-potential.penalties;// (must be positive value)
+//console.log("potential penalties: "+negativePotential);
 var posPotentialWidth = positivePotential / maxPace * halfWidth;
 var negPotentialWidth = negativePotential/ minPace * halfWidth;
 var posPotentialX = halfWidth + positivePaceWidth + (posPotentialWidth/2);
@@ -443,14 +443,65 @@ function drawNumber(count, x, text, className, delay) {
     //}
 }
 
-function variableStamina(number, width, count, delay)
-{
-    delayValue=0;
-    if(delay)
-    {
-        delayValue=4000;
+function variableStamina(number, width, count, delay) {
+
+    delayValue = 0;
+    if (delay) {
+        delayValue = 4000;
     }
     var view = d3.select("#statsView");
+
+    //make a gradient
+    var gradient = view.append('defs')
+        .append('linearGradient')
+        .attr({
+            id: 'staminaGradient',
+            x1: '0%',
+            y1: '0%',
+            x2: '100%',
+            y2: '0%'
+        });
+
+    var firstStop = '0%',secondStop = '40%', thirdStop = '65%',fourthStop = '100%';
+    var firstColor ='#FF0000', secondColor ='#FF0000', thirdColor='#FF0000', fourthColor ='#FF0000';
+
+    if(number>=70){
+        thirdColor = '#FFB630';//orange
+        fourthColor ='#FFB630';//orange
+    }
+    if (number >= 80) {
+        fourthColor ='#FFF830';//yellow
+    }
+    if (number >= 90) {
+        secondColor = '#FFB630';//orange
+        thirdColor = '#FFF830';//yellow
+        fourthColor ='#008000';//green
+    }
+
+    gradient.append('stop')
+        .attr({
+            offset: firstStop,
+            style: 'stop-color:'+firstColor+';stop-opacity:1'
+        });
+
+    gradient.append('stop')
+        .attr({
+            offset: secondStop,
+            style: 'stop-color:'+secondColor+';stop-opacity:1'
+        });
+
+    gradient.append('stop')
+        .attr({
+            offset:thirdStop,
+            style:'stop-color:'+thirdColor+';stop-opacity:.9'
+        });
+
+    gradient.append('stop')
+        .attr({
+            offset:fourthStop,
+            style:'stop-color:'+fourthColor+';stop-opacity:1'
+        });
+
     if (statsAnimate) {
         view.append('rect')
             .attr({
@@ -467,7 +518,7 @@ function variableStamina(number, width, count, delay)
             .duration(1000)
             .attr({
                 width:width,
-                fill:'green'
+                fill:'url(#staminaGradient)'
             })
             .ease('bounce');
     } else {
@@ -478,7 +529,7 @@ function variableStamina(number, width, count, delay)
                 ry:3,
                 height:25,
                 width:width,
-                fill:'green',
+                fill:'url(#staminaGradient)',
                 y:3 * 50 + 20,
                 class:'staminaVars'
             });

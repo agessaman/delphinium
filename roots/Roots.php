@@ -735,6 +735,14 @@ class Roots
             session_start(); 
     	}
         $lms = strtoupper($_SESSION['lms']);
+        $courseId = $_SESSION['courseID'];
+        $users = $this->dbHelper->getUsersInCourseWithRole($courseId, 'Learner');
+        if(count($users)>1)
+        {
+            return $users->toArray();
+        }
+
+        //if no users were found in DB try to get them from Canvas
         if(Lms::isValidValue($lms))
         {
             switch ($lms)
