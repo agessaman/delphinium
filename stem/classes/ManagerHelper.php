@@ -31,30 +31,7 @@ class ManagerHelper
         }
         return $flatArray;
     }
-     
-    public function buildTree(&$elements, $parentId = 1) {
-        $branch = array();
-        $order = 0;
-        $newItems= array();
-        foreach ($elements as $module) {
-            if ($module['parent_id'] == $parentId) 
-            {
-                $children = $this->buildTree($elements, $module['module_id']);
-                if ($children) {
-                    $module['children'] = $children;
-                }
-                else
-                {
-                    $module['children'] = array();
-                }
-                $branch[] = $module;
-                unset($elements[$module['module_id']]);
-            }
-        }
-        return $branch;
 
-    }
-    
     public function makeItemParent($arrWithOldParent, $newParent)
     {
         $newParent['children'] = array();

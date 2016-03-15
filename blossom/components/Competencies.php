@@ -131,15 +131,15 @@ class Competencies extends ComponentBase
 					instructor chooses an enrolled student from a dropdown
 					to see how that students competencies?
 				*/
-				$studentIds = null;//['1604486'];//Test Student
-				$allStudents = true;
-				$allAssignments = true;
-				$multipleStudents = false;
-				$multipleAssignments = true;
-				$includeTags = true;
-				$grouped = true;
+                $studentIds = array($_SESSION['userID']);
+                $allStudents = false;
+                $allAssignments = true;
+                $multipleStudents = false;
+                $multipleAssignments = true;
+                $includeTags = true;
+                $grouped = true;
 
-				$req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, $assignmentIds, $allAssignments, $multipleAssignments, $includeTags, $includeTags, $grouped);
+                $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments, $includeTags, $grouped);
 
 				$submissions = $roots->submissions($req);
 				$this->page['submissions']=json_encode($submissions);// score

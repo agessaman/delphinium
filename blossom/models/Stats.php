@@ -7,6 +7,7 @@ use Model;
  */
 class Stats extends Model
 {
+    use \October\Rain\Database\Traits\Validation;
 
     /**
      * @var string The database table used by the model.
@@ -34,6 +35,7 @@ class Stats extends Model
     public $rules = [
         'name'=>'required',
         'animate'=>'required',
-        'size' => 'required'
+        'size' => 'required',
+        'course_id'=> 'required'
     ];
 }

@@ -376,7 +376,50 @@ class Roots
                 return $canvasHelper->getModuleStates($request);
         }
     }
-    
+
+    public function getModuleTree($freshData)
+    {
+        $moduleId = null;
+        $moduleItemId = null;
+        $includeContentDetails = true;
+        $includeContentItems = true;
+        $module = null;
+        $moduleItem = null;
+
+        $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems,
+            $includeContentDetails, $module, $moduleItem , $freshData);
+
+        $roots = new Roots();
+        $moduleData = $roots->modules($req);
+        $modArr = $moduleData->toArray();
+
+        $result = $this->buildTree($modArr);
+        return $result;
+    }
+
+    public function buildTree(&$elements, $parentId = 1) {
+        $branch = array();
+        $order = 0;
+        $newItems= array();
+        foreach ($elements as $module) {
+            if ($module['parent_id'] == $parentId)
+            {
+                $children = $this->buildTree($elements, $module['module_id']);
+                if ($children) {
+                    $module['children'] = $children;
+                }
+                else
+                {
+                    $module['children'] = array();
+                }
+                $branch[] = $module;
+                unset($elements[$module['module_id']]);
+            }
+        }
+        return $branch;
+
+    }
+
     public function getModuleItemTypes()
     {
         return ModuleItemType::getConstants();
