@@ -301,6 +301,20 @@ class Modulemap extends ComponentBase
         return $array;
     }
 
+	public function getAssgnments()
+	{
+		$roots = new Roots();
+        $req = new AssignmentsRequest(ActionType::GET);
+		$res = $roots->assignments($req);
+
+		//$assignmentIds = array();// for submissionsRequest
+		$assignments = array();// for points_possible
+		foreach ($res as $assignment) {
+			//array_push($assignmentIds, $assignment["assignment_id"]);
+			array_push($assignments, $assignment);
+		}
+		return $assignments;
+	}
 	public function getStudentSubmissions()
 	{
 		$roots = new Roots();

@@ -36,15 +36,16 @@
         Bird of Paradise: student view can fill progress bar
     */
 
-	var assignments={{assignments|raw}};//json MAY NOT NEED
+	//global var in default.htm is available to .js file
+	assignments={{assignments|raw}};//json MAY NOT NEED
     console.log('assignments:',assignments);
     var submissions = {{submissions|raw}};// Only available if DevConfig is student
-	//console.log('submissions:',submissions);
-    var subms = $.grep(submissions, function(elem,indes){
+	//console.log('submissions:',submissions); 
+	subms = $.grep(submissions, function(elem,index){
         return elem.score > 0;
     });
     console.log('subms:',subms);
-	//sumbissions=null;// no longer needed
+	sumbissions=null;// no longer needed
 
     
 })();

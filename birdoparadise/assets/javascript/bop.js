@@ -138,6 +138,7 @@ $(document).ready(function() {
         tabCounter++; 
     }
     
+
     /* click module */
     $('.moditem').on('click', function(){
         var modid = $(this).attr('id');
@@ -176,12 +177,15 @@ $(document).ready(function() {
             var item='<div class="assignment">';// create one still
                 //item+='<a target="_blank" href="'+moditems[i].html_url+'?module_item_id='+moditems[i].module_item_id+'" target="_blank">'+moditems[i].title+'</a>';
                 item +='<i class="icon-file-text"></i> ';
-				item+='<a target="_blank" href="'+moditems[i].html_url+'" target="_blank">'+moditems[i].title+'</a>';
-                if(moditems[i].content.length > 0) {
+				item +=' c_id: '+moditems[i].content_id+' ';//.module_item_id
+				item+='<a href="javascript:void(0);" onClick="findRelation('+moditems[i].module_item_id+');">'+moditems[i].title+'</a>';
+                //item+='<a target="_blank" href="'+moditems[i].html_url+'" target="_blank">'+moditems[i].title+'</a>';
+				item+=' mi_id: '+moditems[i].module_item_id;
+				if(moditems[i].content.length > 0) {
                     item+=' worth: '+moditems[i].content[0].points_possible;
 					item+=' '+moditems[i].content[0].lock_explanation;
                 }
-                item+='</div>';
+                item+='</div>';// c_id: 464884 6: Pre-class Quiz worth: 60 mi_id: 2368118
             $('#detailed-body').append(item);
         }
         // trigger modal
@@ -274,7 +278,27 @@ console.log('chmods:',chmods);
     }
     console.log('cmods:', cmods.length, cmods);
     
-/**** TEST ****/   
+/**** TEST ****/  
+// module item clicked sends content_id or module_item_id
+// see if it matches 
+	findRelation= function(id) {
+		//console.log('content_id:',id);
+		console.log('module_item_id:',id);
+		if(role=='Learner') {
+			
+			var asgn1 = $.grep(assignments, function(elem,index){
+				return elem.assignment_id == id;
+			});// if type:quiz quiz_id ?
+			
+			console.log('asgn1:',asgn1);
+			
+			var subm1 = $.grep(subms, function(elem,index){
+				return elem.grader_id == id;
+			});//grader_id, assignment_id
+			console.log('subm1:',subm1);
+			
+		}
+	} 
 function filterSubms(){
 
     console.log('role:',role);
@@ -282,8 +306,7 @@ function filterSubms(){
     if(role=='Learner') {
         
         console.log('assignments:',assignments);
-        console.log('subms:',subms);
-        //sumbissions=null;// no longer needed
+		console.log('subms:',subms);
         console.log('-----TEST-----');
         
         var subm1 = subms[0].assignment_id;
