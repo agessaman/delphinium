@@ -177,8 +177,8 @@ $(document).ready(function() {
             var item='<div class="assignment">';// create one still
                 //item+='<a target="_blank" href="'+moditems[i].html_url+'?module_item_id='+moditems[i].module_item_id+'" target="_blank">'+moditems[i].title+'</a>';
                 item +='<i class="icon-file-text"></i> ';
-				item +=' c_id: '+moditems[i].content_id+' ';//.module_item_id
-				item+='<a href="javascript:void(0);" onClick="findRelation('+moditems[i].module_item_id+');">'+moditems[i].title+'</a>';
+				item +=' c_id: '+moditems[i].content_id+' ';//.module_item_id .title
+				item+='<a href="javascript:void(0);" onClick="findRelation('+modid+','+moditems[i].content_id+');">'+moditems[i].title+'</a>';
                 //item+='<a target="_blank" href="'+moditems[i].html_url+'" target="_blank">'+moditems[i].title+'</a>';
 				item+=' mi_id: '+moditems[i].module_item_id;
 				if(moditems[i].content.length > 0) {
@@ -281,22 +281,38 @@ console.log('chmods:',chmods);
 /**** TEST ****/  
 // module item clicked sends content_id or module_item_id
 // see if it matches 
-	findRelation= function(id) {
-		//console.log('content_id:',id);
-		console.log('module_item_id:',id);
+// weird err if .title Send module, module_item
+	findRelation= function(mod,item) {
+		console.log('modobj',mod,'content_id:',item);
+		//console.log('module_item_id:',id);
+		//console.log('module item:',id);
 		if(role=='Learner') {
+			var mod1 = $.grep(modobjs, function(elem,index){
+				return elem.module_id == mod;
+			});
+			console.log('mod1:',mod1);
 			
+			var item1 = $.grep(mod1[0].module_items, function(elem,index){
+				return elem.content_id == item;
+			});
+			console.log('item1:',item1);
+		//get title, match assignment, match assgnid with submissions assgnid
+			var title=item1[0].title;
 			var asgn1 = $.grep(assignments, function(elem,index){
-				return elem.assignment_id == id;
+				//return elem.assignment_id == id;
+				return elem.title == title;
 			});// if type:quiz quiz_id ?
 			
 			console.log('asgn1:',asgn1);
 			
+			if(asgn1.length>0){
+				
+			var anid = asgn1[0].assignment_id;
 			var subm1 = $.grep(subms, function(elem,index){
-				return elem.grader_id == id;
-			});//grader_id, assignment_id
+				return elem.assignment_id == anid;
+			});//grader_id?
 			console.log('subm1:',subm1);
-			
+			}
 		}
 	} 
 function filterSubms(){
