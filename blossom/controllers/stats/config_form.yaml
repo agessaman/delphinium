@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Stats
+
+# Model Form Field configuration
+form: $/delphinium/blossom/models/stats/fields.yaml
+
+# Model Class name
+modelClass: Delphinium\Blossom\Models\Stats
+
+# Default redirect location
+defaultRedirect: delphinium/blossom/stats
+
+# Create page
+create:
+    title: Create Stats
+    redirect: delphinium/blossom/stats/update/:id
+    redirectClose: delphinium/blossom/stats
+
+# Update page
+update:
+    title: Edit Stats
+    redirect: delphinium/blossom/stats
+    redirectClose: delphinium/blossom/stats
+
+# Preview page
+preview:
+    title: Preview Stats

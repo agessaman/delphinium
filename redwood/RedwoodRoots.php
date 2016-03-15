@@ -1,6 +1,7 @@
 <?php namespace Delphinium\Redwood;
 
 
+use Aws\CloudFront\Exception\Exception;
 use Config;
 use Delphinium\Redwood\Exceptions\InvalidRequestException;
 use Delphinium\Redwood\Models\PMOAuth;
@@ -128,6 +129,11 @@ class RedwoodRoots
         }
     }
 
+    /**
+     * @return mixed Returns an array of all projects in ProcessMaker
+     * @throws Exception
+     * @throws InvalidRequestException
+     */
     public function getProjects()
     {//GET /api/1.0/{workspace}/roles
         $projects = $this->pmRestRequest("GET", 'projects');
@@ -142,6 +148,17 @@ class RedwoodRoots
         }
     }
 
+    public function getStartingTask($project_uid)
+    {// GET /api/1.0/{workspace}/project/{pro_uid}/starting-tasks
+        $result = $this->pmRestRequest("GET", "project/{$project_uid}/starting-tasks");
+        return $result;
+    }
+
+    public function getTaskAssignees($project_uid, $activity_uid)
+    {//GET/api/1.0/{workspace}/project/{prj_uid}/activity/{act_uid}/assignee?filter={string}&start={number}&limit={number}
+        $result = $this->pmRestRequest("GET", "project/{$project_uid}/activity/{$activity_uid}/assignee");
+        return $result;
+    }
     /**
      * @return mixed An array with the roles available in ProcessMaker
      * @throws Exception
@@ -175,8 +192,16 @@ class RedwoodRoots
         $params = array(
             'filter'    => $username
         );
-        $groups= $this->pmRestRequest("GET", $endpoint, $params);
-        return $groups;
+        $users= $this->pmRestRequest("GET", $endpoint, $params);
+
+        foreach($users as $user)
+        {
+            if(strval($user->usr_username)==strval($username) )
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -270,6 +295,23 @@ class RedwoodRoots
     }
 
     /**
+     * @param $project_uid The uid of the project in which a new task will be created
+     * @param $task_uid The uid of a starting task within the project
+     * @return mixed The newly created case
+     * @throws Exception
+     * @throws InvalidRequestException
+     */
+    public function createCase($project_uid,$task_uid)
+    {//POST /api/1.0/{workspace}/cases
+        $postParams = array(
+            'pro_uid'    => $project_uid,
+            'tas_uid'=>$task_uid
+        );
+
+        $result = $this->pmRestRequest("POST", "cases", $postParams);
+        return $result;
+    }
+    /**
      * @param $group_uid The processmaker uid of the group
      * @param $user_uid The processmaker uid of the user that will be added to the group
      * @return mixed
@@ -284,6 +326,25 @@ class RedwoodRoots
 
         $result = $this->pmRestRequest("POST", "group/{$group_uid}/user", $postParams);
         return $result;
+    }
+
+    public function assignUserToTask($project_uid, $activity_uid, $user_uid)
+    {//POST /api/1.0/{workspace}/project/{prj_uid}/activity/{act_uid}/assignee
+        //check to make sure the group isn't already assigned
+        try{//GET/api/1.0/{workspace}/project/{prj_uid}/activity/{act_uid}/assignee/{aas_uid}
+
+            $firstResult = $this->pmRestRequest("GET", "project/{$project_uid}/activity/{$activity_uid}/assignee/{$user_uid}");
+        }
+        catch(InvalidRequestException $e)
+        {//group wasn't assigned
+            $postParams = array(
+                'aas_type'  => 'user',
+                'aas_uid'    => $user_uid
+            );
+            $result = $this->pmRestRequest("POST", "project/{$project_uid}/activity/{$activity_uid}/assignee", $postParams);
+            return $result;
+        }
+
     }
     /*Function to obtain a new access token, using a refresh token. If the parameters are not specified
             then get them from the cookie if they exist. The new access token is set as a cookie available at $_COOKIE["access_token"]

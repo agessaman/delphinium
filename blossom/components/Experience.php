@@ -14,6 +14,7 @@ use Delphinium\Roots\Enums\ActionType;
 use Delphinium\Roots\Utils;
 use \DateTime;
 use \DateTimeZone;
+use \Delphinium\Roots\Exceptions\InvalidRequestException;
 
 class Experience extends ComponentBase {
 
@@ -106,6 +107,8 @@ class Experience extends ComponentBase {
                 'title' => 'Instance',
                 'description' => 'Select the Experience instance',
                 'type' => 'dropdown',
+                'validationPattern' => '^[1-9][0-9]*$',//check that they've selected an option from the drop down. The default placeholder is=0
+                'validationMessage' => 'Select an instance of Experience from the dropdown'
             ]
         ];
     }
@@ -143,7 +146,20 @@ class Experience extends ComponentBase {
             $this->page['experienceSize'] = $instance->size;
             $this->page['experienceAnimate'] = $instance->animate;
             $this->page['redLine'] = $this->getRedLinePoints($this->property('Instance'));
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
+
+        }
+        catch(\Delphinium\Roots\Exceptions\InvalidRequestException $e)
+        {
+            if($e->getCode()==401)//meaning there are two professors and one is trying to access the other professor's grades
+            {
+                return;
+            }
+            else
+            {
+                return \Response::make($this->controller->run('error'), 500);
+            }
+        }
+        catch (\GuzzleHttp\Exception\ClientException $e) {
             echo "In order for experience to work properly you must be a student, or go into 'Student View'";
             return;
         }
@@ -527,8 +543,10 @@ class Experience extends ComponentBase {
         {
             $submissions = $roots->submissions($request);
             return $submissions;
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
-            return[];
+        } catch (\Delphinium\Roots\Exceptions\InvalidRequestException $e) {
+            if($e->getCode()===401)
+            {return [];}
+            else{throw $e;}
         }
 
     }

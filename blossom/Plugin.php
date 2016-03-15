@@ -29,7 +29,7 @@ class Plugin extends PluginBase
     {
         return [
             'name'        => 'Blossom',
-            'description' => 'Plug-in used to develop view for displaying grade information',
+            'description' => 'Plug-in used to develop views for displaying grade information',
             'author'      => 'Jacob Reid',
             'icon'        => 'icon-asterisk'
         ];
@@ -46,8 +46,9 @@ class Plugin extends PluginBase
             '\Delphinium\Blossom\Components\StudentsGraph' => 'studentsgraph',
             '\Delphinium\Blossom\Components\Timer' => 'timer',
             '\Delphinium\Blossom\Components\Progress' => 'progress',
-            '\Delphinium\Blossom\Components\ExperienceManager' => 'experiencemanager',
-            '\Delphinium\Blossom\Components\Gradebook' => 'gradebook'
+            '\Delphinium\Blossom\Components\Gradebook' => 'gradebook',
+            '\Delphinium\Blossom\Components\EasterEggs' => 'eastereggs',
+            '\Delphinium\Blossom\Components\Stats' => 'stats',
         ];
     }
 	
@@ -99,27 +100,18 @@ class Plugin extends PluginBase
                     'group'       => 'Blossom',
                 ],
 
-                'StudentsGraph' => [
-                    'label' => 'StudentsGraph',
-                    'icon' => 'icon-bar-chart',
+                'Easter Eggs' => [
+                    'label' => 'Easter Eggs',
+                    'icon' => 'icon-lemon-o',
                     'owner' => 'Delphinium.Greenhouse',
-                    'url' => Backend::url('delphinium/blossom/studentsgraph'),
-                    'group'       => 'Blossom',
+                    'url' => Backend::url('delphinium/blossom/eastereggs'),
+                    'group' =>'Blossom',
                 ],
-
-                'Timer' => [
-                    'label' => 'Timer',
+                'Stats' => [
+                    'label' => 'Stats',
                     'icon' => 'icon-bar-chart',
                     'owner' => 'Delphinium.Greenhouse',
-                    'url' => Backend::url('delphinium/blossom/timer'),
-                    'group'       => 'Blossom',
-                ],
-
-                'Progress' => [
-                    'label' => 'Progress',
-                    'icon' => 'icon-bar-chart',
-                    'owner' => 'Delphinium.Greenhouse',
-                    'url' => Backend::url('delphinium/blossom/progress'),
+                    'url' => Backend::url('delphinium/blossom/stats'),
                     'group'       => 'Blossom',
                 ]
             ]);

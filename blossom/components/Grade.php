@@ -89,9 +89,20 @@ class Grade extends ComponentBase {
             $this->addCss("/plugins/delphinium/blossom/assets/css/animate.css");
             $this->addCss("/plugins/delphinium/blossom/assets/css/grade.css");
             $this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
-
+        }
+        catch(\Delphinium\Roots\Exceptions\InvalidRequestException $e)
+        {
+            if($e->getCode()==401)//meaning there are two professors and one is trying to access the other professor's grades
+            {
+                return;
+            }
+            else
+            {
+                return \Response::make($this->controller->run('error'), 500);
+            }
         }
         catch (\GuzzleHttp\Exception\ClientException $e) {
+            echo "In order for experience to work properly you must be a student, or go into 'Student View'";
             return;
         }
         catch(Delphinium\Roots\Exceptions\NonLtiException $e)

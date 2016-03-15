@@ -13,7 +13,7 @@ use Delphinium\Roots\Requestobjects\AssignmentsRequest;
 use Delphinium\Roots\Requestobjects\ModulesRequest;
 use Delphinium\Roots\Roots;
 use Delphinium\Roots\Enums\ActionType;
-use Delphinium\Stem\Classes\ManagerHelper as IrisClass;
+use Delphinium\Stem\Classes\ManagerHelper;
 use Delphinium\Stem\Components\Manager;
 use \DateTime;
 
@@ -84,7 +84,7 @@ class RestfulApi extends Controller
     {
         $parent = json_decode(\Input::get('parent'), true);
         $threeDArrayWithoutParent = json_decode(\Input::get('modulesArray'), true);
-        $iris = new IrisClass();
+        $iris = new ManagerHelper();
         $result = $iris->makeItemParent($threeDArrayWithoutParent,($parent));            
         return $result;
     }
@@ -104,8 +104,8 @@ class RestfulApi extends Controller
       
         
 //        echo " The order is: ---- ".json_encode($flat)." ---";
-        $iris = new IrisClass();
-        $result = $iris->buildTree($mods);
+        $roots = new Roots();
+        $result = $roots->buildTree($mods);
         return $result;
     }
 
@@ -115,7 +115,7 @@ class RestfulApi extends Controller
         $flatArray = array();
         $order = 0;
 
-        $iris = new IrisClass();
+        $iris = new ManagerHelper();
         $iris->recursive($courseId, $array, $flatArray);
         return $flatArray;
     }

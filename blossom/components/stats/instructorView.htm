@@ -1,0 +1,77 @@
+{% partial 'stats::display' %}
+
+<div class="confirm-container bg-success hide">
+    <p style="text-align:center;">Successfully Updated Entry!</p>
+</div>
+<div class="">
+    <a data-toggle="modal"  data-keyboard="true" data-backdrop="true" onclick="showModal()"><i class="icon-cog"></i> Settings</a>
+</div>
+<div class="control-popup modal fade" id="modalWindow" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Tabs -->
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#configure">Configure</a></li>
+                    <li><a data-toggle="tab" href="#instruct">Instructions</a></li>
+                </ul>
+                <div class="tab-content">
+                    <!-- Configure instance -->
+                    <div id="configure" class="tab-pane fade in active" style="padding: 5px 0px;">
+                        <form role="form" id="updateForm"
+                              data-request="{{ __SELF__ }}::onSave"
+
+                              data-request-success="$el.hide();$('.confirm-container').removeClass('hide');completed(data);">
+                            {{ form.update(recordId)|raw }}
+                            {{ form.formRender()|raw }}
+                            <div class="form-group">
+                                <button class="btn btn-primary" type="submit" value="register" data-load-indicator="Saving Stats..." >Update Component</button>
+                                <button type="button" onclick="hideModal()" class="btn btn-default" data-disposable="">Close</button>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- Instructions -->
+                    <div id="instruct" class="tab-pane fade in" style="padding: 0px 20px;">
+                        {{ instructions|raw }}
+                    </div>
+                </div>
+            </div>
+
+            </div>
+            <div style="clear:both; height:1.5em"></div>
+            <!--div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            </div-->
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+    function showModal()
+    {
+        $("#modalWindow").on("shown.bs.modal", function () {
+            //disable the course id and the copy name
+            var modal = $(this);
+            document.getElementById('Form-field-Stats-name').readOnly=true;
+            document.getElementById('Form-field-Stats-course_id').readOnly=true;
+
+        }).modal('show');
+    }
+
+    function hideModal()
+    {
+        $('#modalWindow').modal('hide');
+    }
+
+
+    function completed(data)
+    {
+        hideModal();
+        location.reload();//reload component with new configuration
+    }
+</script>

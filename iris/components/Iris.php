@@ -41,17 +41,19 @@ class Iris extends ComponentBase
             $defaultNode = 1;
             $filter = $this->property('filter',$defaultNode);
             $this->page['filter'] = $filter;
-            $finalData;
+            $finalData=array();
 
             $freshData = false;
             $req = new ModulesRequest(ActionType::GET, null, null, true, true, null, null , $freshData);
 
             $roots = new Roots();
             $moduleData = $roots->modules($req);
+//        echo "hello";
+//        return;
+//        echo json_encode($moduleData);return;
 
             $this->page['rawData'] = json_encode($moduleData);
             $modArr = $moduleData->toArray();
-
             if($filter===$defaultNode)
             {///get all items
                 $finalData = $this->buildTree($modArr,1);
@@ -66,9 +68,21 @@ class Iris extends ComponentBase
                 );
                 $obj = array_shift($filterObj);
                 $finalData = $this->buildTree($modArr,$obj['parent_id'], $filter);
+
             }
             $this->page['graphData'] = json_encode($finalData);
 
+        }
+        catch(\Delphinium\Roots\Exceptions\InvalidRequestException $e)
+        {
+            if($e->getCode()==401)//meaning there are two professors and one is trying to access the other professor's grades
+            {
+                return;
+            }
+            else
+            {
+                return \Response::make($this->controller->run('error'), 500);
+            }
         }
         catch (\GuzzleHttp\Exception\ClientException $e) {
             return;
@@ -139,6 +153,7 @@ class Iris extends ComponentBase
     private function buildTree(array &$elements, $parentId = 1, $moduleFilter=null) {
         $branch = array();
         foreach ($elements as $key=>$module) {
+
             if($module['published'] == "1")//if not published don't include it
             {
                 if(!is_null($moduleFilter)&&($module['module_id']!=$moduleFilter))

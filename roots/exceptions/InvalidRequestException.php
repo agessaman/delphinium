@@ -4,7 +4,8 @@ class InvalidRequestException extends \Exception
 {
     public $action;
     public $reason;
-    
+	public $code;
+
     function getAction() {
         return $this->action;
     }
@@ -21,8 +22,12 @@ class InvalidRequestException extends \Exception
         $this->reason = $reason;
     }
 
+	function setCode($code) {
+        $this->code = $code;
+    }
+
     /**
-     * 
+     *
      * @param string $action The action that was being performed
      * @param string $reason The reason the action failed
      * @param int $code optionl- The error code
@@ -30,18 +35,21 @@ class InvalidRequestException extends \Exception
     public function __construct($action, $reason, $code=null) {
         $this->setAction($action);
         $this->setReason($reason);
-        
-        if(is_null($code))
-        {
-            $code = 1;// see code guide below
-        }
+		if(is_null($code))
+		{
+			$this->setCode(0);
+		}
+		else
+		{
+			$this->setCode($code);
+		}
         $fullMsg = "An error occurred when attempting to {$action}. Reason: {$reason}";
-        
+
         parent::__construct($fullMsg, $code);
     }
-    
+
     public function __toString() {
         return __CLASS__ . ": [{$this->code}]: {$this->message}\n";
     }
-   
+
 }

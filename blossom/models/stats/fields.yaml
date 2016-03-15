@@ -1,0 +1,40 @@
+# ===================================
+#  Form Field Definitions
+# ===================================
+
+fields:
+    id:
+        label: ID
+        disabled: true
+        tab: Settings
+
+    name:
+        label: Name
+        span: auto
+        comment: Enter the name of this instance
+        tab: Settings
+
+    course_id:
+        label: Course id
+        span: auto
+        comment: Enter the course id to which this component will be tied
+        tab: Settings
+
+
+    animate:
+        label: Animate
+        span: auto
+        type: switch
+        comment: On = component will be animated.
+        tab: Settings
+
+    size:
+        label: Size
+        span: auto
+        type: dropdown
+        options:
+            small: Small
+            medium: Medium
+            large: Large
+        comment: Enter the the size of component you want
+        tab: Settings

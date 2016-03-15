@@ -33,8 +33,11 @@ class TestRedwoodRoots extends ComponentBase
 //        $this->testPeerReviewWorkflow();
 //        $this->testLoginUser();
 //        $this->testIsUserInGroup();
-        $this->testGetProjects();
+//        $this->testGetProjects();
 //        var_dump($_POST);
+        $this->testGetStartingTask();
+//        $this->testAssignGroupToTask();
+//        $this->testGetTaskAssignees();
     }
 
     public function test()
@@ -183,5 +186,51 @@ class TestRedwoodRoots extends ComponentBase
         $projects = $this->roots->getProjects();
         var_dump($projects);
         return $projects;
+    }
+
+    private function testGetStartingTask()
+    {
+        $project_uid = '73043823256b50f6624af93018053833';
+        $proj = $this->testGetProjects();
+        if(count($proj)>0)
+        {
+//            $project_uid = $proj[0]->prj_uid;
+            $startingTask = $this->roots->getStartingTask($project_uid);
+            var_dump($startingTask);
+            return $startingTask;
+        }
+        else{
+            echo "No projects available";
+        }
+    }
+
+    private function testAssignGroupToTask()
+    {
+        $proj = $this->testGetProjects();
+        $groups = $this->testGetGroup();
+//echo json_encode($groups);return;
+        if(count($proj)>0 && count($groups)>0) {
+
+//        $group_id = $groups[0]->grp_uid;
+            $group_id = '64035034156d618bb9602b3076445049';
+
+//            $project_id = $proj[0]->prj_uid;
+            $project_id = '73043823256b50f6624af93018053833';
+            $startingTask = $this->roots->getStartingTask($project_id);
+            if(count($startingTask)>0)
+            {
+                $task_uid = $startingTask[0]->act_uid;
+                $this->roots->assignGroupToTask($project_id,$task_uid , $group_id);
+            }
+        }
+    }
+
+    private function testGetTaskAssignees()
+    {
+        $project_uid = '73043823256b50f6624af93018053833';
+        $activity_uid = '96176147456b510867fa071036708730';
+        $result = $this->roots->getTaskAssignees($project_uid, $activity_uid);
+        var_dump($result);
+        return $result;
     }
 }

@@ -1,0 +1,56 @@
+<!--div class="control-tabs primary-tabs" data-control="tab"-->
+<div>
+    <ul class="nav nav-tabs">
+      <li class="active"><a data-toggle="tab" href="#home">Instances</a></li>
+      <li><a data-toggle="tab" href="#menu1">Instructions</a></li>
+    </ul>
+    
+    <div class="tab-content">
+      <div id="home" class="tab-pane fade in active" style="padding: 5px 0px;">
+        <?= $this->listRender() ?>
+      </div>
+        
+      <div id="menu1" class="tab-pane fade in" style="padding: 0px 20px;">
+
+        <h3>EasterEggs Component</h3>   
+		
+		<div style="float:left; width: 50%;">
+            <h4>Using the component:</h4>
+    		
+            </p>
+    		<div class="eggs">
+                <p> Press "H" and "S" at the same time to do the Harlem Shake</p>
+                <p> Press "R" and "P" to ripple the page</p>
+                <p> Press "A" and "D" to play asteroids</p>
+                <p> Press "K" and "I" to play katamari</p>
+                <p> Press "B" and "M" to play bombs</p>
+                <p> Press "F" and "T" to play ponies</p>
+                <p> Press "L" and "P" to play ponies</p>
+            </div>
+        </div>
+
+        
+		<div style="float:left; width: 50%;" >
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/3QJaRLwFDDQ?start=27" frameborder="0" allowfullscreen></iframe>
+            <img id="image0" src="" width="750" title="What it looks like" alt="ripples"/>
+            <img id="image1" src="" width="750" title="What it looks like" alt="asteroids"/>
+            <img id="image2" src="" width="750" title="What it looks like" alt="katamari"/>
+            <img id="image3" src="" width="750" title="What it looks like" alt="bombs"/>
+            <img id="image4" src="" width="750" title="What it looks like" alt="ponies"/>
+            <img id="image5" src="" width="750" title="What it looks like" alt="my little pony"/>
+		</div>
+		
+      </div>
+    </div>
+</div>
+
+<script>
+//console.log("<?= Backend::url() ?>");//http://localhost/delphinium/backend
+//console.log("<?= Config::get('app.url', 'backend') ?>");//http://localhost/delphinium/
+	$('#image0').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/ripples.png');
+    $('#image1').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/asteroids.jpg');
+    $('#image2').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/katamari.jpg');
+    $('#image3').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/bomb.png');
+    $('#image4').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/pony.png');
+    $('#image5').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/mylittlepony.png');
+</script>
