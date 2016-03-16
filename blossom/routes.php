@@ -8,3 +8,4 @@ Route::get('gradebook/getAllStudentSubmissions', 'Delphinium\Blossom\Controllers
 Route::get('gradebook/getBottomTableData', 'Delphinium\Blossom\Controllers\RestfulApi@getAllUserClearedMilestoneData');
 Route::get('gradebook/getSetOfUsersMilestoneInfo', 'Delphinium\Blossom\Controllers\RestfulApi@getSetOfUsersMilestoneInfo');
 Route::get('gradebook/getSetOfUsersTotalScores', 'Delphinium\Blossom\Controllers\RestfulApi@getSetOfUsersTotalScores');
+Route::get('stats/getStatsData', 'Delphinium\Blossom\Controllers\RestfulApi@getStatsData');

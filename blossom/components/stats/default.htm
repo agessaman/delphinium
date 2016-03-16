@@ -1,14 +1,8 @@
 <script>
+    var experienceInstanceId = {{experienceInstanceId}};
     var role = '{{role|raw}}';
     var statsSize = '{{statsSize}}';
     var statsAnimate = {{statsAnimate}};
-    var gapObj = {{gap|raw}};
-    var milestoneSummary = {{milestoneSummary|raw}};
-    var healthObj = {{health|raw}};
-    var redLine ={{redLine}};
-    var potential = {{potential|raw}};
-    var stamina = {{stamina|raw}};
-    var nonstudent = {{nonstudent|raw}};
 </script>
 {% if ('Learner' in role) %}
 {% partial 'stats::studentView' %}

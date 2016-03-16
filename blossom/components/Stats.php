@@ -90,8 +90,8 @@ class Stats extends ComponentBase
             //if no instance exists of this component, create a new one. It will be tied to the experience component they have selected
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/stats.js");
-        //add jquery stuff
-//        $this->addJs("/plugins/delphinium/blossom/assets/javascript/bootstrap.min.js");
+            //add jquery stuff
+            //$this->addJs("/plugins/delphinium/blossom/assets/javascript/bootstrap.min.js");
             $this->addCss("/plugins/delphinium/blossom/assets/css/stats.css");
 
 
@@ -105,20 +105,13 @@ class Stats extends ComponentBase
             $roleStr = $_SESSION['roles'];
 
             $this->page['role'] = $roleStr;
+            $this->page['experienceInstanceId'] = $this->property('Experience');
             $this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
 
-            if(stristr($roleStr, 'Learner'))
-            {
-                $this->student();
+            if(stristr($roleStr, 'Instructor')||stristr($roleStr, 'TeachingAssistant'))
+            {//only instructors will be able to configure the component
+                $this->instructor();
             }
-            else{
-                if(stristr($roleStr, 'Instructor')||stristr($roleStr, 'TeachingAssistant'))
-                {//only students will be able to configure the component
-                    $this->instructor();
-                }
-                $this->nonStudent();//everyone else will just see a blank component
-            }
-
 //        }
 //        catch(\Delphinium\Roots\Exceptions\InvalidRequestException $e)
 //        {
@@ -152,6 +145,23 @@ class Stats extends ComponentBase
 //        }
     }
 
+    public function getStatsData($experienceInstanceId)
+    {
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+        $roleStr = $_SESSION['roles'];
+        if(stristr($roleStr, 'Learner'))
+        {
+            return $this->student($experienceInstanceId);
+        }
+        else if(stristr($roleStr, 'Instructor')||stristr($roleStr, 'TeachingAssistant'))
+        {
+            return $this->nonStudent();//everyone else will just see a blank component
+        }
+        return [];
+    }
+
     private function instructor()
     {//add backend styles
         $this->addCss('/modules/system/assets/ui/storm.css', 'core');
@@ -167,40 +177,42 @@ class Stats extends ComponentBase
         $this->page['instructions'] = $instructions;
     }
 
-    private function nonStudent(){
-        $this->page['nonstudent']=1;
+    private function nonStudent()
+    {
         $potential = new \stdClass();
         $potential->bonus = 0;
         $potential->penalties = 0;
-        $this->page['potential'] = json_encode($potential);
-        $this->page['redLine']= 0;
 
         $milestoneSummary = new \stdClass();
         $milestoneSummary->bonuses = 0;
         $milestoneSummary->penalties = 0;
         $milestoneSummary->total = 0;
-        $this->page['milestoneSummary'] = json_encode($milestoneSummary);
 
         $healthObj = new \stdClass();
         $healthObj->maxPenalties = 0;
         $healthObj->maxBonuses = 0;
-        $this->page['health'] = json_encode($healthObj);
 
         $gap = new \stdClass();
         $gap->minGap = 0;
         $gap->maxGap = 0;
-        $this->page['gap'] = json_encode($gap);
 
         $stamina = new \stdClass();
         $stamina->ten = 0;
         $stamina->total = 0;
-        $this->page['stamina'] = json_encode($stamina);
+
+        $returnObj = new \stdClass();
+        $returnObj->nonstudent = 1;
+        $returnObj->potential = $potential;
+        $returnObj->redLine = 0;
+        $returnObj->milestoneSummary = $milestoneSummary;
+        $returnObj->health = $healthObj;
+        $returnObj->gap = $gap;
+        $returnObj->stamina = $stamina;
+        return $returnObj;
     }
 
-    private function student()
+    private function student($experienceInstanceId)
     {
-        $this->page['nonstudent']=0;
-        //GAP
         if (!isset($_SESSION)) {
             session_start();
         }
@@ -208,15 +220,15 @@ class Stats extends ComponentBase
         //get min and max gap =
         // MAX = experience points + max bonus points
         //MIN = experience points + max penalty points
-        $experience = ExperienceModel::find($this->property('Experience'));
+        $experience = ExperienceModel::find($experienceInstanceId);
         $expTotalPoints = $experience->total_points;
         $maxBonus = $experience->bonus_per_day * $experience->bonus_days;
         $maxPenalties = $experience->penalty_per_day * $experience->penalty_days;
 
         //get red line points
         $experienceComp = new ExperienceComponent();
-        $redLine = $experienceComp->getRedLinePoints($this->property('Experience'));
-        $milestoneClearanceInfo = $experienceComp->getMilestoneClearanceInfo($this->property('Experience'));
+        $redLine = $experienceComp->getRedLinePoints($experienceInstanceId);
+        $milestoneClearanceInfo = $experienceComp->getMilestoneClearanceInfo($experienceInstanceId);
         $potentialBonus =0.0;
         $potentialPenalties=0.0;
 
@@ -239,42 +251,33 @@ class Stats extends ComponentBase
         $potential = new \stdClass();
         $potential->bonus = $potentialBonus;
         $potential->penalties = $potentialPenalties;
-
-        $this->page['potential'] = json_encode($potential);
-        $this->page['redLine']= $redLine;
         //get milestone info (total points including bonus and penalties)
         $gradebookComponent = new Gradebook();
         $userIds = array($studentId);
-        $milestoneSummary = $gradebookComponent->getSetOfUsersMilestoneInfo($this->property('Experience'), $userIds);
-
+        $milestoneSummary = $gradebookComponent->getSetOfUsersMilestoneInfo($experienceInstanceId, $userIds);
         if(count($milestoneSummary)>0)
         {
             $milestoneSummary = $milestoneSummary[0];
         }
-        $this->page['milestoneSummary'] = json_encode($milestoneSummary);
         $milestoneNum = count($experience->milestones);
         $healthObj = new \stdClass();
         $healthObj->maxPenalties = $maxPenalties*$milestoneNum;
         $healthObj->maxBonuses = $maxBonus*$milestoneNum;
-        $this->page['health'] = json_encode($healthObj);
 
         $gap = new \stdClass();
         $gap->minGap = $expTotalPoints+$maxPenalties;
         $gap->maxGap = $expTotalPoints+$maxBonus;
-        $this->page['gap'] = json_encode($gap);
+        $stamina = $this->calculateStamina();
 
-        $this->page['stamina'] = json_encode($this->calculateStamina());
-    }
-
-    private function getBonusPenalties($userId = null) {
-        $experienceComp = new ExperienceComponent();
-        if ((!is_null($this->property('Experience'))) && ($this->property('Experience') > 0)) {
-            return $experienceComp->calculateTotalBonusPenalties($this->property('Experience'), $userId);
-        } else {
-            $obj = new \stdClass();
-            $obj->bonus = 0;
-            $obj->penalties = 0;
-        }
+        $returnObj = new \stdClass();
+        $returnObj->nonstudent = 0;
+        $returnObj->potential = $potential;
+        $returnObj->redLine = $redLine;
+        $returnObj->milestoneSummary = $milestoneSummary;
+        $returnObj->health = $healthObj;
+        $returnObj->gap = $gap;
+        $returnObj->stamina = $stamina;
+        return $returnObj;
     }
 
     private function calculateStamina()
