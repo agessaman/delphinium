@@ -18,11 +18,47 @@ class EasterEggs extends ComponentBase
     {
         return [
             'instance'   => [
-                'title'             => 'Eggs Configuration',
+                'title'             => 'EasterEggs Configuration',
                 'description'       => 'Select an instance',
                 'type'              => 'dropdown',
             ]
         ];
+    }
+
+    public function onRender()
+    {
+        //$roots = new Roots();
+        //$course = $roots->getCourse();
+        //$this->page['course'] = json_encode($course);
+        //$course->id or $_SESSION['courseID']
+        
+        $this->page['crsid'] = $_SESSION['courseID'];// test
+        
+        /*
+        When a component wakes up in a course, it needs to know what course it is assigned to
+        and which copy it is so it can configure itself properly.
+        
+        if courseID is available, get records matching course ID
+            could be multiple
+        
+        Using this information, it can select the proper instance to load with the appropriate configuration data.
+        
+        */
+        
+        //instance set in CMS getInstanceOptions()
+        $config = EastereggsModel::find($this->property('instance'));
+        //Name is just for instances drop down. Use in component display?
+        
+        // copy_id is part of $config
+        //add $course->id to $config for form field
+        $config->course_id = $_SESSION['courseID'];//$course->id;
+        $this->page['config'] = json_encode($config);
+        //$config->save();// update original record now ???
+        
+        // comma delimited string ?
+        if (!isset($_SESSION)) { session_start(); }
+        $roleStr = $_SESSION['roles'];
+        $this->page['role'] = $roleStr;
     }
 
     public function onRun()
@@ -43,7 +79,7 @@ class EasterEggs extends ComponentBase
 
         foreach ($instances as $instance)
         {
-            $array_dropdown[$instance->id] = $instance->Name;
+            $array_dropdown[$instance->id] = $instance->name;
         }
         return $array_dropdown;
     }
@@ -53,9 +89,10 @@ class EasterEggs extends ComponentBase
         $config = EasterEggsModel::find($this->property('instance'));
         $data = post('EasterEggs');
         
-        $config->Name = $data['Name'];
+        $config->name = $data['name'];
         $config->course_id = $data['course_id'];
         $config->copy_id = $data['copy_id'];
+        $config->menu = $data['menu'];
         $config->save();// update original record 
 
         return json_encode($config);
@@ -71,9 +108,10 @@ class EasterEggs extends ComponentBase
     public function dynamicInstance()
     {
         $config = new EasterEggsModel;// db record
-        $config->Name = 'New Instance';//+ total records count?
+        $config->name = 'New Instance';//+ total records count?
         $config->course_id = $_SESSION['courseID'];// or null
         $config->copy_id = 1;
+        $config->menu = false;
         $config->save();// create new record 
     }
 

@@ -1,0 +1,20 @@
+<script>
+    //test:
+    var crsid = '{{crsid|raw}}';
+    console.log('crsid:',crsid);//crsid: 343331
+    
+    // component configuration [id,Name,Color,Size,Animate,course_id,copy_id]
+    var config = {{config|raw}};
+    console.log('instance.Name: '+config.Name);
+    console.log('instance.id: '+config.id);
+	console.log('instance.course: '+config.course_id);
+    
+    var role = '{{role}}';// comma separated
+    console.log('Role: ',role);//string
+    
+</script>
+{% if ('Learner' in role) %}
+{% partial 'eastereggs::studentView' %}
+{% elseif ('Instructor' in role or 'TeachingAssistant' in role) %}
+{% partial 'eastereggs::instructorView' %}
+{% endif %}

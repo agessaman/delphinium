@@ -4,8 +4,35 @@ body {
 	background-size: cover;
 	background-position: 50% 0;
 	height: 100%;
+	color: white;
 }
 
 html{
 	height: 100%;
+}
+
+img {
+	width: 50px;
+	float: left;
+	margin-right: 10px;
+}
+
+p{
+	float: left;
+	width: calc(100% - 50px - 10px);
+	line-height: 50px;
+}
+
+input {
+	margin-left: 10px;
+}
+
+.eggs{
+	margin: 10px;
+}
+
+button {
+	color: black;
+	padding: 5px 50px;
+	margin-left: 50px;
 }
