@@ -739,7 +739,7 @@ class Roots
         $users = $this->dbHelper->getUsersInCourseWithRole($courseId, 'Learner');
         if(count($users)>1)
         {
-            return $users->toArray();
+//            return $users;
         }
 
         //if no users were found in DB try to get them from Canvas

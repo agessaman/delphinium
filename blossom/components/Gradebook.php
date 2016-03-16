@@ -555,7 +555,7 @@ class Gradebook extends ComponentBase {
         $filteredUsers = array();
         foreach($userIds as $userId)
         {
-            $res = array_values(array_filter($users, function($elem) use($userId) {
+            $res = array_values(array_filter($users->toArray(), function($elem) use($userId) {
                 return intval($elem['user']['user_id']) === intval($userId);
             }));
             $filteredUsers = array_merge($filteredUsers,$res);
