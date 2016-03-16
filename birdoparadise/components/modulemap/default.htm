@@ -7,20 +7,16 @@
 <script type="text/javascript" src="plugins/delphinium/birdoparadise/assets/javascript/bop.js"></script>
 <script>
     // include css or javascript libraries
-    //component configuration [id,name, <Your Fields>, course_id,copy_id]
-    var config = {{config|raw}};//array
-    //console.log('config:',config);
     
     var role = '{{role}}';//string
     console.log('Role:',role);
     /*
         get variables from the php with twig
-        init global var 
         use twig to determine if the component is seen 
         by an instructor or a student
+        init global vars here
 		fill global var there.
     */
-    // units & modules
     var moduledata = {{moduledata|raw}};
     //console.log('moduledata:',moduledata);
     

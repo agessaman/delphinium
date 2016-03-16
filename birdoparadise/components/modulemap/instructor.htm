@@ -18,37 +18,23 @@
 	</div>
 </div>
 
-<!-- Configuration modal with Front End Form and Instructions in tabs -->
+<!--text Instructions only -->
 <div class="control-popup modal fade" id="content-configuration" tabindex="-1" role="dialog">
-    <div class="modal-dialog">
-        <div class="modal-content" style="width:800px; overflow-y: auto;">
+    <div class="modal-dialog" style="width:800px; overflow-y: auto;">
+        <div class="modal-content" >
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Component Settings</h4>
+                <h4 class="modal-title">Bird of Paradise</h4>
             </div>
             <div class="modal-body">
-                <!-- Tabs -->
-                <ul class="nav nav-tabs">
-                  <li><a data-toggle="tab" href="#configure">Configure</a></li>
-                  <li class="active"><a data-toggle="tab" href="#instruct">Instructions</a></li>
-                </ul>
-                <div class="tab-content">
-                <!-- Configure instance -->
-                  <div id="configure" class="tab-pane fade in" style="padding: 5px 0px;">
-                    <form role="form" id="updateForm"
-                      data-request="{{ __SELF__ }}::onUpdate"
-                      data-request-success="$el.hide();completed(data);">
-                        {{ form.formRender()|raw }}
-                      <div class="form-group">
-                         <button class="btn btn-primary btn-block btn-md" type="submit" value="register">Update Component</button>
-                      </div>
-                    </form>
-                  </div>
-                <!-- Instructions ACTIVE -->
-                  <div id="instruct" class="tab-pane fade in active" style="padding: 0px 20px;">
-                      {{ instructions|raw }}
-                  </div>
-                </div>
+                <!-- Instructions -->
+              <div id="instruct" class="tab-pane fade in active" style="padding: 0px 20px;">
+                <p>This component is an alternative view of modules.</p>
+                <p>Use Stem to structure the modules of your course into groups.<br />
+                    Groups will display as tabs, modules in each group will display as clickable boxes.<br/>
+                    Students will see their progress as filled stars.<br/>
+                </p>
+              </div>
             </div>
         </div>
     </div>
@@ -56,7 +42,7 @@
 
 <!-- Modal: when module is clicked show items in module -->
 <div class="control-popup modal fade" id="itemdetails" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog" style="width:700px;">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -68,36 +54,3 @@
         </div>
     </div>
 </div>
-
-<script>
-//(function() {
-    
-	var configVal=[config.name];
-	var fieldIDs=['Form-field-Modulemap-name'];
-	
-    /* set id,course,copy in the POST they are not editable
-        Add hidden input fields so they will transfer to onUpdate
-        fields.yaml is set to hidden: true so they do not appear at all
-    */
-    $('#Form-outsideTabs').append('<input type="hidden" name="Modulemap[id]" value="'+config.id+'" /> ');
-    $('#Form-outsideTabs').append('<input type="hidden" name="Modulemap[course_id]" value="'+config.course_id+'" /> ');
-    $('#Form-outsideTabs').append('<input type="hidden" name="Modulemap[copy_id]" value="'+config.copy_id+'" /> ');
-    
-    //fill the form with current configuration
-    for(var f=0; f<configVal.length; f++) {
-       $('#'+fieldIDs[f]).val(configVal[f]);
-    }
-    // wont need form update configure set instruct active
-	function completed(data)
-	{
-        /* updated record is returned */
-        location.reload();
-	}
-	//console.log('instance:'+config.id,config.name,config.course_id,config.copy_id);
-    //  DONT NEED TO EDIT FORM - REMOVE? ONLY Instructions needed! which is part of FORM partial?
-    /*
-        Bird of Paradise: instructor view
-    */
-	
-//})();
-</script>

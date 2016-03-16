@@ -44,7 +44,7 @@
     font-size: 1.5em;
     color: #ddbb31;/* gold */
 }
-/* for testing */
+
 .locked {
 	position: absolute;
 	top: -16px;
@@ -54,6 +54,7 @@
 	color: #666666;
 }
 .items {
+    /* for testing show id & item count */
 	padding: 5px;
 	font-size: 0.9em;
 	font-weight: 400;
@@ -88,15 +89,60 @@
 
 /*styles for module_items.type match iris*/
 .prereq {
-	padding: 3px;
-	/*margin-bottom: 3px;*/
+    height:auto;
+	padding: 10px;
+    margin-bottom: 5px;
+    
+    border-radius: 10px 10px 10px 10px;
+    -moz-border-radius: 10px 10px 10px 10px;
+    -webkit-border-radius: 10px 10px 10px 10px;
 	border: thin solid #f6661d;
 	color: #f6661d;
 }
 .assignment {
-	padding: 3px;
-	margin-bottom: 1px;
+    height: auto;
+	padding: 10px;/* T,R,B,L */
+	margin-bottom: 5px;
+    
+    border-radius: 10px 10px 10px 10px;
+    -moz-border-radius: 10px 10px 10px 10px;
+    -webkit-border-radius: 10px 10px 10px 10px;
 	border: thin solid #ababab;
 	background-color: #fff;
+    color: #888888;
 }
-
+.required {
+    width: 80%;
+    float: left;
+    font-size: 0.9em;
+    color: #000;
+}
+.prereqnote {
+    width: 80%;
+    float: left;
+    font-size: 0.9em;
+    color: #000;
+}
+.ico {
+    /*display: block;*/
+    width: auto;
+    height: auto;
+    padding-right: 10px;
+    float: left;
+    font-size: 1.3em;
+}
+.link {
+    width: 80%;
+    float: left;
+}
+.points {
+    width: auto;
+    float: right;
+    padding: 5px;
+    font-size: 1.1em;
+    color: #000;
+}
+.clearme {
+    clear:both;
+    height: 1px;
+}
