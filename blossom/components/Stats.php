@@ -220,7 +220,6 @@ class Stats extends ComponentBase
         $potentialBonus =0.0;
         $potentialPenalties=0.0;
 
-        echo json_encode($milestoneClearanceInfo);
         foreach($milestoneClearanceInfo as $mileInfo)
         {
             if($mileInfo->cleared)

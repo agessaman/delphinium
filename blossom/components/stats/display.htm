@@ -1,8 +1,43 @@
 <div class="tooltip"></div>
 <svg id = "statsSVG" style="padding: 20px;">
-    <g id = "statsView">
+    <g id="statsView">
+        <!--Pace-->
+        <text x="15" y="10" fill="#444444" transform="translate(0,7)">Pace</text>
+        <text x="0" y="10" font-family="FontAwesome" font-size="14px" fill="#444444" cursor="pointer" transform="translate(0,7)"
+            onmouseover="addTooltipExplanation('pace')" onmouseout="removeTooltipStats();"></text>
+        <rect rx="3" ry="3" height="25" width="250" stroke-width="2" stroke="#444444" fill="none" y="20"></rect>
 
+        <!--Gap-->
+        <line y1="20" y2="45" x1="125" x2="125" stroke-width="2" stroke="#444444" fill="none"></line>
+        <text x="15" y="60" fill="#444444" transform="translate(0,7)">Gap</text>
+        <text x="0" y="60" font-family="FontAwesome" font-size="14px" fill="#444444" cursor="pointer" transform="translate(0,7)"
+              onmouseover="addTooltipExplanation('gap')" onmouseout="removeTooltipStats();"></text>
+        <rect rx="3" ry="3" height="25" width="250" stroke-width="2" stroke="#444444" fill="none" y="70"></rect>
+
+        <!--Health-->
+        <line y1="70" y2="95" x1="125" x2="125" stroke-width="2" stroke="#444444" fill="none"></line>
+        <text x="15" y="110" fill="#444444" transform="translate(0,7)">Health</text>
+        <text x="0" y="110" font-family="FontAwesome" font-size="14px" fill="#444444" cursor="pointer" transform="translate(0,7)"
+              onmouseover="addTooltipExplanation('health')" onmouseout="removeTooltipStats();"></text>
+        <rect rx="3" ry="3" height="25" width="250" stroke-width="2" stroke="#444444" fill="none" y="120"></rect>
+
+        <defs>
+            <linearGradient id="staminaGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop id="firstStop" offset="0%"></stop>
+                <stop id="secondStop" offset="40%"></stop>
+                <stop id="thirdStop" offset="65%"></stop>
+                <stop id="fourthStop" offset="100%"></stop>
+            </linearGradient>
+        </defs>
+
+        <!--Stamina-->
+        <line y1="120" y2="145" x1="125" x2="125" stroke-width="2" stroke="#444444" fill="none"></line>
+        <text x="15" y="160" fill="#444444" transform="translate(0,7)">Stamina</text>
+        <text x="0" y="160" font-family="FontAwesome" font-size="14px" fill="#444444" cursor="pointer" transform="translate(0,7)"
+              onmouseover="addTooltipExplanation('stamina')" onmouseout="removeTooltipStats();"></text>
+        <rect rx="3" ry="3" height="25" width="250" stroke-width="2" stroke="#444444" fill="none" y="170"></rect>
     </g>
+
 </svg>
 <div id="switch">
     <span class="switch-li all on"><a href="#" onclick="toggleStamina(0)">All /</a></span>

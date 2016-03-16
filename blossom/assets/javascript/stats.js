@@ -1,3 +1,5 @@
+
+
 //tooltip
 div = d3.select(".tooltip");
 
@@ -6,10 +8,11 @@ var statsWidth = 290;
 var trueHeight = 200;
 var trueWidth = 250;
 var halfWidth = trueWidth / 2;
-
-var positivePace = milestoneSummary.bonuses;
+var border = 1;//thickness of border, to be accounted for when filling boxes
+//SET VARIABLES
+var positivePace = milestoneSummary.bonuses;20;//
 //console.log("locked bonuses: "+positivePace);
-var negativePace = -milestoneSummary.penalties;// (must be positive value)
+var negativePace = -milestoneSummary.penalties;//15;// (must be positive value)
 //console.log("locked penalties: "+negativePace);
 var maxPace = healthObj.maxBonuses;
 var minPace = healthObj.maxPenalties;
@@ -19,9 +22,9 @@ var positivePaceX = halfWidth + (positivePaceWidth / 2);
 var negativePaceX = halfWidth - (negativePaceWidth / 2);
 
 //also draw potential bonus and penalties
-var positivePotential = potential.bonus;
+var positivePotential = potential.bonus;//15;//
 //console.log("potential bonuses: "+positivePotential);
-var negativePotential =-potential.penalties;// (must be positive value)
+var negativePotential =-potential.penalties;//15;// (must be positive value)
 //console.log("potential penalties: "+negativePotential);
 var posPotentialWidth = positivePotential / maxPace * halfWidth;
 var negPotentialWidth = negativePotential/ minPace * halfWidth;
@@ -66,7 +69,7 @@ if(stamina.total>0)
 }
 
 scaleStats();
-drawStats();
+fillInterface()
 
 function scaleStats() {
     var statsView = d3.select("#statsView");
@@ -97,23 +100,18 @@ function scaleStats() {
     }
 }
 
-function drawStats() {
-
+function fillInterface()
+{
     var view = d3.select("#statsView");
+    //FILL EACH BAR
+    paceInterface();
+    gapInterface();
+    healthInterface();
+    staminaInterface();
 
-    drawPace();
-    drawGap();
-    drawHealth();
-    drawStamina();
-
-    function drawPace()
+    function paceInterface()
     {
-        var count = 0;
-        drawText(count, "Pace");
-        var text = getExplanation("pace");
-        y=count* 50 + 10;
-        drawIcon('\uf05a', 0, y, text, "14px", '#444444');
-
+        var count =0;
         //BONUS
         if (positivePace > 0) {
             drawPositive(count, positivePaceWidth);
@@ -238,57 +236,56 @@ function drawStats() {
         if (positivePace == 0&&negativePace==0&&positivePotential==0&&negativePotential==0) {
             drawNumber(count, 0, 0,"paceVars");
         }
-        drawBox(count, "pace");
         drawCenter(count);
     }
-
-    function drawHealth() {
-        var count = 2;
-        drawText(count, "Health");
-
-        var text = getExplanation("health");
-        y=count* 50 + 10;
-        drawIcon('\uf05a', 0, y, text, "14px", '#444444');
-        if (health > 0)
-            drawPositive(count, healthWidth);
-        else
-            drawNegative(count, healthWidth);
-        drawBox(count, "health");
-        drawCenter(count);
-        drawNumber(count, healthX, roundToTwo(health), "healthVars");
-    }
-
-    function drawGap() {
+    function gapInterface()
+    {
         var count = 1;
         drawText(count, "Gap");
         var text = getExplanation("gap");
         y=count* 50 + 10;
-        drawIcon('\uf05a', 0, y, text, "14px", '#444444');
+        //drawIcon('\uf05a', 0, y, text, "14px", '#444444');
         if (gap > 0)
             drawPositive(count, gapWidth);
         else
             drawNegative(count, gapWidth);
-        drawBox(count, "gap");
-        drawCenter(count);
         drawNumber(count, gapX, roundToTwo(gap, "gapVars"));
+        drawCenter(count);
     }
-
-    function drawStamina() {
-        var count = 3;
-        drawText(count, "Stamina");
-        //draw info icon
-        var text = getExplanation("stamina");
+    function healthInterface()
+    {
+        var count = 2;
+        var text = getExplanation("health");
         y=count* 50 + 10;
-        drawIcon('\uf05a', 0, y, text, "14px", '#444444');
-
-        //draw stamina bar
+        //drawIcon('\uf05a', 0, y, text, "14px", '#444444');
+        if (health > 0)
+            drawPositive(count, healthWidth);
+        else
+            drawNegative(count, healthWidth);
+        drawNumber(count, healthX, roundToTwo(health), "healthVars");
+        drawCenter(count);
+    }
+    function staminaInterface()
+    {
+        var count = 3;
+       //draw stamina bar
         variableStamina(stamina.total, staminaWidth, count, true);
         //add a checkbox so students can select if they want to see their averages for the last 10 assignments or all their assignments
         var options = ['All','Last 10'];
-
-
-        drawBox(count, "stamina");
     }
+
+
+    function drawCenter(count) {
+        view.append('line')
+            .attr('y1', count * 50 + 20)
+            .attr('y2', count * 50 + 45)
+            .attr('x1', halfWidth)
+            .attr('x2', halfWidth)
+            .attr('stroke-width', "2")
+            .attr('stroke', "#444444")
+            .attr('fill', "none")
+    }
+
     function drawText(count, text) {
         view.append('text')
             .text(text)
@@ -318,32 +315,6 @@ function drawStats() {
             })
             .attr('transform', "translate(0,7)");
     }
-
-    function drawBox(count, component) {
-        var explanation = getExplanation(component);
-
-        view.append('rect')
-            .attr('rx', 3)
-            .attr('ry', 3)
-            .attr('height', 25)
-            .attr('width', 250)
-            .attr('stroke-width', "2")
-            .attr('stroke', "#444444")
-            .attr('fill', "none")
-            .attr('y', count * 50 + 20);
-    }
-
-    function drawCenter(count) {
-        view.append('line')
-            .attr('y1', count * 50 + 20)
-            .attr('y2', count * 50 + 45)
-            .attr('x1', halfWidth)
-            .attr('x2', halfWidth)
-            .attr('stroke-width', "2")
-            .attr('stroke', "#444444")
-            .attr('fill', "none")
-    }
-
     function drawPositive(count, value, startingX, opacity) {
         if(nonstudent){return;}
         startingX = startingX || 0;
@@ -353,10 +324,10 @@ function drawStats() {
             var box = view.append('rect')
                 //.attr('rx', 3)
                 //.attr('ry', 3)
-                .attr('height', 25)
+                .attr('height', 25-(2*border))
                 .attr('width', 0)
                 .attr('fill', "white")
-                .attr('y', count * 50 + 20)
+                .attr('y', count * 50 + 20 + border)
                 .attr('x', startingX+ trueWidth / 2)
                 .transition()
                 .delay(count * 1000 + 1000)
@@ -370,10 +341,10 @@ function drawStats() {
             var box = view.append('rect')
                 //.attr('rx', 3)
                 //.attr('ry', 3)
-                .attr('height', 25)
+                .attr('height', 25 -(2*border))
                 .attr('width', value)
                 .attr('fill', color)
-                .attr('y', count * 50 + 20)
+                .attr('y', count * 50 + 20 + border)
                 .attr("opacity", opacity)
                 .attr('x', startingX + trueWidth / 2);
             return box;
@@ -389,10 +360,10 @@ function drawStats() {
             var box = view.append('rect')
                 //.attr('rx', 3)
                 //.attr('ry', 3)
-                .attr('height', 25)
+                .attr('height', 25-(2*border))
                 .attr('width', 0)
                 .attr('fill', "white")
-                .attr('y', count * 50 + 20)
+                .attr('y', count * 50 + 20+border)
                 .attr('x', halfWidth-substract)
                 .attr("opacity", opacity);
             box.transition()
@@ -408,10 +379,10 @@ function drawStats() {
             var box = view.append('rect')
                 //.attr('rx', 3)
                 //.attr('ry', 3)
-                .attr('height', 25)
+                .attr('height', 25-(2*border))
                 .attr('width', value)
                 .attr('fill', color)
-                .attr('y', count * 50 + 20)
+                .attr('y', count * 50 + 20+border)
                 .attr('x', halfWidth - value-substract)
                 .attr("opacity", opacity);
 
@@ -420,6 +391,12 @@ function drawStats() {
     }
 }
 
+//tooltips
+function addTooltipExplanation(component)
+{
+    var text = getExplanation(component);
+    addTooltipStats(text);
+}
 
 function drawNumber(count, x, text, className, delay) {
     delayValue= count * 1000 + 1500;
@@ -450,19 +427,6 @@ function variableStamina(number, width, count, delay) {
         delayValue = 4000;
     }
     var view = d3.select("#statsView");
-
-    //make a gradient
-    var gradient = view.append('defs')
-        .append('linearGradient')
-        .attr({
-            id: 'staminaGradient',
-            x1: '0%',
-            y1: '0%',
-            x2: '100%',
-            y2: '0%'
-        });
-
-    var firstStop = '0%',secondStop = '40%', thirdStop = '65%',fourthStop = '100%';
     var firstColor ='#FF0000', secondColor ='#FF0000', thirdColor='#FF0000', fourthColor ='#FF0000';
 
     if(number>=70){
@@ -477,28 +441,23 @@ function variableStamina(number, width, count, delay) {
         thirdColor = '#FFF830';//yellow
         fourthColor ='#008000';//green
     }
-
-    gradient.append('stop')
+    d3.select('#firstStop')
         .attr({
-            offset: firstStop,
             style: 'stop-color:'+firstColor+';stop-opacity:1'
         });
 
-    gradient.append('stop')
+    d3.select('#secondStop')
         .attr({
-            offset: secondStop,
             style: 'stop-color:'+secondColor+';stop-opacity:1'
         });
 
-    gradient.append('stop')
+    d3.select('#thirdStop')
         .attr({
-            offset:thirdStop,
             style:'stop-color:'+thirdColor+';stop-opacity:.9'
         });
 
-    gradient.append('stop')
+    d3.select('#fourthStop')
         .attr({
-            offset:fourthStop,
             style:'stop-color:'+fourthColor+';stop-opacity:1'
         });
 
@@ -508,10 +467,10 @@ function variableStamina(number, width, count, delay) {
                 class:'staminaVars',
                 rx:3,
                 ry:3,
-                height:25,
+                height:25-(2*border),
                 width:0,
                 fill:'white',
-                y:3 * 50 + 20
+                y:3 * 50 + 20+border
             })
             .transition()
             .delay(delayValue)
@@ -559,7 +518,6 @@ function toggleStamina(value)
 
     variableStamina(staminaValue, staminaWidth, 3, false);
 }
-
 function addTooltipStats(text) {
     div.transition()
         .duration(200)
@@ -576,8 +534,6 @@ function removeTooltipStats() {
         .style("display","none")
         .style("opacity", 0);
 }
-
-
 
 function roundToTwo(num) {
     return +(Math.round(num + "e+2")  + "e-2");
