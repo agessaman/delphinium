@@ -23,7 +23,7 @@ $(document).ready(function() {
         tabTemplate +="</li>";
     // store individual module objects for display when moditem clicked
     var modobjs = [];
-    
+    var modlist = [];// modules in this tab
     // create units and modules from data
     for(var m=0; m<moduledata.length; m++) {
         
@@ -36,8 +36,9 @@ $(document).ready(function() {
             var nuplace = $('#tab_'+c+'body');
             var widt = $(nuplace).width();// increase for each new module
             var mods = chld[c].children;
-            var modlist = [];// modules in this tab
-    //do this in Modulemap after getModules in another function ?
+            modlist = [];// modules in this tab
+			getMyChildren(chld[c]['children']);
+    /* //do this in Modulemap after getModules in another function ?
             for(var i=0; i<mods.length; i++) {
                 // individual module objects for searching items
                 modobjs.push(mods[i]);// all
@@ -57,6 +58,7 @@ $(document).ready(function() {
                     }
                 }
             }
+	*/
             // now display modlist array, gets reset for each tab
             for(i=0; i<modlist.length; i++) {
                 //Module box with title, lock, stars & image
@@ -183,10 +185,10 @@ $(document).ready(function() {
                 item +=ico;//'<i class="icon-file-text"></i> ';
 				item +=' Type: '+moditems[i].type;// determine icon    
 //test: link sends module id, item content_id to find submission
-item+=' <a href="javascript:void(0);" onClick="findRelation('+modid+','+moditems[i].content_id+');"> '+moditems[i].title+'</a>';
+//item+=' <a href="javascript:void(0);" onClick="findRelation('+modid+','+moditems[i].content_id+');"> '+moditems[i].title+'</a>';
                 
                 //item+=' <a target="_blank" href="'+moditems[i].html_url+'" target="_blank">'+moditems[i].title+'</a>';
-				//item+='<a target="_blank" href="'+moditems[i].html_url+'?module_item_id='+moditems[i].module_item_id+'" target="_blank">'+moditems[i].title+'</a>';
+				item+='<a target="_blank" href="'+moditems[i].html_url+'?module_item_id='+moditems[i].module_item_id+'" target="_blank">'+moditems[i].title+'</a>';
 				if(moditems[i].content.length > 0) {
                     if(moditems[i].content[0].points_possible > 0){
                         item+=' worth: '+moditems[i].content[0].points_possible;
@@ -352,76 +354,25 @@ function getStars(modid){
 	} 
     
 
-/* not needed, used tooltip to show prerequisite_module_ids
-Figure out Locked
-	$('.locked').on('mouseenter', function(e){
-		var pid = $(e.currentTarget).parent().attr('id');
-		console.log('p.id:',pid);
-	});
-*/
-// test: deep search for module children
-/*
-    var chmods = [];
-    findNested(moduledata[0].children, 'children', chmods );
-    function findNested(obj, key, memo) {
-      var i,
-          proto = Object.prototype,
-          ts = proto.toString,
-          hasOwn = proto.hasOwnProperty.bind(obj);
-
-      if ('[object Array]' !== ts.call(memo)) memo = [];
-
-      for (i in obj) {
-        if (hasOwn(i)) {
-          if (i === key) {
-            memo.push(obj[i]);
-          } else if ('[object Array]' === ts.call(obj[i]) || '[object Object]' === ts.call(obj[i])) {
-            findNested(obj[i], key, memo);
-          }
+	//console.log('moduledata[0]:', moduledata[0]);
+    //var cmods = [];
+	//var chld = moduledata[0]['children'];// 4 tabs
+	//getMyChildren(chld[1]['children']);// tab 2 children
+	
+	function getMyChildren(theObj){
+		var result = null;
+		for(var i=0; i<theObj.length; i++) {
+			if('children' in theObj[i]) {
+				//cmods.push(theObj[i]);// test comment out modobjs & modlist
+				modobjs.push(theObj[i]);// all objects
+				modlist.push(theObj[i]);// build moduledata
+				result = getMyChildren(theObj[i].children);
+				if(result) { break; }
+			}
         }
-      }
-
-      return memo;
-    }
-console.log('chmods:',chmods);
-*/
-/*
-//http://stackoverflow.com/questions/15642494/find-property-by-name-in-a-deep-object
-//this will deep search an array of objects (hay) for a value (needle) then return an array with the results.
-    var cnmods = [];// 0
-    search(moduledata[0], 'children', cnmods);
-    //search = function(moduledata, 'children', cmods) {
-    function search(hay,needle,accumulator) {
-      var accumulator = accumulator || [];
-        //console.log('type: '+typeof hay);// object,number or string
-      if (typeof hay == 'object') {
-        for (var i in hay) {
-          search(hay[i], needle, accumulator) == true ? accumulator.push(hay) : 1;
-        }
-      }
-      //return new RegExp(needle).test(hay) || accumulator;
-        return accumulator;
-    }
-   console.log('cnmods:', cnmods.length, cnmods); 
-*/
-    
-//http://stackoverflow.com/questions/15523514/find-by-key-deep-in-nested-json-object
-    var cmods = [];
-    getChildren(moduledata);// close: refine this
-    
-    function getChildren(theObj) {
-        var result = null;
-        for(var i=0; i<theObj.length; i++) {
-            var cobj = theObj[i].children;
-            if(cobj.length > 0) {
-                console.log('children: '+cobj.length);
-                cmods.push(theObj[i].children);// to global
-                result = getChildren(theObj[i].children);
-                if(result) { break; }
-            } 
-        }
-        return result;
-    }
-    console.log('cmods:', cmods.length, cmods);
+		return result;
+	}
+	
+    //console.log('cmods:', cmods.length, cmods);
     
 });
