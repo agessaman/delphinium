@@ -13,6 +13,8 @@ var staminaX = 0;
 scaleStats();
 //getData
 $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, function (data, status, xhr) {
+    //enable stamina clicks
+    d3.selectAll(".switch-li").classed("disabled",false);
     statsObj = JSON.parse(data);
 
 //SET VARIABLES

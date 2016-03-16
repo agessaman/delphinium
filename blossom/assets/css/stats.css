@@ -19,6 +19,10 @@ Created by @JohnieHjelm.*/
     margin: -13px 0 0 -42px;
 }
 
+.disabled
+{
+    pointer-events: none;
+}
 .switch-li
 {
     font-size:9px;
