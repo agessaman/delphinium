@@ -1,21 +1,25 @@
 <script>
     
-    //test:
-    var crsid = '{{crsid|raw}}';
-    console.log('crsid:',crsid);//crsid: 343331
-    
-    // component configuration [id,Name,Color,Size,Animate,course_id,copy_id]
+    //component configuration [id,Name,Color,Size,Animate,course_id,copy_id]
     var config = {{config|raw}};
-    console.log('instance.Name: '+config.Name);
-    console.log('instance.id: '+config.id);
-	console.log('instance.course: '+config.course_id);
+    //console.log('config',config);
     
-    var role = '{{role}}';// comma separated
-    console.log('Role: ',role);//string
+    var role = '{{role}}';
+    //console.log('Role: ',role);//string
 	
 	var competenciesColor=config.Color;//string
 	var competenciesSize=config.Size.toLowerCase();//string
 	var competenciesAnimate=config.Animate;//boolean
+    
+    var data =[];// json for d3
+    var details=[];// for modal '#detailed' body content
+    
+	//student view uses
+    //var assignments={{assignments|raw}};//json
+    //var submissions = {{submissions|raw}};
+    
+    //instructor view uses
+    //var modules={{modules|raw}};// use items to build data
     
 </script>
 {% if ('Learner' in role) %}

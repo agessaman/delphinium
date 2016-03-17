@@ -1,0 +1,283 @@
+<div class="container center">
+<div class="accordion">
+    <div class="accordion-section">
+        <a class="accordion-section-title" href="#accordion-1">All Quizzes</a>
+        <div id="accordion-1" class="accordion-section-content">
+			<!-- http://getbootstrap.com/css/   .col-xs-6 .col-md-4 -->
+            <!--div id="col_0" class="thirds left"></div-->
+			<div id="col_0" class="col-md-4"></div>
+			<div id="col_1" class="col-md-4"></div>
+			<div id="col_2" class="col-md-4"></div>
+			<div class="clear"></div>
+			
+        </div><!--end .accordion-section-content-->
+		
+		<a class="accordion-section-title" href="#accordion-2">Selected Quiz</a>
+		<div id="accordion-2" class="accordion-section-content">
+            <h4 id="qtitle">The chosen quiz TITLE </h4>
+            <button class="btn btn-success" type="submit" id="confirmit" name="confirmit">Add Selected Questions</button>
+            <!--div id="quiz_details"></div-->
+			
+			<div id="quiz_data">
+				<ol id="quizselectable">
+				  <!-- quiz questions -->
+				</ol>
+			</div>
+        </div><!--end .accordion-section-content-->
+		
+		<a class="accordion-section-title" href="#accordion-3">Instructions</a>
+		<div id="accordion-3" class="accordion-section-content">
+            <h2>instructions</h2>
+			<div>
+			
+			</div>
+        </div><!--end .accordion-section-content-->
+        
+		<a class="accordion-section-title" href="#accordion-4">Selected Questions for Game</a>
+		<div id="accordion-4" class="accordion-section-content">
+            <p>Select what you want to do with these Questions:</p>
+			<div>
+            <button class="btn btn-default" type="submit" id="clearit" name="clearit">Remove All Questions</button>
+			<button class="btn btn-warning" type="submit" id="removeit" name="removeit">Remove Selected Questions</button>
+			<button class="btn btn-success" type="submit" id="useit" name="useit">Use Questions</button>
+            <button class="btn btn-primary" type="submit" id="seeit" name="seeit">See Question details</button>
+			<!--div id="game_details"></div-->
+			</div>
+			
+			<div id="game_data">
+				<ol id="gameselectable">
+				  <!-- game questions -->
+				</ol>
+			</div>
+        </div><!--end .accordion-section-content-->
+		
+        <a class="accordion-section-title" href="#accordion-5">Game Preview</a>
+		<div id="accordion-5" class="accordion-section-content">
+            {% partial 'popquiz::ygt_game' %}
+        </div><!--end .accordion-section-content-->
+		
+    </div><!--end .accordion-section-->
+</div><!--end .accordion-->
+</div>
+
+<!-- Modal: show details for a selected question -->
+<div class="control-popup modal fade" id="detailed" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content" style="width:800px;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 id="detailed-title" class="modal-title">Quiz Questions</h4>
+            </div>
+            <div id="detailed-body" class="modal-body">
+                <div class="clearfix">
+                    <div id="qtype" class="left questype">Type:</div>
+                    <div id="qpoints" class="right questype">Points:</div>
+                </div>
+				<hr/>
+				<div>
+					<div id="qtext"></div>
+                </div>
+				<div>
+					<div id="qanswers"></div>
+					
+					
+					<div id="qfeedback"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="nextbtn" type="button" class="btn btn-primary"> Next -> </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="plugins/delphinium/poppies/assets/javascript/popquiz.js"></script>
+<script>
+	// list of all quizzes : sortable?
+	var quizList = {{quizList|raw}};
+	console.log('quizList:', quizList.length, quizList);
+	
+	var nextcount=0;
+	
+    $('.accordion-section-title').click(function(e) {
+        e.preventDefault();
+		// Grab current anchor value
+		var currentAttrValue = $(this).attr('href');
+		if($(e.target).is('.active')) {
+			close_accordion_section();
+		}else {
+			close_accordion_section();
+			// Add active class to section title
+			$(this).addClass('active');
+			// Open up the hidden content panel
+			$('.accordion ' + currentAttrValue).slideDown(300).addClass('open'); 
+		}
+		
+	});
+    // accordion-2 selected question
+    $("#quizselectable").selectable({
+        // on mouse up
+        selected: function() {
+            selecteditems=[];// accumulated selections if mouse dragged
+            $( ".ui-selected", this ).each(function() {
+             var index = $( "#quizselectable li" ).index( this );// list[index]
+             var qid = $(this).attr('data-id');
+            if(qid) { selecteditems.push(qid); }
+            });// or just the one clicked
+            console.log('selected:',selecteditems);// array of object id
+        }
+    });
+    // accordion-4 game questions
+    $("#gameselectable").selectable({
+        // on mouse up
+        selected: function() {
+            chosenitems=[];// accumulated selections if mouse dragged
+            $( ".ui-selected", this ).each(function() {
+             var index = $( "#gameselectable li" ).index( this );// list[index]
+             var qid = $(this).attr('data-id');
+             chosenitems.push(qid);// push id for each to an array
+            });// or just the one clicked
+            console.log('chosen:',chosenitems);// array of object 
+        }
+    });
+    
+    $('#confirmit').click(function(e) {
+        e.preventDefault();
+        
+        // transfer selecteditems[question_id,] to qameitems[question object,]
+        for(var i=0; i<selecteditems.length; i++)
+        {
+            var quest = $.grep(quests, function(elem, index){
+                return elem.question_id == selecteditems[i];
+            });
+            gameitems.push(quest);
+        }
+        console.log('gameitems:',gameitems);
+        // should be a json obj
+        //var jitm = JSON.stringify(gameitems);//$.parseJSON(gameitems);
+        //console.log('jitm:',jitm);
+        
+        // refresh gameselectable list
+        showSelected();
+        selecteditems=[];
+    });
+    
+     // remove all gameitems 
+    $('#clearit').click(function(e) {
+        e.preventDefault();
+        gameitems=[];
+        chosenitems=[];
+        $('#gameselectable').empty();
+    });
+    
+    // remove chosenitems from gameitems
+    $('#removeit').click(function(e) {
+        e.preventDefault();
+        
+        for(var i=0; i<chosenitems.length; i++)
+        {
+            var item = $.grep(gameitems, function(elem, index){
+                if(elem[0].question_id == chosenitems[i]) { return index; }
+            });
+            // remove from array
+            gameitems.splice(item,1);
+            // remove <li>st node
+            $('#gameselectable').find('[data-id='+chosenitems[i]+']').remove();
+        }
+        //console.log('chosenitems:',chosenitems);
+        //console.log('gameitems:',gameitems);
+        chosenitems=[];
+    });
+    
+    $('#useit').click(function(e) {
+        e.preventDefault();
+        // gameitems = questions to use in game : store in DB?
+		console.log('gameitems:',gameitems.length, gameitems);
+		// check: if saved yet, if changed since save
+		gameQuest=gameitems;// gameQuest is var in game
+		// or send to function in game?
+		close_accordion_section();
+		$('#accordion-5').addClass('active');
+		// Open up the hidden content panel
+		$('.accordion #accordion-5').slideDown(300).addClass('open');
+		showIntro();// restart game
+	});
+
+    // need to be able to see question with answers
+    //see details of questions in modal next btn?
+    $('#seeit').click(function(e) {
+        e.preventDefault();
+        //detailed-body display question details with answers
+		constructQuestion(nextcount);
+        $('#detailed').modal('show');
+    });
+    $('#nextbtn').click(function(e) {
+        e.preventDefault();
+        //detailed-body replace content with next question
+		nextcount++;
+		if(nextcount==gameitems.length){ nextcount=0; }
+		constructQuestion(nextcount);
+    });
+	
+	function constructQuestion(index){
+		
+		var quest = gameitems[index];
+		$('#detailed-title').html('Question '+(index+1));
+		$('#qtype').html('Type: '+gameitems[index][0].type);
+		$('#qpoints').html('Points: '+gameitems[index][0].points_possible);
+		$('#qtext').html(gameitems[index][0].text);
+		var answers= $.parseJSON(gameitems[index][0].answers);
+		var ansdiv='';
+		console.log(answers);//for each
+		for(var i=0; i<answers.length; i++){
+		//for(var answobj in answers) {
+			if(answers[i].weight==0){
+				ansdiv+='<div class="alert alert-danger">';
+			} else {
+				ansdiv+='<div class="alert alert-success">';
+			}
+			ansdiv+=answers[i].text;
+			ansdiv+='</div>';
+		}
+		$('#qanswers').html('<hr/>Answers:<br/>'+ansdiv);
+		
+		var comdiv='';
+		if(gameitems[index][0].correct_comments!= "")
+		{
+			comdiv+='<div class=bg-success>';
+			comdiv+=gameitems[index][0].correct_comments;
+			comdiv+='</div>';
+		}
+		if(gameitems[index][0].incorrect_comments != "")
+		{
+			comdiv+='<div class=bg-danger>';
+			comdiv+=gameitems[index][0].incorrect_comments;
+			comdiv+='</div>';
+		}
+		if(gameitems[index][0].neutral_comments != "")
+		{
+			comdiv+='<div class=bg-warning>';
+			comdiv+=gameitems[index][0].neutral_comments;
+			comdiv+='</div>';
+		}
+		$('#qfeedback').html('<hr/>Comments:<br/>'+comdiv);
+	}
+/*
+answers: "[
+	{"weight":0,"id":2028,"migration_id":"RESPONSE_1113","text":"Organizational change is..."},
+	{"weight":60,"id":5595,"migration_id":"RESPONSE_2746","text":"Organizational change..."},
+	{"weight":40,"id":6439,"migration_id":"RESPONSE_8703","text":"Organizational change..."},
+	{"weight":0,"id":5998,"migration_id":"RESPONSE_1895","text":"Organizational change..."}]"
+correct_comments: ""
+created_at: "2016-03-04 20:12:19"
+incorrect_comments: ""
+name: "1.a Which of the followi 4"
+neutral_comments: "Organizational change can take many forms."
+points_possible: 1
+position: 1
+question_id: 8369896
+quiz_id: 464878
+text: "Which of the following statements regarding change is INCORRECT?"
+type: "multiple_choice_question"
+*/
+</script>

@@ -102,14 +102,14 @@
                         if ((!event.dest.nodesScope.$nodeScope) && (event.source.nodeScope.$parentNodeScope)) {
                             var parent = event.dest.nodesScope.$modelValue[0];
                             var allOtherItems = event.dest.nodesScope.$modelValue[1];
-                            console.log(parent);
-                            console.log(allOtherItems);
+                            console.log('parent:',parent);
+                            console.log('otherItems:',allOtherItems);
                             $http.post('moveItemToTop', {
                                 parent: JSON.stringify(parent),
                                 modulesArray: JSON.stringify(allOtherItems)
                             })
                                     .success(function (data, status) {
-                                        console.log(data);
+                                        console.log('success:',data);
                                         $scope.data = data;
                                         $scope.saveOrder($scope);
                                     })
@@ -159,8 +159,8 @@
                         modulesArray: JSON.stringify($scope.data), updateLms: false})
 
                             .success(function (data, status) {
-                                console.log("saved Data");
-                                console.log(data);
+                                console.log("saved Data",data);
+                                //console.log(data);
                             })
                             .error(function (data) {
                             });

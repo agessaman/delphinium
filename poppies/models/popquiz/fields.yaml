@@ -1,0 +1,28 @@
+fields:
+    id:
+        label: ID
+        span: full
+        disabled: true
+        hidden: 1
+        type: text
+    name:
+        label: Name
+        span: auto
+        type: text
+        commentAbove: 'Enter a name'
+    quiz_name:
+        label: 'Quiz name'
+        span: auto
+        type: text
+        commentAbove: 'Name of the quiz'
+    quiz_description:
+        label: Description
+        size: large
+        span: auto
+        type: textarea
+        commentAbove: 'An introduction'
+    quiz_id:
+        label: 'Quiz id'
+        span: auto
+        type: text
+        commentAbove: generated

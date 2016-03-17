@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>title animation</title>
+
+<script type="text/javascript" src="javascript/jquery.min.js"></script>
+<script type="text/javascript" src="javascript/jquery-ui.min.js"></script>
+<script type="text/javascript" src="javascript/jquery.spritely.js"></script>
+    
+<style>
+    
+.page {
+	display: block;
+	position: relative;
+	overflow:hidden;
+	width:920px; height:700px;
+}
+.title {
+	display: block;
+	position: relative;
+	overflow:hidden;
+	width:100%; height:100%;
+}
+.gameplay {
+	display: block;
+	position: relative;
+	overflow:hidden;
+	width:100%; height:100%;
+}
+.bkground {
+	display: block;
+	position: absolute;
+	overflow:hidden;
+	opacity: 0.0;
+	width:920px; height:700px;
+	background: url("images/bkgrnd.png") center center no-repeat;
+}
+.score {
+    position: relative;
+    width: 90px;
+    height: 20px;
+    margin: 5px 10px;
+    display:inline-block;
+    background-color: gray;
+    border: #333333 solid 2px;
+}
+.missd {
+    position: relative;
+    width: 90px;
+    height: 20px;
+    margin: 5px 150px;
+    display:inline-block;
+    background-color: gray;
+    border: #333333 solid 2px;
+}
+.timr {
+    position: relative;
+    width: 90px;
+    height: 20px;
+    margin: 5px 10px;
+    display:inline-block;
+    background-color: gray;
+    border: #333333 solid 2px;
+}
+.headbox {
+    width: 100%;
+    height: 30px;
+    position: relative;
+    text-align: center;
+}
+.questbox {
+    position: relative;
+    width:700px;
+    height:200px;
+    margin: 2px auto;
+    padding: 10px;
+    background: tan;
+}
+.valid {
+	/*holds correct answer*/
+	font-weight: 700;
+    text-align: center;
+}
+.answerbox {
+    width: 100%;
+    height: 90px;
+    position: relative;
+    text-align: center;
+}
+.clear { clear: both; }
+
+.makeDraggable {
+    cursor: move;
+    position:relative;
+    width: 100px;
+    height: 50px;
+    margin: 5px 10px;
+    display:inline-block;
+    padding: 5px;
+    text-align: center;
+    color: white;
+    background: teal;
+}
+.makeDraggable.ui-draggable-dragging { background: green; }
+    
+/*animated title*/
+#you {
+	display: block;
+    position: absolute;
+	overflow:hidden;
+	top: 300px;
+	left: 0px;
+	width:145px;
+	height:80px;
+	opacity:0.1;
+	background: url("images/t_you.png") center center no-repeat;
+	background-position: 0px 0px;
+}
+#got {
+	display: block;
+    position: absolute;
+	overflow:hidden;
+	/*top: 228px;*/
+	left: 384px;
+	width:46px;
+	height:244px;
+	opacity:0.0;
+	background: url("images/t_got.png") center center no-repeat;
+	background-position: 0px 0px;
+}
+#this {
+	display: block;
+    position: absolute;
+	overflow:hidden;
+	top: 394px;
+	/*left: 393px;*/
+	left: 790px;
+	width:153px;
+	height:80px;
+	opacity:0.0;
+	background: url("images/t_this.png") center center no-repeat;
+	background-position: 0px 0px;
+}
+#yep {
+	display: block;
+    position: absolute;
+	overflow:hidden;
+	/*top: 392px;*/
+	top: 600px;
+	left: 561px;
+	width:23px;
+	height:79px;
+	opacity:0.0;
+	background: url("images/t_yep.png") center center no-repeat;
+	background-position: 0px 0px;
+}
+#gobtn {
+    display: block;
+    position: absolute;
+    top: 325px;
+    left: 500px;
+    opacity:0.0;
+    padding: 10px;
+    border: #333333 solid 2px;
+    background-color: #167687;
+    color: #efefef;
+    text-align: center;
+    cursor: pointer;
+}
+
+/*---- sprites ----*/
+#star {
+    background: transparent url(images/star_sprite.png) 0 0 no-repeat;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 50px;
+    height: 50px;
+    z-index: 1000;
+}
+#wrong {
+    background: transparent url(images/x_sprite.png) 0 0 no-repeat;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 50px;
+    height: 50px;
+    z-index: 1000;
+}
+#nextaro {
+    background: transparent url(images/aro.png) 0 0 no-repeat;
+    position: relative;
+    top: 0px;
+    left: 800px;
+    width: 80px;
+    height: 50px;
+    z-index: 900;
+    cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+    <div class="bkground"></div>
+    <div class="page">
+        <div class="title">
+            <div id="you"></div>
+            <div id="this"></div>
+            <div id="got"></div>
+            <div id="yep"></div>
+            <div id="gobtn">Play Now</div>
+        </div>
+        <div class="gameplay">
+            <div class="headbox">
+                <div class="score">Score:</div>
+                <div class="missd">Missed:</div>
+                <div class="timr">Timer:</div>
+            </div>
+
+            <div class="questbox">Question:</div>
+            <div class="valid"></div>
+            
+            <div class="answerbox">
+                <div id="a0" class="makeDraggable">Answer 0</div>
+                <div id="a1" class="makeDraggable">Answer 1</div>
+                <div id="a2" class="makeDraggable">Answer 2</div>
+                <div id="a3" class="makeDraggable">Answer 3</div>
+                <div id="nextaro"></div>
+            </div>
+            
+            <div id="star"></div>
+            <div id="wrong"></div>
+        </div>
+    </div>
+<script>
+/*
+    animated title
+    click Play Now #gobtn
+*/
+$('#you')
+   .animate({
+      left: 335, opacity: 1
+    }, 300);
+
+$('#got')
+    .delay(500)
+    .animate({
+        top:228, opacity: 1
+    }, 500);
+
+$('#this')
+    .delay(800)
+    .animate({
+        left:392, opacity: 1
+    }, 300);	
+
+$('#yep')
+    .delay(1000)
+    .animate({
+        top: 392, opacity: 1
+    }, 300);
+
+$('#gobtn')
+    .delay(1600)
+    .animate({opacity: 1}, 400);
+/*
+    click Play Now animates title off
+    play area onto screen
+*/
+$('gameplay').hide();
+$('#gobtn').on('click', function() {
+    $('.title').animate({left: -1000, opacity: 0}, 500, function(){ $('.title').hide(); });
+    $('.bkground').animate({opacity:0.2},800);
+    $('.gameplay').show();
+    
+    //conclusion screen reset & play title again?
+});
+    
+/* http://spritely.net/ sprites */
+$('#star').hide();
+function showStar() {
+    $('#star').show();
+    $('#star').sprite({fps: 6, no_of_frames: 6,
+            on_last_frame: function(obj) { obj.stop(true); }
+            }).active();
+    $('#star').css({'left':350,'top':120, opacity:1})
+        .animate({ left: 200, top: 20, opacity: 0 }, 1000, function(){ $('#star').destroy(); });
+}
+
+$('#wrong').hide();
+function shoWrong() {
+    $('#wrong').show();
+    $('#wrong').sprite({fps: 6, no_of_frames: 6,
+            on_last_frame: function(obj) { obj.stop(true); }
+            }).active();
+    $('#wrong').css({'left':450,'top':150, opacity:1})
+        .animate({ top: 20, opacity: 0 }, 1000, function(){ $('#wrong').destroy(); });
+}
+
+$('#nextaro').hide();
+function showNextaro() {
+    $('#nextaro').show();
+    $('#nextaro').sprite({fps: 6, no_of_frames: 4}).active();
+}
+$('#nextaro').on('click', function(){
+    $('#nextaro').hide().spStop(true);
+    //load next question
+});
+
+/*
+    http://www.elated.com/articles/drag-and-drop-with-jquery-your-essential-guide/
+    http://api.jqueryui.com/draggable/
+    http://getbootstrap.com/css/
+*/
+$('.makeDraggable').draggable({
+    containment: '.page',
+    snap: '.page',
+    zIndex: 500,
+    iframeFix: true,
+    distance: 10,
+    revert: true
+    /*,stop: handleDragStop*/
+});
+/*
+function handleDragStop( event, ui ) {
+  var offsetXPos = parseInt( ui.offset.left );
+  var offsetYPos = parseInt( ui.offset.top );
+  console.log( event.target.id+" Offset: (" + offsetXPos + ", " + offsetYPos + ")");
+}
+*/
+$('.questbox').droppable({
+    drop: handleDropEvent
+});
+function handleDropEvent( event, ui ) {
+    var offsetXPos = parseInt( ui.offset.left );
+    var offsetYPos = parseInt( ui.offset.top );
+    console.log( event.target.id+" Offset: (" + offsetXPos + ", " + offsetYPos + ")");
+    
+    var id = ui.draggable.attr('id');
+    console.log( 'dropped ID "' + id + '" was dropped onto me!' );
+    if(id == 'a2') {
+        showStar();//play correct sprite
+        console.log("correct");
+        $('.makeDraggable').hide();// all answers
+        $('.valid').append($('#'+id).html());// show answer
+        showNextaro();
+    } else {
+        
+       shoWrong();//play wrong
+    }
+}
+
+
+
+</script>
+</body>
+</html>

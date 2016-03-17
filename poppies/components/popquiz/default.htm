@@ -1,0 +1,25 @@
+
+<script type="text/javascript" src="plugins/delphinium/poppies/assets/javascript/jquery.min.js"></script>
+<script type="text/javascript" src="plugins/delphinium/poppies/assets/javascript/jquery-ui.min.js"></script>
+<script type="text/javascript" src="plugins/delphinium/poppies/assets/javascript/jquery.spritely.js"></script>
+<script type="text/javascript" src="plugins/delphinium/poppies/assets/javascript/bootstrap.min.js"></script>
+<script>
+		
+	var role = '{{role}}';
+    console.log('Role: ',role);//string
+	
+$(document).ready(function() {
+
+	if(role == 'Learner') {
+        // play game:
+    } else { 
+        //split up list
+		showQuizzes();
+    }
+});
+</script>
+{% if ('Learner' in role) %}
+{% partial 'popquiz::learner' %}
+{% elseif ('Instructor' in role) %}
+{% partial 'popquiz::instructor' %}
+{% endif %}

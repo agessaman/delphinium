@@ -43,8 +43,11 @@ fields:
         label: Course id
         span: left
         comment: course id is generated dynamically 
+        hidden: true
 
     copy_id:
         label: copy id
+        type: text
         span: auto
         comment: copy id is generated dynamically
+        hidden: true
