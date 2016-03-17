@@ -3,8 +3,12 @@
 <div class="confirm-container bg-success hide">
     <p style="text-align:center;">Successfully Updated Entry!</p>
 </div>
-<div class="">
+<div id="statsSettings">
     <a data-toggle="modal"  data-keyboard="true" data-backdrop="true" onclick="showModal()"><i class="icon-cog"></i></a>
+</div>
+<div id="configureExperience">
+    This component is tied to the Experience component, which hasn't been configured yet.
+    Please go to the experience component in professor mode to configure it.
 </div>
 <div class="control-popup modal fade" id="modalWindow" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg">
@@ -50,19 +54,24 @@
 </div>
 
 <style>
-    /*override backend styles - as per Jared's request*/
+    /*override backend styles*/
     .modal-header {background:none !important;border-bottom:1px solid #e5e5e5 !important;}
     .modal-header .close{color:black !important;background:transparent !important;}
+    #configureExperience{display:none;}
 </style>
 <script>
 
+    if(configureExperience==1)
+    {//if experience hasn't been configured notify the professor
+        document.getElementById("statsSettings").style.display="none";
+        document.getElementById("configureExperience").style.display="block";
+    }
     function showModal()
     {
         $("#modalWindow").on("shown.bs.modal", function () {
             //disable the course id and the copy name
             document.getElementById('Form-field-Stats-name').readOnly=true;
             document.getElementById('Form-field-Stats-course_id').readOnly=true;
-
         }).modal('show');
     }
 

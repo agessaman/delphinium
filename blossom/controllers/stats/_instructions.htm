@@ -2,11 +2,14 @@
     <h2>Stats Component</h2>
     <p>The stats component is tightly related to the experience component. In order for stats to work, an instance of
         experience must be configured in the
-        greenhouse backend. A backend instance of stats must also be configured in greenhouse:
+        greenhouse backend. A backend instance of stats must also be configured in greenhouse.
         <br/><b>Greenhouse-->Blossom-->Stats-->New Stats Instance</b>
     </p>
     Fill out the form accordingly:
-    <br/><img class="img" id="image4" src="" title="Stamina" alt="Quality of work"/>
+    <div class="fillOutForm"></div>
+    <br/>
+    If these instances are not configured and the component is added onto a page, automatic instances of these components will
+    be created on the fly, but the instructor must then configure them from the LTI inside Canvas.
     <hr/>
 </div>
 
@@ -25,7 +28,7 @@
             bonus/penalties are denoted by a clock icon <i class="fa fa-clock-o"></i>.
             <br/>
         </p>
-        <div class="col-sm-12"><img class="img" id="image0" src="" title="Pace" alt="Pace- bonus and penalties"/></div>
+        <div id="image0"></div>
     </div>
     <h3>Health</h3>
     <div>
@@ -34,8 +37,7 @@
             will be green. If the balance is
             negative, the bar will be red.
         </p>
-        <div class="col-sm-12"><img class="img" id="image1" src="" title="Health"
-                                    alt="Total bonus and penalties balance"/></div>
+        <div id="image1"></div>
     </div>
     <h3>Gap</h3>
     <div>
@@ -44,7 +46,7 @@
             will be green.
             If they are behind of the line, the bar will be red.
         </p>
-        <div class="col-sm-12"><img class="img" id="image2" src="" title="Gap" alt="Gap relative to red line"/></div>
+        <div id="image2"></div>
     </div>
     <h3>Stamina</h3>
     <div>
@@ -55,41 +57,49 @@
             view the percent of points
             earned for all assignments they have completed so far, or just the last 10 assignments.
         </p>
-        <div class="col-sm-12"><img class="img" id="image3" src="" title="Stamina" alt="Quality of work"/></div>
+        <div id="image3"></div>
     </div>
 </div>
 
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-<!--<script   src="http://code.jquery.com/jquery-1.12.1.min.js" integrity="sha256-I1nTg78tSrZev3kjvfdM5A5Ak/blglGzlaZANLPDl3I=" crossorigin="anonymous"></script>-->
 <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-<script   src="http://code.jquery.com/ui/1.11.4/jquery-ui.min.js" integrity="sha256-xNjb53/rY+WmG+4L6tTl9m6PpqknWZvRt0rO1SRnJzw=" crossorigin="anonymous"></script>
-<!--<script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>-->
-
-
-<script>
-//    if (!window.jQuery) {
-//        console.log("jquery was undefined");
-//            var e = document.createElement('script'); e.async = true;
-//            e.src = 'http://code.jquery.com/jquery-1.12.1.min.js';
-//            document.getElementById('loader').appendChild(e);
-//        }
-    $(function() {
-        $("#accordion").accordion({
-            autoHeight: true,
-            heightStyle: "content",
-            active: false,
-            collapsible: true
-        });
-    });
-
-    $('#image0').attr('src', '<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/stats_pace.png');
-    $('#image1').attr('src', '<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/stats_health.png');
-    $('#image2').attr('src', '<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/stats_gap.png');
-    $('#image3').attr('src', '<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/stats_stamina.png');
-    $('#image4').attr('src', '<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/stats_new.png');
-</script>
 
 <style>
+    .fillOutForm{
+        width: 100%;
+        height: 288px;
+        background-image: url('<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/stats_new.png');
+        background-repeat: no-repeat;
+        background-size: contain;
+    }
+    #image0{
+        width: 100%;
+        height: 80px;
+        background-image: url('<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/stats_pace.png');
+        background-repeat: no-repeat;
+        background-size: contain;
+    }
+    #image1{
+        width: 100%;
+        height: 72px;
+        background-image: url('<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/stats_health.png');
+        background-repeat: no-repeat;
+        background-size: contain;
+    }
+    #image2{
+        width: 100%;
+        height: 75px;
+        background-image: url('<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/stats_gap.png');
+        background-repeat: no-repeat;
+        background-size: contain;
+     }
+    #image3{
+        width: 100%;
+        height: 90px;
+        background-image: url('<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/stats_stamina.png');
+        background-repeat: no-repeat;
+        background-size: contain;
+    }
     .row {
         margin-bottom: 40px;
     }

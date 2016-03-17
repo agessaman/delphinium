@@ -18,7 +18,9 @@ class Experience extends CustomModel
     public $table = 'delphinium_blossom_experiences';
 
     protected $dates = ['start_date','end_date'];
-    
+
+    protected $fillable = ['*'];
+
     public $rules = [
         'name'=>'required',
         'total_points'=>'required',
