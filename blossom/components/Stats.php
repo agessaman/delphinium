@@ -79,38 +79,35 @@ class Stats extends ComponentBase
     public function onRun()
     {
 //        try
-//        {//load scripts
-//        $this->addJs("/plugins/delphinium/blossom/assets/javascript/jquery-ui.min.js");
-//        $this->addJs("/plugins/delphinium/blossom/assets/javascript/jquery.min.js");
-            $statsInstance = $this->firstOrNewCourseInstance();
-            $experienceInstance = $this->findExperienceInstance();
+//        {
+        $statsInstance = $this->firstOrNewCourseInstance();
+        $experienceInstance = $this->findExperienceInstance();
 
-            $this->experienceInstanceId = $experienceInstance->id;
-            //if no instance exists of this component, create a new one. It will be tied to the experience component they have selected
-            $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
-            $this->addJs("/plugins/delphinium/blossom/assets/javascript/stats.js");
-            //add jquery stuff
-            //$this->addJs("/plugins/delphinium/blossom/assets/javascript/bootstrap.min.js");
-            $this->addCss("/plugins/delphinium/blossom/assets/css/stats.css");
+        //if no instance exists of this component, create a new one. It will be tied to the experience component they have selected
+        $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
+        $this->addJs("/plugins/delphinium/blossom/assets/javascript/stats.js");
+        //add jquery stuff
+        //$this->addJs("/plugins/delphinium/blossom/assets/javascript/bootstrap.min.js");
+        $this->addCss("/plugins/delphinium/blossom/assets/css/stats.css");
 
 
-            $statsInstance = StatsModel::find($this->statsInstanceId);
-            $this->page['statsSize'] = $statsInstance->size;
-            $this->page['statsAnimate'] = $statsInstance->animate;
+        $statsInstance = StatsModel::find($this->statsInstanceId);
+        $this->page['statsSize'] = $statsInstance->size;
+        $this->page['statsAnimate'] = $statsInstance->animate;
 
-            if (!isset($_SESSION)) {
-                session_start();
-            }
-            $roleStr = $_SESSION['roles'];
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+        $roleStr = $_SESSION['roles'];
 
-            $this->page['role'] = $roleStr;
+        $this->page['role'] = $roleStr;
 
-            $this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
+        $this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
 
-            if(stristr($roleStr, 'Instructor')||stristr($roleStr, 'TeachingAssistant'))
-            {//only instructors will be able to configure the component
-                $this->instructor();
-            }
+        if(stristr($roleStr, 'Instructor')||stristr($roleStr, 'TeachingAssistant'))
+        {//only instructors will be able to configure the component
+            $this->instructor();
+        }
 //        }
 //        catch(\Delphinium\Roots\Exceptions\InvalidRequestException $e)
 //        {
@@ -223,13 +220,16 @@ class Stats extends ComponentBase
                 $this->page['configureExperience']=0;
             }
             $this->page['experienceInstanceId'] =$experienceModel->id;
+            $this->experienceInstanceId = $experienceModel->id;
             return $experienceModel;
         }
         else
         {//use the selected instance
-            $experienceModel= ExperienceModel::find($this->property('Experience'))->get();
+            $experienceModel= ExperienceModel::find($this->property('Experience'))->first();
             $this->page['experienceInstanceId'] =$experienceModel->id;
             $this->page['configureExperience']=0;
+
+            $this->experienceInstanceId = $experienceModel->id;
             return $experienceModel;
         }
     }
@@ -283,37 +283,47 @@ class Stats extends ComponentBase
         //get red line points
         $experienceComp = new ExperienceComponent();
         $redLine = $experienceComp->getRedLinePoints($experienceInstanceId);
+        //get milestoneClearance info to get potential bonuses and penalties
         $milestoneClearanceInfo = $experienceComp->getMilestoneClearanceInfo($experienceInstanceId);
         $potentialBonus =0.0;
         $potentialPenalties=0.0;
+        $penalties=0.0;
+        $bonus=0.0;
 
         foreach($milestoneClearanceInfo as $mileInfo)
         {
             if($mileInfo->cleared)
             {
-                continue;
+                if($mileInfo->bonusPenalty>=0)
+                {
+                    $bonus+=$mileInfo->bonusPenalty;
+                }
+                else{
+                    $penalties+=$mileInfo->bonusPenalty;
+                }
+            }
+            else
+            {
+                if($mileInfo->bonusPenalty>=0)
+                {
+                    $potentialBonus+=$mileInfo->bonusPenalty;
+                }
+                else{
+                    $potentialPenalties+=$mileInfo->bonusPenalty;
+                }
             }
 
-            if($mileInfo->bonusPenalty>=0)
-            {
-                $potentialBonus+=$mileInfo->bonusPenalty;
-            }
-            else{
-                $potentialPenalties+=$mileInfo->bonusPenalty;
-            }
         }
 
         $potential = new \stdClass();
         $potential->bonus = $potentialBonus;
         $potential->penalties = $potentialPenalties;
-        //get milestone info (total points including bonus and penalties)
-        $gradebookComponent = new Gradebook();
-        $userIds = array($studentId);
-        $milestoneSummary = $gradebookComponent->getSetOfUsersMilestoneInfo($experienceInstanceId, $userIds);
-        if(count($milestoneSummary)>0)
-        {
-            $milestoneSummary = $milestoneSummary[0];
-        }
+
+        $milestoneSummary =new \stdClass();
+        $milestoneSummary->bonuses = $bonus;
+        $milestoneSummary->penalties = $penalties;
+        $milestoneSummary->total = $experienceComp->getUserPoints();
+
         $milestoneNum = count($experience->milestones);
         $healthObj = new \stdClass();
         $healthObj->maxPenalties = $maxPenalties*$milestoneNum;
@@ -322,6 +332,7 @@ class Stats extends ComponentBase
         $gap = new \stdClass();
         $gap->minGap = $expTotalPoints+$maxPenalties;
         $gap->maxGap = $expTotalPoints+$maxBonus;
+
         $stamina = $this->calculateStamina();
 
         $returnObj = new \stdClass();
@@ -405,9 +416,7 @@ class Stats extends ComponentBase
     public function onSave()
     {
         $data = post('Stats');
-//        echo json_encode($data['name'])."---";
         $statsInstance = $this->firstOrNewCourseInstance($data['name']);//get the instance
-//        echo json_encode($statsInstance);
         $statsInstance->name = $data['name'];
         $statsInstance->size = $data['size'];
         $statsInstance->animate = $data['animate'];
