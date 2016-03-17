@@ -1,0 +1,31 @@
+<link rel="stylesheet" type="text/css" href="plugins/delphinium/birdoparadise/assets/css/font-autumn.css">
+<link rel="stylesheet" type="text/css" href="plugins/delphinium/birdoparadise/assets/css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="plugins/delphinium/birdoparadise/assets/css/bop.css">
+
+<script type="text/javascript" src="plugins/delphinium/birdoparadise/assets/javascript/jquery.min.js"></script>
+<script type="text/javascript" src="plugins/delphinium/birdoparadise/assets/javascript/bootstrap.min.js"></script>
+<script type="text/javascript" src="plugins/delphinium/birdoparadise/assets/javascript/bop.js"></script>
+<script>
+    // include css or javascript libraries
+    
+    var role = '{{role}}';//string
+    console.log('Role:',role);
+    /*
+        get variables from the php with twig
+        use twig to determine if the component is seen 
+        by an instructor or a student
+        init global vars here
+		fill global var there.
+    */
+    var moduledata = {{moduledata|raw}};
+    //console.log('moduledata:',moduledata);
+    
+	var assignments=[];// student
+	var subms=[];// view fills vars
+</script>
+
+{% if ('Learner' in role) %}
+{% partial 'modulemap::student' %}
+{% elseif ('Instructor' in role) %}
+{% partial 'modulemap::instructor' %}
+{% endif %}
