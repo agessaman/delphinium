@@ -11,6 +11,7 @@ class Stats extends ComponentBase
 
     public $courseId;
     public $statsInstanceId;
+    public $experienceInstanceId;
     public function componentDetails()
     {
         return [
@@ -23,14 +24,12 @@ class Stats extends ComponentBase
     {
         return [
             'Experience' => [
-                'title' => 'Experience instance',
+                'title' => '(Optional) Experience instance',
                 'description' => 'Select the experience instance to display the student\'s stats',
-                'type' => 'dropdown',
-                'validationPattern' => '^[1-9][0-9]*$',//check that they've selected an option from the drop down. The default placeholder is=0
-                'validationMessage' => 'Select an instance of Experience from the dropdown'
+                'type' => 'dropdown'
             ],
 //            'Stats' => [
-//                'title' => 'Stats instance',
+//                'title' => '(Optional) Stats instance',
 //                'description' => 'Select the stats instance to display',
 //                'type' => 'dropdown',
 //                'depends'     => ['Experience'],
@@ -41,8 +40,6 @@ class Stats extends ComponentBase
                 'title'             => 'Copy name',
                 'description'       => 'Enter the name of this copy of the processmaker component',
                 'type'              => 'string',
-                'required'          => 'true',
-                'validationMessage' => 'Please enter a copy name'
             ]
         ];
     }
@@ -79,20 +76,21 @@ class Stats extends ComponentBase
 //        }
 //    }
 
-    public function onRun() {
+    public function onRun()
+    {
 //        try
 //        {//load scripts
 //        $this->addJs("/plugins/delphinium/blossom/assets/javascript/jquery-ui.min.js");
 //        $this->addJs("/plugins/delphinium/blossom/assets/javascript/jquery.min.js");
             $statsInstance = $this->firstOrNewCourseInstance();
+            $experienceInstance = $this->findExperienceInstance();
 
-            $this->statsInstanceId = $statsInstance->id;
+            $this->experienceInstanceId = $experienceInstance->id;
             //if no instance exists of this component, create a new one. It will be tied to the experience component they have selected
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/stats.js");
-        //add jquery stuff
-//        $this->addJs("/plugins/delphinium/blossom/assets/javascript/bootstrap.min.js");
-            $this->addCss('/modules/system/assets/ui/storm.css', 'core');
+            //add jquery stuff
+            //$this->addJs("/plugins/delphinium/blossom/assets/javascript/bootstrap.min.js");
             $this->addCss("/plugins/delphinium/blossom/assets/css/stats.css");
 
 
@@ -106,20 +104,13 @@ class Stats extends ComponentBase
             $roleStr = $_SESSION['roles'];
 
             $this->page['role'] = $roleStr;
+
             $this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
 
-            if(stristr($roleStr, 'Learner'))
-            {
-                $this->student();
+            if(stristr($roleStr, 'Instructor')||stristr($roleStr, 'TeachingAssistant'))
+            {//only instructors will be able to configure the component
+                $this->instructor();
             }
-            else{
-                if(stristr($roleStr, 'Instructor')||stristr($roleStr, 'TeachingAssistant'))
-                {//only students will be able to configure the component
-                    $this->instructor();
-                }
-                $this->nonStudent();//everyone else will just see a blank component
-            }
-
 //        }
 //        catch(\Delphinium\Roots\Exceptions\InvalidRequestException $e)
 //        {
@@ -153,8 +144,99 @@ class Stats extends ComponentBase
 //        }
     }
 
-    private function instructor()
+    private function firstOrNewCourseInstance($copyName=null)
     {
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+        $courseId = $_SESSION['courseID'];
+        $this->courseId = $courseId;
+        $courseInstance = null;
+//        if(!is_null($this->property('Stats')))
+//        {
+//
+//            $courseInstance= StatsModel::find($this->property('Stats'));
+//            $this->statsInstanceId = $courseInstance->id;
+//            $this->page['instance_id'] = $this->statsInstanceId;
+//            return $courseInstance;
+//        }
+
+        //first use the copy name passed to this method, if any
+        //if null, then use the property defined in the component
+        //if null, just get the instance using the course id
+        if(is_null($copyName)&& !is_null($this->property('Copy')))
+        {
+            $copyName =$this->property('Copy');
+        }
+        if(!is_null($copyName))
+        {
+            $courseInstance =StatsModel::firstOrNew(array('course_id' => $courseId,'name'=>$copyName));
+            if(is_null($courseInstance->name)){$courseInstance->name=$copyName;}
+        }
+        else{
+            $courseInstance =StatsModel::firstOrNew(array('course_id' => $courseId));
+            if(is_null($courseInstance->name)){$courseInstance->name='Stats_auto';}
+        }
+
+        $this->statsInstanceId = $courseInstance->id;
+        $this->page['instance_id'] = $this->statsInstanceId;
+        $courseInstance->course_id = $courseId;
+        if(is_null($courseInstance->animate)){$courseInstance->animate = 1;}
+        if(is_null($courseInstance->size)){$courseInstance->size = 'medium';}
+        $courseInstance->save();
+
+        return $courseInstance;
+    }
+
+    private function findExperienceInstance()
+    {
+        $experienceModel=null;
+        if(is_null($this->property('Experience'))||$this->property('Experience')==0)
+        {//find an instance of experience with the same course id
+            if (!isset($_SESSION)) {
+                session_start();
+            }
+            $courseId = $_SESSION['courseID'];
+            $experienceModel = ExperienceModel::where('course_id','=',$courseId)->first();
+            if(is_null($experienceModel))
+            {//if no experience was created we will create one on the fly and tell the user to go configure it
+                $experienceModel = ExperienceModel::firstOrNew(array('course_id' => $courseId));
+                $experienceModel->name = "Experience_auto";
+                $experienceModel->total_points = 1000;
+                $today = new \DateTime('now');
+                $experienceModel->start_date = $today;
+                $newDate = new \DateTime('now');
+                $tomorrow = $newDate->add(new \DateInterval('P10D'));
+                $experienceModel->end_date = $tomorrow;
+                $experienceModel->bonus_per_day = 1;
+                $experienceModel->penalty_per_day = 1;
+                $experienceModel->bonus_days = 5;
+                $experienceModel->penalty_days = 5;
+                $experienceModel->animate = 1;
+                $experienceModel->size = 'medium';
+                $experienceModel->course_id = $courseId;
+                $experienceModel->save();
+                $this->page['configureExperience']=1;
+            }
+            else
+            {
+                $this->page['configureExperience']=0;
+            }
+            $this->page['experienceInstanceId'] =$experienceModel->id;
+            return $experienceModel;
+        }
+        else
+        {//use the selected instance
+            $experienceModel= ExperienceModel::find($this->property('Experience'))->get();
+            $this->page['experienceInstanceId'] =$experienceModel->id;
+            $this->page['configureExperience']=0;
+            return $experienceModel;
+        }
+    }
+
+    private function instructor()
+    {//add backend styles
+        $this->addCss('/modules/system/assets/ui/storm.css', 'core');
         $this->page['nonstudent']=1;
         $formController = new \Delphinium\Blossom\Controllers\Stats();
         $formController->create('frontend');
@@ -166,60 +248,45 @@ class Stats extends ComponentBase
         $instructions = $formController->makePartial('instructions');
         $this->page['instructions'] = $instructions;
     }
-    private function nonStudent(){
-        $this->page['nonstudent']=1;
-        $potential = new \stdClass();
-        $potential->bonus = 0;
-        $potential->penalties = 0;
-        $this->page['potential'] = json_encode($potential);
-        $this->page['redLine']= 0;
 
-        $milestoneSummary = new \stdClass();
-        $milestoneSummary->bonuses = 0;
-        $milestoneSummary->penalties = 0;
-        $milestoneSummary->total = 0;
-        $this->page['milestoneSummary'] = json_encode($milestoneSummary);
-
-        $healthObj = new \stdClass();
-        $healthObj->maxPenalties = 0;
-        $healthObj->maxBonuses = 0;
-        $this->page['health'] = json_encode($healthObj);
-
-        $gap = new \stdClass();
-        $gap->minGap = 0;
-        $gap->maxGap = 0;
-        $this->page['gap'] = json_encode($gap);
-
-        $stamina = new \stdClass();
-        $stamina->ten = 0;
-        $stamina->total = 0;
-        $this->page['stamina'] = json_encode($stamina);
+    public function getStatsData($experienceInstanceId)
+    {
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+        $roleStr = $_SESSION['roles'];
+        if(stristr($roleStr, 'Learner'))
+        {
+            return $this->student($experienceInstanceId);
+        }
+        else if(stristr($roleStr, 'Instructor')||stristr($roleStr, 'TeachingAssistant'))
+        {
+            return $this->nonStudent();//everyone else will just see a blank component
+        }
+        return [];
     }
 
-    private function student()
+    private function student($experienceInstanceId)
     {
-        $this->page['nonstudent']=0;
-        //GAP
         if (!isset($_SESSION)) {
             session_start();
         }
         $studentId = $_SESSION['userID'];
-
         //get min and max gap =
         // MAX = experience points + max bonus points
         //MIN = experience points + max penalty points
-        $experience = ExperienceModel::find($this->property('Experience'));
+        $experience = ExperienceModel::find($experienceInstanceId);
         $expTotalPoints = $experience->total_points;
         $maxBonus = $experience->bonus_per_day * $experience->bonus_days;
         $maxPenalties = $experience->penalty_per_day * $experience->penalty_days;
 
         //get red line points
         $experienceComp = new ExperienceComponent();
-        $redLine = $experienceComp->getRedLinePoints($this->property('Experience'));
-        $milestoneClearanceInfo = $experienceComp->getMilestoneClearanceInfo($this->property('Experience'));
-
+        $redLine = $experienceComp->getRedLinePoints($experienceInstanceId);
+        $milestoneClearanceInfo = $experienceComp->getMilestoneClearanceInfo($experienceInstanceId);
         $potentialBonus =0.0;
         $potentialPenalties=0.0;
+
         foreach($milestoneClearanceInfo as $mileInfo)
         {
             if($mileInfo->cleared)
@@ -239,43 +306,33 @@ class Stats extends ComponentBase
         $potential = new \stdClass();
         $potential->bonus = $potentialBonus;
         $potential->penalties = $potentialPenalties;
-
-        $this->page['potential'] = json_encode($potential);
-        $this->page['redLine']= $redLine;
         //get milestone info (total points including bonus and penalties)
         $gradebookComponent = new Gradebook();
         $userIds = array($studentId);
-        $milestoneSummary = $gradebookComponent->getSetOfUsersMilestoneInfo($this->property('Experience'), $userIds);
-
+        $milestoneSummary = $gradebookComponent->getSetOfUsersMilestoneInfo($experienceInstanceId, $userIds);
         if(count($milestoneSummary)>0)
         {
             $milestoneSummary = $milestoneSummary[0];
         }
-        $this->page['milestoneSummary'] = json_encode($milestoneSummary);
-
         $milestoneNum = count($experience->milestones);
         $healthObj = new \stdClass();
         $healthObj->maxPenalties = $maxPenalties*$milestoneNum;
         $healthObj->maxBonuses = $maxBonus*$milestoneNum;
-        $this->page['health'] = json_encode($healthObj);
 
         $gap = new \stdClass();
         $gap->minGap = $expTotalPoints+$maxPenalties;
         $gap->maxGap = $expTotalPoints+$maxBonus;
-        $this->page['gap'] = json_encode($gap);
+        $stamina = $this->calculateStamina();
 
-        $this->page['stamina'] = json_encode($this->calculateStamina());
-    }
-
-    private function getBonusPenalties($userId = null) {
-        $experienceComp = new ExperienceComponent();
-        if ((!is_null($this->property('Experience'))) && ($this->property('Experience') > 0)) {
-            return $experienceComp->calculateTotalBonusPenalties($this->property('Experience'), $userId);
-        } else {
-            $obj = new \stdClass();
-            $obj->bonus = 0;
-            $obj->penalties = 0;
-        }
+        $returnObj = new \stdClass();
+        $returnObj->nonstudent = 0;
+        $returnObj->potential = $potential;
+        $returnObj->redLine = $redLine;
+        $returnObj->milestoneSummary = $milestoneSummary;
+        $returnObj->health = $healthObj;
+        $returnObj->gap = $gap;
+        $returnObj->stamina = $stamina;
+        return $returnObj;
     }
 
     private function calculateStamina()
@@ -311,52 +368,51 @@ class Stats extends ComponentBase
         return $averageObj;
     }
 
+    private function nonStudent()
+    {
+        $potential = new \stdClass();
+        $potential->bonus = 0;
+        $potential->penalties = 0;
+
+        $milestoneSummary = new \stdClass();
+        $milestoneSummary->bonuses = 0;
+        $milestoneSummary->penalties = 0;
+        $milestoneSummary->total = 0;
+
+        $healthObj = new \stdClass();
+        $healthObj->maxPenalties = 0;
+        $healthObj->maxBonuses = 0;
+
+        $gap = new \stdClass();
+        $gap->minGap = 0;
+        $gap->maxGap = 0;
+
+        $stamina = new \stdClass();
+        $stamina->ten = 0;
+        $stamina->total = 0;
+
+        $returnObj = new \stdClass();
+        $returnObj->nonstudent = 1;
+        $returnObj->potential = $potential;
+        $returnObj->redLine = 0;
+        $returnObj->milestoneSummary = $milestoneSummary;
+        $returnObj->health = $healthObj;
+        $returnObj->gap = $gap;
+        $returnObj->stamina = $stamina;
+        return $returnObj;
+    }
+
     public function onSave()
     {
         $data = post('Stats');
+//        echo json_encode($data['name'])."---";
         $statsInstance = $this->firstOrNewCourseInstance($data['name']);//get the instance
-        $statsInstance = StatsModel::where(array('id' => $statsInstance->id))->first();
+//        echo json_encode($statsInstance);
         $statsInstance->name = $data['name'];
         $statsInstance->size = $data['size'];
         $statsInstance->animate = $data['animate'];
         $statsInstance->course_id = $data['course_id'];
         $statsInstance->save();// update original record
         return json_encode($statsInstance);
-    }
-
-    private function firstOrNewCourseInstance($copyName=null)
-    {
-        if (!isset($_SESSION)) {
-            session_start();
-        }
-        $courseId = $_SESSION['courseID'];
-        $this->courseId = $courseId;
-
-        //first use the copy name passed to this method, if any
-        //if null, then use the property defined in the component
-        //if null, just get the instance using the course id
-        if(is_null($copyName) && !is_null($this->property('Copy')))
-        {
-            $copyName =$this->property('Copy');
-        }
-
-        if(!is_null($copyName))
-        {
-            $courseInstance =StatsModel::firstOrNew(array('course_id' => $courseId,'name'=>$this->property('Copy')));
-            if(is_null($courseInstance->name)){$courseInstance->name=$this->property('Copy');}
-        }
-        else{
-            $courseInstance =StatsModel::firstOrNew(array('course_id' => $courseId));
-            if(is_null($courseInstance->name)){$courseInstance->name="CopyA";}
-        }
-
-        $this->statsInstanceId = $courseInstance->id;
-        $this->page['instance_id'] = $this->statsInstanceId;
-        $courseInstance->course_id = $courseId;
-        if(is_null($courseInstance->animate)){$courseInstance->animate = 1;}
-        if(is_null($courseInstance->size)){$courseInstance->size = 'medium';}
-        $courseInstance->save();
-
-        return $courseInstance;
     }
 }

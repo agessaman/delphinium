@@ -51,7 +51,9 @@ class TestRoots extends ComponentBase
         $this->dbHelper = new DbHelper();
 //        $this->refreshCache();
 //        $this->test();
-//        $this->testBasicModulesRequest();
+        $this->testBasicModulesRequest();
+//        $this->testGettingModuleStates();
+//        $this->testBuildTree();
 //        $this->testDeleteTag();
 //        $this->testAddingUpdatingTags();
 //        $this->testUpdatingModuleItem();
@@ -78,7 +80,7 @@ class TestRoots extends ComponentBase
 //        $this->testGettingSubmissions();
 //        $this->testFileUpload();
 //        $this->testAddingAssignment();
-        $this->testStudentAnalyticsAssignmentData();
+//        $this->testStudentAnalyticsAssignmentData();
 //        $this->testGetCourse();
 //        $this->testGetAccount();
 //        $this->testGetEnrollments();
@@ -106,10 +108,30 @@ class TestRoots extends ComponentBase
             $includeContentDetails, $module, $moduleItem , $freshData) ;
 
         $res = $this->roots->modules($req);
+//        echo json_encode($res);
+    }
+
+    private function testGettingModuleStates()
+    {
+        $moduleId = 380213;//null;//380200;
+        $moduleItemId = null;//2368085;
+        $includeContentDetails = true;
+        $includeContentItems = true;
+        $module = null;
+        $moduleItem = null;
+        $freshData = true;
+
+        $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems,
+            $includeContentDetails, $module, $moduleItem , $freshData);
+        $res = $this->roots->getModuleStates($req);
         echo json_encode($res);
     }
 
-
+    private function testBuildTree()
+    {
+        $res = $this->roots->getModuleTree(false);
+        echo json_encode($res);
+    }
     private function testUpdatingModule()
     {
         //380212

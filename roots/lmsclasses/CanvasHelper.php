@@ -459,9 +459,12 @@ class CanvasHelper
         $urlArgs[]="access_token={$token}&per_page=5000";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
-
         $response = GuzzleHelper::makeRequest($request, $url, false, $token);
 
+//        if(intval($moduleRow->id)==380213)
+//        {
+//            echo json_encode($moduleRow)."_";
+//        }
         return $this->processCanvasModuleData($response, $courseId);
     }
 
@@ -1494,8 +1497,7 @@ class CanvasHelper
     }
 
     private function processSingleModule($moduleRow, $courseId, $possibleOrder=null, $firstItemId = null, &$itemIdsArr = null)
-    {
-        //check if module exists
+    {//check if module exists
         $module = Module::firstOrNew(array('module_id' => $moduleRow->id));//('moduleId','=',$module->id);
         $module->module_id = $moduleRow->id;
         $module->course_id = $courseId;

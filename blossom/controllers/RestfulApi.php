@@ -8,6 +8,7 @@ use Delphinium\Roots\Requestobjects\SubmissionsRequest;
 use Delphinium\Roots\Enums\ActionType;
 use Delphinium\Blossom\Components\Experience as ExperienceController;
 use Delphinium\Blossom\Components\Gradebook as GradebookComponent;
+use Delphinium\Blossom\Components\Stats as StatsComponent;
 use \DateTime;
 use DateTimeZone;
 
@@ -208,5 +209,13 @@ class RestfulApi extends Controller
         $gradebook = new GradebookComponent();
 
         return $gradebook->getSetOfUsersTotalScores($instanceId, $userIds);
+    }
+
+    public function getStatsData()
+    {
+        $instanceId = \Input::get('experienceInstanceId');
+        $stats = new StatsComponent();
+        $data = $stats->getStatsData($instanceId);
+        return json_encode($data);
     }
 }
