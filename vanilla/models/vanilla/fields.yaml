@@ -4,15 +4,18 @@ fields:
         span: auto
         type: text
         commentAbove: 'Name this instance'
-
+    custom:
+        label: Custom
+        span: auto
+        type: text
+        commentAbove: 'Add text or html to content'
     course_id:
         label: 'Course id'
         span: auto
         type: text
-        comment: copy id is generated dynamically
-
+        comment: 'copy id is generated dynamically'
     copy_id:
         label: 'Copy id'
         span: auto
         type: text
-        comment: copy id is generated dynamically
+        comment: 'copy id is generated dynamically'

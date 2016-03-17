@@ -12,6 +12,7 @@ class BuilderTableCreateDelphiniumVanillaVanilla extends Migration
             $table->engine = 'InnoDB';
             $table->increments('id')->unsigned();
             $table->string('name', 255);
+            $table->string('custom',255);
             $table->string('course_id', 255);
             $table->string('copy_id', 255);
         });

@@ -1,20 +1,23 @@
 <p>This is the default markup for component vanilla</p>
-
 <small>You can delete this file if you want</small>
+
+<div id="content"></div>
 
 <script type="text/javascript" src="plugins/delphinium/vanilla/assets/javascript/jquery.min.js"></script>
 <script type="text/javascript" src="plugins/delphinium/vanilla/assets/javascript/bootstrap.min.js"></script>
 <script>
     // include css or javascript libraries
     //component configuration [id,name, <Your Fields>, course_id,copy_id]
-    var config = {{config|raw}};//array
+    var config = {{config|raw}};//object
     console.log('config',config);
     
     var role = '{{role}}';//string
     console.log('Role: ',role);
+    
+    $('#content').html(config.custom);
     /*
+        initialize main variables
         get variables from the php with twig
-        
         use twig to determine if the component is seen 
         by an instructor or a student
     */

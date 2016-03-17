@@ -8,4 +8,3 @@ create:
 update:
     redirect: delphinium/vanilla/vanilla
     redirectClose: delphinium/vanilla/vanilla
-preview: {  }

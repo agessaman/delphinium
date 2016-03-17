@@ -126,10 +126,11 @@ class Vanilla extends ComponentBase
 				$formController = new \Delphinium\Vanilla\Controllers\Vanilla();
 				$formController->create('frontend');
 				
-				// Append the formController to the page
-				$this->page['form'] = $formController;
                 //this is the primary key of the record you want to update
                 $this->page['recordId'] = $config->id;
+				// Append the formController to the page
+				$this->page['form'] = $formController;
+                
                 
                 // Instructions page
                 $instructions = $formController->makePartial('instructions');

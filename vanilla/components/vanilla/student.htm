@@ -1,9 +1,69 @@
 <!-- Student View :-->
+<div style="z-index:10;">
+    <!-- component partial -->
+    <h3>Student Learner view</h3>
+    <p>Add your awesome stuff here ...</p>
+</div>
+<div style="position:relative;">
+    <div id="cog" data-toggle="modal" href="#content-configuration" style="position:absolute; bottom:0; right:40; z-index:950;">
+        <a data-toggle="tooltip" title="Info" data-placement="top"><i class="icon-question"></i></a>
+        <a data-toggle="tooltip" title="Settings" data-placement="top"><i class="icon-cog"></i></a>
+    </div>
+</div>
+
+<!-- Configuration modal with Front End Form and Instructions in tabs -->
+<div class="control-popup modal fade" id="content-configuration" tabindex="-1" role="dialog">
+    <div class="modal-dialog" style="width:800px; overflow-y: auto;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Component Settings</h4>
+            </div>
+            <div class="modal-body">
+                <!-- Tabs -->
+                <ul class="nav nav-tabs">
+                  <li class="active"><a data-toggle="tab" href="#configure">Configure</a></li>
+                  <li><a data-toggle="tab" href="#instruct">Instructions</a></li>
+                </ul>
+                <div class="tab-content">
+                <!-- Configure instance -->
+                  <div id="configure" class="tab-pane fade in active" style="padding: 5px 0px;">
+                    <form role="form" id="updateForm"
+                      data-request="{{ __SELF__ }}::onUpdate"
+                      data-request-success="$el.hide();completed(data);">
+                        {{ form.update(recordId)|raw }}
+                        {{ form.formRender()|raw }}
+                      <div class="form-group">
+                         <button class="btn btn-primary btn-block btn-md" type="submit" value="register">Update Component</button>
+                      </div>
+                    </form>
+                  </div>
+                <!-- Instructions -->
+                  <div id="instruct" class="tab-pane fade in" style="padding: 0px 20px;">
+                      {{ instructions|raw }}
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
+    /* set id,course,copy in the POST if they are hidden in fields.yaml
+        Add hidden input fields so they will transfer to onUpdate
+        fields.yaml is set to hidden: true do not appear in the form at all
+        
+        in Vanilla I only have id hidden
+    */
     
+    $('#Form-outsideTabs').append('<input type="hidden" name="Vanilla[id]" value="'+config.id+'" /> ');
+    //$('#Form-outsideTabs').append('<input type="hidden" name="Vanilla[course_id]" value="'+config.course_id+'" /> ');
+    //$('#Form-outsideTabs').append('<input type="hidden" name="Vanilla[copy_id]" value="'+config.copy_id+'" /> ');
+    
+	function completed(data)
+	{
+        /* updated record is returned */
+        location.reload();
+	}
+	console.log('instance: id='+config.id,config.name,config.custom,config.course_id,config.copy_id);
 </script>
-
-<!-- component partial -->
-<h3>Student Learner view</h3>
-
-<p>Add your awesome stuff goes here ...</p>
