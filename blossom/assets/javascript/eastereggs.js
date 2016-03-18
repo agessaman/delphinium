@@ -29,7 +29,7 @@ $(document).keydown(function(e) {
     harlemShake[e.keyCode] = true;
     if (harlemShake[keys.H] && harlemShake[keys.S]) {
     	var s = document.createElement('script');
-			s.setAttribute('src', "/delphinium/plugins/delphinium/blossom/assets/javascript/harlem-shake.js");
+			s.setAttribute('src', path + 'plugins/delphinium/blossom/assets/javascript/harlem-shake.js');
 			document.body.appendChild(s);
     }
   }
@@ -38,7 +38,7 @@ $(document).keydown(function(e) {
     ripple[e.keyCode] = true;
     if (ripple[keys.R] && ripple[keys.P]) {
     	var s = document.createElement('script');
-			s.setAttribute('src', "/delphinium/plugins/delphinium/blossom/assets/javascript/jquery.ripples.js");
+			s.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/jquery.ripples.js");
 			document.body.appendChild(s);
       setInterval(function() {
         var $el = $('body');
@@ -56,7 +56,7 @@ $(document).keydown(function(e) {
     asteroid[e.keyCode] = true;
     if (asteroid[keys.A] && asteroid[keys.D]) {
     	var s = document.createElement('script');
-			s.setAttribute('src', "https://erkie.github.com/asteroids.min.js");
+			s.setAttribute('src', "https://hi.kickassapp.com/kickass.js");
 			document.body.appendChild(s);
     }
   }
@@ -65,7 +65,7 @@ $(document).keydown(function(e) {
     katamari[e.keyCode] = true;
     if (katamari[keys.K] && katamari[keys.I]) {
     	var s = document.createElement('script');
-			s.setAttribute('src', "https://kathack.com/js/kh.js");
+			s.setAttribute('src', document.location.protocol + "//kathack.com/js/kh.js");
 			document.body.appendChild(s);
     }
   }
@@ -75,7 +75,7 @@ $(document).keydown(function(e) {
     if (bomb[keys.B] && bomb[keys.M]) {
     	window.FONTBOMB_HIDE_CONFIRMATION = true;
     	var s = document.createElement('script');
-			s.setAttribute('src', "https://fontbomb.ilex.ca/js/main.js");
+			s.setAttribute('src', document.location.protocol + "//fontbomb.ilex.ca/js/main.js");
 			document.body.appendChild(s);
     }
   }
@@ -84,7 +84,7 @@ $(document).keydown(function(e) {
     pony[e.keyCode] = true;
     if (pony[keys.F] && pony[keys.T]) {
     	var s = document.createElement('script');
-			s.setAttribute('src', "https://websplat.bitbucket.org/websplat/loader.js");
+			s.setAttribute('src', document.location.protocol + "//websplat.bitbucket.org/websplat/loader.js");
 			document.body.appendChild(s);
     }
   }
@@ -93,17 +93,17 @@ $(document).keydown(function(e) {
     myLittlePony[e.keyCode] = true;
     if (myLittlePony[keys.L] && myLittlePony[keys.P]) {
     	var s = document.createElement('script');
-    	s.setAttribute('src', "https://panzi.github.io/Browser-Ponies/basecfg.js");
+    	s.setAttribute('src', document.location.protocol + "//panzi.github.io/Browser-Ponies/basecfg.js");
     	document.body.appendChild(s);
     	var b = document.createElement('script');
-    	b.setAttribute('src', "https://panzi.github.io/Browser-Ponies/browserponies.js");
+    	b.setAttribute('src', document.location.protocol + "//panzi.github.io/Browser-Ponies/browserponies.js");
     	document.body.appendChild(b);
     	setTimeout(function(){
     		(function (cfg) {
 				BrowserPonies.setBaseUrl(cfg.baseurl);
 				BrowserPonies.loadConfig(BrowserPoniesBaseConfig);
 				BrowserPonies.loadConfig(cfg);
-			})({"baseurl":"https://panzi.github.io/Browser-Ponies/","fadeDuration":500,"volume":1,"fps":25,"speed":3,"audioEnabled":false,"showFps":false,"showLoadProgress":true,"speakProbability":0.1,"spawn":{"applejack":1,"fluttershy":1,"pinkie pie":1,"rainbow dash":1,"rarity":1,"twilight sparkle":1},"autostart":true}); 
+			})({"baseurl":document.location.protocol + "//panzi.github.io/Browser-Ponies/","fadeDuration":500,"volume":1,"fps":25,"speed":3,"audioEnabled":false,"showFps":false,"showLoadProgress":true,"speakProbability":0.1,"spawn":{"applejack":1,"fluttershy":1,"pinkie pie":1,"rainbow dash":1,"rarity":1,"twilight sparkle":1},"autostart":true}); 
     	},500);
     }
   }
