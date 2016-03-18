@@ -162,6 +162,7 @@ $(document).ready(function() {
             
             // after link
             if(hasContent && moditems[i].content[0].lock_explanation.length >0) {
+                console.log('lock_ex len:',moditems[i].content[0].lock_explanation.length);
                item +='<div class="prereqnote">'+moditems[i].content[0].lock_explanation+'</div>';
             /* WEIRD CONTENT BROKE THIS !!!
             lock_explanation:
