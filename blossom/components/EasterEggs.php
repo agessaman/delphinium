@@ -60,9 +60,12 @@ class EasterEggs extends ComponentBase
         $roleStr = $_SESSION['roles'];
         $this->page['role'] = $roleStr;
 
-        
+
         $path = \Config::get("app.url");
         $this->page['path'] = $path;
+
+        $menu = $config->menu;
+        $this->page['menu'] = $menu;
     }
 
     public function onRun()

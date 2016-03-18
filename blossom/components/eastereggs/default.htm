@@ -14,10 +14,15 @@
 
     var path = '{{path}}';
     console.log('Path: ', path);
+
+    var menu = {{menu}};
+    console.log('Menu: ',menu);
     
 </script>
-{% if ('Learner' in role) %}
-{% partial 'eastereggs::studentView' %}
-{% elseif ('Instructor' in role or 'TeachingAssistant' in role) %}
-{% partial 'eastereggs::instructorView' %}
-{% endif %}
+{% if (menu == 1) %}
+    {% if ('Learner' in role) %}
+        {% partial 'eastereggs::studentView' %}
+    {% elseif ('Instructor' in role or 'TeachingAssistant' in role) %}
+        {% partial 'eastereggs::instructorView' %}
+    {% endif %}
+{% endif %}    
