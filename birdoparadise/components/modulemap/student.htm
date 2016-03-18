@@ -1,0 +1,51 @@
+<!-- Student View -->
+<div class="page">
+	<div id="tabs">
+		<ul id="tablist" role="tablist" class="nav nav-tabs">
+			<!-- Insert new tabs -->
+		</ul>
+		<div class="scrollnav"><!-- scroll arrows -->
+			<span class="arol"></span>
+			<span class="aror"></span>
+		</div>
+		<div id="tabdy" class="tab-content">
+			<!-- Insert tab body content -->
+		</div>
+	</div>
+</div>
+
+<!-- Modal: when module is clicked show items in module -->
+<div class="control-popup modal fade" id="itemdetails" tabindex="-1" role="dialog">
+    <div class="modal-dialog" style="width:700px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 id="detailed-title" class="modal-title">Item Details</h4>
+            </div>
+            <div id="detailed-body" class="modal-body">
+                <p>This displays details of module</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    
+    /*
+        Bird of Paradise: student view will display progress
+    */
+
+	//global var in default.htm is available to .js file
+	assignments={{assignments|raw}};
+    //console.log('assignments:',assignments);
+    var submissions = {{submissions|raw}};// Only available if a student
+	//console.log('submissions:',submissions); 
+	subms = $.grep(submissions, function(elem,index){
+        return elem.score > 0;
+    });
+    //console.log('subms:',subms);
+	sumbissions=null;// no longer needed
+    
+})();
+</script>

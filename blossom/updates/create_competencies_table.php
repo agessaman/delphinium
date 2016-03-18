@@ -18,8 +18,8 @@ class CreateCompetenciesTable extends Migration
 				$table->string('Color');//hex #FF00FF
                 $table->boolean('Animate');//tinyInt switch 0~1 true false
                 $table->string('Size');//Small,Medium,Large radio btns
-				$table->integer('course_id')->nullable();
-                $table->integer('copy_id')->nullable();
+				$table->integer('course_id');
+                $table->string('copy_id');
                 $table->timestamps();
             });
         }

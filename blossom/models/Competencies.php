@@ -22,6 +22,6 @@ class Competencies extends Model
     ];//copy_id & 'course_id' => 'required' created dynamically
     
     protected $guarded = ['*'];
-    protected $fillable = ['Name','Color','Animate','Size','course_id','copy_id'];
+    protected $fillable = ['Name','Color','Animate','Size'];
     
 }

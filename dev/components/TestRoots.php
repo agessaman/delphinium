@@ -35,6 +35,7 @@ class TestRoots extends ComponentBase
     public $roots;
     public $canvasHelper;
     public $dbHelper;
+
     public function componentDetails()
     {
         return [
@@ -50,7 +51,9 @@ class TestRoots extends ComponentBase
         $this->dbHelper = new DbHelper();
 //        $this->refreshCache();
 //        $this->test();
-//        $this->testBasicModulesRequest();
+        $this->testBasicModulesRequest();
+//        $this->testGettingModuleStates();
+//        $this->testBuildTree();
 //        $this->testDeleteTag();
 //        $this->testAddingUpdatingTags();
 //        $this->testUpdatingModuleItem();
@@ -77,7 +80,7 @@ class TestRoots extends ComponentBase
 //        $this->testGettingSubmissions();
 //        $this->testFileUpload();
 //        $this->testAddingAssignment();
-        $this->testStudentAnalyticsAssignmentData();
+//        $this->testStudentAnalyticsAssignmentData();
 //        $this->testGetCourse();
 //        $this->testGetAccount();
 //        $this->testGetEnrollments();
@@ -105,10 +108,30 @@ class TestRoots extends ComponentBase
             $includeContentDetails, $module, $moduleItem , $freshData) ;
 
         $res = $this->roots->modules($req);
+//        echo json_encode($res);
+    }
+
+    private function testGettingModuleStates()
+    {
+        $moduleId = 380213;//null;//380200;
+        $moduleItemId = null;//2368085;
+        $includeContentDetails = true;
+        $includeContentItems = true;
+        $module = null;
+        $moduleItem = null;
+        $freshData = true;
+
+        $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems,
+            $includeContentDetails, $module, $moduleItem , $freshData);
+        $res = $this->roots->getModuleStates($req);
         echo json_encode($res);
     }
 
-
+    private function testBuildTree()
+    {
+        $res = $this->roots->getModuleTree(false);
+        echo json_encode($res);
+    }
     private function testUpdatingModule()
     {
         //380212
@@ -281,6 +304,7 @@ class TestRoots extends ComponentBase
         $freshData = false;
         $includeTags = true;
         $req = new AssignmentsRequest(ActionType::GET, $assignment_id, $freshData, null, $includeTags);
+
         $res = $this->roots->assignments($req);
         echo json_encode($res);
     }
@@ -304,7 +328,6 @@ class TestRoots extends ComponentBase
         $res = $this->roots->assignmentGroups($req);
         echo json_encode($res);
     }
-
 
     private function testGettingSingleSubmissionSingleUserSingleAssignment()
     {
@@ -562,6 +585,7 @@ class TestRoots extends ComponentBase
     }
     public function testGetQuiz()
     {
+
         $req = new QuizRequest(ActionType::GET, 623912, $fresh_data = true, true);
         $result = $this->roots->quizzes($req);
         echo json_encode($result);

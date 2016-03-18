@@ -1,0 +1,6 @@
+plugin:
+    name: 'delphinium.vanilla::lang.plugin.name'
+    description: 'delphinium.vanilla::lang.plugin.description'
+    author: Delphinium
+    icon: oc-icon-adjust
+    homepage: ''

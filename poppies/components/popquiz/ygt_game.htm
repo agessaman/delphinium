@@ -1,0 +1,209 @@
+<!-- You Got This Game partial -->
+
+<div class="bkground"></div>
+    <div class="page">
+        <div class="title">
+            <div id="you"></div>
+            <div id="this"></div>
+            <div id="got"></div>
+            <div id="yep"></div>
+            <div id="gobtn">Play Now</div>
+        </div>
+        
+        <div class="gameplay">
+            <div class="headbox">
+                <div class="score">Score:</div>
+                <div class="missd">Missed:</div>
+                <div class="timr">Timer:</div>
+            </div>
+
+            <div class="questbox">Question:</div>
+			<div class="valid"></div>
+            <div class="answerbox">
+                <div id="a0" class="makeDraggable answer">Answer 0</div>
+                <div id="a1" class="makeDraggable answer">Answer 1</div>
+                <div id="a2" class="makeDraggable answer">Answer 2</div>
+                <div id="a3" class="makeDraggable answer">Answer 3</div>
+                <div id="nextaro"></div>
+            </div>
+            <div id="star"></div>
+            <div id="wrong"></div>
+        </div>
+    </div>
+</div>
+<!--script type="text/javascript" src="plugins/delphinium/poppies/assets/javascript/jquery.spritely.js"></script-->
+<script>
+/* To Do:
+assets/javascript/ygt_game.js
+	get game questions from db?
+	
+	updateScore & missed
+	timer
+	gameOver();
+*/
+var scoreis=0, misses=0;
+var current=0;// questnum
+var gameQuest=[];
+
+function showIntro()
+{
+	// reset intro elements
+	$('#you').css({'left':11,'opacity':0});
+	$('#got').css({'top':1,'opacity':0});
+	$('#this').css({'left':555,'opacity':0});
+	$('#yep').css({'top':555,'opacity':0});
+	current=scoreis=misses=0;
+	$('#nextaro').hide();
+	$('gameplay').hide();
+	$('title').show();
+	
+	console.log('show intro');
+	/*
+		animated title as js file ???
+		click Play Now #gobtn
+		todo: center animated title
+	*/
+	$('#you')
+	   .animate({
+		  left: 335, opacity: 1
+		}, 300);
+
+	$('#got')
+		.delay(500)
+		.animate({
+			top:228, opacity: 1
+		}, 500);
+
+	$('#this')
+		.delay(800)
+		.animate({
+			left:392, opacity: 1
+		}, 300);	
+
+	$('#yep')
+		.delay(1000)
+		.animate({
+			top: 392, opacity: 1
+		}, 300);
+
+	$('#gobtn')
+		.delay(1600)
+		.animate({opacity: 1}, 400);
+}
+
+// begin
+showIntro();
+/*
+    click Play Now animates title off
+    play area onto screen
+*/
+$('#gobtn').on('click', function(){
+    $('.title').animate({left: -1000, opacity: 0}, 500, function(){ $('.title').hide(); });
+    $('.bkground').animate({opacity:0.2},800);
+    $('.gameplay').show();
+    showQuestion(current);
+    //conclusion gameOver and play again?
+});
+
+/* http://spritely.net/ sprites */
+$('#star').sprite({fps:6, no_of_frames:6}).active();
+$('#star').hide();
+function showStar() {
+    $('#star').show();
+    $('#star').css({'left':350,'top':120, opacity:1})
+        .animate({ left: 200, top: 20, opacity: 0 }, 1000, function(){ //$('#star').destroy(); 
+	});
+}
+
+$('#wrong').sprite({fps: 6, no_of_frames: 6}).active();
+$('#wrong').hide();
+function shoWrong() {
+    $('#wrong').show();
+    $('#wrong').css({'left':450,'top':150, opacity:1})
+        .animate({ top: 20, opacity: 0 }, 1000, function(){ //$('#wrong').spStop(true); 
+	});
+}
+
+$('#nextaro').sprite({fps: 6, no_of_frames: 4}).active();
+$('#nextaro').hide();
+function showNextaro() {
+    $('#nextaro').show();
+    
+}
+$('#nextaro').on('click', function(){
+    $('#nextaro').hide();
+	current++;
+	if(current==gameitems.length){ 
+		current=0;
+		//gameOver
+	}
+    showQuestion(current);//show next question
+	//$('.makeDraggable').show();// all answers
+});
+
+//animate onto screen from top?
+function showQuestion(index) {
+	$('.valid').empty();
+	$('.makeDraggable').hide();// all answers
+	// animate question onto screen or fade in
+	$('.questbox').attr('data-points', gameQuest[index][0].points_possible)
+		.html(gameQuest[index][0].text);
+	var answers= $.parseJSON(gameQuest[index][0].answers);
+	//console.log(answers);
+	// animate answers onto screen from bottom?
+	for(var i=0; i<answers.length; i++){
+		$('#a'+i).html(answers[i].text)
+			.attr('weight', answers[i].weight)
+			.addClass('shado')
+			.show();// only answers with content
+	}
+}
+// ToDo: score, missed, timer, gameOver
+function updateScore() {
+	scoreis += parseInt($('.questbox').attr('data-points'));
+	$('.score').html('Score: '+scoreis);
+}
+function updateMissed() {
+	misses ++;
+	$('.missd').html('oops: '+misses);
+}
+/*
+    http://www.elated.com/articles/drag-and-drop-with-jquery-your-essential-guide/
+    http://api.jqueryui.com/draggable/
+	http://getbootstrap.com/css/
+*/
+$('.makeDraggable').draggable({
+    containment: '.page',
+    snap: '.page',
+    zIndex: 500,
+    iframeFix: true,
+    distance: 10,
+	revert: true,
+	start: function(){ $(this).removeClass('shado'); }
+});
+
+$('.questbox').droppable({
+    drop: handleDropEvent
+});
+function handleDropEvent( event, ui ) {
+        
+    var id = ui.draggable.attr('weight');
+    //console.log( 'dropped ID "' + id + '" was dropped onto me!' );
+	//multiple answers points/weight = score: totalWeight=100 = done
+	// if id>0 valid append ui.draggable.hide if wcnt == 100
+    if(id == '100') {
+        showStar();//play correct sprite
+        updateScore();//console.log("correct");
+        $('.makeDraggable').hide();// all answers
+        $('.valid').append($(ui.draggable).html());// show answer
+		$('.valid').show();
+		
+        showNextaro();
+    } else {
+       updateMissed(); 
+       shoWrong();//play wrong
+    }
+}
+
+
+</script>
