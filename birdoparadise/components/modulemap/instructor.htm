@@ -1,7 +1,12 @@
 <!-- Instructor View with Settings cog -->
 <div class="page">
-	<div id="cog" data-toggle="modal" href="#content-configuration" style="position:absolute; top:10px; right:50px; z-index:950;">
-		<a data-toggle="tooltip" title="Settings" data-placement="bottom"><i class="icon-cog"></i></a>
+	<div style="position:relative; z-index:950;">
+		<a id="popinfo" title="Info" tabindex="0" role="button" data-trigger="focus" data-container="body" data-toggle="popover" data-placement="left" data-content="And here's some amazing content. It's very engaging. Right?" style="position:absolute; top:0; right:0px;">
+			<i class="icon-question"></i>
+		</a>
+		<div id="cog" data-toggle="modal" href="#content-configuration" style="position:absolute; top:0; right:10px;">
+			<a data-toggle="tooltip" title="Settings" data-placement="bottom"><i class="icon-cog"></i></a>
+		</div>
 	</div>
 
 	<div id="tabs">
@@ -29,11 +34,16 @@
             <div class="modal-body">
                 <!-- Instructions -->
               <div id="instruct" class="tab-pane fade in active" style="padding: 0px 20px;">
-                <p>This component is an alternative view of modules.</p>
-                <p>Use Stem to structure the modules of your course into groups.<br />
-                    Groups will display as tabs, modules in each group will display as clickable boxes.<br/>
-                    Students will see their progress as filled stars.<br/>
+                <p>This component is an alternative way to view of modules.</p>
+                <p>Create an empty module in your course for each tab.<br/>
+				   Use Stem to group the modules of your course into each tab.<br/>
+                   Modules in each group will display as clickable boxes that display assignments.<br/>
+                   Students will see their progress as filled stars.<br/>
                 </p>
+				<p>You can set the width of this component in the markup by wrapping it in a div.<br/>
+				   div style="width: 790px; padding:5px;" component 'modulemap' /div<br/>
+				   Scroll arrows are turned on if either the window or the parent of the component are smaller than the tab content.<br/>
+				</p>
               </div>
             </div>
         </div>

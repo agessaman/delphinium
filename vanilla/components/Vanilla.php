@@ -5,7 +5,6 @@ use Delphinium\Vanilla\Models\Vanilla as VanillaModel;
 
 class Vanilla extends ComponentBase
 {
-
     public function componentDetails()
     {
         return [
@@ -14,6 +13,9 @@ class Vanilla extends ComponentBase
         ];
     }
 
+	/** Added for copy_id
+	 *  & instance dropdown in CMS
+	 */
     public function defineProperties()
     {
         return [
@@ -35,11 +37,14 @@ class Vanilla extends ComponentBase
         ];
     }
     
+	/** Added
+	 *  Requires the Dev component in CMS page
+	 */
     public function onRun()
     {
         try
         {
-            /*
+            /*Notes:
             is an instance set? yes show it
 
             else get all instances
@@ -49,7 +54,7 @@ class Vanilla extends ComponentBase
                 is there an instance with this course? yes use it
             else create dynamicInstance, save new instance, show it
             
-            Dont forget have the component set up from Here:
+            Requires the Dev component set up from Here:
             https://github.com/ProjectDelphinium/delphinium/wiki/3.-Setting-up-a-Project-Delphinium-Dev-environment-on-localhost
             */
             if (!isset($_SESSION)) { session_start(); }
@@ -58,13 +63,14 @@ class Vanilla extends ComponentBase
             // if instance has been set
             if( $this->property('instance') )
             {
-                //instance set in CMS getInstanceOptions()
+                //use the instance set in CMS dropdown
                 $config = VanillaModel::find($this->property('instance'));
                 $config->course_id = $_SESSION['courseID'];//$course->id;
                 $config->save();//update original record now in case it did not have course
 
             } else {
-                // if copy has a name 
+                // if copy has a name.
+				// note: it will after the first dynamic is created
                 $copyLength = strlen($this->property('copy_id'));
                 if($copyLength > 0 )
                 {
@@ -72,7 +78,8 @@ class Vanilla extends ComponentBase
                     $instances = VanillaModel::where('course_id','=', $courseID)->get();
                     $instCount = count($instances);
                     if($instCount == 0) { 
-                        $copyLength = 0;// none found
+						// none found so set to catch condition for dynamic
+                        $copyLength = 0;
                     } else {
                         // find instance with copy
                         $flag=false;
@@ -89,23 +96,29 @@ class Vanilla extends ComponentBase
                         if( !$flag ) { $config = $instances[0]; }
                     }
                 }
-                // no match found so create new one
+                // no match found so create new dynamic instance
                 if($copyLength == 0 )
                 {
                     $config = new VanillaModel;// db record
                     $config->name = 'dynamic_';//+ total records count?
                     // add your fields
                     //$config->size = 'Medium';
-                    $config->course_id = $_SESSION['courseID'];// or null
+                    $config->course_id = $_SESSION['courseID'];
                     $config->copy_id = $this->property('copy_id');
-                    $config->save();// create a new record
+                    $config->save();// save the new record
                 }
             }
-
+			// use the record in the component and frontend form 
             $this->page['config'] = json_encode($config);
-            // comma delimited string
+            
+			/** get roles, a comma delimited string
+			 * check if Student
+			 * if not the set to Instructor
+			 * disregard any other roles?
+			 * role is used to determine functions and display options
+			 */
             $roleStr = $_SESSION['roles'];
-
+			
             if(stristr($roleStr, 'Learner')) {
                 $roleStr = 'Learner';
             } else { 
@@ -113,12 +126,12 @@ class Vanilla extends ComponentBase
             }
             $this->page['role'] = $roleStr;// only one or the other
             
-            // include any css or javascript here
-            $this->addCss("/plugins/delphinium/vanilla/assets/css/bootstrap.min.css");
-            $this->addJs("/plugins/delphinium/vanilla/assets/javascript/jquery.min.js");
-            $this->addJs("/plugins/delphinium/vanilla/assets/javascript/bootstrap.min.js");
+            // include your css note: bootstrap.min.css is part of minimal layout
+            //$this->addCss("/plugins/delphinium/vanilla/assets/css/bootstrap.min.css");
+			// javascript had to be added to default.htm to work
+            //$this->addJs("/plugins/delphinium/vanilla/assets/javascript/jquery.min.js");
             
-            // include the backend form with instructions here
+            // include the backend form with instructions for instructor.htm
             if(stristr($roleStr, 'Instructor'))
 			{
 				//https://medium.com/@matissjanis/octobercms-using-backend-forms-in-frontend-component-fe6c86f9296b#.ge50nlmtc
@@ -131,19 +144,19 @@ class Vanilla extends ComponentBase
 				// Append the formController to the page
 				$this->page['form'] = $formController;
                 
-                
-                // Instructions page
+                // Append Instructions page
                 $instructions = $formController->makePartial('instructions');
                 $this->page['instructions'] = $instructions;
                 
-                //other code specific to instructor view goes here
+                //code specific to instructor.htm goes here
             }
             
             if(stristr($roleStr, 'Learner'))
 			{
-            //code specific to the student view goes here
+				//code specific to the student.htm goes here
             }
-            
+			
+        // Error handling
         }
         catch (\GuzzleHttp\Exception\ClientException $e) {
             return;
@@ -165,16 +178,17 @@ class Vanilla extends ComponentBase
         }
     }
     
+	/**Added
+	*  https://octobercms.com/docs/plugin/components#dropdown-properties
+	*  The method should have a name in the following format: get*Property*Options()
+	*  where Property is the property name
+	*  Fills the Configuration [dropdown] in CMS
+	*/
     public function getInstanceOptions()
     {
-        /*https://octobercms.com/docs/plugin/components#dropdown-properties
-		*  The method should have a name in the following format: get*Property*Options()
-		*  where Property is the property name
-        * Fills the Configuration [dropdown] in CMS 
-		*/
-		$instances = VanillaModel::all();
+		$instances = VanillaModel::all();// records
         $array_dropdown = ['0'=>'- select Instance - '];//id, text in dropdown
-
+		// populate CMS dropdown
         foreach ($instances as $instance)
         {
             $array_dropdown[$instance->id] = $instance->Name;
@@ -182,31 +196,30 @@ class Vanilla extends ComponentBase
         return $array_dropdown;
     }
     
-    /**
-	* update, add course_id & copy_id
-	* save to database and return updated
-    
-    * id can be disabled in fields.yaml
-    * id, course & copy can also be hidden
-    * $data gets .id from config setting field
-    * called from instructor view configure settings
+    /**Added
+	*  frontend update component submit button
+	*  save to database and return updated record
+    *
+    *  id can be disabled in fields.yaml
+    *  id, course & copy can also be hidden
+    *  $data gets .id from config.id instructor.htm
+    *  called from instructor.htm configure settings modal
 	*/
 	public function onUpdate()
     {
-        $data = post('Vanilla');//('Competencies');
-        $did = intval($data['id']);
-        $config = VanillaModel::find($did);
-        $config->name = $data['name'];
-        //echo json_encode($config);//($data);//
+        $data = post('Vanilla');//component name
+        $did = intval($data['id']);// convert string to integer
+        $config = VanillaModel::find($did);// retrieve existing record
+        $config->name = $data['name'];// change to new data
+        //echo json_encode($config);//($data);// testing
         
 		// add your fields to update
-        //$config->Size = $data['Size'];
+        $config->custom = $data['custom'];
 
-		$config->course_id = $data['course_id'];//hidden
+		$config->course_id = $data['course_id'];//hidden in frontend
         $config->copy_id = $data['copy_id'];//hidden
 		$config->save();// update original record 
-		return json_encode($config);// back to instructor
-        
+		return json_encode($config);// back to instructor view
     }
     /* End of class */
 }

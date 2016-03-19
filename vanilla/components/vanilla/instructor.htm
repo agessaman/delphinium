@@ -1,7 +1,10 @@
 <!-- Instructor View with Settings cog -->
-<div style="position:relative;">
-    <div id="cog" data-toggle="modal" href="#content-configuration" style="position:absolute; top:0; z-index:950; padding-left:220px;">
-        <a data-toggle="tooltip" title="Settings" data-placement="bottom"><i class="icon-cog"></i></a>
+<div style="position:relative; z-index:950;">
+    <a id="popinfo" title="Info" tabindex="0" role="button" data-trigger="focus" data-container="body" data-toggle="popover" data-placement="left" data-content="And here's some amazing content. It's very engaging. Right?" style="position:absolute; top:0; right:0px;">
+        <i class="icon-question"></i>
+    </a>
+	<div id="cog" data-toggle="modal" href="#content-configuration" style="position:absolute; top:0; right:10px;">
+		<a data-toggle="tooltip" title="Settings" data-placement="bottom"><i class="icon-cog"></i></a>
     </div>
 </div>
 <div style="z-index:10;">
@@ -11,8 +14,8 @@
 
 <!-- Configuration modal with Front End Form and Instructions in tabs -->
 <div class="control-popup modal fade" id="content-configuration" tabindex="-1" role="dialog">
-    <div class="modal-dialog" style="width:800px; overflow-y: auto;">
-        <div class="modal-content">
+    <div class="modal-dialog">
+        <div class="modal-content" style="width:800px; overflow-y: auto;">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title">Component Settings</h4>
@@ -47,7 +50,7 @@
 </div>
 
 <script>
-    
+    $('#popinfo').popover();// activate info
     /* set id,course,copy in the POST if they are hidden in fields.yaml
         Add hidden input fields so they will transfer to onUpdate
         fields.yaml is set to hidden: true do not appear in the form at all

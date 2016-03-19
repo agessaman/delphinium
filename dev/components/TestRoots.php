@@ -78,14 +78,15 @@ class TestRoots extends ComponentBase
 //        $this->testGettingSubmissions();
 //        $this->testFileUpload();
 //        $this->testAddingAssignment();
-        $this->testStudentAnalyticsAssignmentData();
+
+//        $this->testStudentAnalyticsAssignmentData();
 //        $this->testGetCourse();
 //        $this->testGetAccount();
 //        $this->testGetEnrollments();
 //        $this->testGetQuiz();
 //        $this->testGetQuizQuestions();
 //        $this->testGetAllQuizzes();
-//        $this->testGetPages();
+        $this->testGetPages();
 //        $this->testQuizTakingWorkflow();
 //        $this->testIsQuestionAnswered();
 //        $this->testSubmitQuiz();

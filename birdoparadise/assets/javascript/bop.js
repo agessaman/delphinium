@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    
+    $('#popinfo').popover();// activate info
     /*
         Bird of Paradise displays modules in tabbed sections 
         configure the Tab/modules structure with Stem
@@ -88,9 +88,12 @@ $(document).ready(function() {
     arrowsNeeded();
     function arrowsNeeded() {
         var docWidth = $( document ).width();
+		var parentWidth = $('.page').parent().width();
         var needArrows=false;
         for(var i=0; i<tabCounter; i++) {
-            if($('#tab_'+i+'body').width() > docWidth) { needArrows=true; }
+			var tabWidth = $('#tab_'+i+'body').width();
+            if(tabWidth > docWidth) { needArrows=true; }
+			if(tabWidth > parentWidth) { needArrows=true; }
         }
         if(needArrows) {
             $('.arol, .aror').show();
@@ -164,7 +167,8 @@ $(document).ready(function() {
             if(hasContent && moditems[i].content[0].lock_explanation.length >0) {
                 console.log('lock_ex len:',moditems[i].content[0].lock_explanation.length);
                item +='<div class="prereqnote">'+moditems[i].content[0].lock_explanation+'</div>';
-            /* WEIRD CONTENT BROKE THIS !!!
+            /* WEIRD CONTENT BROKE THIS !!! gets truncated in db !
+			length=255 actualCONTENT.length = 366
             lock_explanation:
             "This quiz is part of the module <b>Organizational Controls</b> and hasn&#39;t been unlocked yet.
             <br/>

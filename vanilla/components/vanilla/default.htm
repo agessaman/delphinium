@@ -1,25 +1,35 @@
 <p>This is the default markup for component vanilla</p>
 <small>You can delete this file if you want</small>
 
+<!-- Added everything below -->
 <div id="content"></div>
 
 <script type="text/javascript" src="plugins/delphinium/vanilla/assets/javascript/jquery.min.js"></script>
 <script type="text/javascript" src="plugins/delphinium/vanilla/assets/javascript/bootstrap.min.js"></script>
 <script>
-    // include css or javascript libraries
-    //component configuration [id,name, <Your Fields>, course_id,copy_id]
+	/* jquery and boostrap.js must be added here
+	   include additional css or javascript libraries
+		
+		component instance record
+		[id,name, <Your Fields>, course_id,copy_id]
+	*/
     var config = {{config|raw}};//object
     console.log('config',config);
     
     var role = '{{role}}';//string
     console.log('Role: ',role);
     
+	/* Usage Example
+	   write custom field to div content
+	   custom field can be edited
+	   in Backend or Frontend
+	*/
     $('#content').html(config.custom);
     /*
         initialize main variables
         get variables from the php with twig
         use twig to determine if the component is seen 
-        by an instructor or a student
+        by an instructor or a student and load partial
     */
 </script>
 {% if ('Learner' in role) %}

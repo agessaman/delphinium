@@ -25,5 +25,7 @@ class Vanilla extends Model
      * @var string The database table used by the model.
      */
     public $table = 'delphinium_vanilla_vanilla';
+	
+	/* Added for Frontend */
     protected $fillable = ['name','custom'];
 }
