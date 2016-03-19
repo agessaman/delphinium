@@ -47,6 +47,7 @@ function showQuizzes()
 	var row=0;
 	for(var i=0; i<quizList.length; i++)
 	{
+		if(quizList[i].questions.length == 0) { continue; }
 		content = '<div id='+quizList[i].quiz_id+' class="alert alert-info">';// blue
 		content += quizList[i].title;
 		content += ': total questions: '+quizList[i].question_count;
@@ -57,30 +58,20 @@ function showQuizzes()
 		if(row==count){ row=0; col++; }
 	}
 	/*
-	for(var i=0; i<count; i++) {
-		for(var c=0; c<3; c++) {
-			content = '<div id='+quizList[(i*(c+1))].quiz_id+' class="alert alert-info">';// blue
-			//content += '<a target="_blank" href="'+quizList[i].html_url+'">'+quizList[i].title+'</a>';
-			content += quizList[(i*(c+1))].title;
-			content += ': total questions: '+quizList[(i*(c+1))].question_count;
-			//content += ' worth: '+quizList[(i*(c+1))].points_possible;
-			content += '</div>';
-			$('#col_'+c).append(content);
-		}
-	}
+		store which quiz the questions came from?
 	*/
 	//click quiz to view questions
 	$('.alert').on('click', function(e){
-		showQuiz(e.target.id);
+		showQuizQuestions(e.target.id);
 	});
 	// open All Quizzes
 	$('#accordion-1').addClass('active');
-	// Open up the hidden content panel
+	// Open content panel
 	$('.accordion #accordion-1').slideDown(300).addClass('open');
 }
 
 /* show all questions in selected quiz */
-function showQuiz(id)
+function showQuizQuestions(id)
 {
 	// fill id=quizdata with selected quiz and show it
 	// qtitle quiz_details, quizdata
@@ -103,7 +94,11 @@ function showQuiz(id)
 	var i=0;
 	for(var obj in quests)
 	{
-		var txt = quests[i].text;//$.parseHTML(quests[i].text);//[object Text]
+		var txt = quests[i].text;
+		//console.log(txt);// &lt;strong&gt; ...
+		txt = $.parseHTML(txt);
+		txt = txt[0].textContent;
+		//console.log(txt);//<strong>
 		$('#quizselectable').append('<li class="ui-widget-content" data-id="'+quests[i]["question_id"]+'">'+txt+'</li>');
 		i+=1;// select by question_id
 	}
@@ -120,18 +115,21 @@ function showQuiz(id)
 function showSelected()
 {
     //gameitems [question, ]
-    //$('#gameselectable').empty();
+    $('#gameselectable').empty();
+	$('#questcount').html(gameitems.length+' Questions');
     for(var i=0; i<gameitems.length; i++)
 	{
-		var txt = gameitems[i][0].text;//$.parseHTML(quests[i].text);//[object Text]
-        //var lnk = '<a href="'+gameitems[i][0].question_id+'">[ <i class="icon-eye">SEE</i> ]</a> ';//view link
-        //cant add link to selectable <li>
+		var txt = gameitems[i][0].text;//.toString();
+		//console.log(txt);// &lt;strong&gt; ...
+		txt = $.parseHTML(txt);
+		txt = txt[0].textContent;
+		//console.log(txt);//<strong>
 		$('#gameselectable').append('<li class="ui-widget-content" data-id="'+gameitems[i][0].question_id+'">'+txt+'</li>');
 	}
 	
 	close_accordion_section();
 	$('#accordion-4').addClass('active');
-	// Open up the hidden content panel
+	// Open content panel
 	$('.accordion #accordion-4').slideDown(300).addClass('open');
 }
 

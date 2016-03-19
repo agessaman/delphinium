@@ -3,20 +3,23 @@
 <script type="text/javascript" src="plugins/delphinium/poppies/assets/javascript/jquery-ui.min.js"></script>
 <script type="text/javascript" src="plugins/delphinium/poppies/assets/javascript/jquery.spritely.js"></script>
 <script type="text/javascript" src="plugins/delphinium/poppies/assets/javascript/bootstrap.min.js"></script>
+<script type="text/javascript" src="plugins/delphinium/poppies/assets/javascript/popquiz.js"></script>
 <script>
 		
 	var role = '{{role}}';
     console.log('Role: ',role);//string
 	
-$(document).ready(function() {
+	//var config
+	
+	// instructor vars
+	var quizList = [];// all quizzes
+	var nextcount=0;// question details
+	
+	// game vars
+	var scoreis=0, misses=0;
+	var current=0;// questnum
+	var gameQuest=[];// questions
 
-	if(role == 'Learner') {
-        // play game:
-    } else { 
-        //split up list
-		showQuizzes();
-    }
-});
 </script>
 {% if ('Learner' in role) %}
 {% partial 'popquiz::learner' %}

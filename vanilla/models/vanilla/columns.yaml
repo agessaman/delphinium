@@ -1,7 +1,0 @@
-columns:
-    name:
-        label: Name
-        type: text
-    custom:
-        label: Custom
-        type: text

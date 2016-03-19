@@ -3,6 +3,7 @@
 <div class="bkground"></div>
     <div class="page">
         <div class="title">
+			<div id="introMessage"></div>
             <div id="you"></div>
             <div id="this"></div>
             <div id="got"></div>
@@ -26,6 +27,7 @@
                 <div id="a3" class="makeDraggable answer">Answer 3</div>
                 <div id="nextaro"></div>
             </div>
+			<div id="comment"></div>
             <div id="star"></div>
             <div id="wrong"></div>
         </div>
@@ -40,11 +42,12 @@ assets/javascript/ygt_game.js
 	updateScore & missed
 	timer
 	gameOver();
-*/
+
+// init in default.htm
 var scoreis=0, misses=0;
 var current=0;// questnum
 var gameQuest=[];
-
+*/
 function showIntro()
 {
 	// reset intro elements
@@ -58,6 +61,12 @@ function showIntro()
 	$('title').show();
 	
 	console.log('show intro');
+	if(gameQuest.length==0) {
+		$('#introMessage').html('Sorry, No Questions to play with');
+		$('#gobtn').hide();
+	} else {
+		$('#introMessage').hide();
+		$('#gobtn').show(); }
 	/*
 		animated title as js file ???
 		click Play Now #gobtn
@@ -101,7 +110,9 @@ $('#gobtn').on('click', function(){
     $('.title').animate({left: -1000, opacity: 0}, 500, function(){ $('.title').hide(); });
     $('.bkground').animate({opacity:0.2},800);
     $('.gameplay').show();
-    showQuestion(current);
+	if(gameQuest.length>0) {
+		showQuestion(current);
+	} else { $('#introMessage').html('Sorry, No Questions to play with'); }
     //conclusion gameOver and play again?
 });
 
@@ -132,6 +143,7 @@ function showNextaro() {
 }
 $('#nextaro').on('click', function(){
     $('#nextaro').hide();
+	$('#comment').html('').hide();
 	current++;
 	if(current==gameitems.length){ 
 		current=0;
@@ -146,8 +158,12 @@ function showQuestion(index) {
 	$('.valid').empty();
 	$('.makeDraggable').hide();// all answers
 	// animate question onto screen or fade in
-	$('.questbox').attr('data-points', gameQuest[index][0].points_possible)
-		.html(gameQuest[index][0].text);
+	//console.log('showQuestion');
+	var txt = gameQuest[index][0].text;//.toString();
+		txt = $.parseHTML(txt);
+		txt = txt[0].textContent;
+	$('.questbox').attr('data-points', gameQuest[index][0].points_possible);
+	$('.questbox').html(txt);
 	var answers= $.parseJSON(gameQuest[index][0].answers);
 	//console.log(answers);
 	// animate answers onto screen from bottom?
@@ -179,14 +195,18 @@ $('.makeDraggable').draggable({
     iframeFix: true,
     distance: 10,
 	revert: true,
-	start: function(){ $(this).removeClass('shado'); }
+	start: function(){
+		$(this).removeClass('shado');
+		$('#comment').html('').hide();
+	}
 });
 
 $('.questbox').droppable({
     drop: handleDropEvent
 });
 function handleDropEvent( event, ui ) {
-        
+    
+	var comdiv='';
     var id = ui.draggable.attr('weight');
     //console.log( 'dropped ID "' + id + '" was dropped onto me!' );
 	//multiple answers points/weight = score: totalWeight=100 = done
@@ -197,13 +217,21 @@ function handleDropEvent( event, ui ) {
         $('.makeDraggable').hide();// all answers
         $('.valid').append($(ui.draggable).html());// show answer
 		$('.valid').show();
-		
         showNextaro();
+		if(gameQuest[current][0].correct_comments!= "") {
+			comdiv+=gameQuest[current][0].correct_comments;
+		}
     } else {
-       updateMissed(); 
-       shoWrong();//play wrong
+		updateMissed(); 
+		shoWrong();//play wrong
+		if(gameQuest[current][0].incorrect_comments != "") {
+			comdiv+=gameQuest[current][0].incorrect_comments;
+		}
     }
+	if(gameQuest[current][0].neutral_comments != "") {
+		comdiv+=gameQuest[current][0].neutral_comments;
+	}
+	$('#comment').html(comdiv).show('slow');//slide in from upper left
 }
-
 
 </script>

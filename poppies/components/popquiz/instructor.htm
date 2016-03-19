@@ -12,7 +12,7 @@
 			
         </div><!--end .accordion-section-content-->
 		
-		<a class="accordion-section-title" href="#accordion-2">Selected Quiz</a>
+		<a class="accordion-section-title" href="#accordion-2">Selected Quiz Questions</a>
 		<div id="accordion-2" class="accordion-section-content">
             <h4 id="qtitle">The chosen quiz TITLE </h4>
             <button class="btn btn-success" type="submit" id="confirmit" name="confirmit">Add Selected Questions</button>
@@ -29,14 +29,15 @@
 		<div id="accordion-3" class="accordion-section-content">
             <h2>instructions</h2>
 			<div>
-			
+			To Do Still...
 			</div>
         </div><!--end .accordion-section-content-->
         
-		<a class="accordion-section-title" href="#accordion-4">Selected Questions for Game</a>
+		<a class="accordion-section-title" href="#accordion-4">Questions Selected for Game</a>
 		<div id="accordion-4" class="accordion-section-content">
-            <p>Select what you want to do with these Questions:</p>
+            <h4>Select what you want to do with these Questions:</h4>
 			<div>
+			<div id="questcount"></div>
             <button class="btn btn-default" type="submit" id="clearit" name="clearit">Remove All Questions</button>
 			<button class="btn btn-warning" type="submit" id="removeit" name="removeit">Remove Selected Questions</button>
 			<button class="btn btn-success" type="submit" id="useit" name="useit">Use Questions</button>
@@ -46,7 +47,7 @@
 			
 			<div id="game_data">
 				<ol id="gameselectable">
-				  <!-- game questions -->
+				  <!-- selectable game questions li ui-widget-content -->
 				</ol>
 			</div>
         </div><!--end .accordion-section-content-->
@@ -79,26 +80,26 @@
                 </div>
 				<div>
 					<div id="qanswers"></div>
-					
-					
 					<div id="qfeedback"></div>
                 </div>
             </div>
             <div class="modal-footer">
+				<!-- backbtn -->
                 <button id="nextbtn" type="button" class="btn btn-primary"> Next -> </button>
             </div>
         </div>
     </div>
 </div>
 
-<script type="text/javascript" src="plugins/delphinium/poppies/assets/javascript/popquiz.js"></script>
 <script>
-	// list of all quizzes : sortable?
-	var quizList = {{quizList|raw}};
+	// list of all quizzes for instructor
+	quizList = {{quizList|raw}};
 	console.log('quizList:', quizList.length, quizList);
 	
-	var nextcount=0;
+	nextcount=0;// question details
 	
+	showQuizzes();
+	// accordion and button functions
     $('.accordion-section-title').click(function(e) {
         e.preventDefault();
 		// Grab current anchor value
@@ -124,7 +125,7 @@
              var qid = $(this).attr('data-id');
             if(qid) { selecteditems.push(qid); }
             });// or just the one clicked
-            console.log('selected:',selecteditems);// array of object id
+            //console.log('selected:',selecteditems);// array of question ids
         }
     });
     // accordion-4 game questions
@@ -132,12 +133,16 @@
         // on mouse up
         selected: function() {
             chosenitems=[];// accumulated selections if mouse dragged
-            $( ".ui-selected", this ).each(function() {
+            var items=$( ".ui-selected", this ).each(function() {
              var index = $( "#gameselectable li" ).index( this );// list[index]
              var qid = $(this).attr('data-id');
              chosenitems.push(qid);// push id for each to an array
             });// or just the one clicked
-            console.log('chosen:',chosenitems);// array of object 
+			//adjust nextcount to first selected item for constructQuestion
+			nextcount = $( "#gameselectable li" ).index( items );
+			console.log('nextcount:',nextcount);
+            //console.log('chosen:',chosenitems);// array of question ids
+			
         }
     });
     
@@ -165,8 +170,11 @@
      // remove all gameitems 
     $('#clearit').click(function(e) {
         e.preventDefault();
+		current=0;// questnum
+		nextcount=0;// see question
         gameitems=[];
         chosenitems=[];
+		$('#questcount').html(gameitems.length+' Questions');
         $('#gameselectable').empty();
     });
     
@@ -183,6 +191,7 @@
             gameitems.splice(item,1);
             // remove <li>st node
             $('#gameselectable').find('[data-id='+chosenitems[i]+']').remove();
+			$('#questcount').html(gameitems.length+' Questions');
         }
         //console.log('chosenitems:',chosenitems);
         //console.log('gameitems:',gameitems);
@@ -195,6 +204,7 @@
 		console.log('gameitems:',gameitems.length, gameitems);
 		// check: if saved yet, if changed since save
 		gameQuest=gameitems;// gameQuest is var in game
+		current=0;// questnum
 		// or send to function in game?
 		close_accordion_section();
 		$('#accordion-5').addClass('active');
@@ -203,9 +213,11 @@
 		showIntro();// restart game
 	});
 
-    // need to be able to see question with answers
-    //see details of questions in modal next btn?
-    $('#seeit').click(function(e) {
+    /*see details of each question 
+	  with answers and comments in modal
+	  use next btn to view each
+    */
+	$('#seeit').click(function(e) {
         e.preventDefault();
         //detailed-body display question details with answers
 		constructQuestion(nextcount);
@@ -217,20 +229,26 @@
 		nextcount++;
 		if(nextcount==gameitems.length){ nextcount=0; }
 		constructQuestion(nextcount);
-    });
-	
-	function constructQuestion(index){
-		
+    });// backbtn ?
+	/* also see selected questions?
+	   or only game questions
+	   send index of first question to see in modal
+	*/
+	function constructQuestion(index)
+	{	
 		var quest = gameitems[index];
 		$('#detailed-title').html('Question '+(index+1));
 		$('#qtype').html('Type: '+gameitems[index][0].type);
 		$('#qpoints').html('Points: '+gameitems[index][0].points_possible);
-		$('#qtext').html(gameitems[index][0].text);
+		var txt = gameitems[index][0].text;//.toString();
+			txt = $.parseHTML(txt);
+			txt = txt[0].textContent;
+		$('#qtext').html(txt);
 		var answers= $.parseJSON(gameitems[index][0].answers);
 		var ansdiv='';
 		console.log(answers);//for each
-		for(var i=0; i<answers.length; i++){
-		//for(var answobj in answers) {
+		for(var i=0; i<answers.length; i++)
+		{
 			if(answers[i].weight==0){
 				ansdiv+='<div class="alert alert-danger">';
 			} else {
@@ -271,7 +289,7 @@ answers: "[
 correct_comments: ""
 created_at: "2016-03-04 20:12:19"
 incorrect_comments: ""
-name: "1.a Which of the followi 4"
+name: "1.a Which of the followi"
 neutral_comments: "Organizational change can take many forms."
 points_possible: 1
 position: 1

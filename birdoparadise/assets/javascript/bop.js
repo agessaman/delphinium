@@ -1,4 +1,6 @@
 $(document).ready(function() {
+	//possibly add the content message dynamically
+	$('#popinfo').attr('data-content','Click a module to see assignments');
     $('#popinfo').popover();// activate info
     /*
         Bird of Paradise displays modules in tabbed sections 
@@ -136,9 +138,9 @@ $(document).ready(function() {
             prereq +='</div>';// close prereq
 
             $('#detailed-body').append(prereq);
-            
-            
 		}
+		
+		//mod[0].state;//null,locked,unlocked,started,completed
         for(var i=0; i<moditems.length; i++) {
 			var hasContent=false;
             var item='<div class="assignment">';
@@ -158,8 +160,14 @@ $(document).ready(function() {
             item +='<div class="ico">'+ico+'</div>';//'<i class="icon-file-text"></i> ';
             //item +=' Type: '+moditems[i].type;// determine icon                    
             //item+='<a target="_blank" href="'+moditems[i].html_url+'" target="_blank"> '+moditems[i].title+'</a>';
-            item +='<div class="link"><a target="_blank" href="'+moditems[i].html_url+'?module_item_id='+moditems[i].module_item_id+'" target="_blank"> '+moditems[i].title+'</a></div>';
-            if(moditems[i].completion_requirement.length > 0) {
+            item +='<div class="link">';
+			if(mod[0].state == 'locked') {
+				item += ' '+moditems[i].title;// not a link if locked
+			} else {
+				item +='<a target="_blank" href="'+moditems[i].html_url+'?module_item_id='+moditems[i].module_item_id+'" target="_blank"> '+moditems[i].title+'</a>';
+            }
+			item +='</div>';
+			if(moditems[i].completion_requirement.length > 0) {
                 item += '<div class="required">'+moditems[i].completion_requirement+'</div>';
             }
             
