@@ -1,0 +1,10 @@
+<p>This is the default markup for component Vanilla</p>
+
+<small>You can delete this file if you want</small>
+<div id="content"></div>
+<script>
+	var config = {{config|raw}};
+	console.log('config',config);
+	
+	document.getElementById('content').innerHTML = config[0].custom;
+</script>
