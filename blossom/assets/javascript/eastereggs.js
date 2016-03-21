@@ -25,6 +25,7 @@ myLittlePony[keys.Y] = false;
 
 $(document).keydown(function(e) {
 	//Harlem Shake
+  //console.log(current_grade);
   if(current_grade >= config.harlem_shake){
     if (e.keyCode in harlemShake) {
       harlemShake[e.keyCode] = true;

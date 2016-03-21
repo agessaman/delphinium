@@ -22,62 +22,165 @@ class EasterEggs extends ComponentBase
                 'title'             => 'EasterEggs Configuration',
                 'description'       => 'Select an instance',
                 'type'              => 'dropdown',
+            ],
+            'copy_id' => [
+                'title'        => 'Copy Name:',
+                'type'         => 'string',
+                'default'      => 'copy-1',
+                'required'     => 'true',
+                'validationPattern' => '^(?!\s*$).+',
+                'validationMessage' => 'This field cannot be left blank.'
             ]
         ];
     }
 
-    public function onRender()
-    {
-        //$roots = new Roots();
-        //$course = $roots->getCourse();
-        //$this->page['course'] = json_encode($course);
-        //$course->id or $_SESSION['courseID']
-        
-        $this->page['crsid'] = $_SESSION['courseID'];// test
-        
-        /*
-        When a component wakes up in a course, it needs to know what course it is assigned to
-        and which copy it is so it can configure itself properly.
-        
-        if courseID is available, get records matching course ID
-            could be multiple
-        
-        Using this information, it can select the proper instance to load with the appropriate configuration data.
-        
-        */
-        
-        //instance set in CMS getInstanceOptions()
-        $config = EastereggsModel::find($this->property('instance'));
-        //Name is just for instances drop down. Use in component display?
-        
-        // copy_id is part of $config
-        //add $course->id to $config for form field
-        $config->course_id = $_SESSION['courseID'];//$course->id;
-        $this->page['config'] = json_encode($config);
-        //$config->save();// update original record now ???
-        
-        // comma delimited string ?
-        if (!isset($_SESSION)) { session_start(); }
-        $roleStr = $_SESSION['roles'];
-        $this->page['role'] = $roleStr;
-
-
-        $path = \Config::get("app.url");
-        $this->page['path'] = $path;
-
-        $menu = $config->menu;
-        $this->page['menu'] = $menu;
-
-        $exComp = new ExperienceComponent();
-        $points = $exComp->getUserPoints();
-        $this->page['current_grade'] = $points;
-
-    }
-
     public function onRun()
     {
-        $this->addJs("/plugins/delphinium/blossom/assets/javascript/eastereggs.js");
-        $this->addCss("/plugins/delphinium/blossom/assets/css/eastereggs.css");
+        try
+        {
+            /*Notes:
+            is an instance set? yes show it
+
+            else get all instances
+                is copy set?
+                -yes check for an instance that matches copy + course show it
+
+                is there an instance with this course? yes use it
+            else create dynamicInstance, save new instance, show it
+            
+            Requires minimal.htm layout
+            Requires the Dev component set up from Here:
+            https://github.com/ProjectDelphinium/delphinium/wiki/3.-Setting-up-a-Project-Delphinium-Dev-environment-on-localhost
+            */
+            if (!isset($_SESSION)) { session_start(); }
+
+            $courseID = $_SESSION['courseID'];
+            // if instance has been set
+            if( $this->property('instance') )
+            {
+                //use the instance set in CMS dropdown
+                $config = EasterEggsModel::find($this->property('instance'));
+                $config->course_id = $_SESSION['courseID'];//$course->id;
+                $config->save();//update original record now in case it did not have course
+
+            } else {
+                // if copy has a name.
+                // note: it will after the first dynamic is created
+                $copyLength = strlen($this->property('copy_id'));
+                if($copyLength > 0 )
+                {
+                    // find all matching course 
+                    $instances = EasterEggsModel::where('course_id','=', $courseID)->get();
+                    $instCount = count($instances);
+                    if($instCount == 0) { 
+                        // none found so set to catch condition for dynamic
+                        $copyLength = 0;
+                    } else {
+                        // find instance with copy
+                        $flag=false;
+                        foreach ($instances as $instance)
+                        {
+                           if($instance->copy_id == $this->property('copy_id') )
+                           {
+                               $config = $instance;
+                               $flag=true;
+                               break;// got first one found
+                           }
+                        }
+                        //yes found courses but not matching copy. use the first one found with course id
+                        if( !$flag ) { $config = $instances[0]; }
+                    }
+                }
+                // no match found so create new dynamic instance
+                if($copyLength == 0 )
+                {
+                    $config = new EasterEggsModel;// db record
+                    $config->name = 'dynamic_';//+ total records count?
+                    // add your fields
+                    //$config->size = 'Medium';
+                    $config->course_id = $_SESSION['courseID'];
+                    $config->copy_id = $this->property('copy_id');
+                    $config->save();// save the new record
+                }
+            }
+            // use the record in the component and frontend form 
+            $this->page['config'] = json_encode($config);
+            
+            /** get roles, a comma delimited string
+             * check if Student
+             * if not then set to Instructor. disregard any other roles?
+             * role is used to determine functions and display options
+             */
+            $roleStr = $_SESSION['roles'];
+            
+            if(stristr($roleStr, 'Learner')) {
+                $roleStr = 'Learner';
+            } else { 
+                $roleStr = 'Instructor';
+            }
+            $this->page['role'] = $roleStr;// only one or the other
+
+            $path = \Config::get("app.url");
+            $this->page['path'] = $path;
+
+            $menu = $config->menu;
+            $this->page['menu'] = $menu;
+
+            $exComp = new ExperienceComponent();
+            $points = $exComp->getUserPoints();
+            $this->page['current_grade'] = $points;
+            
+            // include your css note: bootstrap.min.css is part of minimal layout
+            $this->addCss("/plugins/delphinium/blossom/assets/css/eastereggs.css");
+            // javascript had to be added to default.htm to work correctly
+            //$this->addJs("/plugins/delphinium/EasterEggs/assets/javascript/jquery.min.js");
+            
+            // include the backend form with instructions for instructor.htm
+            if(stristr($roleStr, 'Instructor'))
+            {
+                //https://medium.com/@matissjanis/octobercms-using-backend-forms-in-frontend-component-fe6c86f9296b#.ge50nlmtc
+                // Build a back-end form with the context of 'frontend'
+                $formController = new \Delphinium\Blossom\Controllers\EasterEggs();
+                $formController->create('frontend');
+                
+                //this is the primary key of the record you want to update
+                $this->page['recordId'] = $config->id;
+                // Append the formController to the page
+                $this->page['form'] = $formController;
+                
+                // Append Instructions page
+                $instructions = $formController->makePartial('instructions');
+                $this->page['instructions'] = $instructions;
+                
+                //code specific to instructor.htm goes here
+            }
+            
+            if(stristr($roleStr, 'Learner'))
+            {
+                //code specific to the student.htm goes here
+            }
+            // code used by both goes here
+            
+        // Error handling requires nonlti.htm
+        }
+        catch (\GuzzleHttp\Exception\ClientException $e) {
+            return;
+        }
+        catch(Delphinium\Roots\Exceptions\NonLtiException $e)
+        {
+            if($e->getCode()==584)
+            {
+                return \Response::make($this->controller->run('nonlti'), 500);
+            }
+        }
+        catch(\Exception $e)
+        {
+            if($e->getMessage()=='Invalid LMS')
+            {
+                return \Response::make($this->controller->run('nonlti'), 500);
+            }
+            return \Response::make($this->controller->run('error'), 500);
+        }
     }
 
     public function getInstanceOptions()
@@ -97,49 +200,21 @@ class EasterEggs extends ComponentBase
         return $array_dropdown;
     }
 
-    public function onSave()
+    
+    public function onUpdate()
     {
-        $config = EasterEggsModel::find($this->property('instance'));
-        $data = post('EasterEggs');
+        $data = post('EasterEggs');//component name
+        $did = intval($data['id']);// convert string to integer
+        $config = EasterEggsModel::find($did);// retrieve existing record
+        $config->name = $data['name'];// change to new data
+        //echo json_encode($config);//($data);// testing
         
-        $config->name = $data['name'];
-        $config->course_id = $data['course_id'];
-        $config->copy_id = $data['copy_id'];
-        $config->menu = $data['menu'];
-        $config->harlem_shake = $data['harlem_shake'];
-        $config->ripples = $data['ripples'];
-        $config->asteroids = $data['asteroids'];
-        $config->katamari = $data['katamari'];
-        $config->bombs = $data['bombs'];
-        $config->ponies = $data['ponies'];
-        $config->my_little_pony = $data['my_little_pony'];
+        // add your fields to update
+        $config->custom = $data['custom'];
+
+        $config->course_id = $data['course_id'];//hidden in frontend
+        $config->copy_id = $data['copy_id'];//hidden
         $config->save();// update original record 
-
-        return json_encode($config);
+        return json_encode($config);// back to instructor view
     }
-    
-    // test: for controller.formExtendFields
-    public function getConfig()
-    {
-        $config = EasterEggsModel::find($this->property('instance'));
-        return $config;
-    }
-    
-    public function dynamicInstance()
-    {
-        $config = new EasterEggsModel;// db record
-        $config->name = 'New Instance';//+ total records count?
-        $config->course_id = $_SESSION['courseID'];// or null
-        $config->copy_id = 1;
-        $config->menu = false;
-        $config->harlem_shake = 0;
-        $config->ripples = 0;
-        $config->asteroids = 0;
-        $config->katamari = 0;
-        $config->bombs = 0;
-        $config->ponies = 0;
-        $config->my_little_pony = 0;
-        $config->save();// create new record 
-    }
-
 }

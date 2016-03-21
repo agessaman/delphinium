@@ -1,18 +1,34 @@
+<div id="content"></div>
+
 <script type="text/javascript" src="plugins/delphinium/blossom/assets/javascript/jquery.min.js"></script>
 <script type="text/javascript" src="plugins/delphinium/blossom/assets/javascript/bootstrap.min.js"></script>
+<script type="text/javascript" src="plugins/delphinium/blossom/assets/javascript/eastereggs.js"></script>
 <script>
-    //test:
-    var crsid = '{{crsid|raw}}';
-    //console.log('crsid:',crsid);//crsid: 343331
+    /* jquery and boostrap.js must be added here
+       include additional css or javascript libraries
+        
+        component instance DB record
+        [id,name, <Your Fields>, course_id,copy_id]
+    */
     
     var config = {{config|raw}};
-    //console.log('instance.Name: '+config.Name);
-    //console.log('instance.id: '+config.id);
-	//console.log('instance.course: '+config.course_id);
-    //console.log(config.ripples);
+    //console.log('config',config);
     
-    var role = '{{role}}';// comma separated
-    //console.log('Role: ',role);//string
+    //ORIGINAL CODE: document.getElementById('content').innerHTML = config[0].custom;
+    /* Usage Example
+       write custom field to div content
+       custom field can be edited
+       in Backend or Frontend
+    */
+    $('#content').html(config.custom);
+    /*
+        initialize main variables
+        get variables from the php with twig
+        use twig to determine if the component is seen 
+        by an instructor or a student and load needed partial
+    */
+    var role = '{{role}}';//string
+    //console.log('Role: ',role);
 
     var path = '{{path}}';
     //console.log('Path: ', path);
@@ -20,8 +36,13 @@
     var menu = {{menu}};
     //console.log('Menu: ',menu);
 
-    var current_grade = {{current_grade}};
-    
+    var current_grade; 
+    if('Learner' == role){
+        current_grade = {{current_grade}};
+    }else{
+        current_grade = 1000000;
+    }
+    //console.log(current_grade);
 </script>
 {% if (menu == 1) %}
     {% if ('Learner' in role) %}

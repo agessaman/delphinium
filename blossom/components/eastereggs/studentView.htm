@@ -1,33 +1,11 @@
-<div id="eggs">
-  <!--<div id="harlem-shake">
-    <img src="/delphinium/plugins/delphinium/blossom/assets/images/harlemshake-icon.png" >
-    <p> Press "H" and "S" at the same time to do the Harlem Shake</p>
-  </div>
-  <div id="ripples">
-    <img src="/delphinium/plugins/delphinium/blossom/assets/images/ripples-icon.png" >
-    <p> Press "R" and "P" to ripple the page</p>
-  </div>
-  <div id="asteroids">
-    <img src="/delphinium/plugins/delphinium/blossom/assets/images/asteroids-icon.jpeg" >
-    <p> Press "A" and "D" to play asteroids</p>
-  </div>
-  <div id="katamari">
-    <img src="/delphinium/plugins/delphinium/blossom/assets/images/katamari-icon.jpg" >
-    <p> Press "K" and "I" to play katamari</p>
-  </div>
-  <div id="bombs">
-    <img src="/delphinium/plugins/delphinium/blossom/assets/images/bomb-icon.png" >
-    <p> Press "B" and "M" to play bombs</p>
-  </div>
-  <div id="ponies">
-    <img src="/delphinium/plugins/delphinium/blossom/assets/images/pony-icon.jpeg" >
-    <p> Press "F" and "T" to play ponies</p>
-  </div>
-  <div id="my-little-pony">
-    <img src="/delphinium/plugins/delphinium/blossom/assets/images/mylittlepony-icon.png" >
-    <p> Press "L" and "P" to play my little pony</p>
-  </div>-->
+<div style="position:relative; z-index:950">
+    <a id="popinfo" title="Info" tabindex="0" role="button" data-trigger="focus" data-container="body" data-toggle="popover" data-placement="left" data-content="And here's some amazing content. It's very engaging. Right?" style="position:absolute; top:0; right:0px;">
+        <i class="icon-question"></i>
+    </a>
 </div>
+
+<div id="eggs"></div>
+
 <script>
   var eggs = ['harlem_shake','ripples','asteroids','katamari','bombs','ponies','my_little_pony'];
   var eggs_div = document.getElementById('eggs');
@@ -41,4 +19,62 @@
     }
   }
   eggs_div.innerHTML = html;
+</script>
+<!-- Configuration modal with Front End Form and Instructions in tabs -->
+<div class="control-popup modal fade" id="content-configuration" tabindex="-1" role="dialog">
+    <div class="modal-dialog" style="width:800px; overflow-y: auto;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Component Settings</h4>
+            </div>
+            <div class="modal-body">
+                <!-- Tabs -->
+                <ul class="nav nav-tabs">
+                  <li class="active"><a data-toggle="tab" href="#configure">Configure</a></li>
+                  <li><a data-toggle="tab" href="#instruct">Instructions</a></li>
+                </ul>
+                <div class="tab-content">
+                <!-- Configure instance -->
+                  <div id="configure" class="tab-pane fade in active" style="padding: 5px 0px;">
+                    <form role="form" id="updateForm"
+                      data-request="{{ __SELF__ }}::onUpdate"
+                      data-request-success="$el.hide();completed(data);">
+                        {{ form.update(recordId)|raw }}
+                        {{ form.formRender()|raw }}
+                      <div class="form-group">
+                         <button class="btn btn-primary btn-block btn-md" type="submit" value="register">Update Component</button>
+                      </div>
+                    </form>
+                  </div>
+                <!-- Instructions -->
+                  <div id="instruct" class="tab-pane fade in" style="padding: 0px 20px;">
+                      {{ instructions|raw }}
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+  $('#popinfo').popover();// activate info
+
+    /* set id,course,copy in the POST if they are hidden in fields.yaml
+        Add hidden input fields so they will transfer to onUpdate
+        fields set to hidden: true do not appear in the form at all
+        
+        in Vanilla I only have id hidden
+    */
+    
+    $('#Form-outsideTabs').append('<input type="hidden" name="Vanilla[id]" value="'+config.id+'" /> ');
+    //$('#Form-outsideTabs').append('<input type="hidden" name="Vanilla[course_id]" value="'+config.course_id+'" /> ');
+    //$('#Form-outsideTabs').append('<input type="hidden" name="Vanilla[copy_id]" value="'+config.copy_id+'" /> ');
+    
+  function completed(data)
+  {
+        /* updated record is returned */
+        location.reload();
+  }
+  //console.log('instance: id='+config.id,config.name,config.custom,config.course_id,config.copy_id);
 </script>

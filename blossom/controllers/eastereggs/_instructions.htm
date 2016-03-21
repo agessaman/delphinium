@@ -1,0 +1,32 @@
+<!-- Easter Eggs Instructions partial -->
+<h3>Easter Eggs Component</h3>
+
+<div style="float:left; width:50%">
+	
+	<h4>Using the component:</h4>
+    		
+	<div class="eggs">
+		<p> Press "H" and "A" at the same time to do the Harlem Shake</p>
+		<p> Press "R" and "I" to ripple the page</p>
+		<p> Press "A" and "S" to play asteroids</p>
+		<p> Press "K" and "A" to play katamari</p>
+		<p> Press "B" and "O" to play bombs</p>
+		<p> Press "P" and "O" to play ponies</p>
+		<p> Press "M" and "Y" to play ponies</p>
+	</div>
+</div>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/3QJaRLwFDDQ?start=27" frameborder="0" allowfullscreen></iframe>
+<img id="image0" src="" width="750" title="What it looks like" alt="ripples"/>
+<img id="image1" src="" width="750" title="What it looks like" alt="asteroids"/>
+<img id="image2" src="" width="750" title="What it looks like" alt="katamari"/>
+<img id="image3" src="" width="750" title="What it looks like" alt="bombs"/>
+<img id="image4" src="" width="750" title="What it looks like" alt="ponies"/>
+<img id="image5" src="" width="750" title="What it looks like" alt="my little pony"/>
+<script>
+  $('#image0').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/ripples.png');
+  $('#image1').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/asteroids.png');
+  $('#image2').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/katamari.png');
+  $('#image3').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/bomb.png');
+  $('#image4').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/pony.png');
+  $('#image5').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/mylittlepony.png');
+</script>
