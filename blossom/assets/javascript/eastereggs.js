@@ -40,6 +40,7 @@ $(document).keydown(function(e) {
     	var s = document.createElement('script');
 			s.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/jquery.ripples.js");
 			document.body.appendChild(s);
+      $('body').css('backgroundImage', 'url(/delphinium/plugins/delphinium/blossom/assets/images/pebbles.jpg)');
       setInterval(function() {
         var $el = $('body');
         var x = Math.random() * $el.outerWidth();
