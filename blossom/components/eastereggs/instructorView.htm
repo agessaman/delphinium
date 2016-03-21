@@ -1,84 +1,135 @@
-<table class="eggs">
-  <tr id="harlem-shake">
-  	<td>
-  		<img src="/delphinium/plugins/delphinium/blossom/assets/images/harlemshake-icon.png" >
-  	</td>
-  	<td>
-  		<h1>Harlem Shake</h1>
-  	</td>
-  	<td>
-  		<input type="text" >
-  	</td>
-  </tr>
-  <tr id="ripples">
-  	<td>
-  		<img src="/delphinium/plugins/delphinium/blossom/assets/images/ripples-icon.png" >
-  	</td>
-  	<td>
-  		<h1>Ripples</h1>
-  	</td>
-  	<td>
-  		<input type="text" >
-  	</td>
-  </tr>
-  <tr id="asteroids">
-  	<td>
-  		<img src="/delphinium/plugins/delphinium/blossom/assets/images/asteroids-icon.jpeg" >
-  	</td>
-  	<td>
-  		<h1>Asteroids</h1>
-  	</td>
-  	<td>
-  		<input type="text" >
-  	</td>
-  </tr>
-  <tr id="katamari">
-  	<td>
-  		<img src="/delphinium/plugins/delphinium/blossom/assets/images/katamari-icon.jpg" >
-  	</td>
-  	<td>
-  		<h1>Katamari</h1>
-  	</td>
-  	<td>
-  		<input type="text" >
-  	</td>
-  </tr>
-  <tr id="bombs">
-  	<td>
-  		<img src="/delphinium/plugins/delphinium/blossom/assets/images/bomb-icon.png" >
-  	</td>
-  	<td>
-  		<h1>Bombs</h1>
-  	</td>
-  	<td>
-  		<input type="text" >
-  	</td>
-  </tr>
-  <tr id="ponies">
-  	<td>
-  		<img src="/delphinium/plugins/delphinium/blossom/assets/images/pony-icon.jpeg" >
-  	</td>
-  	<td>
-  		<h1>Ponies</h1>
-  	</td>
-  	<td>
-  		<input type="text" >
-  	</td>
-  </tr>
-  <tr id="my-little-pony">
-  	<td>
-  		<img src="/delphinium/plugins/delphinium/blossom/assets/images/mylittlepony-icon.png" >
-  	</td>
-  	<td>
-  		<h1>My Little Pony</h1>
-  	</td>
-  	<td>
-  		<input type="text" >
-  	</td>
-  </tr>
-</table>
-
-<div class="">
-<a data-toggle="modal" href="#content-confirmation">Configure component <i class="icon-cog"></i> Settings</a>
-<button> Save </button>
+<!-- Instructor View with Settings cog -->
+<div style="position:relative;">
+    <div id="cog" data-toggle="modal" href="#content-configuration" style="position:absolute; top:0; z-index:950; padding-left:220px;">
+        <a data-toggle="tooltip" title="Settings" data-placement="bottom"><i class="icon-cog"></i></a>
+    </div>
+    <div style="z-index:10;">
+      <script>
+        current_grade = 1000000;
+      </script>
+      {% partial 'eastereggs::studentView' %}
+    </div>
 </div>
+
+<!-- Configuration modal with Front End Form and Instructions in tabs -->
+<div class="control-popup modal fade" id="content-configuration" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content" style="width:800px; overflow-y: auto;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Easter Eggs Settings</h4>
+            </div>
+            <div class="modal-body">
+                <!-- Tabs -->
+                <ul class="nav nav-tabs">
+                  <li class="active"><a data-toggle="tab" href="#configure">Configure</a></li>
+                  <li><a data-toggle="tab" href="#instruct">Instructions</a></li>
+                </ul>
+                <div class="tab-content">
+                <!-- Configure instance -->
+                  <div id="configure" class="tab-pane fade in active" style="padding: 5px 0px;">
+                    <form role="form" id="updateForm"
+                      data-request="{{ __SELF__ }}::onUpdate"
+                      data-request-success="$el.hide();completed(data);">
+            {{ form.update(recordId)|raw }}
+                        {{ form.formRender()|raw }}
+                      <div class="form-group">
+                         <button class="btn btn-primary btn-block btn-md" type="submit" value="register">Update Component</button>
+                      </div>
+                    </form>
+                  </div>
+                <!-- Instructions -->
+                  <div id="instruct" class="tab-pane fade in" style="padding: 0px 20px;">
+                      {{ instructions|raw }}
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: when a bar is clicked show details for the competency -->
+<div class="control-popup modal fade" id="detailed" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 id="detailed-title" class="modal-title">Competency Details</h4>
+            </div>
+            <div id="detailed-body" class="modal-body">
+                <p>This displays details of competency</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+/*
+    
+    After changing settings, Refresh the component but not the page
+  course_id has been added dynamically to config.course_id
+    
+    get tags from module items to build data & details
+    bars clickable with assignments but no submissions yet
+    
+    https://medium.com/@matissjanis/octobercms-using-backend-forms-in-frontend-component-fe6c86f9296b#.ge50nlmtc
+*/
+    //var modules={{modules|raw}};// use items to build data
+    //console.log('modules:',modules.length, modules);
+    //var assignments=[];// for click bar
+    //var submissions=[];// N/A unless Learner
+    
+    /* set id,course,copy in the POST they are not editable
+        Add hidden input fields so they will transfer to onUpdate
+        fields.yaml is set to hidden: true so they do not appear at all
+    */
+    $('#Form-outsideTabs').append('<input type="hidden" name="Competencies[id]" value="'+config.id+'" /> ');
+    $('#Form-outsideTabs').append('<input type="hidden" name="Competencies[course_id]" value="'+config.course_id+'" /> ');
+    $('#Form-outsideTabs').append('<input type="hidden" name="Competencies[copy_id]" value="'+config.copy_id+'" /> ');
+    
+    // Fix Animate checkbox switch
+    $('<div style="height:90px;" class="clearfix"></div>').insertBefore('.checkbox-field').parent;
+  $('.checkbox-field').attr('style','margin-left:20px').removeClass('span-right').addClass('span-left');
+    $('#Form-field-Competencies-Name-group').hide();// not useful
+    
+  //ToDo: custom-color dataLocker
+    //jsAPI: $('div#someElement').colorPicker({ dataLocker: 'input#locker' })
+    //$('div #ColorPicker-formColor-Color').colorPicker({ dataLocker: config.Color });// not a function
+//HACK figure out dataLocker
+//    $('#ColorPicker-formColor-Color-input-Color').val(config.Color);
+//    $('.custom-color').addClass('active');
+//    $('.custom-color span').attr('style','background:'+config.Color);
+    
+  //var configVal=[config.Name, config.Size, config.Color, config.Animate];
+  //var fieldIDs=['Form-field-Competencies-Name','Form-field-Competencies-Size','ColorPicker-formColor-input-Color','Form-field-Competencies-Animate'];
+    //fill the form with current configuration
+ //   for(var i=0; i<configVal.length; i++) {
+ //      $('#'+fieldIDs[i]).val(configVal[i]);
+ //   }
+    
+  function completed(data)
+  {
+        /*  returned updated record
+            dont reload page
+            if dynamic it will add another record and show it instead
+            Replace: contents
+            <svg id = "competenciesSVG">
+             <g id="competenciesView"></g></svg>
+        */
+        location.reload();
+        /*
+        config = JSON.parse(data['result']);
+    competenciesColor=config.Color;//string
+    competenciesSize=config.Size.toLowerCase();//string
+    competenciesAnimate=config.Animate;//boolean
+    
+        // replace the svg content
+        ///$('.outline').addClass('spinner');
+        $('#competenciesView').empty();
+        showCompetencies();// refresh component
+        */
+        //$('#updateForm').show();// could remove success in form
+    //console.log('instance: '+config.id,config.Name,config.Size,config.Color,config.Animate,config.course_id,config.copy_id);
+  }
+  //console.log('instance: '+config.id,config.Name,config.Size,config.Color,config.Animate,config.course_id,config.copy_id);
+</script>

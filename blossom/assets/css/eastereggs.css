@@ -21,16 +21,6 @@ p{
 	line-height: 50px;
 }
 
-input {
-	margin-left: 10px;
-}
-
-.eggs{
+#eggs{
 	margin: 10px;
-}
-
-button {
-	color: black;
-	padding: 5px 50px;
-	margin-left: 50px;
 }

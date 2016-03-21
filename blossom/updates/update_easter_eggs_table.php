@@ -17,6 +17,13 @@ class UpdateEasterEggsTable extends Migration
                 $table->increments('id');
                 $table->string('name');
                 $table->string('menu');
+                $table->string('harlem_shake');
+                $table->string('ripples');
+                $table->string('asteroids');
+                $table->string('katamari');
+                $table->string('bombs');
+                $table->string('ponies');
+                $table->string('my_little_pony');
                 $table->integer('course_id')->nullable();
                 $table->integer('copy_id')->nullable();
                 $table->timestamps();
@@ -30,6 +37,13 @@ class UpdateEasterEggsTable extends Migration
                 $table->increments('id');
                 $table->string('name');
                 $table->string('menu');
+                $table->string('harlem_shake');
+                $table->string('ripples');
+                $table->string('asteroids');
+                $table->string('katamari');
+                $table->string('bombs');
+                $table->string('ponies');
+                $table->string('my_little_pony');
                 $table->integer('course_id')->nullable();
                 $table->integer('copy_id')->nullable();
                 $table->timestamps();

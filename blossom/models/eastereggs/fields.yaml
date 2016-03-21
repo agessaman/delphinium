@@ -18,3 +18,38 @@ fields:
         span: auto
         default: false
         comment: Checked = Show shortcuts
+
+    harlem_shake:
+        label: harlem_shake
+        span: auto
+        comment: Enter a point threshold
+
+    ripples:
+        label: ripples
+        span: auto
+        comment: Enter a point threshold
+
+    asteroids:
+        label: asteroids
+        span: auto
+        comment: Enter a point threshold
+
+    katamari:
+        label: katamari
+        span: auto
+        comment: Enter a point threshold
+
+    bombs:
+        label: bombs
+        span: auto
+        comment: Enter a point threshold
+
+    ponies:
+        label: ponies
+        span: auto
+        comment: Enter a point threshold
+
+    my_little_pony:
+        label: my_little_pony
+        span: auto
+        comment: Enter a point threshold

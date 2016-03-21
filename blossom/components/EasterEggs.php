@@ -2,6 +2,7 @@
 
 use Cms\Classes\ComponentBase;
 use Delphinium\Blossom\Models\EasterEggs as EasterEggsModel;
+use Delphinium\Blossom\Components\Experience as ExperienceComponent;
 
 class EasterEggs extends ComponentBase
 {
@@ -66,6 +67,11 @@ class EasterEggs extends ComponentBase
 
         $menu = $config->menu;
         $this->page['menu'] = $menu;
+
+        $exComp = new ExperienceComponent();
+        $points = $exComp->getUserPoints();
+        $this->page['current_grade'] = $points;
+
     }
 
     public function onRun()
@@ -100,6 +106,13 @@ class EasterEggs extends ComponentBase
         $config->course_id = $data['course_id'];
         $config->copy_id = $data['copy_id'];
         $config->menu = $data['menu'];
+        $config->harlem_shake = $data['harlem_shake'];
+        $config->ripples = $data['ripples'];
+        $config->asteroids = $data['asteroids'];
+        $config->katamari = $data['katamari'];
+        $config->bombs = $data['bombs'];
+        $config->ponies = $data['ponies'];
+        $config->my_little_pony = $data['my_little_pony'];
         $config->save();// update original record 
 
         return json_encode($config);
@@ -119,6 +132,13 @@ class EasterEggs extends ComponentBase
         $config->course_id = $_SESSION['courseID'];// or null
         $config->copy_id = 1;
         $config->menu = false;
+        $config->harlem_shake = 0;
+        $config->ripples = 0;
+        $config->asteroids = 0;
+        $config->katamari = 0;
+        $config->bombs = 0;
+        $config->ponies = 0;
+        $config->my_little_pony = 0;
         $config->save();// create new record 
     }
 
