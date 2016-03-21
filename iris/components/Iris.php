@@ -18,7 +18,6 @@ class Iris extends ComponentBase
 
     public function onRun()
     {
-        $this->addJs("/plugins/delphinium/iris/assets/javascript/jquery.min.js");
         $this->addJs("/plugins/delphinium/iris/assets/javascript/d3.v3.min.js");
         $this->addJs("/plugins/delphinium/iris/assets/javascript/iris.js");
         $this->addCss("/plugins/delphinium/iris/assets/css/main.css");

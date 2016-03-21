@@ -1,9 +1,13 @@
 var statsObj;
 //tooltip
-div = d3.select(".tooltip");
+// statsDiv = d3.select(".statsTooltip");
+var statsDiv = d3.select("body").append("div")
+    .attr("class", "statsTooltip")
+    .style("opacity", 0);
+var wrapper = d3.select("#statsWrapper").node();
 
-var statsHeight = 240;
-var statsWidth = 290;
+var statsHeight = 200;
+var statsWidth = 250;
 var trueHeight = 200;
 var trueWidth = 250;
 var halfWidth = trueWidth / 2;
@@ -14,6 +18,7 @@ scaleStats();
 //getData
 $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, function (data, status, xhr) {
     //enable stamina clicks
+    d3.select(".spinnerStats").style("display","none");
     d3.selectAll(".switch-li").classed("disabled",false);
     statsObj = JSON.parse(data);
 
@@ -120,11 +125,12 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
         staminaInterface();
 
         function paceInterface() {
-            var count = 0;
+            var count = 2;
+            var text = getExplanation('pace');
             //BONUS
             if (positivePace > 0) {
-                drawPositive(count, positivePaceWidth);
-                drawNumber(count, positivePaceX, roundToTwo(positivePace), "paceVars");
+                drawPositive(text,count, positivePaceWidth);
+                drawNumber(count, positivePaceX, roundToOne(positivePace), "paceVars");
                 //apend the lock icon (must be text. inside of svg we can't add span or i)
                 view.append("svg:text")
                     .attr("x", function (d) {
@@ -139,7 +145,7 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
                         return x;
                     })
                     .on("mouseover", function (d) {
-                        addTooltipStats("Locked in bonus: " + roundToTwo(positivePace));
+                        addTooltipStats("Locked in bonus: " + roundToOne(positivePace));
                     })
                     .on("mouseout", function (d) {
                         removeTooltipStats();
@@ -151,8 +157,8 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
 
             //PENALTIES
             if (negativePace > 0) {
-                box = drawNegative(count, negativePaceWidth);
-                drawNumber(count, negativePaceX, roundToTwo(-negativePace), "paceVars");
+                box = drawNegative(text, count, negativePaceWidth);
+                drawNumber(count, negativePaceX, roundToOne(-negativePace), "paceVars");
                 view.append("svg:text")
                     .attr("x", function (d) {
                         return negativePaceX;
@@ -166,7 +172,7 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
                         return x;
                     })
                     .on("mouseover", function (d) {
-                        addTooltipStats("Locked in penalties: " + roundToTwo(-negativePace));
+                        addTooltipStats("Locked in penalties: " + roundToOne(-negativePace));
                     })
                     .on("mouseout", function (d) {
                         removeTooltipStats();
@@ -180,8 +186,8 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
             //POTENTIAL BONUSES
             if (positivePotential > 0) {
 
-                drawNumber(count, posPotentialX, roundToTwo(positivePotential), "paceVars");
-                drawPositive(count, posPotentialWidth, positivePaceWidth, 0.4);
+                drawNumber(count, posPotentialX, roundToOne(positivePotential), "paceVars");
+                drawPositive(text, count, posPotentialWidth, positivePaceWidth, 0.4);
                 view.append("svg:text")
                     .attr("x", function (d) {
                         return posPotentialX;
@@ -195,7 +201,7 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
                         return x;
                     })
                     .on("mouseover", function (d) {
-                        addTooltipStats("Potential bonus: " + roundToTwo(positivePotential));
+                        addTooltipStats("Potential bonus: " + roundToOne(positivePotential));
                     })
                     .on("mouseout", function (d) {
                         removeTooltipStats();
@@ -208,8 +214,8 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
             //POTENTIAL PENALTIES
             if (negativePotential > 0) {
 
-                drawNumber(count, negPotentialX, roundToTwo(-negativePotential), "paceVars");
-                drawNegative(count, negPotentialWidth, negativePaceWidth, 0.4);
+                drawNumber(count, negPotentialX, roundToOne(-negativePotential), "paceVars");
+                drawNegative(text,count, negPotentialWidth, negativePaceWidth, 0.4);
 
                 view.append("svg:text")
                     .attr("x", function (d) {
@@ -224,7 +230,7 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
                         return x;
                     })
                     .on("mouseover", function (d) {
-                        addTooltipStats("Potential penalties: " + roundToTwo(-negativePotential));
+                        addTooltipStats("Potential penalties: " + roundToOne(-negativePotential));
                     })
                     .on("mouseout", function (d) {
                         removeTooltipStats();
@@ -241,36 +247,37 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
         }
 
         function gapInterface() {
-            var count = 1;
-            drawText(count, "Gap");
+            var count = 0;
+            var text = getExplanation('gap');
             var text = getExplanation("gap");
             y = count * 50 + 10;
             //drawIcon('\uf05a', 0, y, text, "14px", '#444444');
             if (gap > 0)
-                drawPositive(count, gapWidth);
+                drawPositive(text,count, gapWidth);
             else
-                drawNegative(count, gapWidth);
+                drawNegative(text,count, gapWidth);
             drawCenter(count);
-            drawNumber(count, gapX, roundToTwo(gap, "gapVars"));
+            drawNumber(count, gapX, roundToOne(gap, "gapVars"));
         }
 
         function healthInterface() {
-            var count = 2;
+            var count = 1;
             var text = getExplanation("health");
             y = count * 50 + 10;
             //drawIcon('\uf05a', 0, y, text, "14px", '#444444');
             if (health > 0)
-                drawPositive(count, healthWidth);
+                drawPositive(text,count, healthWidth);
             else
-                drawNegative(count, healthWidth);
+                drawNegative(text,count, healthWidth);
             drawCenter(count);
-            drawNumber(count, healthX, roundToTwo(health), "healthVars");
+            drawNumber(count, healthX, roundToOne(health), "healthVars");
         }
 
         function staminaInterface() {
+            var text = getExplanation('stamina');
             var count = 3;
             //draw stamina bar
-            variableStamina(statsObj.stamina.total, staminaWidth, count, true);
+            variableStamina(text,statsObj.stamina.total, staminaWidth, count, true);
             //add a checkbox so students can select if they want to see their averages for the last 10 assignments or all their assignments
             var options = ['All', 'Last 10'];
         }
@@ -278,32 +285,38 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
 
         function drawCenter(count) {
             view.append('line')
-                .attr('y1', count * 50 + 20)
-                .attr('y2', count * 50 + 45)
-                .attr('x1', halfWidth)
-                .attr('x2', halfWidth)
-                .attr('stroke-width', "2")
-                .attr('stroke', "#444444")
-                .attr('fill', "none")
+                .attr({
+                    y1:count * 50 + 20,
+                    y2:count * 50 + 45,
+                    x1:halfWidth,
+                    x2:halfWidth,
+                    stroke:"#444444",
+                    fill:'none',
+                    'stroke-width':1
+                });
         }
 
         function drawText(count, text) {
             view.append('text')
                 .text(text)
-                .attr('x', 15)
-                .attr('y', count * 50 + 10)
-                .attr("fill", '#444444')
-                .attr('transform', "translate(0,7)");
+                .attr({
+                    x:15,
+                    y:count * 50 + 10,
+                    fill:'#444444',
+                    transform:"translate(0,7)"
+                });
         }
 
         function drawIcon(iconCode, x, y, mouseInText, fontSize, color) {
             view.append("svg:text")
-                .attr("x", x)
-                .attr("y", y)
-                .attr('font-family', 'FontAwesome')
-                .attr('font-size', fontSize)
-                .attr("fill", color)
-                .attr("cursor", "pointer")
+                .attr({
+                    y:y,
+                    x:x,
+                    'font-family':'FontAwesome',
+                    'font-size':fontSize,
+                    fill:color,
+                    cursor:pointer
+                })
                 .on("mouseenter", function (d) {
                     addTooltipStats(mouseInText);
                 })
@@ -316,7 +329,7 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
                 .attr('transform', "translate(0,7)");
         }
 
-        function drawPositive(count, value, startingX, opacity) {
+        function drawPositive(text, count, value, startingX, opacity) {
             if (statsObj.nonstudent) {
                 return;
             }
@@ -325,36 +338,50 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
             opacity = opacity || 1;
             if (statsAnimate) {
                 var box = view.append('rect')
-                    //.attr('rx', 3)
-                    //.attr('ry', 3)
-                    .attr('height', 25 - (2 * border))
-                    .attr('width', 0)
-                    .attr('fill', "white")
-                    .attr('y', count * 50 + 20 + border)
-                    .attr('x', startingX + trueWidth / 2)
+                    .attr({
+                        height: 25 - border,
+                        width: 0,
+                        fill: 'white',
+                        y: count * 50 + 20 + (border/2),
+                        x: startingX + trueWidth / 2
+                    })
+                    .on("mouseenter", function (d) {
+                        addTooltipStats(text);
+                    })
+                    .on("mouseleave", function (d) {
+                        removeTooltipStats();
+                    })
                     .transition()
                     .delay(count * 1000 + 1000)
                     .duration(1000)
-                    .attr('width', value)
-                    .attr('fill', color)
-                    .attr("opacity", opacity)
+                    .attr({
+                        width:value,
+                        fill:color,
+                        opacity:opacity
+                    })
                     .ease('bounce');
                 return box;
             } else {
                 var box = view.append('rect')
-                    //.attr('rx', 3)
-                    //.attr('ry', 3)
-                    .attr('height', 25 - (2 * border))
-                    .attr('width', value)
-                    .attr('fill', color)
-                    .attr('y', count * 50 + 20 + border)
-                    .attr("opacity", opacity)
-                    .attr('x', startingX + trueWidth / 2);
+                    .attr({
+                        height:25 -  border,
+                        width:value,
+                        fill:color,
+                        y:count * 50 + 20 + (border/2),
+                        opacity: opacity,
+                        x: startingX + trueWidth / 2
+                    })
+                    .on("mouseenter", function (d) {
+                        addTooltipStats(text);
+                    })
+                    .on("mouseleave", function (d) {
+                        removeTooltipStats();
+                    });
                 return box;
             }
         }
 
-        function drawNegative(count, value, substract, opacity) {
+        function drawNegative(text, count, value, substract, opacity) {
             if (statsObj.nonstudent) {
                 return;
             }
@@ -363,33 +390,47 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
             opacity = opacity || 1;
             if (statsAnimate) {
                 var box = view.append('rect')
-                    //.attr('rx', 3)
-                    //.attr('ry', 3)
-                    .attr('height', 25 - (2 * border))
-                    .attr('width', 0)
-                    .attr('fill', "white")
-                    .attr('y', count * 50 + 20 + border)
-                    .attr('x', halfWidth - substract)
-                    .attr("opacity", opacity);
+                    .attr({
+                        height:25 - border,
+                        width:0,
+                        fill:'white',
+                        y:count * 50 + 20 + (border/2),
+                        x:halfWidth - substract,
+                        opacity:opacity
+                    })
+                    .on("mouseenter", function (d) {
+                        addTooltipStats(text);
+                    })
+                    .on("mouseleave", function (d) {
+                        removeTooltipStats();
+                    });
                 box.transition()
                     .delay(count * 1000 + 1000)
                     .duration(1000)
-                    .attr('x', halfWidth - value - substract)
-                    .attr('width', value)
-                    .attr('fill', color)
+                    .attr({
+                        x:halfWidth - value - substract,
+                        width:value,
+                        fill:color
+                    })
                     .ease('bounce');
 
                 return box;
             } else {
                 var box = view.append('rect')
-                    //.attr('rx', 3)
-                    //.attr('ry', 3)
-                    .attr('height', 25 - (2 * border))
-                    .attr('width', value)
-                    .attr('fill', color)
-                    .attr('y', count * 50 + 20 + border)
-                    .attr('x', halfWidth - value - substract)
-                    .attr("opacity", opacity);
+                    .attr({
+                        height:25 - border,
+                        width:value,
+                        fill:color,
+                        y:count * 50 + 20 +(border/2),
+                        x:halfWidth - value - substract,
+                        opacity:opacity
+                    })
+                    .on("mouseenter", function (d) {
+                        addTooltipStats(text);
+                    })
+                    .on("mouseleave", function (d) {
+                        removeTooltipStats();
+                    });
 
                 return box;
             }
@@ -401,6 +442,7 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
 
 
 function scaleStats() {
+    var wrapper = d3.select(".statsWrapper");
     var statsView = d3.select("#statsView");
     var statsSVG = d3.select("#statsSVG");
     var switchComp = d3.select("#switch");
@@ -408,47 +450,51 @@ function scaleStats() {
     var switchTop = switchComp.style("top").replace("px", "");
 
     if (statsSize == "small") {
+        wrapper.style('width', halfWidth + 100)
+            .style('height', trueHeight / 2 + 100);
         statsSVG.attr('width', halfWidth + 100)
             .attr('height', trueHeight / 2 + 100);
         statsView.attr('transform', "scale(.8)");
-        switchComp.style('left', "120px")
-            .style('top', "151px");
+        switchComp.style('left', "60px")
+            .style('top', "-82px");
         lis.classed('smallLi', true);
     } else if (statsSize == "medium") {
+        wrapper.style('width', statsWidth)
+            .style('height', statsHeight);
         statsSVG.attr('width', statsWidth)
             .attr('height', statsHeight);
-        switchComp.style('left', "135px")
-            .style('top', "184px");
+        switchComp.style('left', "75px")
+            .style('top', "-48px");
     } else {
+        wrapper.style('width', trueWidth * 1.5 + 40)
+            .style('height',  trueHeight * 1.5 + 40);
         statsSVG.attr('width', trueWidth * 1.5 + 40)
             .attr('height', trueHeight * 1.5 + 40);
         statsView.attr('transform', "scale(1.5)");
-        switchComp.style('left', "177px")
-            .style('top', "265px");
+        switchComp.style('left', "115px")
+            .style('top', "-106px");
         lis.classed('largeLi', true);
     }
 }
 
 //tooltips
 function addTooltipStats(text) {
-    div.transition()
+    statsDiv.transition()
         .duration(200)
-        .style("opacity", 1)
-        .style("display", "block")
-        .style("left", (d3.event.pageX + 10) + "px")
-        .style("top", (d3.event.pageY) + "px");
-    div.html(text);
+        .style("opacity", .9);
+    statsDiv.html(text)
+        .style("left", (d3.event.pageX +20) + "px")
+        .style("top", (d3.event.pageY +20) + "px");
 }
 
 function removeTooltipStats() {
-    div.transition()
+    statsDiv.transition()
         .duration(100)
-        .style("display", "none")
         .style("opacity", 0);
 }
 
-function roundToTwo(num) {
-    return +(Math.round(num + "e+2") + "e-2");
+function roundToOne(num) {
+    return Math.round( num * 10 ) / 10;
 }
 
 function getExplanation(component) {
@@ -479,6 +525,7 @@ function getExplanation(component) {
 }
 
 function toggleStamina(value) {
+    var text = getExplanation('stamina');
     lastTen = value == 10 ? true : false;
     d3.select(".all")
         .classed("on", !lastTen);
@@ -496,10 +543,10 @@ function toggleStamina(value) {
         staminaX = (staminaWidth / 2) + 10;
     }
 
-    variableStamina(staminaValue, staminaWidth, 3, false);
+    variableStamina(text,staminaValue, staminaWidth, 3, false);
 }
 
-function variableStamina(number, width, count, delay) {
+function variableStamina(text,number, width, count, delay) {
 
     delayValue = 0;
     if (delay) {
@@ -546,10 +593,17 @@ function variableStamina(number, width, count, delay) {
                 class: 'staminaVars',
                 rx: 3,
                 ry: 3,
-                height: 25 - (2 * border),
+                height: 25 -border,
                 width: 0,
                 fill: 'white',
-                y: 3 * 50 + 20 + border
+                y: 3 * 50 + 20 + (border/2),
+                x:border
+            })
+            .on("mouseenter", function (d) {
+                addTooltipStats(text);
+            })
+            .on("mouseleave", function (d) {
+                removeTooltipStats();
             })
             .transition()
             .delay(delayValue)
@@ -565,14 +619,21 @@ function variableStamina(number, width, count, delay) {
                 class: 'staminaVars',
                 rx: 3,
                 ry: 3,
-                height: 25,
+                height: 25 - border,
                 width: width,
                 fill: 'url(#staminaGradient)',
-                y: 3 * 50 + 20,
-                class: 'staminaVars'
-            });
+                y: 3 * 50 + 20+ (border/2),
+                class: 'staminaVars',
+                x:border
+            })
+            .on("mouseenter", function (d) {
+                addTooltipStats(text);
+            })
+            .on("mouseleave", function (d) {
+                removeTooltipStats();
+            });;
     }
-    drawNumber(count, staminaX, roundToTwo(number) + "%", "staminaVars", delay);
+    drawNumber(count, staminaX, roundToOne(number) + "%", "staminaVars", delay);
 }
 
 function drawNumber(count, x, text, className, delay) {
@@ -584,7 +645,7 @@ function drawNumber(count, x, text, className, delay) {
     var text = d3.select('#statsView').append("text")
         .attr("fill", "none")
         .style("text-anchor", "middle")
-        .attr('font-size', "16px")
+        .attr('font-size', "12px")
         .attr('x', x)
         .attr('y', count * 50 + 40)
         .attr('class', className)
