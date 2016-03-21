@@ -1,3 +1,6 @@
 1.0.1:
 - First version of Vanilla
 - create_vanillas_table.php
+1.0.2:
+- 'Add copy and course to table delphinium_vanilla_vanillas'
+- update_vanillas_table.php

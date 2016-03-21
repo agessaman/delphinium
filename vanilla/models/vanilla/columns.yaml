@@ -6,6 +6,11 @@ columns:
     id:
         label: ID
         searchable: true
+
+    name:
+        label: Name
+        searchable: true
+
     custom:
         label: Custom
         searchable: true

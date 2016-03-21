@@ -2,10 +2,6 @@
 
 use Cms\Classes\ComponentBase;
 use Delphinium\Roots\Roots;
-//use Delphinium\Roots\Utils;
-//use Delphinium\Roots\Guzzle\GuzzleHelper;
-//use Delphinium\Roots\Lmsclasses\CanvasHelper;
-
 use Delphinium\Roots\Enums\ActionType;
 use Delphinium\Roots\Models\Quizquestion;
 use Delphinium\Roots\Requestobjects\QuizRequest;
@@ -45,28 +41,54 @@ class Popquiz extends ComponentBase
         ];
     }
 	
+	/* This is added as an Assignment.
+		How can we get this assignment object
+		Need Intro text and points to display in game
+			if not done as a Canvas Assignment
+		
+		Pop Quiz Game:
+		Instructor
+			choose which quiz to use from getAllQuizzes
+			un-published quzzes are available in list
+				click quiz to see questions 
+			select questions to use in game
+				can choose questions from multiple quizzes
+				questions are added to db? or ids?
+				? is it possible to get question_banks instead?
+				
+			select total points for game in the assignment
+			add Intro text in assignment, used in game
+			
+			each question has points_possible but is not used
+			choose game type from list [YouGotThis, ...]?
+			possibly let the Learner choose which game?
+			un-publish quiz chosen?
+			preview of game with questions chosen
+		
+		Learner:
+		let the Learner choose which game?
+			get Questions from db?
+			see Intro text, Play game
+		
+		pass back points for LTI assignment, not a single quiz
+	*/
 	public function onRun()
 	{
 		try
         {
 			$this->addCss("/plugins/delphinium/poppies/assets/css/bootstrap.min.css");
             $this->addCss("/plugins/delphinium/poppies/assets/css/popquiz.css");
-			//$this->addCss("/plugins/delphinium/poppies/assets/css/university-ave.css");
-            //$this->addJs("/plugins/delphinium/poppies/assets/javascript/jquery.min.js");
-			//$this->addJs("/plugins/delphinium/poppies/assets/javascript/jquery-ui.min.js");
-			//$this->addJs("/plugins/delphinium/poppies/assets/javascript/jquery.spritely.js");
-			//$this->addJs("/plugins/delphinium/poppies/assets/javascript/bootstrap.min.js");
 			
 			$role = $this->setup();
 			$this->page['role'] = $role;// either Learner or Instructor
 			if($role=='Instructor')
 			{
-				$quizList = $this->getAllQuizzes();// choose quiz to use
+				$quizList = $this->getAllQuizzes();// choose quiz questions to use
 				$this->page['quizList'] = $quizList;
 			}
 			if($role=='Learner')
 			{
-			
+				//get questions from model and show game chosen
 			}
 			// main code here
 		}
@@ -91,18 +113,17 @@ class Popquiz extends ComponentBase
 	}
 	
 	/*
-		common funtions:
+		common functions:
 			define Role: either Instructor or Learner
-			
+			dynamic instance:
+			pass back grade for assignment
 	*/
 	public function setup()
 	{
 		if (!isset($_SESSION)) { session_start(); }
     
         //$courseID = $_SESSION['courseID'];// store if needed
-		// dynamic instance?
-		
-		// update this Assignment?
+		// dynamic instance? not set up yet...
 		
 		// comma delimited string
         $roleStr = $_SESSION['roles'];
@@ -115,20 +136,7 @@ class Popquiz extends ComponentBase
 	}
 	
 	/*
-		Pop Quiz Game:
-		Instructor
-			choose which quiz to use from getAllQuizzes
-			choose # of questions to use from total
-			add Intro text, used in game
-			each question has points_possible
-			adjust total points or use total possible
-			choose game type from list [YouGotThis, ...]
-			un-publish quiz chosen?
-			
-		Learner:
-			see Intro text, Play game
-			getQuizQuestions
-			pass back points for LTI assignment, not quiz
+		Instructor can choose questions from multiple quizzes
 	*/
 	public function getAllQuizzes()
     {
@@ -137,45 +145,27 @@ class Popquiz extends ComponentBase
 		$req = new QuizRequest(ActionType::GET, null, $fresh_data, true);
         //echo json_encode($roots->quizzes($req));
 		
-		// return list of quiz_id only? or simplified for choosing
-		//contains questions and answers for each !
+		// remove quizzes with no questions
+		// return list of quizzes for instructor to choose questions
+		
+		//contains questions and answers for each quiz
 		return json_encode($roots->quizzes($req));
     }
-   // if learner just get one
-    public function getQuizQuestions($quiz_id)
-    {
-        $quiz_id =623912;// call with id
-		$fresh_data=false;
-		$roots = new Roots();
-		$req = new QuizRequest(ActionType::GET, $quiz_id, $fresh_data, true);
-        $result = $roots->quizzes($req);
-
-        echo json_encode($result);
-//        foreach($result['questions'] as $question)
-//        {
-//
-//            $answers = $question['answers'];
-//            $obj = json_decode($answers, true);
-//            foreach($obj as $answer)
-//            {
-//                echo json_encode($answer['text']);
-//            }
-//        }
-    }
 	
-	// create new Assignment and un-publish Quiz used ???
-	public function addAssignment()
+	/*
+		How can we get (this) assignment object
+		Need Intro text and points to display in game
+			if not done as a Canvas Assignment
+	*/
+	public function getSingleAssignment()
     {
-        $date = new DateTime("now");
-        $assignment = new Assignment();
-        $assignment->name = "my new name";// Set by Instructor
-        $assignment->description = "This assignment was created from backend";
-        $assignment->points_possible = 30;
-        $assignment->due_at = $date;
-		
+        $assignment_id = 1660430;// Need current assignment
+        $freshData = false;
+        $includeTags = true;
+        $req = new AssignmentsRequest(ActionType::GET, $assignment_id, $freshData, null, $includeTags);
 		$roots = new Roots();
-        $req = new AssignmentsRequest(ActionType::POST, null, null, $assignment);
-        $res = $roots->assignments($req);
-        return json_encode($res);
+        $res = $this->roots->assignments($req);
+        echo json_encode($res);
     }
+
 }

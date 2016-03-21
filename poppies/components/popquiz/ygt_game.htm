@@ -38,9 +38,9 @@
 /* To Do:
 assets/javascript/ygt_game.js
 	get game questions from db?
-	
-	updateScore & missed
-	timer
+	timer?
+	instructions
+	gameIntro? from Assignment text?
 	gameOver();
 
 // init in default.htm
@@ -61,6 +61,7 @@ function showIntro()
 	$('title').show();
 	
 	console.log('show intro');
+	console.log('gameQuest:',gameQuest);
 	if(gameQuest.length==0) {
 		$('#introMessage').html('Sorry, No Questions to play with');
 		$('#gobtn').hide();
@@ -112,8 +113,9 @@ $('#gobtn').on('click', function(){
     $('.gameplay').show();
 	if(gameQuest.length>0) {
 		showQuestion(current);
-	} else { $('#introMessage').html('Sorry, No Questions to play with'); }
-    //conclusion gameOver and play again?
+	} else {
+		$('#introMessage').html('Sorry, No Questions to play with');
+	}
 });
 
 /* http://spritely.net/ sprites */
@@ -138,8 +140,7 @@ function shoWrong() {
 $('#nextaro').sprite({fps: 6, no_of_frames: 4}).active();
 $('#nextaro').hide();
 function showNextaro() {
-    $('#nextaro').show();
-    
+    $('#nextaro').show();// sprite
 }
 $('#nextaro').on('click', function(){
     $('#nextaro').hide();
@@ -147,10 +148,10 @@ $('#nextaro').on('click', function(){
 	current++;
 	if(current==gameitems.length){ 
 		current=0;
-		//gameOver
+		//gameOver();//conclusion and play again?
+	} else {
+		showQuestion(current);//show next question
 	}
-    showQuestion(current);//show next question
-	//$('.makeDraggable').show();// all answers
 });
 
 //animate onto screen from top?
@@ -159,12 +160,12 @@ function showQuestion(index) {
 	$('.makeDraggable').hide();// all answers
 	// animate question onto screen or fade in
 	//console.log('showQuestion');
-	var txt = gameQuest[index][0].text;//.toString();
+	var txt = gameQuest[index].text;//.toString();
 		txt = $.parseHTML(txt);
 		txt = txt[0].textContent;
-	$('.questbox').attr('data-points', gameQuest[index][0].points_possible);
+	$('.questbox').attr('data-points', gameQuest[index].points_possible);
 	$('.questbox').html(txt);
-	var answers= $.parseJSON(gameQuest[index][0].answers);
+	var answers= $.parseJSON(gameQuest[index].answers);
 	//console.log(answers);
 	// animate answers onto screen from bottom?
 	for(var i=0; i<answers.length; i++){
@@ -218,18 +219,18 @@ function handleDropEvent( event, ui ) {
         $('.valid').append($(ui.draggable).html());// show answer
 		$('.valid').show();
         showNextaro();
-		if(gameQuest[current][0].correct_comments!= "") {
-			comdiv+=gameQuest[current][0].correct_comments;
+		if(gameQuest[current].correct_comments!= "") {
+			comdiv+=gameQuest[current].correct_comments;
 		}
     } else {
 		updateMissed(); 
 		shoWrong();//play wrong
-		if(gameQuest[current][0].incorrect_comments != "") {
-			comdiv+=gameQuest[current][0].incorrect_comments;
+		if(gameQuest[current].incorrect_comments != "") {
+			comdiv+=gameQuest[current].incorrect_comments;
 		}
     }
-	if(gameQuest[current][0].neutral_comments != "") {
-		comdiv+=gameQuest[current][0].neutral_comments;
+	if(gameQuest[current].neutral_comments != "") {
+		comdiv+=gameQuest[current].neutral_comments;
 	}
 	$('#comment').html(comdiv).show('slow');//slide in from upper left
 }

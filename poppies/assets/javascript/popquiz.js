@@ -3,74 +3,83 @@
 	Pop Quiz Game:
 	Instructor
 		choose which quiz to use from getAllQuizzes
+		un-published quzzes are available in list
 			click quiz to see questions 
-		select questions to use 
+		select questions to use in game
+			can choose questions from multiple quizzes
 			questions are added to db? or ids?
-			select questions from multiple quizzes
-		select total points for game
+			? is it possible to get question_banks instead?
 			
-		choose # of questions to use from total
-		add Intro text, used in game
-		each question has points_possible
-			adjust total points or use total possible
-		choose game type from list [YouGotThis, ...]
+		select total points for game in the assignment
+		add Intro text in assignment, used in game
+		
+		each question has points_possible but is not used
+		choose game type from list [YouGotThis, ...]?
+		possibly let the Learner choose which game?
 		un-publish quiz chosen?
 		preview of game with questions chosen
 	
 	Learner:
+	let the Learner choose which game?
+		get Questions from db?
 		see Intro text, Play game
-		getQuizQuestions
-		pass back points for LTI assignment, not quiz
+		
+		pass back points for LTI assignment, not a single quiz
 		
 		
-	http://inspirationalpixels.com/tutorials/creating-an-accordion-with-html-css-jquery
 */
 
-// Instructor view
+// Instructor view vars & functions ONLY?
 // globals
 var selecteditems=[];// quiz question_id selections
 var chosenitems=[];// question_id of gameitems to use, remove clear all
-var gameitems=[];// questions for game
+var gameitems=[];// questions selected for game
 var quests=[];// quiz questions to selected from
-// gameitems = '{items:[ obj, obj, ... ]}';
 
-
-/* show all quizzes */
+function validateQuizzes()
+{
+	/* remove quizzes that do not have questions from quizList
+		should do this in php
+	*/
+	var tempList = $.grep(quizList, function(elem,index){
+		return elem.questions.length > 0;
+	});
+	quizList = tempList;
+}
+/* show all valid quizzes */
 function showQuizzes()
 {
-	var count = Math.ceil(quizList.length/3);
-	//console.log('count:',count);
-	// put 1/3 in each column
-	//inc to count, reset : inc colm
+	validateQuizzes();// remove quizzes with no questions
 	//console.log('quizList.length:',quizList.length);
+	
+	/* put 1/3 in each column inc to count, reset : inc colm */
+	var count = Math.ceil(quizList.length/3);
 	var col=0;
 	var row=0;
 	for(var i=0; i<quizList.length; i++)
 	{
-		if(quizList[i].questions.length == 0) { continue; }
 		content = '<div id='+quizList[i].quiz_id+' class="alert alert-info">';// blue
 		content += quizList[i].title;
-		content += ': total questions: '+quizList[i].question_count;
+		content += ': total questions: '+quizList[i].questions.length;//.question_count;
 		//content += ' worth: '+quizList[i].points_possible;
 		content += '</div>';
 		$('#col_'+col).append(content);
 		row++;
 		if(row==count){ row=0; col++; }
 	}
-	/*
-		store which quiz the questions came from?
-	*/
 	//click quiz to view questions
 	$('.alert').on('click', function(e){
-		showQuizQuestions(e.target.id);
+		showQuizQuestions(e.target.id);// quiz_id
 	});
-	// open All Quizzes
+	// open All Quizzes panel
 	$('#accordion-1').addClass('active');
-	// Open content panel
 	$('.accordion #accordion-1').slideDown(300).addClass('open');
 }
 
-/* show all questions in selected quiz */
+/*	show all questions from selected quiz
+	Questions are selectable or all
+	submit btn adds questions to gameitems
+*/
 function showQuizQuestions(id)
 {
 	// fill id=quizdata with selected quiz and show it
@@ -85,22 +94,19 @@ function showQuizQuestions(id)
 	console.log('quests:',quests);
 	//properties of quiz, title, q_count, points, id?
 	$('#qtitle').text(quiz[0].title+' Points: '+quiz[0].points_possible);
-	//var details = 'Points: '+quiz[0].points_possible;
-	//$('#quiz_details').html(details);
 	
 	// show the quiz questions in modal when clicked?
-	// needs 2 columns or ?
 	$('#quizselectable').empty();
-	var i=0;
-	for(var obj in quests)
+	selecteditems=[];// no questions selected
+	for(var i=0; i<quests.length; i++)
 	{
 		var txt = quests[i].text;
 		//console.log(txt);// &lt;strong&gt; ...
 		txt = $.parseHTML(txt);
 		txt = txt[0].textContent;
 		//console.log(txt);//<strong>
-		$('#quizselectable').append('<li class="ui-widget-content" data-id="'+quests[i]["question_id"]+'">'+txt+'</li>');
-		i+=1;// select by question_id
+		$('#quizselectable').append('<li class="ui-widget-content" data-id="'+quests[i].question_id+'">'+txt+'</li>');
+		selecteditems.push(quests[i].question_id);// all questions selected
 	}
 	
 	//http://api.jqueryui.com/1.12/selectable/#entry-examples
@@ -108,28 +114,28 @@ function showQuizQuestions(id)
 	$('#accordion-2').addClass('active');
 	// Open up the hidden content panel
 	$('.accordion #accordion-2').slideDown(300).addClass('open');
-	// select btn chooses this quiz for game
 }
 
-/* Display selected questions for game */
+/* Display questions selected for game */
 function showSelected()
 {
     //gameitems [question, ]
     $('#gameselectable').empty();
 	$('#questcount').html(gameitems.length+' Questions');
+	chosenitems=[];// none yet
     for(var i=0; i<gameitems.length; i++)
 	{
-		var txt = gameitems[i][0].text;//.toString();
+		var txt = gameitems[i].text;//.toString();
 		//console.log(txt);// &lt;strong&gt; ...
 		txt = $.parseHTML(txt);
 		txt = txt[0].textContent;
 		//console.log(txt);//<strong>
-		$('#gameselectable').append('<li class="ui-widget-content" data-id="'+gameitems[i][0].question_id+'">'+txt+'</li>');
+		$('#gameselectable').append('<li class="ui-widget-content" data-id="'+gameitems[i].question_id+'">'+txt+'</li>');
+		chosenitems.push(gameitems[i].question_id);
 	}
 	
 	close_accordion_section();
 	$('#accordion-4').addClass('active');
-	// Open content panel
 	$('.accordion #accordion-4').slideDown(300).addClass('open');
 }
 

@@ -1,5 +1,6 @@
 <?php namespace Delphinium\Vanilla\Controllers;
 
+use Flash;
 use BackendMenu;
 use Backend\Classes\Controller;
 
@@ -24,5 +25,27 @@ class Vanilla extends Controller
 		//The second parameter sets the menu code.
 		//The optional third parameter specifies the submenu code.
 		BackendMenu::setContext('Delphinium.Greenhouse', 'greenhouse', 'greenhouse');
+    }
+	
+	/**
+     * Delete checked instances.
+	 * called from /controllers/list_toolbar.htm Remove button
+     */
+    public function index_onDelete()
+    {
+        if (($checkedIds = post('checked')) && is_array($checkedIds) && count($checkedIds)) {
+
+            foreach ($checkedIds as $configId) {
+                if (!$config = ConfigModel::find($configId)) continue;
+                $config->delete();
+            }
+
+            Flash::success("Successfully deleted");
+        }
+        else {
+            Flash::error("An error occurred when trying to delete this item");
+        }
+
+        return $this->listRefresh();
     }
 }

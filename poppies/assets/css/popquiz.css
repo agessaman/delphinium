@@ -24,6 +24,7 @@
 }
 #questcount {
 	float: left;
+	padding: 6px 10px;/*top&botm, l&r*/
 	font-size:  1.2em;
 	font-weight: 600;
 }

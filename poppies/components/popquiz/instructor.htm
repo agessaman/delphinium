@@ -16,7 +16,8 @@
 		<div id="accordion-2" class="accordion-section-content">
             <h4 id="qtitle">The chosen quiz TITLE </h4>
             <button class="btn btn-success" type="submit" id="confirmit" name="confirmit">Add Selected Questions</button>
-            <!--div id="quiz_details"></div-->
+            <!-- see question details btn? -->
+			<!--div id="quiz_details"></div-->
 			
 			<div id="quiz_data">
 				<ol id="quizselectable">
@@ -40,8 +41,8 @@
 			<div id="questcount"></div>
             <button class="btn btn-default" type="submit" id="clearit" name="clearit">Remove All Questions</button>
 			<button class="btn btn-warning" type="submit" id="removeit" name="removeit">Remove Selected Questions</button>
-			<button class="btn btn-success" type="submit" id="useit" name="useit">Use Questions</button>
             <button class="btn btn-primary" type="submit" id="seeit" name="seeit">See Question details</button>
+			<button class="btn btn-success" type="submit" id="useit" name="useit">Use These Questions</button>
 			<!--div id="game_details"></div-->
 			</div>
 			
@@ -92,13 +93,15 @@
 </div>
 
 <script>
-	// list of all quizzes for instructor
+	/*	Note: these functions are only for instructor view
+		may get moved to /assets/popquiz.js
+		list of all quizzes for instructor
+		to choose questions for game */
 	quizList = {{quizList|raw}};
-	console.log('quizList:', quizList.length, quizList);
+	//console.log('quizList:', quizList.length, quizList);
+	nextcount=0;//index for question details
 	
-	nextcount=0;// question details
-	
-	showQuizzes();
+	showQuizzes();// all quizzes with no questions
 	// accordion and button functions
     $('.accordion-section-title').click(function(e) {
         e.preventDefault();
@@ -124,11 +127,11 @@
              var index = $( "#quizselectable li" ).index( this );// list[index]
              var qid = $(this).attr('data-id');
             if(qid) { selecteditems.push(qid); }
-            });// or just the one clicked
-            //console.log('selected:',selecteditems);// array of question ids
+            });// or only one clicked
+            console.log('selecteditems:',selecteditems);// array of question_ids
         }
     });
-    // accordion-4 game questions
+    // accordion-4 selected game questions
     $("#gameselectable").selectable({
         // on mouse up
         selected: function() {
@@ -137,37 +140,36 @@
              var index = $( "#gameselectable li" ).index( this );// list[index]
              var qid = $(this).attr('data-id');
              chosenitems.push(qid);// push id for each to an array
-            });// or just the one clicked
-			//adjust nextcount to first selected item for constructQuestion
-			nextcount = $( "#gameselectable li" ).index( items );
+            });// or only one clicked
+            console.log('chosenitems:',chosenitems);// array of question_ids
+			//set nextcount to gameitems.indexOf(chosenitems[0]) for constructQuestion
+			for(var i=0; i<gameitems.length; i++) {
+				if(chosenitems[0]==gameitems[i].question_id){ nextcount=i; }
+			}
 			console.log('nextcount:',nextcount);
-            //console.log('chosen:',chosenitems);// array of question ids
-			
         }
     });
-    
+    /*Add Selected Questions button in accordion-2*/
     $('#confirmit').click(function(e) {
         e.preventDefault();
-        
+        // selecteditems is array of question_id
         // transfer selecteditems[question_id,] to qameitems[question object,]
+		console.log('selecteditems:',selecteditems);
         for(var i=0; i<selecteditems.length; i++)
         {
             var quest = $.grep(quests, function(elem, index){
                 return elem.question_id == selecteditems[i];
             });
-            gameitems.push(quest);
+            gameitems.push(quest[0]);//quest[0] array of objects fix this
         }
         console.log('gameitems:',gameitems);
-        // should be a json obj
-        //var jitm = JSON.stringify(gameitems);//$.parseJSON(gameitems);
-        //console.log('jitm:',jitm);
-        
-        // refresh gameselectable list
+        // should be array of objects
+        // reset gameselectable list
         showSelected();
         selecteditems=[];
     });
     
-     // remove all gameitems 
+     /* Remove All Questions button from gameitems */
     $('#clearit').click(function(e) {
         e.preventDefault();
 		current=0;// questnum
@@ -178,14 +180,14 @@
         $('#gameselectable').empty();
     });
     
-    // remove chosenitems from gameitems
+    /* Remove Selected Questions in chosenitems from gameitems */
     $('#removeit').click(function(e) {
         e.preventDefault();
         
         for(var i=0; i<chosenitems.length; i++)
         {
             var item = $.grep(gameitems, function(elem, index){
-                if(elem[0].question_id == chosenitems[i]) { return index; }
+                if(elem.question_id == chosenitems[i]) { return index; }
             });
             // remove from array
             gameitems.splice(item,1);
@@ -196,21 +198,26 @@
         //console.log('chosenitems:',chosenitems);
         //console.log('gameitems:',gameitems);
         chosenitems=[];
+		nextcount = 0;//none
     });
-    
+    /* use gameitems to play game 
+		save gameitem to db questions
+	*/
     $('#useit').click(function(e) {
         e.preventDefault();
         // gameitems = questions to use in game : store in DB?
 		console.log('gameitems:',gameitems.length, gameitems);
-		// check: if saved yet, if changed since save
-		gameQuest=gameitems;// gameQuest is var in game
-		current=0;// questnum
-		// or send to function in game?
-		close_accordion_section();
-		$('#accordion-5').addClass('active');
-		// Open up the hidden content panel
-		$('.accordion #accordion-5').slideDown(300).addClass('open');
-		showIntro();// restart game
+		if(gameitems.length>0) { 
+			// check: if saved yet, if changed since save
+			gameQuest=gameitems;// gameQuest is var in game
+			current=0;// questnum
+			// or send to function in game?
+			close_accordion_section();
+			$('#accordion-5').addClass('active');
+			$('.accordion #accordion-5').slideDown(300).addClass('open');
+			showIntro();// restart game
+		}
+		// else no questions to use
 	});
 
     /*see details of each question 
@@ -219,9 +226,12 @@
     */
 	$('#seeit').click(function(e) {
         e.preventDefault();
-        //detailed-body display question details with answers
-		constructQuestion(nextcount);
-        $('#detailed').modal('show');
+        //modal detailed-body display question details with answers
+		if(gameitems.length>0) { 
+			constructQuestion(nextcount);
+			$('#detailed').modal('show');
+		 }
+		 // else no questions to see
     });
     $('#nextbtn').click(function(e) {
         e.preventDefault();
@@ -238,13 +248,13 @@
 	{	
 		var quest = gameitems[index];
 		$('#detailed-title').html('Question '+(index+1));
-		$('#qtype').html('Type: '+gameitems[index][0].type);
-		$('#qpoints').html('Points: '+gameitems[index][0].points_possible);
-		var txt = gameitems[index][0].text;//.toString();
+		$('#qtype').html('Type: '+gameitems[index].type);
+		$('#qpoints').html('Points: '+gameitems[index].points_possible);
+		var txt = gameitems[index].text;//.toString();
 			txt = $.parseHTML(txt);
 			txt = txt[0].textContent;
 		$('#qtext').html(txt);
-		var answers= $.parseJSON(gameitems[index][0].answers);
+		var answers= $.parseJSON(gameitems[index].answers);
 		var ansdiv='';
 		console.log(answers);//for each
 		for(var i=0; i<answers.length; i++)
@@ -260,27 +270,27 @@
 		$('#qanswers').html('<hr/>Answers:<br/>'+ansdiv);
 		
 		var comdiv='';
-		if(gameitems[index][0].correct_comments!= "")
+		if(gameitems[index].correct_comments!= "")
 		{
 			comdiv+='<div class=bg-success>';
-			comdiv+=gameitems[index][0].correct_comments;
+			comdiv+=gameitems[index].correct_comments;
 			comdiv+='</div>';
 		}
-		if(gameitems[index][0].incorrect_comments != "")
+		if(gameitems[index].incorrect_comments != "")
 		{
 			comdiv+='<div class=bg-danger>';
-			comdiv+=gameitems[index][0].incorrect_comments;
+			comdiv+=gameitems[index].incorrect_comments;
 			comdiv+='</div>';
 		}
-		if(gameitems[index][0].neutral_comments != "")
+		if(gameitems[index].neutral_comments != "")
 		{
 			comdiv+='<div class=bg-warning>';
-			comdiv+=gameitems[index][0].neutral_comments;
+			comdiv+=gameitems[index].neutral_comments;
 			comdiv+='</div>';
 		}
 		$('#qfeedback').html('<hr/>Comments:<br/>'+comdiv);
 	}
-/*
+/*question object
 answers: "[
 	{"weight":0,"id":2028,"migration_id":"RESPONSE_1113","text":"Organizational change is..."},
 	{"weight":60,"id":5595,"migration_id":"RESPONSE_2746","text":"Organizational change..."},

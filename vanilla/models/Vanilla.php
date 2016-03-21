@@ -21,7 +21,7 @@ class Vanilla extends Model
     /**
      * @var array Fillable fields
      */
-    protected $fillable = [];
+    protected $fillable = ['name','custom'];
 
     /**
      * @var array Relations
