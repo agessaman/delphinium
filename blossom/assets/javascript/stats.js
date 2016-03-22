@@ -126,11 +126,18 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
 
         function paceInterface() {
             var count = 2;
-            var text = getExplanation('pace');
+            var originalText = getExplanation('pace');
+            var text =originalText;
             //BONUS
             if (positivePace > 0) {
+                if((positivePaceWidth)<20) {
+                    text = "<i class='fa fa-lock'></i> Locked in bonuses: "+roundToOne(positivePace)+"<br/>"+originalText;
+                }
                 drawPositive(text,count, positivePaceWidth);
-                drawNumber(count, positivePaceX, roundToOne(positivePace), "paceVars");
+                if((positivePaceWidth)>20)
+                {
+                    drawNumber(count, positivePaceX, roundToOne(positivePace), "paceVars");
+
                 //apend the lock icon (must be text. inside of svg we can't add span or i)
                 view.append("svg:text")
                     .attr("x", function (d) {
@@ -153,12 +160,20 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
                     .text(function (d) {
                         return '\uf023';
                     });
+                }
             }
 
             //PENALTIES
             if (negativePace > 0) {
-                box = drawNegative(text, count, negativePaceWidth);
-                drawNumber(count, negativePaceX, roundToOne(-negativePace), "paceVars");
+                text=originalText;
+                if((negativePaceWidth)<20) {
+                    text = "<i class='fa fa-lock'></i> Locked in penalties: "+roundToOne(-negativePace)+"<br/>"+originalText;
+                }
+                drawNegative(text, count, negativePaceWidth);
+                if((negativePaceWidth)>20)
+                {
+                    drawNumber(count, negativePaceX, roundToOne(-negativePace), "paceVars");
+
                 view.append("svg:text")
                     .attr("x", function (d) {
                         return negativePaceX;
@@ -180,14 +195,21 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
                     .text(function (d) {
                         return '\uf023';
                     });
+                }
             }
 
 
             //POTENTIAL BONUSES
             if (positivePotential > 0) {
-
-                drawNumber(count, posPotentialX, roundToOne(positivePotential), "paceVars");
+                text=originalText;
+                if((posPotentialWidth)<20) {
+                    text = "<i class='fa fa-clock-o'></i> Potential bonuses: "+roundToOne(positivePotential)+"<br/>"+originalText;
+                }
                 drawPositive(text, count, posPotentialWidth, positivePaceWidth, 0.4);
+                if((posPotentialWidth)>20)
+                {
+                    drawNumber(count, posPotentialX, roundToOne(positivePotential), "paceVars");
+
                 view.append("svg:text")
                     .attr("x", function (d) {
                         return posPotentialX;
@@ -209,13 +231,19 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
                     .text(function (d) {
                         return '\uf017';
                     });
+                }
             }
 
             //POTENTIAL PENALTIES
             if (negativePotential > 0) {
-
-                drawNumber(count, negPotentialX, roundToOne(-negativePotential), "paceVars");
+                text=originalText;
+                if((negPotentialWidth)<20) {
+                    text = "<i class='fa fa-clock-o'></i> Potential penalties: "+roundToOne(-negativePotential)+"<br/>"+originalText;
+                }
                 drawNegative(text,count, negPotentialWidth, negativePaceWidth, 0.4);
+                if((negPotentialWidth)>20)
+                {
+                    drawNumber(count, negPotentialX, roundToOne(-negativePotential), "paceVars");
 
                 view.append("svg:text")
                     .attr("x", function (d) {
@@ -238,6 +266,8 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
                     .text(function (d) {
                         return '\uf017';
                     });
+                }
+
             }
 
             if (positivePace == 0 && negativePace == 0 && positivePotential == 0 && negativePotential == 0) {
@@ -248,16 +278,21 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
 
         function gapInterface() {
             var count = 0;
-            var text = getExplanation('gap');
             var text = getExplanation("gap");
             y = count * 50 + 10;
             //drawIcon('\uf05a', 0, y, text, "14px", '#444444');
+            if((gapWidth)<20) {
+                text = "Gap: "+roundToOne(gap)+"<br/>"+text;
+            }
             if (gap > 0)
                 drawPositive(text,count, gapWidth);
             else
                 drawNegative(text,count, gapWidth);
             drawCenter(count);
-            drawNumber(count, gapX, roundToOne(gap, "gapVars"));
+            if((gapWidth)>20)
+            {
+                drawNumber(count, gapX, roundToOne(gap), "gapVars");
+            }
         }
 
         function healthInterface() {
@@ -265,12 +300,18 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
             var text = getExplanation("health");
             y = count * 50 + 10;
             //drawIcon('\uf05a', 0, y, text, "14px", '#444444');
+            if((healthWidth)<20) {
+                text = "Health: "+ roundToOne(health)+"<br/>"+text;
+            }
             if (health > 0)
                 drawPositive(text,count, healthWidth);
             else
                 drawNegative(text,count, healthWidth);
             drawCenter(count);
-            drawNumber(count, healthX, roundToOne(health), "healthVars");
+            if((healthWidth)>20)
+            {
+                drawNumber(count, healthX, roundToOne(health), "healthVars");
+            }
         }
 
         function staminaInterface() {
@@ -548,6 +589,9 @@ function toggleStamina(value) {
 
 function variableStamina(text,number, width, count, delay) {
 
+    if((width)<20) {
+        text = "Stamina: "+roundToOne(number)+"<br/>"+text+"%";
+    }
     delayValue = 0;
     if (delay) {
         delayValue = 4000;
@@ -633,7 +677,10 @@ function variableStamina(text,number, width, count, delay) {
                 removeTooltipStats();
             });;
     }
-    drawNumber(count, staminaX, roundToOne(number) + "%", "staminaVars", delay);
+    if((width)>20)
+    {
+        drawNumber(count, staminaX, roundToOne(number) + "%", "staminaVars", delay);
+    }
 }
 
 function drawNumber(count, x, text, className, delay) {

@@ -6,7 +6,7 @@
     var statsAnimate = {{statsAnimate}};
 </script>
 {% if ('Learner' in role) %}
-{% partial 'stats::studentView' %}
+{% partial __SELF__~"::studentView" %}
 {% elseif ('Instructor' in role or 'TeachingAssistant' in role) %}
-{% partial 'stats::instructorView' %}
+{% partial __SELF__~"::instructorView" %}
 {% endif %}

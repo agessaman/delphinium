@@ -27,11 +27,6 @@ class Stats extends ComponentBase
                 'title' => '(Optional) Experience instance',
                 'description' => 'Select the experience instance to display the student\'s stats',
                 'type' => 'dropdown'
-            ],
-            'Copy'	=> [
-                'title'             => 'Copy name',
-                'description'       => 'Enter the name of this copy of the processmaker component',
-                'type'              => 'string',
             ]
         ];
     }
@@ -56,7 +51,7 @@ class Stats extends ComponentBase
 //        {
         $statsInstance = $this->firstOrNewCourseInstance();
         $this->statsInstanceId = $statsInstance->id;
-        $this->page['instance_id'] = $this->statsInstanceId;
+        $this->page['instance_id'] =  $statsInstance->id;
         $experienceInstance = $this->findExperienceInstance();
 
         //if no instance exists of this component, create a new one. It will be tied to the experience component they have selected
@@ -123,33 +118,14 @@ class Stats extends ComponentBase
         $courseId = $_SESSION['courseID'];
         $this->courseId = $courseId;
         $courseInstance = null;
-//        if(!is_null($this->property('Stats')))
-//        {
-//
-//            $courseInstance= StatsModel::find($this->property('Stats'));
-//            $this->statsInstanceId = $courseInstance->id;
-//            $this->page['instance_id'] = $this->statsInstanceId;
-//            return $courseInstance;
-//        }
-
-        //first use the copy name passed to this method, if any
-        //if null, then use the property defined in the component
-        //if null, just get the instance using the course id
-        if(is_null($copyName)&& !is_null($this->property('Copy')))
+        if(is_null($copyName))
         {
-            $copyName =$this->property('Copy');
+            $copyName =$this->alias;
         }
-        if(!is_null($copyName))
-        {
-            $courseInstance =StatsModel::firstOrNew(array('course_id' => $courseId,'name'=>$copyName));
-            if(is_null($courseInstance->name)){$courseInstance->name=$copyName;}
-        }
-        else{
-            $courseInstance =StatsModel::firstOrNew(array('course_id' => $courseId));
-            if(is_null($courseInstance->name)){$courseInstance->name='Stats_auto';}
-        }
-
+        echo $copyName;
+        $courseInstance =StatsModel::firstOrNew(array('course_id' => $courseId,'name'=>$copyName));
         $courseInstance->course_id = $courseId;
+        $courseInstance->name = $copyName;
         if(is_null($courseInstance->animate)){$courseInstance->animate = 1;}
         if(is_null($courseInstance->size)){$courseInstance->size = 'medium';}
         $courseInstance->save();
