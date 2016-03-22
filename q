@@ -1,0 +1,75 @@
+[1mdiff --git a/blossom/components/Stats.php b/blossom/components/Stats.php[m
+[1mindex 5b23fdf..f74f9a1 100644[m
+[1m--- a/blossom/components/Stats.php[m
+[1m+++ b/blossom/components/Stats.php[m
+[36m@@ -27,11 +27,6 @@[m [mclass Stats extends ComponentBase[m
+                 'title' => '(Optional) Experience instance',[m
+                 'description' => 'Select the experience instance to display the student\'s stats',[m
+                 'type' => 'dropdown'[m
+[31m-            ],[m
+[31m-            'Copy'	=> [[m
+[31m-                'title'             => 'Copy name',[m
+[31m-                'description'       => 'Enter the name of this copy of the processmaker component',[m
+[31m-                'type'              => 'string',[m
+             ][m
+         ];[m
+     }[m
+[36m@@ -57,17 +52,16 @@[m [mclass Stats extends ComponentBase[m
+         $statsInstance = $this->firstOrNewCourseInstance();[m
+         $this->statsInstanceId = $statsInstance->id;[m
+         $this->page['instance_id'] = $this->statsInstanceId;[m
+[32m+[m[32m        $this->page['statsSize'] = $statsInstance->size;[m
+[32m+[m[32m        $this->page['statsAnimate'] = $statsInstance->animate;[m
+         $experienceInstance = $this->findExperienceInstance();[m
+ [m
+         //if no instance exists of this component, create a new one. It will be tied to the experience component they have selected[m
+         $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");[m
+[31m-        $this->addJs("/plugins/delphinium/blossom/assets/javascript/stats.js");[m
+[32m+[m[32m//        $this->addJs("/plugins/delphinium/blossom/assets/javascript/stats.js");[m
+         $this->addCss("/plugins/delphinium/blossom/assets/css/stats.css");[m
+ [m
+ [m
+[31m-        $statsInstance = StatsModel::find($this->statsInstanceId);[m
+[31m-        $this->page['statsSize'] = $statsInstance->size;[m
+[31m-        $this->page['statsAnimate'] = $statsInstance->animate;[m
+ [m
+         if (!isset($_SESSION)) {[m
+             session_start();[m
+[36m@@ -123,33 +117,18 @@[m [mclass Stats extends ComponentBase[m
+         $courseId = $_SESSION['courseID'];[m
+         $this->courseId = $courseId;[m
+         $courseInstance = null;[m
+[31m-//        if(!is_null($this->property('Stats')))[m
+[31m-//        {[m
+[31m-//[m
+[31m-//            $courseInstance= StatsModel::find($this->property('Stats'));[m
+[31m-//            $this->statsInstanceId = $courseInstance->id;[m
+[31m-//            $this->page['instance_id'] = $this->statsInstanceId;[m
+[31m-//            return $courseInstance;[m
+[31m-//        }[m
+ [m
+         //first use the copy name passed to this method, if any[m
+         //if null, then use the property defined in the component[m
+         //if null, just get the instance using the course id[m
+[31m-        if(is_null($copyName)&& !is_null($this->property('Copy')))[m
+[31m-        {[m
+[31m-            $copyName =$this->property('Copy');[m
+[31m-        }[m
+[31m-        if(!is_null($copyName))[m
+[32m+[m[32m        if(is_null($copyName))[m
+         {[m
+[31m-            $courseInstance =StatsModel::firstOrNew(array('course_id' => $courseId,'name'=>$copyName));[m
+[31m-            if(is_null($courseInstance->name)){$courseInstance->name=$copyName;}[m
+[31m-        }[m
+[31m-        else{[m
+[31m-            $courseInstance =StatsModel::firstOrNew(array('course_id' => $courseId));[m
+[31m-            if(is_null($courseInstance->name)){$courseInstance->name='Stats_auto';}[m
+[32m+[m[32m            $copyName =$this->alias;[m
+         }[m
+ [m
+[32m+[m[32m        $courseInstance =StatsModel::firstOrNew(array('course_id' => $courseId,'name'=>$copyName));[m
+         $courseInstance->course_id = $courseId;[m
+[32m+[m[32m        $courseInstance->name = $copyName;[m
+         if(is_null($courseInstance->animate)){$courseInstance->animate = 1;}[m
+         if(is_null($courseInstance->size)){$courseInstance->size = 'medium';}[m
+         $courseInstance->save();[m
