@@ -1,4 +1,3 @@
-
 <script type="text/javascript" src="plugins/delphinium/poppies/assets/javascript/jquery.min.js"></script>
 <script type="text/javascript" src="plugins/delphinium/poppies/assets/javascript/jquery-ui.min.js"></script>
 <script type="text/javascript" src="plugins/delphinium/poppies/assets/javascript/jquery.spritely.js"></script>
@@ -9,7 +8,8 @@
 	var role = '{{role}}';
     console.log('Role: ',role);//string
 	
-	//var config
+	var config = {{config|raw}};
+	console.log('config',config);
 	
 	// instructor vars
 	var quizList = [];// all quizzes

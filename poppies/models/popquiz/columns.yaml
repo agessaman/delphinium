@@ -1,21 +1,21 @@
 columns:
-    id:
-        label: ID
-        type: number
-        searchable: true
-        sortable: true
     name:
         label: Name
         type: text
         searchable: true
         sortable: true
     quiz_name:
-        label: 'Quiz name'
+        label: Title
         type: text
         searchable: true
         sortable: true
-    quiz_id:
-        label: 'Quiz id'
-        type: number
+    quiz_description:
+        label: Description
+        type: text
+        searchable: true
+        sortable: true
+    quiz_style:
+        label: Game Style
+        type: text
         searchable: true
         sortable: true

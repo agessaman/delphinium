@@ -1,3 +1,12 @@
+<!--Instrutor view-->
+<div style="position:relative; z-index:950;">
+    <a id="popinfo" title="Info" tabindex="0" role="button" data-trigger="focus" data-container="body" data-toggle="popover" data-placement="left" data-content="And here's some amazing content. It's very engaging. Right?" style="position:absolute; top:10; right:20px;">
+        <i class="icon-question"></i>
+    </a>
+	<div id="cog" data-toggle="modal" href="#content-configuration" style="position:absolute; top:10; right:30px;">
+		<a data-toggle="tooltip" title="Settings" data-placement="bottom"><i class="icon-cog"></i></a>
+    </div>
+</div>
 <div class="container center">
 <div class="accordion">
     <div class="accordion-section">
@@ -92,7 +101,57 @@
     </div>
 </div>
 
+<!-- Configuration modal with Front End Form and Instructions in tabs -->
+<div class="control-popup modal fade" id="content-configuration" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content" style="width:800px; overflow-y: auto;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Component Settings</h4>
+            </div>
+            <div class="modal-body">
+                <!-- Tabs -->
+                <ul class="nav nav-tabs">
+                  <li class="active"><a data-toggle="tab" href="#configure">Configure</a></li>
+                  <li><a data-toggle="tab" href="#instruct">Instructions</a></li>
+                </ul>
+                <div class="tab-content">
+                <!-- Configure instance -->
+                  <div id="configure" class="tab-pane fade in active" style="padding: 5px 0px;">
+                    <form role="form" id="updateForm"
+                      data-request="{{ __SELF__ }}::onUpdate"
+                      data-request-success="$el.hide();completed(data);">
+                        {{ form.update(recordId)|raw }}
+                        {{ form.formRender()|raw }}
+                      <div class="form-group">
+                         <button class="btn btn-primary btn-block btn-md" type="submit" value="register">Update Component</button>
+                      </div>
+                    </form>
+                  </div>
+                <!-- Instructions -->
+                  <div id="instruct" class="tab-pane fade in" style="padding: 0px 20px;">
+                      {{ instructions|raw }}
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
+	/* delphinium functions*/
+	$('#popinfo').popover();// activate info
+	//hidden in fields.yaml so repopulate form
+	$('#Form-outsideTabs').append('<input type="hidden" name="Popquiz[id]" value="'+config.id+'" /> ');
+    $('#Form-outsideTabs').append('<input type="hidden" name="Popquiz[course_id]" value="'+config.course_id+'" /> ');
+    $('#Form-outsideTabs').append('<input type="hidden" name="Popquiz[copy_id]" value="'+config.copy_id+'" /> ');
+	function completed(data)
+	{
+        /* updated record is returned */
+        location.reload();
+	}
+	//console.log('instance: id='+config.id,config.name,config.custom,config.course_id,config.copy_id);
+	
+	/* main functions */
 	/*	Note: these functions are only for instructor view
 		may get moved to /assets/popquiz.js
 		list of all quizzes for instructor
@@ -202,6 +261,7 @@
     });
     /* use gameitems to play game 
 		save gameitem to db questions
+		may only need to store [question_id, ...] for delphinium_roots_quiz_questions
 	*/
     $('#useit').click(function(e) {
         e.preventDefault();
@@ -209,7 +269,20 @@
 		console.log('gameitems:',gameitems.length, gameitems);
 		if(gameitems.length>0) { 
 			// check: if saved yet, if changed since save
-			gameQuest=gameitems;// gameQuest is var in game
+			gameQuest=gameitems;// gameQuest is Array of questions in game
+			// may only need to store [question_id, ...] for delphinium_roots_quiz_questions
+			// construct array and populate Popquiz[questions]=idsArray
+			// then submit the form
+			// may need to be comma delimited string?
+			//Popquiz[questions]=[];//empty existing
+			var idArray = [];
+			for(var i=0; i<gameitems.length; i++) {
+				idArray.push(gameitems[i].question_id);//try array 
+			}
+			console.log('idArray:',idArray);
+			//$('#Form-field-Popquiz[questions]').val(idArray);
+			//$('#updateForm').submit();
+			
 			current=0;// questnum
 			// or send to function in game?
 			close_accordion_section();
@@ -240,9 +313,9 @@
 		if(nextcount==gameitems.length){ nextcount=0; }
 		constructQuestion(nextcount);
     });// backbtn ?
-	/* also see selected questions?
+	/* also see selected questions accordion-2
 	   or only game questions
-	   send index of first question to see in modal
+	   index of first selected question to see in modal
 	*/
 	function constructQuestion(index)
 	{	

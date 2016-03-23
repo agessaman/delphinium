@@ -1,28 +1,43 @@
 fields:
     id:
         label: ID
-        span: full
         disabled: true
         hidden: 1
-        type: text
     name:
         label: Name
         span: auto
         type: text
-        commentAbove: 'Enter a name'
-    quiz_name:
-        label: 'Quiz name'
-        span: auto
+        commentAbove: 'Instance name'
+    game_style:
+        label: 'Game Style'
+        span: right
         type: text
-        commentAbove: 'Name of the quiz'
+        commentAbove: generated
+    questions:
+        label: 'Question ids'
+        span: right
+        type: text
+        commentAbove: generated
+    quiz_name:
+        label: 'Title'
+        span: left
+        type: text
+        commentAbove: 'Title of the game'
     quiz_description:
         label: Description
         size: large
-        span: auto
+        span: left
         type: textarea
-        commentAbove: 'An introduction'
-    quiz_id:
-        label: 'Quiz id'
+        commentAbove: 'An introduction for game'
+    course_id:
+        label: 'Course id'
         span: auto
         type: text
-        commentAbove: generated
+        hidden: 1
+        comment: 'copy id is generated dynamically'
+    copy_id:
+        label: 'Copy id'
+        span: auto
+        type: text
+        hidden: 1
+        comment: 'copy id is generated dynamically'
