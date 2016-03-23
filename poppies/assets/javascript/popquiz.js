@@ -3,30 +3,26 @@
 	Pop Quiz Game:
 	Instructor
 		choose which quiz to use from getAllQuizzes
-		un-published quzzes are available in list
 			click quiz to see questions 
 		select questions to use in game
 			can choose questions from multiple quizzes
-			questions are added to db? or ids?
-			? is it possible to get question_banks instead?
+			question_ids are added to db
+is it possible to get question_banks instead?
 			
-		select total points for game in the assignment
-		add Intro text in assignment, used in game
-		
 		each question has points_possible but is not used
+        select total points for game in the assignment
+		add Intro text in assignment, or _description, used in game
+		
 		choose game type from list [YouGotThis, ...]?
 		possibly let the Learner choose which game?
-		un-publish quiz chosen?
 		preview of game with questions chosen
 	
 	Learner:
 	let the Learner choose which game?
-		get Questions from db?
+		get Questions from db
 		see Intro text, Play game
 		
-		pass back points for LTI assignment, not a single quiz
-		
-		
+		pass back points for LTI assignment, not a quiz
 */
 
 // Instructor view vars & functions ONLY?
@@ -100,16 +96,18 @@ function showQuizQuestions(id)
 	selecteditems=[];// no questions selected
 	for(var i=0; i<quests.length; i++)
 	{
-		var txt = quests[i].text;
-		//console.log(txt);// &lt;strong&gt; ...
-		txt = $.parseHTML(txt);
-		txt = txt[0].textContent;
-		//console.log(txt);//<strong>
-		$('#quizselectable').append('<li class="ui-widget-content" data-id="'+quests[i].question_id+'">'+txt+'</li>');
-		selecteditems.push(quests[i].question_id);// all questions selected
+		//ONLY? if type == "multiple_choice_question" ONLY?
+        if(quests[i].type == "multiple_choice_question") {
+            var txt = quests[i].text;
+            //console.log(txt);// &lt;strong&gt; ...
+            txt = $.parseHTML(txt);
+            txt = txt[0].textContent;
+            //console.log(txt);//<strong>
+            $('#quizselectable').append('<li class="ui-widget-content" data-id="'+quests[i].question_id+'">'+txt+'</li>');
+            selecteditems.push(quests[i].question_id);// all questions selected
+        }
 	}
 	
-	//http://api.jqueryui.com/1.12/selectable/#entry-examples
 	close_accordion_section();
 	$('#accordion-2').addClass('active');
 	// Open up the hidden content panel
@@ -121,7 +119,7 @@ function showSelected()
 {
     //gameitems [question, ]
     $('#gameselectable').empty();
-	$('#questcount').html(gameitems.length+' Questions');
+	$('#questcount').html(gameitems.length+' Game Questions');
 	chosenitems=[];// none yet
     for(var i=0; i<gameitems.length; i++)
 	{

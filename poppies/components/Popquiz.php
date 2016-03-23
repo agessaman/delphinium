@@ -168,6 +168,8 @@ class Popquiz extends ComponentBase
                 $this->page['instructions'] = $instructions;
 				$quizList = $this->getAllQuizzes();// choose quiz questions to use
 				$this->page['quizList'] = $quizList;
+                
+                //if questions stored then need them too
 			}
 			if($role=='Learner')
 			{
@@ -175,10 +177,11 @@ class Popquiz extends ComponentBase
                     selected questions are stored in db as array of question_id
                     retrieve questions from delphinium_roots_quiz_questions
                 */
-                $gameQuest = $this->getSomeQuestions($config->questions);
-                $this->page['gameQuest'] = $gameQuest;
+                
 			}
-			// main code here
+			// code for both
+            $gameQuest = $this->getSomeQuestions($config->questions);
+            $this->page['gameQuest'] = $gameQuest;
 		}
         catch (\GuzzleHttp\Exception\ClientException $e) {
             return;

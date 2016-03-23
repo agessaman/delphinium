@@ -35,14 +35,14 @@
 			</div>
         </div><!--end .accordion-section-content-->
 		
-		<a class="accordion-section-title" href="#accordion-3">Instructions</a>
+<!--		<a class="accordion-section-title" href="#accordion-3">Instructions</a>
 		<div id="accordion-3" class="accordion-section-content">
-            <h2>instructions</h2>
+            <h2>UNUSED</h2>
 			<div>
-			To Do Still...
+			     Instructions are now in the cog tab
 			</div>
-        </div><!--end .accordion-section-content-->
-        
+        </div>
+-->        
 		<a class="accordion-section-title" href="#accordion-4">Questions Selected for Game</a>
 		<div id="accordion-4" class="accordion-section-content">
             <h4>Select what you want to do with these Questions:</h4>
@@ -157,20 +157,33 @@
     */
     function completed(data)
 	{
-        console.log('completed:',data);
-        $('#content-configuration').modal('hide');
+        //console.log('completed:',data);
+        //console.log('config:',config);
+        $('#content-configuration').modal('hide');// if cog
 	}
 	
-	/* main functions */
+	/* component functions */
 	/*	Note: these functions are only for instructor view
 		may get moved to /assets/popquiz.js
 		list of all quizzes for instructor
-		to choose questions for game */
+		to choose questions for game
+        //ONLY? if type == "multiple_choice_question" ONLY?
+        ToDo:
+        instructions are in the cog instructions tab
+        remove accordion-3
+    */
 	quizList = {{quizList|raw}};
-	//console.log('quizList:', quizList.length, quizList);
+    //console.log('quizList:', quizList.length, quizList);
+    showQuizzes();// all quizzes to choose from
+    
+    if(gameQuest.length > 0) {
+        gameitems = {{gameQuest|raw}};
+        showSelected();// from config.questions
+    }
+    
 	nextcount=0;//index for question details
 	
-	showQuizzes();// all quizzes to choose from
+	
     
 	/* activate accordion and button functions */
     $('.accordion-section-title').click(function(e) {
@@ -183,12 +196,16 @@
 			close_accordion_section();
 			// Add active class to section title
 			$(this).addClass('active');
+            if(currentAttrValue == '#accordion-5') { showIntro(); }
 			// Open up the hidden content panel
 			$('.accordion ' + currentAttrValue).slideDown(300).addClass('open'); 
 		}
-		
 	});
-    // accordion-2 selected questions
+    
+    /* accordion-2 selected questions
+        http://api.jqueryui.com/1.12/selectable/
+        single click, drag or control click
+    */
     $("#quizselectable").selectable({
         // on mouse up
         selected: function() {
@@ -201,6 +218,7 @@
             console.log('selecteditems:',selecteditems);// array of question_ids
         }
     });
+    
     /* accordion-4 selected game questions */
     $("#gameselectable").selectable({
         // on mouse up
@@ -251,20 +269,19 @@
         $('#gameselectable').empty();
     });
     
-    /* Remove Selected Questions in chosenitems from gameitems */
+    /* Remove Selected Questions btn in chosenitems from gameitems */
     $('#removeit').click(function(e) {
         e.preventDefault();
-        
         for(var i=0; i<chosenitems.length; i++)
         {
-            var item = $.grep(gameitems, function(elem, index){
-                if(elem.question_id == chosenitems[i]) { return index; }
-            });
-            // remove from array
-            gameitems.splice(item,1);
+            var item = 0;
+            for(var c=0; c<gameitems.length; c++) {
+                if(gameitems[c].question_id == chosenitems[i]) { item=c; break; }
+            }
+            gameitems.splice(item,1);// remove from array
             // remove <li>st node
             $('#gameselectable').find('[data-id='+chosenitems[i]+']').remove();
-			$('#questcount').html(gameitems.length+' Questions');
+			$('#questcount').html(gameitems.length+' Game Questions');
         }
         //console.log('chosenitems:',chosenitems);
         //console.log('gameitems:',gameitems);
@@ -278,43 +295,49 @@
 	*/
     $('#useit').click(function(e) {
         e.preventDefault();
-        // gameitems = questions to use in game : store in DB?
-		console.log('gameitems:',gameitems.length, gameitems);
+        
+		//console.log('gameitems:',gameitems.length, gameitems);
 		if(gameitems.length>0) { 
-			// check: if saved yet, if changed since save
-			gameQuest=gameitems;// gameQuest is Array of questions in game
-			// store questions[question_id, ...] for delphinium_roots_quiz_questions
-			// construct array and populate Popquiz[questions]=idsArray
-			// then submit the form
-			// may need to be comma delimited string?
-			var idArray = [];// try array
+            /* gameitems = questions to use in game */
+			gameQuest=gameitems;
+			/* gameQuest is Array of questions in game
+                store config.questions[question_id, ...]
+                in delphinium_poppies_popquizzes
+                to retrieve question objects 
+                from delphinium_roots_quiz_questions
+                construct array then submit the form
+                ends up as a comma delimited string 
+            */
+			var idArray = [];
 			for(var i=0; i<gameitems.length; i++) {
             //ONLY? if type == "multiple_choice_question" ONLY?
 				idArray.push(gameitems[i].question_id);
 			}
 			//console.log('idArray:',idArray);
-            // update the form and config then submit to onSave
+            /* update the form and config
+                then submit to onSave in Poppies.php
+                which returns to completed(data) above
+            */
 			$('#Form-field-Popquiz-questions').val(idArray);
             config.questions=idArray;// and internal array
             console.log('config:',config.questions);
 			$('#updateForm').submit();// update the db record
-            // reloads page because of completed();
-			// or send to function in game?
-			
+			//open the game
 			close_accordion_section();
 			$('#accordion-5').addClass('active');
 			$('.accordion #accordion-5').slideDown(300).addClass('open');
-			showIntro();// restart game
+			showIntro();// restart game with updated questions
 		}
 		// else no questions to use
 	});
 
-    /*  see details of each question with answers and comments in modal
+    /*  see details of each question with answers and comments
+        in #detailed modal
+        nextcount is index of starting question
         use next btn to view each question
     */
 	$('#seeit').click(function(e) {
         e.preventDefault();
-        //modal detailed-body display question details with answers
 		if(gameitems.length>0) { 
 			constructQuestion(nextcount);
 			$('#detailed').modal('show');
@@ -328,9 +351,10 @@
 		if(nextcount==gameitems.length){ nextcount=0; }
 		constructQuestion(nextcount);
     });// backbtn ?
-	/* also see selected questions accordion-2
-	   or only game questions
-	   index of first selected question to see in modal
+	/* also see selected questions accordion-2 quests[]
+	   currently only game questions gameitems[]
+	   index is first selected question to see in #detailed modal
+       construct: type, points, question, answers and comments
 	*/
 	function constructQuestion(index)
 	{	
