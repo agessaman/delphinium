@@ -1,9 +1,9 @@
 <!--Instrutor view-->
 <div style="position:relative; z-index:950;">
-    <a id="popinfo" title="Info" tabindex="0" role="button" data-trigger="focus" data-container="body" data-toggle="popover" data-placement="left" data-content="And here's some amazing content. It's very engaging. Right?" style="position:absolute; top:10; right:20px;">
+    <a id="popinfo" title="Instructions:" tabindex="0" role="button" data-trigger="focus" data-container="body" data-toggle="popover" data-placement="left" data-content="And here's some amazing content." style="position:absolute; top:10; right:20px;">
         <i class="icon-question"></i>
     </a>
-	<div id="cog" data-toggle="modal" href="#content-configuration" style="position:absolute; top:10; right:30px;">
+	<div id="cog" style="position:absolute; top:10; right:30px;">
 		<a data-toggle="tooltip" title="Settings" data-placement="bottom"><i class="icon-cog"></i></a>
     </div>
 </div>
@@ -120,11 +120,11 @@
                   <div id="configure" class="tab-pane fade in active" style="padding: 5px 0px;">
                     <form role="form" id="updateForm"
                       data-request="{{ __SELF__ }}::onUpdate"
-                      data-request-success="$el.hide();completed(data);">
+                      data-request-success="completed(data);">
                         {{ form.update(recordId)|raw }}
                         {{ form.formRender()|raw }}
                       <div class="form-group">
-                         <button class="btn btn-primary btn-block btn-md" type="submit" value="register">Update Component</button>
+                         <button class="btn btn-primary btn-block btn-md" type="submit" value="register">Update Poppies</button>
                       </div>
                     </form>
                   </div>
@@ -139,17 +139,27 @@
 </div>
 <script>
 	/* delphinium functions*/
-	$('#popinfo').popover();// activate info
-	//hidden in fields.yaml so repopulate form
+    $('#popinfo').attr('data-content','Select a Quiz, Add Selected Questions, Modify the question list as needed then Click Use These Questions. Your students will receive points for playing the game. What a great way to learn.');
+	$('#popinfo').popover();// activate ? instructions
+    
+	/* these form fields are hidden in fields.yaml so repopulate form for submit */
 	$('#Form-outsideTabs').append('<input type="hidden" name="Popquiz[id]" value="'+config.id+'" /> ');
     $('#Form-outsideTabs').append('<input type="hidden" name="Popquiz[course_id]" value="'+config.course_id+'" /> ');
     $('#Form-outsideTabs').append('<input type="hidden" name="Popquiz[copy_id]" value="'+config.copy_id+'" /> ');
-	function completed(data)
+	
+    
+    /* manually activate the modal worked */
+    $('#cog').on('click', function(){
+        $('#content-configuration').modal('toggle');
+    });
+    /*  updated record is returned 
+        form can be submitted from cog.Update button or useit.submit()
+    */
+    function completed(data)
 	{
-        /* updated record is returned */
-        location.reload();
+        console.log('completed:',data);
+        $('#content-configuration').modal('hide');
 	}
-	//console.log('instance: id='+config.id,config.name,config.custom,config.course_id,config.copy_id);
 	
 	/* main functions */
 	/*	Note: these functions are only for instructor view
@@ -160,8 +170,9 @@
 	//console.log('quizList:', quizList.length, quizList);
 	nextcount=0;//index for question details
 	
-	showQuizzes();// all quizzes with no questions
-	// accordion and button functions
+	showQuizzes();// all quizzes to choose from
+    
+	/* activate accordion and button functions */
     $('.accordion-section-title').click(function(e) {
         e.preventDefault();
 		// Grab current anchor value
@@ -177,7 +188,7 @@
 		}
 		
 	});
-    // accordion-2 selected question
+    // accordion-2 selected questions
     $("#quizselectable").selectable({
         // on mouse up
         selected: function() {
@@ -190,7 +201,7 @@
             console.log('selecteditems:',selecteditems);// array of question_ids
         }
     });
-    // accordion-4 selected game questions
+    /* accordion-4 selected game questions */
     $("#gameselectable").selectable({
         // on mouse up
         selected: function() {
@@ -208,7 +219,8 @@
 			console.log('nextcount:',nextcount);
         }
     });
-    /*Add Selected Questions button in accordion-2*/
+    
+    /* Add Selected Questions button in accordion-2 */
     $('#confirmit').click(function(e) {
         e.preventDefault();
         // selecteditems is array of question_id
@@ -257,11 +269,12 @@
         //console.log('chosenitems:',chosenitems);
         //console.log('gameitems:',gameitems);
         chosenitems=[];
-		nextcount = 0;//none
+		nextcount = 0;//none selected
     });
-    /* use gameitems to play game 
-		save gameitem to db questions
-		may only need to store [question_id, ...] for delphinium_roots_quiz_questions
+    
+    /*  use gameitems to play game 
+		save gameitem to db questions as array of question_id
+		retrieve questions from delphinium_roots_quiz_questions
 	*/
     $('#useit').click(function(e) {
         e.preventDefault();
@@ -270,21 +283,24 @@
 		if(gameitems.length>0) { 
 			// check: if saved yet, if changed since save
 			gameQuest=gameitems;// gameQuest is Array of questions in game
-			// may only need to store [question_id, ...] for delphinium_roots_quiz_questions
+			// store questions[question_id, ...] for delphinium_roots_quiz_questions
 			// construct array and populate Popquiz[questions]=idsArray
 			// then submit the form
 			// may need to be comma delimited string?
-			//Popquiz[questions]=[];//empty existing
-			var idArray = [];
+			var idArray = [];// try array
 			for(var i=0; i<gameitems.length; i++) {
-				idArray.push(gameitems[i].question_id);//try array 
+            //ONLY? if type == "multiple_choice_question" ONLY?
+				idArray.push(gameitems[i].question_id);
 			}
-			console.log('idArray:',idArray);
-			//$('#Form-field-Popquiz[questions]').val(idArray);
-			//$('#updateForm').submit();
-			
-			current=0;// questnum
+			//console.log('idArray:',idArray);
+            // update the form and config then submit to onSave
+			$('#Form-field-Popquiz-questions').val(idArray);
+            config.questions=idArray;// and internal array
+            console.log('config:',config.questions);
+			$('#updateForm').submit();// update the db record
+            // reloads page because of completed();
 			// or send to function in game?
+			
 			close_accordion_section();
 			$('#accordion-5').addClass('active');
 			$('.accordion #accordion-5').slideDown(300).addClass('open');
@@ -293,9 +309,8 @@
 		// else no questions to use
 	});
 
-    /*see details of each question 
-	  with answers and comments in modal
-	  use next btn to view each
+    /*  see details of each question with answers and comments in modal
+        use next btn to view each question
     */
 	$('#seeit').click(function(e) {
         e.preventDefault();
@@ -363,22 +378,24 @@
 		}
 		$('#qfeedback').html('<hr/>Comments:<br/>'+comdiv);
 	}
-/*question object
-answers: "[
-	{"weight":0,"id":2028,"migration_id":"RESPONSE_1113","text":"Organizational change is..."},
-	{"weight":60,"id":5595,"migration_id":"RESPONSE_2746","text":"Organizational change..."},
-	{"weight":40,"id":6439,"migration_id":"RESPONSE_8703","text":"Organizational change..."},
-	{"weight":0,"id":5998,"migration_id":"RESPONSE_1895","text":"Organizational change..."}]"
-correct_comments: ""
-created_at: "2016-03-04 20:12:19"
-incorrect_comments: ""
-name: "1.a Which of the followi"
-neutral_comments: "Organizational change can take many forms."
-points_possible: 1
-position: 1
-question_id: 8369896
-quiz_id: 464878
-text: "Which of the following statements regarding change is INCORRECT?"
-type: "multiple_choice_question"
+
+/* question object
+    answers: "[
+        {"weight":0,"id":2028,"migration_id":"RESPONSE_1113","text":"Organizational change is..."},
+        {"weight":60,"id":5595,"migration_id":"RESPONSE_2746","text":"Organizational change..."},
+        {"weight":40,"id":6439,"migration_id":"RESPONSE_8703","text":"Organizational change..."},
+        {"weight":0,"id":5998,"migration_id":"RESPONSE_1895","text":"Organizational change..."}]"
+    
+    name: "1.a Which of the followi"
+    incorrect_comments: ""
+    correct_comments: ""
+    neutral_comments: "Organizational change can take many forms."
+    points_possible: 1
+    position: 1
+    question_id: 8369896
+    quiz_id: 464878
+    text: "Which of the following statements regarding change is INCORRECT?"
+    type: "multiple_choice_question"
+    created_at: "2016-03-04 20:12:19"
 */
 </script>

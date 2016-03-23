@@ -8,6 +8,8 @@ use Delphinium\Roots\Requestobjects\QuizRequest;
 use Delphinium\Roots\Models\Assignment;
 use Delphinium\Roots\Requestobjects\AssignmentsRequest;// Add Update?
 use Delphinium\Poppies\Models\Popquiz as popquizModel;
+//TEST
+use Delphinium\Roots\Models\Quizquestion as questionsModel;
 use \DateTime;
 
 class Popquiz extends ComponentBase
@@ -169,7 +171,12 @@ class Popquiz extends ComponentBase
 			}
 			if($role=='Learner')
 			{
-				//get questions from model and show game chosen
+				/*get questions from $config->questions and show game chosen
+                    selected questions are stored in db as array of question_id
+                    retrieve questions from delphinium_roots_quiz_questions
+                */
+                $gameQuest = $this->getSomeQuestions($config->questions);
+                $this->page['gameQuest'] = $gameQuest;
 			}
 			// main code here
 		}
@@ -193,8 +200,8 @@ class Popquiz extends ComponentBase
         }
 	}
 
-	/*
-		Instructor can choose questions from multiple quizzes
+	/* Instructor can choose questions from multiple quizzes
+        return list of quizzes for instructor to choose questions
 	*/
 	public function getAllQuizzes()
     {
@@ -204,17 +211,36 @@ class Popquiz extends ComponentBase
         //echo json_encode($roots->quizzes($req));
 		
 		// remove quizzes with no questions
-		// return list of quizzes for instructor to choose questions
 		
 		//contains questions and answers for each quiz
 		return json_encode($roots->quizzes($req));
     }
-	
-	/*
+    
+    /* Learner needs question objects for game
+        use Delphinium\Roots\Models\Quizquestion as questionsModel; 
+        
+        $gameQuest = $this->getSomeQuestions($config->questions);
+        $this->page['gameQuest'] = $gameQuest;
+    */
+    public function getSomeQuestions($idList)
+    {
+        $ids = explode(",", $idList);
+        $length = count($ids);
+        $questionArray = array();
+        for ($i=0; $i<$length; $i++) {
+            // get question matching question_id
+            $question = questionsModel::where(array('question_id'=>$ids[$i]))->first();
+            //array_push($questionArray, $ids[$i]);//test ok
+            array_push($questionArray, $question);
+        }
+        return json_encode($questionArray);
+    }
+    
+    
+	/*UNUSED SO FAR
 		How can we get (this) assignment object
 		Need Intro text and points to display in game
 			if not done as a Canvas Assignment
-	UNUSED SO FAR
 	*/
 	public function getSingleAssignment()
     {
@@ -249,9 +275,9 @@ class Popquiz extends ComponentBase
 	*  frontend update component submit button
 	*  save to database and return updated record
     *
-    *  id can be disabled in fields.yaml
+    *  id is disabled in fields.yaml
     *  id, course & copy can also be hidden
-    *  $data gets .id from config.id instructor.htm
+    *  $data gets .id from config.id at instructor.htm
     *  called from instructor.htm configure settings modal
 	*/
 	public function onUpdate()
@@ -262,10 +288,9 @@ class Popquiz extends ComponentBase
         $config->quiz_name = $data['quiz_name'];// change to new data
         //echo json_encode($config);//($data);// testing
         
-		// add your fields to update
-        //$config->quiz_description=$data['quiz_name'];
-		//$config->game_style=$data['game_style'];
-		//$config->questions=$data['questions'];
+        $config->quiz_description=$data['quiz_description'];
+		$config->game_style=$data['game_style'];
+		$config->questions=$data['questions'];
 
 		$config->course_id = $data['course_id'];//hidden in frontend
         $config->copy_id = $data['copy_id'];//hidden

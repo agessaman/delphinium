@@ -46,20 +46,33 @@ assets/javascript/ygt_game.js
 // init in default.htm
 var scoreis=0, misses=0;
 var current=0;// questnum
-var gameQuest=[];
+var gameQuest=[];// array of questions
+
+Questions are stored in db as array of question_id
+in php if Learner, 
+retrieve questions in config.questions from delphinium_roots_quiz_questions
 */
+console.log('ygt role:',role);
+if(role == 'Learner') {
+    gameQuest = {{gameQuest|raw}};
+    console.log('ygt gameQuest:',gameQuest.length, gameQuest);
+    showIntro();
+    
+}/* else { showIntro(); } */
+
 function showIntro()
 {
 	// reset intro elements
-	$('#you').css({'left':11,'opacity':0});
+	$('#you').css({'left':90,'opacity':0});
 	$('#got').css({'top':1,'opacity':0});
 	$('#this').css({'left':555,'opacity':0});
 	$('#yep').css({'top':555,'opacity':0});
-	current=scoreis=misses=0;
+	
 	$('#nextaro').hide();
 	$('gameplay').hide();
 	$('title').show();
-	
+	current=scoreis=misses=0;
+    
 	console.log('show intro');
 	console.log('gameQuest:',gameQuest);
 	if(gameQuest.length==0) {
@@ -101,8 +114,6 @@ function showIntro()
 		.animate({opacity: 1}, 400);
 }
 
-// begin
-showIntro();
 /*
     click Play Now animates title off
     play area onto screen
