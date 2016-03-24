@@ -675,11 +675,11 @@ p.nominalBounds = new cjs.Rectangle(0,0,1223.7,1223.7);
 	this.initialize();
 
 	// Layer 1
-	this.text = new cjs.Text("Sorry, you lose!", "40px 'Arial'", "#CA0202");
+	this.text = new cjs.Text("Sorry, you will have to start over!", "40px 'Arial'", "#CA0202");
 	this.text.textAlign = "center";
 	this.text.lineHeight = 42;
 	this.text.lineWidth = 382;
-	this.text.setTransform(358,41.3);
+	this.text.setTransform(358,15);
 
 	this.again_btn = new lib.btnplayagain();
 	this.again_btn.setTransform(359.4,128.1,1,1,0,0,0,80.9,17);
@@ -976,7 +976,7 @@ new cjs.ButtonHelper(this.friend_btn, 0, 1, 1, false, new lib.btnfriend(), 0);
 	this.text.lineWidth = 100;
 	this.text.setTransform(22,16);
 	
-	this.questionText = new cjs.Text("Here's where the text of the questions will go... 1Blah blah blah... 2blah blah blah... 3blah blah blah... 4blah blah blah... 5blah blah blah... 6blah blah blah... 7blah blah blah... 8blah blah blah... 9blah blah blah... 10blah blah blah... 11blah blah blah... 12blah blah blah... 13blah blah blah... 14blah blah blah... 15blah blah blah... 16blah blah blah... 17blah blah blah... 18blah blah blah... 19blah blah blah... 20blah blah blah... 21blah blah blah... 22blah blah blah... 23blah blah", "14px 'Arial'", "#333333");
+	this.questionText = new cjs.Text("Here's where the text of the questions will go...", "14px 'Arial'", "#333333");
 	this.questionText.name = "questionText";
 	this.questionText.textAlign = "center";
 	this.questionText.lineHeight = 16;
@@ -1054,10 +1054,10 @@ p.nominalBounds = new cjs.Rectangle(0,0,396.5,66.7);
 	this.timeline.addTween(cjs.Tween.get(this).call(this.frame_0).wait(1));
 
 	// answerText
-	this.answerText = new cjs.Text("text for answer text answer text answer text answer text answer text answer text", "14px 'Arial'", "#FFFFFF");
+	this.answerText = new cjs.Text("text for answer ", "14px 'Arial'", "#FFFFFF");
 	this.answerText.name = "answerText";
 	this.answerText.textAlign = "center";
-	this.answerText.lineHeight = 12;
+	this.answerText.lineHeight = 14;
 	this.answerText.lineWidth = 268;
 	this.answerText.setTransform(178.7,10);
 
@@ -1499,15 +1499,14 @@ p.nominalBounds = new cjs.Rectangle(-131.8,-423.8,1223.7,1223.7);
 		function setupQuestion(question)
 		{
 			console.log("setting up question # "+questionNumber);
-			console.log(question);
-			//question 15 call it done
-			if(questionNumber>14) {
-				console.log('Done Grade it');
-				window.parent.postMessage({"score":1},"*");// for viewStudent to mark grade
-			}// else ?
+			//console.log(question);
+			if(questionNumber>13) {
+				console.log('One more question to go');
+				//window.parent.postMessage({"score":1},"*");// go to mark grade
+			}
 			
 			var txt = question.text;
-				txt = $.parseHTML(txt);
+				txt = $.parseHTML(txt);//jquery available
 				txt = txt[0].textContent;
 			//$('#qtext').html(txt);
 			var answers= $.parseJSON(question.answers);
@@ -1515,32 +1514,39 @@ p.nominalBounds = new cjs.Rectangle(-131.8,-423.8,1223.7,1223.7);
 			qlist=[4];
 			for(var i=0; i<answers.length; i++)
 			{
-				//find rightAnswer REWORK THIS
-				if(answers[i].weight == '100') { ri=i; }
+				//find rightAnswer REWORK THIS could be 60/40
+				if(answers[i].weight > 0) { ri=i; } 
 				qlist[i]=answers[i].text;
 			}
-			
+            
+			// T/F questions only have 2 make some up [maybe, probably]
+			console.log('answLen:',answers.length);
+            if(answers.length<3) { qlist[2]='Maybe'; }
+            if(answers.length<4) { qlist[3]='Probably'; }
+            
+            //console.log('answer:',answers[ri].text);
+            qlist=shuffleArray(qlist);//
+            
 			questionBox.questionText.text = txt;//??? html
-			questionBox.rightAnswer=answers[ri];// to compare with 
+			questionBox.rightAnswer=answers[ri];// to compare with ???
 			questionBox.questionNumBox.text = questionNumber;
 			questionBox.highlight.visible = false;
-
+            
 			congratsBox.visible = false;
 			askAudienceBox.visible = false;
 			phoneAFriendBox.visible = false;
-			
-			//if only 2 answers make some up [maybe, probably]
-			console.log('answLen:',answers.length);
-			//qlist=[4];
-			qlist=shuffleArray(qlist);
 			
 			for(i=0; i<optins.length; i+=1)
 			{
 				optins[i].answerText.text=qlist[i];
 				optins[i].visible=true;//reset fifty:fifty
 				optins[i].isRight=false;// reset & mark
-				if(optins[i].answerText.text == questionBox.rightAnswer) { optins[i].isRight=true; console.log("answer:"+qlist[i]); }
-				var tempNum = qlist[i].length;
+				if(optins[i].answerText.text == answers[ri].text) {
+                    optins[i].isRight=true;
+                    console.log("answer:"+qlist[i]);
+                }
+				var tempStr = qlist[i];
+                var tempNum = tempStr.length;
 				
 				if(tempNum<=45)
 				{
@@ -1561,8 +1567,7 @@ p.nominalBounds = new cjs.Rectangle(-131.8,-423.8,1223.7,1223.7);
 			timerBox.countdownBox.text = countdownInt;
 			startTimer();//countdownTimer.start();
 			showLifelines();
-			if(optionsOut)
-			{
+			if(optionsOut) {
 				popInOptions();//animate answers onto screen
 			}
 		}
@@ -1629,7 +1634,7 @@ p.nominalBounds = new cjs.Rectangle(-131.8,-423.8,1223.7,1223.7);
 			while(removedCounter<2)
 			{
 				tempInt = Math.ceil(getRandom(0,3));
-				console.log("tempInt =", tempInt);
+				console.log("fiftyClick: "+tempInt);
 				
 				if( ! optins[tempInt].isRight )
 				{
@@ -1650,14 +1655,11 @@ p.nominalBounds = new cjs.Rectangle(-131.8,-423.8,1223.7,1223.7);
 		function friendClick(e)
 		{
 			var tempInt = 0;
-			
 			var rand1 = 0;
 			var rand2 = 0;
 			var rand3 = 0;
 			var rand4 = 0;
-			
 			var finalPercent = 0;
-			
 			var moveOn = false;
 			phoneUsed=true;
 			questionBox.highlight.visible = false;
@@ -1667,8 +1669,8 @@ p.nominalBounds = new cjs.Rectangle(-131.8,-423.8,1223.7,1223.7);
 				{
 					if(optins[i].isRight) { tempInt=i+1; }
 				}
-				
-				//console.log("friendClicked : "+tempInt);
+				// Hanging up here?
+				console.log("friendClicked: "+tempInt);
 				while(moveOn==false)
 				{
 					switch(tempInt)
@@ -1715,9 +1717,10 @@ p.nominalBounds = new cjs.Rectangle(-131.8,-423.8,1223.7,1223.7);
 					}
 				}
 			}
-			
+			// Hanging up here?
 			if(fiftyClicked)
 			{
+                console.log('Hang? line 1723');
 				while(moveOn==false)
 				{
 					rand1 = Math.round(getRandom(0,100))+30;
@@ -2107,7 +2110,7 @@ p.nominalBounds = new cjs.Rectangle(-131.8,-423.8,1223.7,1223.7);
 		// answer clicked
 		function optClick(e)
 		{
-			//console.log(e.currentTarget.isRight);
+			console.log('clicked:',e.currentTarget.isRight, e.currentTarget);
 			///console.log(e.currentTarget.answerText.text, questionBox.rightAnswer);
 			hideLifelines();
 			
@@ -2243,8 +2246,12 @@ p.nominalBounds = new cjs.Rectangle(-131.8,-423.8,1223.7,1223.7);
 		 
 		this.background.spinningRays.play();
 		// wait for click
-		victoryBox.outroText.text = xmlplaylist.getElementsByTagName("outroText")[0].childNodes[0].nodeValue;
+		victoryBox.outroText.text = 'Thank you for playing our game! You can click "Play Again" if you want.';
 		var viclistnr=victoryBox.again_btn.on("click", playAgain);
+        
+        console.log('Done! Now Grade it');
+        window.parent.postMessage({"score":1},"*");// tell viewStudent to mark grade
+        
 		//victoryBox.again_btn.addEventListener(MouseEvent.MOUSE_OVER, overBtn);
 		function playAgain(e)
 		{

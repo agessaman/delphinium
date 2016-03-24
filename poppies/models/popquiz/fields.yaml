@@ -12,7 +12,7 @@ fields:
         label: 'Game Style'
         span: right
         type: text
-        commentAbove: generated
+        commentAbove: dropdown WIP
     questions:
         label: 'Question ids'
         span: right
