@@ -51,7 +51,7 @@ class TestRoots extends ComponentBase
         $this->dbHelper = new DbHelper();
 //        $this->refreshCache();
 //        $this->test();
-        $this->testBasicModulesRequest();
+//        $this->testBasicModulesRequest();
 //        $this->testGettingModuleStates();
 //        $this->testBuildTree();
 //        $this->testDeleteTag();
