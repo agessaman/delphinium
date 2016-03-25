@@ -1622,7 +1622,7 @@ p.nominalBounds = new cjs.Rectangle(-131.8,-423.8,1223.7,1223.7);
 			
 			return tempNum3;
 		}
-		
+		//fifty fifty
 		function fiftyClick(e)
 		{
 			var removedCounter = 0;
@@ -1651,7 +1651,7 @@ p.nominalBounds = new cjs.Rectangle(-131.8,-423.8,1223.7,1223.7);
 			lifelinesLeft -= 1;
 			fiftyClicked = true;
 		}
-		
+		//Phone a Friend
 		function friendClick(e)
 		{
 			var tempInt = 0;
@@ -1720,9 +1720,8 @@ p.nominalBounds = new cjs.Rectangle(-131.8,-423.8,1223.7,1223.7);
 			// Hanging up here?
 			if(fiftyClicked)
 			{
-                console.log('Hang? line 1723');
-				while(moveOn==false)
-				{
+                console.log('while Hangs line 1723');
+				//while(moveOn==false){
 					rand1 = Math.round(getRandom(0,100))+30;
 					rand2 = Math.round(getRandom(0,100)) - rand1;
 					
@@ -1793,15 +1792,15 @@ p.nominalBounds = new cjs.Rectangle(-131.8,-423.8,1223.7,1223.7);
 					{
 						moveOn = true;
 					}
-				}
+					console.log('finalPercent='+finalPercent);
+				//}
 			}
-			
 			
 			lifelinesLeft -= 1;
 			phoneAFriendBox.visible = true;
 			phoneAFriendBox.percentBox.text = finalPercent;
 			phoneAFriendBox.optLetterBox.text = friendChoice;
-			
+			//move off screen
 			cjs.Tween.get(popup.incorrectBox, { loop: false }).to({y:(incorrectYup+200)}, 350, cjs.Ease.backIn);
 			
 			askAudienceBox.visible = false;
@@ -1831,7 +1830,7 @@ p.nominalBounds = new cjs.Rectangle(-131.8,-423.8,1223.7,1223.7);
 				return num4;
 			}
 		}
-		
+		//Ask the audience
 		function audClick(e)
 		{
 			var temp1=0;
