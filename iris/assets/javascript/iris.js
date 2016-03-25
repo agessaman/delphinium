@@ -204,7 +204,7 @@ function createChart(iris)
                         var obj = rawData.filter(function (obj) {
 
                             //add each prereq to an array
-                            if (obj.module_id === prereqs)
+                            if (obj.module_id === parseInt(prereqs))
                             {
                                 prereqObjArr[obj.module_id] = obj;
                                 return obj;
@@ -313,7 +313,7 @@ function createChart(iris)
                         //only display optional tags if required content has been completed
                         ob = accessibleSubmissData.filter(function (ob)
                         {
-                            if (ob.content_id === currentAssignment.content_id)
+                            if (parseInt(ob.content_id) === parseInt(currentAssignment.content_id))
                             {
                                 return ob;
                             }
@@ -464,7 +464,7 @@ function createChart(iris)
         var ob = accessibleSubmissData.filter(function (ob)
         {
             var id = dd.content_id;
-            if (ob.content_id === id)
+            if (parseInt(ob.content_id) === parseInt(id))
             {
                 return ob;
             }

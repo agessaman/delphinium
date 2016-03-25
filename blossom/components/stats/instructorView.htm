@@ -1,4 +1,4 @@
-<div>
+<div id="instructorWrap">
     <div id="statsSettings">
         <a data-toggle="modal"  data-keyboard="true" data-backdrop="true" onclick="showModal()"><i class="icon-cog"></i></a>
     </div>
@@ -61,6 +61,8 @@
 </style>
 <script>
 
+    var childWidth = document.getElementById('statsWrapper').clientWidth;
+    document.getElementById("instructorWrap").style.width =childWidth+'px';
     if(configureExperience==1)
     {//if experience hasn't been configured notify the professor
         document.getElementById("statsSettings").style.display="none";
