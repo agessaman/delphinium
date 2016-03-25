@@ -435,7 +435,7 @@ class Experience extends ComponentBase {
         }
 
         //sort the remaining milestones by points asc
-        $mileArray = $milestonesDesc->toArray();
+        $mileArray = $localMilestones->toArray();
         usort($mileArray, function($a, $b) {
             $ad = $a['points'];
             $bd = $b['points'];

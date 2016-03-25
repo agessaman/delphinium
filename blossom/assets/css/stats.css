@@ -1,35 +1,46 @@
-.tooltip
+.statsWrapper
 {
-    border: 5px solid gray;
-    max-width: 300px;
+    min-width:225px;
+    min-height:200px;
+    position:relative;
+}
+.spinnerStats
+{
+    position: absolute;
+}
+.statsTooltip
+{
+    border: 3px solid gray;
+    /*max-width: 300px;*/
     background: white;
     padding: 10px;
     font-size: 14px;
     color: gray;
     border-radius: 9px;
+    position:absolute;
+    z-index:1001;
 }
-
-/*The following switch style idea came from http://jsfiddle.net/johniehjelm/zavqu/4/
-Created by @JohnieHjelm.*/
-
 #switch{
     width: 162px;
     height: 26px;
-    position: absolute;
-    margin: -13px 0 0 -42px;
+    position: relative;
 }
 
+.disabled
+{
+    pointer-events: none;
+}
 .switch-li
 {
-    font-size:11px;
+    font-size:9px;
 }
 .smallLi{
-    font-size:10px;
+    font-size:8px;
     line-height:12px;
     height:15px;
 }
 .largeLi {
-    font-size:18px;
+    font-size:15px;
     line-height:23px;
     height:24px;
 }
@@ -37,7 +48,6 @@ Created by @JohnieHjelm.*/
 #switch span a{
     text-decoration: none;
     font-family:"lato", sans-serif;
-    text-transform:uppercase;
     color:gray;
 }
 
@@ -52,58 +62,9 @@ Created by @JohnieHjelm.*/
     /*-webkit-box-shadow:0 1px 2px rgba(0, 0, 0, .7) inset, 0 1px 0 #FFF;*/
 }
 
-ul li:not(.on):active{
-    background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#ddd), to(#f1f1f1));
-}
-
-
-ul li.on a{
-    color:#7BBA47;
-    cursor: default;
-}
-
 a a:hover, a:visited, a:active{
     text-decoration:none;
 }
-
-
-@-webkit-keyframes spinnerRotate
-{
-    from{-webkit-transform:rotate(0deg);}
-    to{-webkit-transform:rotate(360deg);}
-}
-@-moz-keyframes spinnerRotate
-{
-    from{-moz-transform:rotate(0deg);}
-    to{-moz-transform:rotate(360deg);}
-}
-@-ms-keyframes spinnerRotate
-{
-    from{-ms-transform:rotate(0deg);}
-    to{-ms-transform:rotate(360deg);}
-}
-#loading{
-    opacity: 0.6;
-    display: none;
-    position:absolute;
-    top:60%;
-    left:37%;
-    color:blue;
-    font-size:5em;
-    -webkit-animation-name: spinnerRotate;
-    -webkit-animation-duration: 2s;
-    -webkit-animation-iteration-count: infinite;
-    -webkit-animation-timing-function: linear;
-    -moz-animation-name: spinnerRotate;
-    -moz-animation-duration: 2s;
-    -moz-animation-iteration-count: infinite;
-    -moz-animation-timing-function: linear;
-    -ms-animation-name: spinnerRotate;
-    -ms-animation-duration: 2s;
-    -ms-animation-iteration-count: infinite;
-    -ms-animation-timing-function: linear;
-}
-
 .settings:visited
 {
     text-decoration:none;

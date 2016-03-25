@@ -1,44 +1,48 @@
-{% partial 'stats::display' %}
+<div>
+    <div id="statsSettings">
+        <a data-toggle="modal"  data-keyboard="true" data-backdrop="true" onclick="showModal()"><i class="icon-cog"></i></a>
+    </div>
+    {% partial __SELF__~"::display" %}
+    <div class="confirm-container bg-success hide">
+        <p style="text-align:center;">Successfully Updated Entry!</p>
+    </div>
+    <div id="configureExperience">
+        This component is tied to the Experience component, which hasn't been configured yet.
+        Please go to the experience component in professor mode to configure it.
+    </div>
+    <div class="control-popup modal fade" id="modalWindow" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <!-- Tabs -->
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a data-toggle="tab" href="#configure">Configure</a></li>
+                        <li><a data-toggle="tab" href="#instruct">Instructions</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <!-- Configure instance -->
+                        <div id="configure" class="tab-pane fade in active" style="padding: 5px 0px;">
+                            <form role="form" id="updateForm"
+                                  data-request="{{ __SELF__ }}::onSave"
 
-<div class="confirm-container bg-success hide">
-    <p style="text-align:center;">Successfully Updated Entry!</p>
-</div>
-<div class="">
-    <a data-toggle="modal"  data-keyboard="true" data-backdrop="true" onclick="showModal()"><i class="icon-cog"></i> Settings</a>
-</div>
-<div class="control-popup modal fade" id="modalWindow" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            </div>
-            <div class="modal-body">
-                <!-- Tabs -->
-                <ul class="nav nav-tabs">
-                    <li class="active"><a data-toggle="tab" href="#configure">Configure</a></li>
-                    <li><a data-toggle="tab" href="#instruct">Instructions</a></li>
-                </ul>
-                <div class="tab-content">
-                    <!-- Configure instance -->
-                    <div id="configure" class="tab-pane fade in active" style="padding: 5px 0px;">
-                        <form role="form" id="updateForm"
-                              data-request="{{ __SELF__ }}::onSave"
-
-                              data-request-success="$el.hide();$('.confirm-container').removeClass('hide');completed(data);">
-                            {{ form.update(recordId)|raw }}
-                            {{ form.formRender()|raw }}
-                            <div class="form-group">
-                                <button class="btn btn-primary" type="submit" value="register" data-load-indicator="Saving Stats..." >Update Component</button>
-                                <button type="button" onclick="hideModal()" class="btn btn-default" data-disposable="">Close</button>
-                            </div>
-                        </form>
-                    </div>
-                    <!-- Instructions -->
-                    <div id="instruct" class="tab-pane fade in" style="padding: 0px 20px;">
-                        {{ instructions|raw }}
+                                  data-request-success="$el.hide();$('.confirm-container').removeClass('hide');completed(data);">
+                                {{ form.update(recordId)|raw }}
+                                {{ form.formRender()|raw }}
+                                <div class="form-group">
+                                    <button class="btn btn-primary" type="submit" value="register" data-load-indicator="Saving Stats..." >Update Component</button>
+                                    <button type="button" onclick="hideModal()" class="btn btn-default" data-disposable="">Close</button>
+                                </div>
+                            </form>
+                        </div>
+                        <!-- Instructions -->
+                        <div id="instruct" class="tab-pane fade in" style="padding: 0px 20px;">
+                            {{ instructions|raw }}
+                        </div>
                     </div>
                 </div>
-            </div>
 
             </div>
             <div style="clear:both; height:1.5em"></div>
@@ -49,17 +53,25 @@
     </div>
 </div>
 
-
+<style>
+    /*override backend styles*/
+    .modal-header {background:none !important;border-bottom:1px solid #e5e5e5 !important;}
+    .modal-header .close{color:black !important;background:transparent !important;}
+    #configureExperience{display:none;}
+</style>
 <script>
 
+    if(configureExperience==1)
+    {//if experience hasn't been configured notify the professor
+        document.getElementById("statsSettings").style.display="none";
+        document.getElementById("configureExperience").style.display="block";
+    }
     function showModal()
     {
         $("#modalWindow").on("shown.bs.modal", function () {
             //disable the course id and the copy name
-            var modal = $(this);
             document.getElementById('Form-field-Stats-name').readOnly=true;
             document.getElementById('Form-field-Stats-course_id').readOnly=true;
-
         }).modal('show');
     }
 
@@ -67,7 +79,6 @@
     {
         $('#modalWindow').modal('hide');
     }
-
 
     function completed(data)
     {

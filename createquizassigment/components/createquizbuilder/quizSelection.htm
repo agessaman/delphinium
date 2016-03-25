@@ -1,0 +1,70 @@
+
+<!--<div id="divHidden" class="hiddenRow" style="clear:both;border:1px solid #8E8E8E;margin-left:16px;padding:2px;width:389px;">Doh, you found me!<br clear="all"></div>-->
+<br/>
+<br/>
+<div class="container">
+    {% set division = 0 %}
+    {% set divCounter = 0 %}
+    {% set counter = 0 %}
+    {% for q in setOfQuestions   %}
+
+    {%if division == 0%}
+        <div id="{{divCounter}}" >
+            {% set divCounter = divCounter + 1 %}
+    {% endif %}
+        {% set counter = counter +1 %}
+        {% set division = division +1 %}
+
+        <div><label>{{counter}}.- {{q[1]}}</label></div>
+
+        {% if q[3]   ==  "multipleChoice"  %}
+             {% for answer in q[2] %}
+                <span style="padding-left:20px">
+                 <input type='radio' name="{{ q[0] }}" value="{{ q[0] }}">  {{ answer |trim('",') }}</input>
+                </span>
+                 <br/>
+             {% endfor %} 
+        {% endif %}
+
+        {% if q[3]   ==  "trueFalse"  %} 
+            {% for answer in q[2] %}
+                <span style="padding-left:20px">
+                 <input type='radio' name="{{ q[0] }}" value="{{ q[0] }}">  {{ answer |trim('",')}}</input>
+                </span>
+             <br/>
+            {% endfor %}
+          {% endif %} 
+
+            {% set answerDiv =  'ans'~q[0]    %}
+            <div id="{{answerDiv}}"></div>
+            <div id="printQuestions"></div>
+
+            <button class='btn btn-primary' onclick='updateComponent({{ q[0] }})' >Check</button><br>
+    {%if division == 15%}
+    </div>
+    {% set division = 0 %}
+    {% endif %}
+
+
+    {% endfor %}
+
+    {%if division < 15%}
+        </div>
+    {% endif %}
+
+</div>
+
+<div id="selectQuestions">
+    {% if setOfQuestions %}
+    <hr/>
+    <button type="button" class="btn btn-primary" onclick="nextButton()">NEXT</button>
+
+    {% endif %}
+</div>
+
+
+<script>
+    document.getElementById(0).style.display='block';
+    document.getElementById(1).style.display='none';
+</script>
+
