@@ -44,7 +44,7 @@ class Vanilla extends ComponentBase
     {
 		$instances = VanillaModel::all();// records
 		if(count($instances) === 0) {
-			return $array_dropdown = ['0' => "No instance available."]
+			return $array_dropdown = ['0' => "No instance available."];
 		} else {
 			$array_dropdown = ['0'=>'- select Instance - '];//id, text in dropdown
 			// populate CMS dropdown

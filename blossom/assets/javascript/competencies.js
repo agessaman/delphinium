@@ -4,6 +4,11 @@
     Uses:
     submissions for tags & scores
     assignments for points_possible
+	
+	Stem must contain special tags starting with C:
+	After configuring stem to work for Bird of Pardise,
+	I could not see any of the tags for Competencies.
+	I will need to add the deep search on module items here too.
 */
 
 var div;// tooltip
@@ -88,7 +93,7 @@ function filterModuleTags() {
             }
         }
     }
-    //console.log('tagList:', tagList.length, tagList);
+    console.log('tagList:', tagList.length, tagList);
     //console.log('modAssignments:', modAssignments.length, modAssignments);
     //console.log('assignments:',assignments.length, assignments);
     
@@ -151,7 +156,7 @@ function filterData() {
         var tdetails = 'subm['+i+']';
             tdetails+= ' tags:'+tagged[i].tags+' [score:'+tagged[i].score+']<br/>';
     }
-    //console.log(tagList.length, 'tagList:'+tagList);
+    console.log(tagList.length, 'tagList:'+tagList);
 
 	/*
     loop thru tagList to sort tagged submissions into groups, 
