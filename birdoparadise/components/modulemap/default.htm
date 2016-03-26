@@ -25,7 +25,7 @@
 </script>
 
 {% if ('Learner' in role) %}
-{% partial 'modulemap::student' %}
+{% partial __SELF__~'::student' %}
 {% elseif ('Instructor' in role) %}
-{% partial 'modulemap::instructor' %}
+{% partial __SELF__~'::instructor' %}
 {% endif %}

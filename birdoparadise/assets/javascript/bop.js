@@ -1,5 +1,5 @@
 $(document).ready(function() {
-	//possibly add the content message dynamically
+	/* Add the content message dynamically, could be different for role */
 	$('#popinfo').attr('data-content','Click a module to see assignments');
     $('#popinfo').popover();// activate info
     /*
@@ -15,7 +15,7 @@ $(document).ready(function() {
         assignment links in locked modules are disabled for student view
     */
 	var stateColors = {locked: "#8F8F8F", unlocked: "#588238", started: "#5eacd4", completed: "#143D55"};
-    var backColors = {locked: "#DDDDDD", unlocked: "#588238", started: "#5eacd4", completed: "#133D55"};
+    //var backColors = {locked: "#DDDDDD", unlocked: "#588238", started: "#5eacd4", completed: "#133D55"};
     // colors from iris
     
     var tabCounter = 0;

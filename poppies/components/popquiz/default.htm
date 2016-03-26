@@ -22,7 +22,7 @@
 
 </script>
 {% if ('Learner' in role) %}
-{% partial 'popquiz::learner' %}
+{% partial __SELF__~'::learner' %}
 {% elseif ('Instructor' in role) %}
-{% partial 'popquiz::instructor' %}
+{% partial __SELF__~'::instructor' %}
 {% endif %}

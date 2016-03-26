@@ -64,7 +64,7 @@
 		
         <a class="accordion-section-title" href="#accordion-5">Game Preview</a>
 		<div id="accordion-5" class="accordion-section-content">
-            {% partial 'popquiz::millionaire_game' %}
+            {% partial __SELF__~'::millionaire_game' %}
 			<!-- ygt_game , millionaire_game , ... -->
         </div><!--end .accordion-section-content-->
 		
@@ -147,7 +147,7 @@
 	/* these form fields are hidden in fields.yaml so repopulate form for submit */
 	$('#Form-outsideTabs').append('<input type="hidden" name="Popquiz[id]" value="'+config.id+'" /> ');
     $('#Form-outsideTabs').append('<input type="hidden" name="Popquiz[course_id]" value="'+config.course_id+'" /> ');
-    $('#Form-outsideTabs').append('<input type="hidden" name="Popquiz[copy_id]" value="'+config.copy_id+'" /> ');
+    
 	/* show instructions first? */
     
     /* manually activate the modal */

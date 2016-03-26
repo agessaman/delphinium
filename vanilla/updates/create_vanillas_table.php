@@ -5,7 +5,7 @@ use October\Rain\Database\Updates\Migration;
 
 class CreateVanillasTable extends Migration
 {
-
+	//http://octobercms.com/docs/database/structure
     public function up()
     {
         Schema::create('delphinium_vanilla_vanillas', function($table)

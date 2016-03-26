@@ -35,9 +35,3 @@ fields:
         type: text
         hidden: 1
         comment: 'copy id is generated dynamically'
-    copy_id:
-        label: 'Copy id'
-        span: auto
-        type: text
-        hidden: 1
-        comment: 'copy id is generated dynamically'

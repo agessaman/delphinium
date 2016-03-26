@@ -1,6 +1,6 @@
 <!-- Instructor View with Settings cog -->
 <div style="position:relative; z-index:950;">
-    <a id="popinfo" title="Info" tabindex="0" role="button" data-trigger="focus" data-container="body" data-toggle="popover" data-placement="left" data-content="And here's some amazing content. It's very engaging. Right?" style="position:absolute; top:0; right:0px;">
+    <a id="popinfo" title="Info" tabindex="0" role="button" data-trigger="focus" data-container="body" data-toggle="popover" data-placement="left" data-content="Setup below" style="position:absolute; top:0; right:0px;">
         <i class="icon-question"></i>
     </a>
 	<div id="cog" data-toggle="modal" href="#content-configuration" style="position:absolute; top:0; right:10px;">
@@ -50,22 +50,24 @@
 </div>
 
 <script>
+	/* set up the popover content text and activate it*/
+	$('#popinfo').attr("data-content","Here is some amazing content. It's very engaging. Right?");
     $('#popinfo').popover();// activate info
-    /* set id,course,copy in the POST if they are hidden in fields.yaml
+	
+    /* set id & course for the POST if they are hidden in fields.yaml
         Add hidden input fields so they will transfer to onUpdate
-        fields.yaml is set to hidden: true do not appear in the form at all
+        if a field is set to hidden: true it does not appear in the form at all
         
         in Vanilla I only have id hidden
     */
     
     $('#Form-outsideTabs').append('<input type="hidden" name="Vanilla[id]" value="'+config.id+'" /> ');
     //$('#Form-outsideTabs').append('<input type="hidden" name="Vanilla[course_id]" value="'+config.course_id+'" /> ');
-    //$('#Form-outsideTabs').append('<input type="hidden" name="Vanilla[copy_id]" value="'+config.copy_id+'" /> ');
     
 	function completed(data)
 	{
         /* updated record is returned */
         location.reload();
 	}
-	console.log('instance: id='+config.id,config.name,config.custom,config.course_id,config.copy_id);
+	console.log('instance: id='+config.id,config.name,config.custom,config.course_id);
 </script>

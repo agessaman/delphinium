@@ -12,7 +12,6 @@ class UpdateDelphiniumPoppiesPopquizzes extends Migration
 			$table->string('questions',1024);//could be long
 			$table->string('game_style',255);
 			$table->integer('course_id')->nullable();
-            $table->string('copy_id',255);
         });
     }
     
@@ -23,7 +22,6 @@ class UpdateDelphiniumPoppiesPopquizzes extends Migration
 			$table->dropColumn('questions');
 			$table->dropColumn('game_style');
 			$table->dropColumn('course_id');
-            $table->dropColumn('copy_id');
         });
     }
 }

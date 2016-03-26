@@ -23,7 +23,7 @@
     
 </script>
 {% if ('Learner' in role) %}
-{% partial 'competencies::studentView' %}
-{% elseif ('Instructor' in role or 'TeachingAssistant' in role) %}
-{% partial 'competencies::instructorView' %}
+{% partial __SELF__~'::studentView' %}
+{% elseif ('Instructor' in role) %}
+{% partial __SELF__~'::instructorView' %}
 {% endif %}

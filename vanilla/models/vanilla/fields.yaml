@@ -17,8 +17,3 @@ fields:
         span: auto
         type: text
         comment: 'copy id is generated dynamically'
-    copy_id:
-        label: 'Copy id'
-        span: auto
-        type: text
-        comment: 'copy id is generated dynamically'

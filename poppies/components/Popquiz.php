@@ -26,15 +26,6 @@ class Popquiz extends ComponentBase
     public function defineProperties()
     {
         return [
-
-            'copy_id' => [
-                'title'        => 'Copy Name:',
-                'type'         => 'string',
-                'default'      => 'copy-1',
-                'required'     => 'true',
-                'validationPattern' => '^(?!\s*$).+',
-                'validationMessage' => 'This field cannot be left blank.'
-            ],
             'instance'	=> [
                 'title'             => 'Configuration:',
                 'description'       => 'Select an instance',
@@ -91,45 +82,21 @@ class Popquiz extends ComponentBase
                 $config->save();//update original record now in case it did not have course
 
             } else {
-                // if copy has a name.
-				// note: it will after the first dynamic is created
-                $copyLength = strlen($this->property('copy_id'));
-                if($copyLength > 0 )
-                {
-                    // find all matching course 
-                    $instances = popquizModel::where('course_id','=', $courseID)->get();
-                    $instCount = count($instances);
-                    if($instCount == 0) { 
-						// none found so set to catch condition for dynamic
-                        $copyLength = 0;
-                    } else {
-                        // find instance with copy
-                        $flag=false;
-                        foreach ($instances as $instance)
-                        {
-                           if($instance->copy_id == $this->property('copy_id') )
-                           {
-                               $config = $instance;
-                               $flag=true;
-                               break;// got first one found
-                           }
-                        }
-                        //yes found courses but not matching copy. use the first one found with course id
-                        if( !$flag ) { $config = $instances[0]; }
-                    }
-                }
-                // no match found so create new dynamic instance
-                if($copyLength == 0 )
-                {
-                    $config = new popquizModel;// db record
-                    $config->name = 'dynamic_';//+ total records count?
-                    // add your fields
-                    //$config->quiz_name = '';
-					//quiz_description,game_style,questions
-                    $config->course_id = $_SESSION['courseID'];
-                    $config->copy_id = $this->property('copy_id');
-                    $config->save();// save the new record
-                }
+                
+				// find all matching course 
+				$instances = popquizModel::where('course_id','=', $courseID)->get();
+				
+				if(count($instances) === 0) { 
+					// no record found so create a new dynamic instance
+					$config = new popquizModel;// db record
+					$config->name = 'dynamic_';//+ total records count?
+					
+					$config->course_id = $_SESSION['courseID'];
+					$config->save();// save the new record
+				} else {
+					//use the first record matching course
+					$config = $instances[0];
+				}
             }
 			// use the record in the component and frontend form 
             $this->page['config'] = json_encode($config);
@@ -156,7 +123,7 @@ class Popquiz extends ComponentBase
 				$formController = new \Delphinium\Poppies\Controllers\Popquiz();
 				$formController->create('frontend');
 				
-                //this is the primary key of the record you want to update
+                // Use the primary key of the record you want to update
                 $this->page['recordId'] = $config->id;
 				// Append the formController to the page
 				$this->page['form'] = $formController;
@@ -274,12 +241,12 @@ class Popquiz extends ComponentBase
         return $array_dropdown;
     }
     
-    /**Added
+    /**
 	*  frontend update component submit button
 	*  save to database and return updated record
     *
     *  id is disabled in fields.yaml
-    *  id, course & copy can also be hidden
+    *  id & course can also be hidden
     *  $data gets .id from config.id at instructor.htm
     *  called from instructor.htm configure settings modal
 	*/
@@ -296,7 +263,6 @@ class Popquiz extends ComponentBase
 		$config->questions=$data['questions'];
 
 		$config->course_id = $data['course_id'];//hidden in frontend
-        $config->copy_id = $data['copy_id'];//hidden
 		$config->save();// update original record 
 		return json_encode($config);// back to instructor view
     }

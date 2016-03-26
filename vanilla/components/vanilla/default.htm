@@ -10,7 +10,7 @@
 	   include additional css or javascript libraries
 		
 		component instance DB record
-		[id,name, <Your Fields>, course_id,copy_id]
+		[id,name, <Your Fields>, course_id]
 	*/
 	
 	var config = {{config|raw}};
@@ -33,7 +33,7 @@
     console.log('Role: ',role);
 </script>
 {% if ('Learner' in role) %}
-{% partial 'vanilla::student' %}
+{% partial __SELF__~'::student' %}
 {% elseif ('Instructor' in role) %}
-{% partial 'vanilla::instructor' %}
+{% partial __SELF__~'::instructor' %}
 {% endif %}
