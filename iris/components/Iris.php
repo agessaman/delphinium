@@ -148,21 +148,14 @@ class Iris extends ComponentBase
     }
 
     private function buildTree(array &$elements, $parentId = 1, $moduleFilter=null) {
-echo "prent: ".$parentId."  --";
-echo "filter: ".$moduleFilter;
         $branch = array();
-        $i=0;
         foreach ($elements as $key=>$module) {
-echo $i."-";$i++;
             if($module['published'] == "1")//if not published don't include it
             {
                 if(!is_null($moduleFilter)&&($module['module_id']!=$moduleFilter))
                 {//if we have a filter and this module doesn't match the filter, skip the item
 
-                    echo "build tree -";
-                    echo count($elements)."|";
                     unset($elements[$module['module_id']]);
-                    echo count($elements);
                     continue;
                 }
                 if ($module['parent_id'] == $parentId) {

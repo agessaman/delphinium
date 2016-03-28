@@ -122,7 +122,6 @@ class Stats extends ComponentBase
         {
             $copyName =$this->alias;
         }
-        echo $copyName;
         $courseInstance =StatsModel::firstOrNew(array('course_id' => $courseId,'name'=>$copyName));
         $courseInstance->course_id = $courseId;
         $courseInstance->name = $copyName;
