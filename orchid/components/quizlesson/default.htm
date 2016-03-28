@@ -1,3 +1,26 @@
-<p>This is the default markup for component quizlesson</p>
-
-<small>You can delete this file if you want</small>
+<script>
+	/* jquery and boostrap.js must be added here
+	   include additional css or javascript libraries
+		
+		component instance DB record
+		[id,name, <Your Fields>, course_id]
+	*/
+	
+	var config = {{config|raw}};
+	console.log('config',config);
+	
+	/*
+        initialize main variables
+        get variables from the php with twig
+        use twig to determine if the component is seen 
+        by an instructor or a student and load needed partial
+    */
+	var role = '{{role}}';//string
+    console.log('Role: ',role);
+    
+</script>
+{% if ('Learner' in role) %}
+{% partial __SELF__~'::student' %}
+{% elseif ('Instructor' in role) %}
+{% partial __SELF__~'::instructor' %}
+{% endif %}

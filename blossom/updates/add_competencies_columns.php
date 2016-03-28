@@ -8,7 +8,7 @@ class AddCompetenciesTable extends Migration
     public function up()
     {
 		//http://octobercms.com/docs/database/structure	
-		Schema::create('delphinium_blossom_competencies', function($table)
+		Schema::table('delphinium_blossom_competencies', function($table)
 		{
 			$table->string('Color');//hex #FF00FF
 			$table->integer('course_id')->unsigned();

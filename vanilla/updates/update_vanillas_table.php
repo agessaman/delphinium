@@ -7,7 +7,7 @@ class UpdateVanillasTable extends Migration
 {
     public function up()
     {
-        Schema::create('delphinium_vanilla_vanillas', function($table)
+        Schema::table('delphinium_vanilla_vanillas', function($table)
         {
 			$table->string('course_id',255);
         });

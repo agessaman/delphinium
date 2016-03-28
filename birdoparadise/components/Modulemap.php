@@ -26,6 +26,10 @@ class Modulemap extends ComponentBase
     {
         try
         {
+            //$this->addCss("/plugins/delphinium/birdoparadise/assets/css/bootstrap.min.css");
+            $this->addCss("/plugins/delphinium/birdoparadise/assets/css/bop.css");
+            $this->addJs("/plugins/delphinium/birdoparadise/assets/javascript/bop.js");
+            
             if (!isset($_SESSION)) { session_start(); }
 
             // comma delimited string
