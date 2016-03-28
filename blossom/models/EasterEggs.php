@@ -14,9 +14,11 @@ class EasterEggs extends Model
     public $table = 'delphinium_blossom_easter_eggs';
 
     public $rules = [
-        'Name'=>'required'
+        'name'=>'required',
+        'menu'=>'required'
     ];//copy_id & 'course_id' => 'required' created dynamically
     
-    
+    protected $guarded = ['*'];
+    protected $fillable = ['name','menu'];
 
 }

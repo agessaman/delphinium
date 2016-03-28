@@ -1,5 +1,6 @@
 <?php namespace Delphinium\Blossom\Controllers;
 
+use Flash;
 use BackendMenu;
 use Backend\Classes\Controller;
 
