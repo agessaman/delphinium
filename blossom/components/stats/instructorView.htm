@@ -62,7 +62,11 @@
 <script>
 
     var childWidth = document.getElementById('statsWrapper').clientWidth;
-    document.getElementById("instructorWrap").style.width =childWidth+'px';
+    var childHeight = document.getElementById('statsWrapper').clientHeight;
+    var wrap = document.getElementById("instructorWrap");
+    wrap.style.width =childWidth+'px';
+    wrap.style.height =childHeight+'px';
+
     if(configureExperience==1)
     {//if experience hasn't been configured notify the professor
         document.getElementById("statsSettings").style.display="none";
