@@ -556,6 +556,18 @@ function scaleStats() {
         lis.classed('largeLi', true);
     }
 
+    if(nonstudent===1)
+    {
+        //if professor, fix the position of the gear
+        var childWidth = document.getElementById('statsWrapper').offsetWidth;
+        var childHeight = document.getElementById('statsWrapper').offsetHeight;
+        var wrap = document.getElementById("instructorWrap");
+        if(wrap!=undefined)
+        {
+            wrap.style.width =childWidth+'px';
+            wrap.style.height =childHeight+'px';
+        }
+    }
 }
 
 //tooltips

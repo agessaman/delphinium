@@ -98,6 +98,10 @@ class Stats extends ComponentBase
         {//only instructors will be able to configure the component
             $this->instructor();
         }
+        else
+        {
+            $this->page['nonstudent']=0;
+        }
 //        }
 //        catch(\Delphinium\Roots\Exceptions\InvalidRequestException $e)
 //        {
