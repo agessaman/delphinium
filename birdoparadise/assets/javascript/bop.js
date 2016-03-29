@@ -157,14 +157,12 @@ $(document).ready(function() {
                     item+=moditems[i].content[0].points_possible+' pts.</div>';// close points
                 }
             }
-            item +='<div class="ico">'+ico+'</div>';//'<i class="icon-file-text"></i> ';
-            //item +=' Type: '+moditems[i].type;// determine icon                    
-            //item+='<a target="_blank" href="'+moditems[i].html_url+'" target="_blank"> '+moditems[i].title+'</a>';
+            item +='<div class="ico">'+ico+'</div>';
             item +='<div class="link">';
 			if(mod[0].state == 'locked') {
 				item += ' '+moditems[i].title;// not a link if locked
 			} else {
-				item +='<a target="_blank" href="'+moditems[i].html_url+'?module_item_id='+moditems[i].module_item_id+'" target="_blank"> '+moditems[i].title+'</a>';
+				item +='<a target="_blank" href="'+moditems[i].html_url+'?module_item_id='+moditems[i].module_item_id+'"> '+moditems[i].title+'</a>';
             }
 			item +='</div>';
 			if(moditems[i].completion_requirement.length > 0) {
