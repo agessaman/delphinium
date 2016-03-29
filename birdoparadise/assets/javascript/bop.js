@@ -14,9 +14,6 @@ $(document).ready(function() {
 		module box background images - upload and location
         assignment links in locked modules are disabled for student view
     */
-	var stateColors = {locked: "#8F8F8F", unlocked: "#588238", started: "#5eacd4", completed: "#143D55"};
-    //var backColors = {locked: "#DDDDDD", unlocked: "#588238", started: "#5eacd4", completed: "#133D55"};
-    // colors from iris
     
     var tabCounter = 0;
     var tabTemplate = "<li role='presentation'>";
@@ -44,7 +41,7 @@ $(document).ready(function() {
             for(i=0; i<modlist.length; i++) {
                 //Module box with title, lock, stars & image
             var modbox = '<div id="'+modlist[i].module_id+'" class="moditem" data-locked="'+modlist[i].locked+'">';
-                modbox +='<div class="title">'+modlist[i].name+'</div>';
+                modbox +='<div class="title '+modlist[i].state+'">'+modlist[i].name+'</div>';
                 //console.log('locked:',modlist[i].state);//null,locked,unlocked,started,completed
                 if(modlist[i].state == 'locked') {
                     var prereqids = modlist[i].prerequisite_module_ids;
@@ -56,7 +53,7 @@ $(document).ready(function() {
                         if(pid>0) { prename+=' & '; }
                         prename += preids[pid];// maybe just id
                     }
-				    modbox +='<div class="locked" data-toggle="tooltip" data-placement="bottom" title="'+prename+'"><i class="icon-lock"></i></div>';   
+				    modbox +='<div class="modlocked" data-toggle="tooltip" data-placement="bottom" title="'+prename+'"><i class="icon-lock"></i></div>';   
                 }
 				//modbox +='<div class="items">'+modlist[i].module_id+' Items: '+modlist[i].items_count+'</div>';// testing
                 if(role == 'Learner') {
@@ -101,7 +98,7 @@ $(document).ready(function() {
             $('.arol, .aror').show();
         } else { $('.arol, .aror').hide(); }
     }
-
+    
     /* click module to see module_items */
     $('.moditem').on('click', function(){
         var modid = $(this).attr('id');
@@ -114,6 +111,8 @@ $(document).ready(function() {
         // display in modal detailed-body
         
         $('#detailed-body').empty();
+        
+        // hide if fulfilled
 		//append prerequisite_module_ids 
 		if(mod[0].prerequisite_module_ids != '') {
 			var prereqids=mod[0].prerequisite_module_ids;
@@ -132,7 +131,10 @@ $(document).ready(function() {
                 
                 if(itm.length>0) { prename = itm[0].name; }
                 //console.log('pid:',pid,'prename:',prename);
-				prereq +='<div class="ico">'+preids[pid]+'-'+prename+'</div>';// orange
+                if(prename != '') {
+				    //prereq +='<li class="ico">'+prename+'</li>';// size 1.3em
+                    prereq +='<li>'+prename+'</li>';
+                }
             }
             prereq +='<div class="clearme"></div>';
             prereq +='</div>';// close prereq
@@ -140,11 +142,11 @@ $(document).ready(function() {
             $('#detailed-body').append(prereq);
 		}
 		
-		//mod[0].state;//null,locked,unlocked,started,completed
+        //append module_items : mod[0].state;//null,locked,unlocked,started,completed
         for(var i=0; i<moditems.length; i++) {
 			var hasContent=false;
             var item='<div class="assignment">';
-            var ico = getIcon(moditems[i].type);
+            var ico = chooseIcon(moditems[i].type);
             if(moditems[i].content.length > 0) { hasContent=true; }
             if(hasContent && moditems[i].content[0].points_possible > 0) {
                 // before link & icon float:right
@@ -188,6 +190,7 @@ $(document).ready(function() {
             $('#detailed-body').append(item);
         }
         // trigger modal
+        //$('#detailed-title').html(mod[0].name +' '+mod[0].state);
         $('#detailed-title').html(mod[0].name);
         $('#itemdetails').modal('show');
     });
@@ -216,7 +219,7 @@ $(document).ready(function() {
         tabCounter++; 
     }
 
-    function getIcon(type) {
+    function chooseIcon(type) {
         //console.log('type:',type);
         var ico = 'icon-book';
 
