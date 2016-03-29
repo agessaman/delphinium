@@ -76,8 +76,9 @@
     {
         $("#modalWindow").on("shown.bs.modal", function () {
             //disable the course id and the copy name
-            document.getElementById('Form-field-Stats-name').readOnly=true;
-            document.getElementById('Form-field-Stats-course_id').readOnly=true;
+            document.getElementById('Form-field-Stats-id-group').style.display='none';
+            document.getElementById('Form-field-Stats-name-group').style.display='none';
+            document.getElementById('Form-field-Stats-course_id-group').style.display='none';
         }).modal('show');
     }
 

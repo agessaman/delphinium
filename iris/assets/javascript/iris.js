@@ -109,10 +109,10 @@ function createChart(iris)
 
     d3.select("#stackImgClose")
         .on("mouseenter", function (d) {
-            d3.select("#circle").classed("icon-circle-thin fa-stack-2x", true);
+            d3.select("#circle").classed("fa fa-circle-thin fa-stack-1x", true);
         })
         .on('mouseleave', function (d) {
-            d3.select("#circle").classed("icon-circle-thin fa-stack-2x", false);
+            d3.select("#circle").classed("fa fa-circle-thin fa-stack-1x", false);
         });
 
 
@@ -911,6 +911,7 @@ function getStudentSubmissions()
 {
     if(submissionData==undefined)
     {
+        // studentId = 1240358;
         var newPromise = $.get('getStudentSubmissions', {studentId: studentId, courseId: courseId});
         newPromise.then(function (data1) {
             showScores(data1);

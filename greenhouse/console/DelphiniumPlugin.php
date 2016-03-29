@@ -13,13 +13,13 @@ class PluginRefresh extends Command
      * The console command name.
      * @var string
      */
-    protected $name = 'delphinium:refresh';
+    protected $name = 'delphinium:init';
 
     /**
      * The console command description.
      * @var string
      */
-    protected $description = 'Removes and re-adds an existing plugin.';
+    protected $description = 'Initializes a delphinium-esque plugin';
 
     /**
      * Create a new command instance.

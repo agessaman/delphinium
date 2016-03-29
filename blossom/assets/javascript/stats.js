@@ -139,7 +139,7 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
                 drawPositive(text,count, positivePaceWidth);
                 if((positivePaceWidth)>20)
                 {
-                    drawNumber(count, positivePaceX, roundToOne(positivePace), "paceVars");
+                    drawNumber(count, positivePaceX, roundToOne(positivePace), "paceVars", count,text);
 
                 //apend the lock icon (must be text. inside of svg we can't add span or i)
                 view.append("svg:text")
@@ -177,7 +177,7 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
                 drawNegative(text, count, negativePaceWidth);
                 if((negativePaceWidth)>20)
                 {
-                    drawNumber(count, negativePaceX, roundToOne(-negativePace), "paceVars");
+                    drawNumber(count, negativePaceX, roundToOne(-negativePace), "paceVars",count, text);
 
                 view.append("svg:text")
                     .attr("x", function (d) {
@@ -216,7 +216,7 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
                 drawPositive(text, count, posPotentialWidth, positivePaceWidth, 0.4);
                 if((posPotentialWidth)>20)
                 {
-                    drawNumber(count, posPotentialX, roundToOne(positivePotential), "paceVars");
+                    drawNumber(count, posPotentialX, roundToOne(positivePotential), "paceVars", count, text);
 
                 view.append("svg:text")
                     .attr("x", function (d) {
@@ -254,7 +254,7 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
                 drawNegative(text,count, negPotentialWidth, negativePaceWidth, 0.4);
                 if((negPotentialWidth)>20)
                 {
-                    drawNumber(count, negPotentialX, roundToOne(-negativePotential), "paceVars");
+                    drawNumber(count, negPotentialX, roundToOne(-negativePotential), "paceVars", count, text);
 
                 view.append("svg:text")
                     .attr("x", function (d) {
@@ -300,7 +300,7 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
             else
                 drawNegative(text,count, gapWidth);
             drawCenter(count);
-            drawNumber(count, gapX, roundToOne(gap), "gapVars");
+            drawNumber(count, gapX, roundToOne(gap), "gapVars", count, text);
         }
 
         function healthInterface() {
@@ -316,7 +316,7 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
             else
                 drawNegative(text,count, healthWidth);
             drawCenter(count);
-            drawNumber(count, healthX, roundToOne(health), "healthVars");
+            drawNumber(count, healthX, roundToOne(health), "healthVars", count, text);
 
         }
 
@@ -679,11 +679,11 @@ function variableStamina(number, width, count, delay) {
                 removeTooltipStats();
             });
     }
-    drawNumber(count, staminaX, roundToOne(number) + "%", "staminaVars", delay);
+    drawNumber(count, staminaX, roundToOne(number) + "%", "staminaVars", delay, text);
 
 }
 
-function drawNumber(count, x, text, className, delay) {
+function drawNumber(count, x, text, className, delay, tooltipText) {
     delayValue = count * 1000 + 1500;
     if (delay != undefined && !delay)//if defined and set to false
     {
@@ -696,7 +696,19 @@ function drawNumber(count, x, text, className, delay) {
         .attr('x', x)
         .attr('y', count * 50 + 40)
         .attr('class', className)
-        .text((text));
+        .text((text))
+        .on("mouseenter", function (d) {
+            if(tooltipText!=undefined)
+            {
+                addTooltipStats(tooltipText);
+            }
+        })
+        .on("mouseleave", function (d) {
+            if(tooltipText!=undefined)
+            {
+                removeTooltipStats();
+            }
+        });
 
     //if (statsAnimate) {
     text.transition()

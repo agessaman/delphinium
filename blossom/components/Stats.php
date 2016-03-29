@@ -23,10 +23,18 @@ class Stats extends ComponentBase
     public function defineProperties()
     {
         return [
-            'Experience' => [
+            'experience' => [
                 'title' => '(Optional) Experience instance',
                 'description' => 'Select the experience instance to display the student\'s stats',
                 'type' => 'dropdown'
+            ],
+            'stats' => [
+                'title' => '(Optional) Stats instance',
+                'description' => 'Select the stats instance to display',
+                'type' => 'dropdown',
+                'depends'     => ['Experience'],
+                'validationPattern' => '^[1-9][0-9]*$',//check that they've selected an option from the drop down. The default placeholder is=0
+                'validationMessage' => 'Select an instance of stats from the dropdown'
             ]
         ];
     }
@@ -35,7 +43,7 @@ class Stats extends ComponentBase
         $instances = ExperienceModel::all();
 
         if (count($instances) === 0) {
-            return $array_dropdown = ["0" => "No instances available. Component won\'t work"];
+            return $array_dropdown = ["0" => "No instances available."];
         } else {
             $array_dropdown = ["0" => "- select Experience Instance - "];
             foreach ($instances as $instance) {
@@ -45,8 +53,25 @@ class Stats extends ComponentBase
         }
     }
 
+    public function getStatsOptions()
+    {
+        $instances = StatsModel::all();
+
+        if (count($instances) === 0) {
+            return $array_dropdown = ["0" => "No instances available"];
+        } else {
+            $array_dropdown = ["0" => "- select Stats Instance - "];
+            foreach ($instances as $instance) {
+                $array_dropdown[$instance->id] = $instance->name;
+            }
+            return $array_dropdown;
+        }
+    }
+
     public function onRun()
     {
+
+        $this->addCss('/modules/system/assets/ui/storm.css', 'core');
 //        try
 //        {
         $statsInstance = $this->firstOrNewCourseInstance();
@@ -118,6 +143,11 @@ class Stats extends ComponentBase
         $courseId = $_SESSION['courseID'];
         $this->courseId = $courseId;
         $courseInstance = null;
+
+//        if(!is_null($this->property('stats')))
+//        {
+//            $courseInstance =StatsModel::firstOrNew(array('id' => $this->property('stats')));
+//        }
         if(is_null($copyName))
         {
             $copyName =$this->alias;
@@ -135,7 +165,7 @@ class Stats extends ComponentBase
     private function findExperienceInstance()
     {
         $experienceModel=null;
-        if(is_null($this->property('Experience'))||$this->property('Experience')==0)
+        if(is_null($this->property('experience'))||$this->property('experience')==0)
         {//find an instance of experience with the same course id
             if (!isset($_SESSION)) {
                 session_start();
@@ -172,7 +202,7 @@ class Stats extends ComponentBase
         }
         else
         {//use the selected instance
-            $experienceModel= ExperienceModel::find($this->property('Experience'))->first();
+            $experienceModel= ExperienceModel::find($this->property('experience'))->first();
             $this->page['experienceInstanceId'] =$experienceModel->id;
             $this->page['configureExperience']=0;
 
@@ -183,7 +213,6 @@ class Stats extends ComponentBase
 
     private function instructor()
     {//add backend styles
-        $this->addCss('/modules/system/assets/ui/storm.css', 'core');
         $this->page['nonstudent']=1;
         $formController = new \Delphinium\Blossom\Controllers\Stats();
         $formController->create('frontend');
