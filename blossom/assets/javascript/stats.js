@@ -644,7 +644,7 @@ function variableStamina(number, width, count, delay) {
     if (delay) {
         delayValue = 4000;
     }
-    var text = "Your average score is: "+roundToOne(number);
+    var text = "Your average score is: "+roundToOne(number)+'%';
     var view = d3.select("#statsView");
     var firstColor = '#FF0000', secondColor = '#FF0000', thirdColor = '#FF0000', fourthColor = '#FF0000';
 

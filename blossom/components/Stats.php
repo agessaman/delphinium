@@ -25,12 +25,14 @@ class Stats extends ComponentBase
         return [
             'experience' => [
                 'title' => '(Optional) Experience instance',
-                'description' => 'Select the experience instance to display the student\'s stats',
+                'description' => 'Select the experience instance to display the student\'s stats.
+                Leaving this field blank will automatically select the experience instance for this course.',
                 'type' => 'dropdown'
             ],
             'stats' => [
                 'title' => '(Optional) Stats instance',
-                'description' => 'Select the stats instance to display. If an instance is selected, it will take precedence over the alias name',
+                'description' => 'Select the stats instance to display. if an instance is selected, it will be the configuration for all courses that use this page.
+                Leaving this field blank will allow different configurations for every course',
                 'type' => 'dropdown',
             ]
         ];
