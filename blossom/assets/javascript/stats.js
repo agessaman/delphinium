@@ -522,7 +522,7 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
 
 
 function scaleStats() {
-    var wrapper = d3.select(".statsWrapper");
+    var wrapper = d3.select("#statsWrapper");
     var statsView = d3.select("#statsView");
     var statsSVG = d3.select("#statsSVG");
     var switchComp = d3.select("#switch");
@@ -555,6 +555,7 @@ function scaleStats() {
             .style('top', "-106px");
         lis.classed('largeLi', true);
     }
+
 }
 
 //tooltips
@@ -718,7 +719,6 @@ function variableStamina(number, width, count, delay) {
 }
 
 function drawNumber(count, x, text, className, delay, tooltipText) {
-    console.log(className + delay);
     delayValue = count * 1000 + 1500;
     if (delay != undefined && !delay)//if defined and set to false
     {

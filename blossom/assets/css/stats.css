@@ -2,7 +2,7 @@
 {
     min-width:225px;
     min-height:200px;
-    position:relative;
+    position:absolute;
 }
 .spinnerStats
 {
@@ -67,7 +67,7 @@ a a:hover, a:visited, a:active{
 #statsSettings
 {
     float: right;
-    z-index:1001;
-    cursor:pointer;
-    position:relative;
+    z-index: 1001;
+    cursor: pointer;
+    position: relative;
 }
