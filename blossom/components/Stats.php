@@ -30,11 +30,8 @@ class Stats extends ComponentBase
             ],
             'stats' => [
                 'title' => '(Optional) Stats instance',
-                'description' => 'Select the stats instance to display',
+                'description' => 'Select the stats instance to display. If an instance is selected, it will take precedence over the alias name',
                 'type' => 'dropdown',
-                'depends'     => ['Experience'],
-                'validationPattern' => '^[1-9][0-9]*$',//check that they've selected an option from the drop down. The default placeholder is=0
-                'validationMessage' => 'Select an instance of stats from the dropdown'
             ]
         ];
     }
@@ -70,7 +67,6 @@ class Stats extends ComponentBase
 
     public function onRun()
     {
-
         $this->addCss('/modules/system/assets/ui/storm.css', 'core');
 //        try
 //        {
@@ -144,17 +140,22 @@ class Stats extends ComponentBase
         $this->courseId = $courseId;
         $courseInstance = null;
 
-//        if(!is_null($this->property('stats')))
-//        {
-//            $courseInstance =StatsModel::firstOrNew(array('id' => $this->property('stats')));
-//        }
-        if(is_null($copyName))
+        //if they have selected a backend instance, that will take precedence over creating a dynamic instance based on the component alias
+        if(($this->property('stats'))>0)
         {
-            $copyName =$this->alias;
+            $courseInstance =StatsModel::firstOrNew(array('id' => $this->property('stats')));
         }
-        $courseInstance =StatsModel::firstOrNew(array('course_id' => $courseId,'name'=>$copyName));
-        $courseInstance->course_id = $courseId;
-        $courseInstance->name = $copyName;
+        else
+        {//didn't select a backend instance. Create the component based on the copy name, or the alias name if the copy name was not provided
+            if(is_null($copyName))
+            {
+                $copyName =$this->alias;
+            }
+            $courseInstance =StatsModel::firstOrNew(array('course_id' => $courseId,'name'=>$copyName));
+            $courseInstance->course_id = $courseId;
+            $courseInstance->name = $copyName;
+        }
+
         if(is_null($courseInstance->animate)){$courseInstance->animate = 1;}
         if(is_null($courseInstance->size)){$courseInstance->size = 'medium';}
         $courseInstance->save();

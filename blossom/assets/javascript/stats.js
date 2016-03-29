@@ -125,6 +125,16 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
         staminaInterface();
 
         function paceInterface() {
+            if(!statsAnimate)
+            {
+                delayValue = 0;
+                duration =0;
+            }
+            else
+            {
+                delayValue = count * 1000 + 1000;
+                duration = 1000;
+            }
             var count = 1;
             var text ='';
             //BONUS
@@ -139,7 +149,7 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
                 drawPositive(text,count, positivePaceWidth);
                 if((positivePaceWidth)>20)
                 {
-                    drawNumber(count, positivePaceX, roundToOne(positivePace), "paceVars", count,text);
+                    drawNumber(count, positivePaceX, roundToOne(positivePace), "paceVars", 1,text);
 
                 //apend the lock icon (must be text. inside of svg we can't add span or i)
                 view.append("svg:text")
@@ -150,10 +160,6 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
                     .attr('font-family', 'FontAwesome')
                     .attr('font-size', '8px')
                     .attr("cursor", "pointer")
-                    .attr("fill", function (d) {
-                        var x = positivePace > 0 ? "white" : "gray";
-                        return x;
-                    })
                     .on("mouseover", function (d) {
                         addTooltipStats("Locked in bonus: " + roundToOne(positivePace));
                     })
@@ -162,7 +168,17 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
                     })
                     .text(function (d) {
                         return '\uf023';
-                    });
+                    })
+                    .attr("fill", function (d) {
+                        var x = positivePace > 0 ? "white" : "gray";
+                        return x;
+                    })
+                    .attr("display",'none')
+                    .transition()
+                    .delay(delayValue)
+                    .duration(duration)
+                    .attr("display",'block')
+                    .ease('bounce');
                 }
             }
 
@@ -177,7 +193,7 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
                 drawNegative(text, count, negativePaceWidth);
                 if((negativePaceWidth)>20)
                 {
-                    drawNumber(count, negativePaceX, roundToOne(-negativePace), "paceVars",count, text);
+                    drawNumber(count, negativePaceX, roundToOne(-negativePace), "paceVars",1, text);
 
                 view.append("svg:text")
                     .attr("x", function (d) {
@@ -191,6 +207,7 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
                         var x = negativePace > 0 ? "white" : "gray";
                         return x;
                     })
+                    .attr("display",'none')
                     .on("mouseover", function (d) {
                         addTooltipStats("Locked in penalties: " + roundToOne(-negativePace));
                     })
@@ -199,7 +216,12 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
                     })
                     .text(function (d) {
                         return '\uf023';
-                    });
+                    })
+                    .transition()
+                    .delay(delayValue)
+                    .duration(duration)
+                    .attr("display",'block')
+                    .ease('bounce');
                 }
             }
 
@@ -216,7 +238,7 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
                 drawPositive(text, count, posPotentialWidth, positivePaceWidth, 0.4);
                 if((posPotentialWidth)>20)
                 {
-                    drawNumber(count, posPotentialX, roundToOne(positivePotential), "paceVars", count, text);
+                    drawNumber(count, posPotentialX, roundToOne(positivePotential), "paceVars", 1, text);
 
                 view.append("svg:text")
                     .attr("x", function (d) {
@@ -238,7 +260,13 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
                     })
                     .text(function (d) {
                         return '\uf017';
-                    });
+                    })
+                    .attr("display",'none')
+                    .transition()
+                    .delay(delayValue)
+                    .duration(duration)
+                    .attr("display",'block')
+                    .ease('bounce');
                 }
             }
 
@@ -254,7 +282,7 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
                 drawNegative(text,count, negPotentialWidth, negativePaceWidth, 0.4);
                 if((negPotentialWidth)>20)
                 {
-                    drawNumber(count, negPotentialX, roundToOne(-negativePotential), "paceVars", count, text);
+                    drawNumber(count, negPotentialX, roundToOne(-negativePotential), "paceVars", 1, text);
 
                 view.append("svg:text")
                     .attr("x", function (d) {
@@ -276,7 +304,13 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
                     })
                     .text(function (d) {
                         return '\uf017';
-                    });
+                    })
+                    .attr("display",'none')
+                    .transition()
+                    .delay(delayValue)
+                    .duration(duration)
+                    .attr("display",'block')
+                    .ease('bounce');
                 }
 
             }
@@ -300,7 +334,7 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
             else
                 drawNegative(text,count, gapWidth);
             drawCenter(count);
-            drawNumber(count, gapX, roundToOne(gap), "gapVars", count, text);
+            drawNumber(count, gapX, roundToOne(gap), "gapVars", 1, text);
         }
 
         function healthInterface() {
@@ -316,7 +350,7 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
             else
                 drawNegative(text,count, healthWidth);
             drawCenter(count);
-            drawNumber(count, healthX, roundToOne(health), "healthVars", count, text);
+            drawNumber(count, healthX, roundToOne(health), "healthVars", 1, text);
 
         }
 
@@ -684,10 +718,16 @@ function variableStamina(number, width, count, delay) {
 }
 
 function drawNumber(count, x, text, className, delay, tooltipText) {
+    console.log(className + delay);
     delayValue = count * 1000 + 1500;
     if (delay != undefined && !delay)//if defined and set to false
     {
         delayValue = 100;
+    }
+
+    if(!statsAnimate)
+    {
+        delayValue = 0;
     }
     var text = d3.select('#statsView').append("text")
         .attr("fill", "none")
