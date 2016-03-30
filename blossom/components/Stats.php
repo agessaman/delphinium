@@ -5,6 +5,8 @@ use Delphinium\Blossom\Models\Experience as ExperienceModel;
 use Delphinium\Blossom\Models\Stats as StatsModel;
 use Delphinium\Blossom\Components\Experience as ExperienceComponent;
 use Delphinium\Roots\Roots;
+use Flash;
+use Redirect;
 
 class Stats extends ComponentBase
 {
@@ -69,18 +71,21 @@ class Stats extends ComponentBase
 
     public function onRun()
     {
-        $this->addCss('/modules/system/assets/ui/storm.css', 'core');
 //        try
 //        {
+        $this->addCss('/modules/system/assets/ui/storm.css', 'core');
+        $this->addJs('/modules/system/assets/ui/storm-min.js', 'core');
+        $this->addCss('/modules/system/assets/ui/storm.less', 'core');
+        $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
+        $this->addJs("/plugins/delphinium/blossom/assets/javascript/stats.js");
+        $this->addCss("/plugins/delphinium/blossom/assets/css/stats.css");
+
+        //if no instance exists of this component, create a new one. It will be tied to the experience component they have selected
         $statsInstance = $this->firstOrNewCourseInstance();
         $this->statsInstanceId = $statsInstance->id;
         $this->page['instance_id'] =  $statsInstance->id;
         $experienceInstance = $this->findExperienceInstance();
 
-        //if no instance exists of this component, create a new one. It will be tied to the experience component they have selected
-        $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
-        $this->addJs("/plugins/delphinium/blossom/assets/javascript/stats.js");
-        $this->addCss("/plugins/delphinium/blossom/assets/css/stats.css");
 
 
         $statsInstance = StatsModel::find($this->statsInstanceId);
@@ -155,9 +160,9 @@ class Stats extends ComponentBase
         {//didn't select a backend instance. Create the component based on the copy name, or the alias name if the copy name was not provided
             if(is_null($copyName))
             {
-                $copyName =$this->alias;
+                $copyName =$this->alias . "_".$courseId;
             }
-            $courseInstance =StatsModel::firstOrNew(array('course_id' => $courseId,'name'=>$copyName));
+            $courseInstance =StatsModel::firstOrNew(array('name'=>$copyName));
             $courseInstance->course_id = $courseId;
             $courseInstance->name = $copyName;
         }
@@ -165,7 +170,6 @@ class Stats extends ComponentBase
         if(is_null($courseInstance->animate)){$courseInstance->animate = 1;}
         if(is_null($courseInstance->size)){$courseInstance->size = 'medium';}
         $courseInstance->save();
-
         return $courseInstance;
     }
 
@@ -405,6 +409,7 @@ class Stats extends ComponentBase
         $statsInstance->animate = $data['animate'];
         $statsInstance->course_id = $data['course_id'];
         $statsInstance->save();// update original record
-        return json_encode($statsInstance);
+
+        return Redirect::refresh();
     }
 }
