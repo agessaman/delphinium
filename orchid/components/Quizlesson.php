@@ -1,6 +1,10 @@
 <?php namespace Delphinium\Orchid\Components;
 
 use Cms\Classes\ComponentBase;
+use Delphinium\Roots\Roots;
+use Delphinium\Roots\Enums\ActionType;
+use Delphinium\Roots\Models\Quizquestion;
+use Delphinium\Roots\Requestobjects\QuizRequest;
 use Delphinium\Orchid\Models\Quizlesson as QuizlessonModel;
 
 class Quizlesson extends ComponentBase
@@ -55,6 +59,9 @@ class Quizlesson extends ComponentBase
             Requires the Dev component set up from Here:
             https://github.com/ProjectDelphinium/delphinium/wiki/3.-Setting-up-a-Project-Delphinium-Dev-environment-on-localhost
             */
+			$this->addCss("/plugins/delphinium/orchid/assets/css/quizlesson.css");
+			$this->addJs("/plugins/delphinium/orchid/assets/javascript/quizlesson.js");
+			
             if (!isset($_SESSION)) { session_start(); }
             $courseID = $_SESSION['courseID'];
 			
@@ -130,7 +137,12 @@ class Quizlesson extends ComponentBase
 			{
 				//code specific to the student.htm goes here
             }
-			// code used by both goes here
+			// code used by both
+			
+			$quizList = $this->getAllQuizzes();// choose quiz questions to use
+			$this->page['quizList'] = $quizList;
+			
+			
 			
         // Error handling requires nonlti.htm
 /*        }
@@ -153,6 +165,21 @@ class Quizlesson extends ComponentBase
             return \Response::make($this->controller->run('error'), 500);
         }
 */    }
+	
+	/* 
+        return list of quizzes for instructor to choose one
+		contains questions and answers for each quiz
+	*/
+	public function getAllQuizzes()
+    {
+        $fresh_data = false;//true;
+		$roots = new Roots();
+		$req = new QuizRequest(ActionType::GET, null, $fresh_data, true);
+		
+		// remove quizzes with no questions
+		
+		return json_encode($roots->quizzes($req));
+    }
 	
     /**
 	*  frontend update component submit button

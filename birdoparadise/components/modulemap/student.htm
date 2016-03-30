@@ -33,24 +33,3 @@
         </div>
     </div>
 </div>
-
-<script>
-(function() {
-    
-    /*
-        Bird of Paradise: student view will display progress
-    */
-
-	//global var in default.htm is available to .js file
-	assignments={{assignments|raw}};
-    //console.log('assignments:',assignments);
-    var submissions = {{submissions|raw}};// Only available if a student
-	//console.log('submissions:',submissions); 
-	subms = $.grep(submissions, function(elem,index){
-        return elem.score > 0;
-    });
-    //console.log('subms:',subms);
-	sumbissions=null;// no longer needed
-    
-})();
-</script>

@@ -14,7 +14,16 @@ $(document).ready(function() {
 		module box background images - upload and location
         assignment links in locked modules are disabled for student view
     */
-    
+    if(role == 'Learner') {
+	/*
+        student view will display progress
+    */
+		subms = $.grep(submissions, function(elem,index){
+			return elem.score > 0;
+		});
+		//console.log('subms:',subms);
+		sumbissions=null;// no longer needed
+	}
     var tabCounter = 0;
     var tabTemplate = "<li role='presentation'>";
 		tabTemplate +="<a role='tab' data-toggle='tab' href='#{href}' aria-controls='#{href}'>#{label}</a>";

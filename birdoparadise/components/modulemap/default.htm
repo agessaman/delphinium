@@ -15,6 +15,18 @@
     
 	var assignments=[];// student
 	var subms=[];// view fills vars
+	
+	if(role == 'Learner') {
+	/*
+        student view will display progress
+    */
+		//global var in default.htm is available to .js file
+		assignments={{assignments|raw}};
+		//console.log('assignments:',assignments);
+		var submissions = {{submissions|raw}};// Only available if a student
+		//console.log('submissions:',submissions); 
+	}
+	
 </script>
 
 {% if ('Learner' in role) %}

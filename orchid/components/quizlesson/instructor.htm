@@ -4,12 +4,21 @@
         <i class="icon-question"></i>
     </a>
 	<div id="cog" data-toggle="modal" href="#content-configuration" style="position:absolute; top:0; right:10px;">
-		<a data-toggle="tooltip" title="Settings" data-placement="bottom"><i class="icon-cog"></i></a>
+		<a data-toggle="tooltip" title="Settings" data-placement="left"><i class="icon-cog"></i></a>
     </div>
 </div>
 <div style="z-index:10;">
-    <!-- component partial -->
-    <h3>Instructor view</h3>
+    <div id="quizlist" class="quizpanel">
+			<!-- http://getbootstrap.com/css/   .col-xs-6 .col-md-4 -->
+            <!--div id="col_0" class="thirds left"></div-->
+			<div id="col_0" class="col-md-4"></div>
+			<div id="col_1" class="col-md-4"></div>
+			<div id="col_2" class="col-md-4"></div>
+			<div class="clear"></div>
+			
+    </div>
+	<div id="qtitle"></div>
+	<div id="questionlist"></div>
 </div>
 
 <!-- Configuration modal with Front End Form and Instructions in tabs -->
@@ -49,25 +58,32 @@
     </div>
 </div>
 
-<script>
-	/* set up the popover content text and activate it*/
-	$('#popinfo').attr("data-content","Here is some amazing content. It's very engaging. Right?");
-    $('#popinfo').popover();// activate info
-	
-    /* set id & course for the POST if they are hidden in fields.yaml
-        Add hidden input fields so they will transfer to onUpdate
-        if a field is set to hidden: true it does not appear in the form at all
-        
-        in Vanilla I only have id hidden
-    */
-    
-    $('#Form-outsideTabs').append('<input type="hidden" name="Quizlesson[id]" value="'+config.id+'" /> ');
-    $('#Form-outsideTabs').append('<input type="hidden" name="Quizlesson[course_id]" value="'+config.course_id+'" /> ');
-    
-	function completed(data)
-	{
-        /* updated record is returned */
-        location.reload();
-	}
-	//console.log('instance: id='+config.id,config.quiz_name,config.quiz_id,config.course_id);
-</script>
+<!-- Modal: show details for a selected question -->
+<div class="control-popup modal fade" id="detailed" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content" style="width:800px;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 id="detailed-title" class="modal-title">Quiz Questions</h4>
+            </div>
+            <div id="detailed-body" class="modal-body">
+                <div class="clearfix">
+                    <div id="qtype" class="left questype">Type:</div>
+                    <div id="qpoints" class="right questype">Points:</div>
+                </div>
+				<hr/>
+				<div>
+					<div id="qtext"></div>
+                </div>
+				<div>
+					<div id="qanswers"></div>
+					<div id="qfeedback"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+				<!-- backbtn -->
+                <button id="nextbtn" type="button" class="btn btn-primary"> Next -> </button>
+            </div>
+        </div>
+    </div>
+</div>
