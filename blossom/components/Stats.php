@@ -410,6 +410,6 @@ class Stats extends ComponentBase
         $statsInstance->course_id = $data['course_id'];
         $statsInstance->save();// update original record
 
-        return Redirect::refresh();
+        return json_encode($statsInstance);
     }
 }
