@@ -1,8 +1,4 @@
 <script>
-    // include css or javascript libraries
-    
-    var role = '{{role}}';//string
-    console.log('Role:',role);
     /*
         get variables from the php with twig
         use twig to determine if the component is seen 
@@ -10,23 +6,16 @@
         init global vars here
 		fill global var there.
     */
+    console.log('default.htm');
     var moduledata = {{moduledata|raw}};
-    //console.log('moduledata:',moduledata);
+    console.log('moduledata:', moduledata);
     
-	var assignments=[];// student
+	var assignments=[];// student & instructor
 	var subms=[];// view fills vars
 	
-	if(role == 'Learner') {
-	/*
-        student view will display progress
-    */
-		//global var in default.htm is available to .js file
-		assignments={{assignments|raw}};
-		//console.log('assignments:',assignments);
-		var submissions = {{submissions|raw}};// Only available if a student
-		//console.log('submissions:',submissions); 
-	}
-	
+    var role = '{{role}}';//string
+    console.log('Role:', role);
+
 </script>
 
 {% if ('Learner' in role) %}

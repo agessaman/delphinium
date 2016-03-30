@@ -1,4 +1,6 @@
 $(document).ready(function() {
+
+/* Delphinium functions*/
 	/* Add the content message dynamically, could be different for role */
 	$('#popinfo').attr('data-content','Click a module to see assignments');
     $('#popinfo').popover();// activate info
@@ -14,23 +16,23 @@ $(document).ready(function() {
 		module box background images - upload and location
         assignment links in locked modules are disabled for student view
     */
+/* End Delphinium functions*/
+
+    //console.log('role',role);
     if(role == 'Learner') {
-	/*
-        student view will display progress
-    */
-		subms = $.grep(submissions, function(elem,index){
-			return elem.score > 0;
-		});
-		//console.log('subms:',subms);
-		sumbissions=null;// no longer needed
-	}
+        // used at getStars
+        subms = $.grep(submissions, function(elem,index){ return elem.score > 0; });
+    }
+    
     var tabCounter = 0;
     var tabTemplate = "<li role='presentation'>";
 		tabTemplate +="<a role='tab' data-toggle='tab' href='#{href}' aria-controls='#{href}'>#{label}</a>";
         tabTemplate +="</li>";
     // display module items when modbox clicked
-    var modobjs = [];// all modules for search
+    var modobjs = [moduledata[0]];// all modules for search include First
     var modlist = [];// modules in this tab
+    
+    //$('.loading-indicator-container').hide();// could not get this to show
     // create units and modules from data
     for(var m=0; m<moduledata.length; m++) {
         
@@ -48,6 +50,10 @@ $(document).ready(function() {
 			getMyChildren(chld[c]['children']);
             // now display modlist for each tab
             for(i=0; i<modlist.length; i++) {
+                
+                // dont display if unpublished
+                if(modlist[i].published == 0) { continue; }
+                //console.log('published: '+modlist[i].published);
                 //Module box with title, lock, stars & image
             var modbox = '<div id="'+modlist[i].module_id+'" class="moditem" data-locked="'+modlist[i].locked+'">';
                 modbox +='<div class="title '+modlist[i].state+'">'+modlist[i].name+'</div>';
@@ -65,6 +71,8 @@ $(document).ready(function() {
 				    modbox +='<div class="modlocked" data-toggle="tooltip" data-placement="bottom" title="'+prename+'"><i class="icon-lock"></i></div>';   
                 }
 				//modbox +='<div class="items">'+modlist[i].module_id+' Items: '+modlist[i].items_count+'</div>';// testing
+                
+                // pull this out and build after modbox?
                 if(role == 'Learner') {
                     // if Learner calc filled stars from submissions
                     var starset = getStars(modlist[i].module_id);//find items
@@ -77,7 +85,7 @@ $(document).ready(function() {
                 // + cog edit { image upload? }
                 modbox +='</div>';
                 
-				widt += 190;// add for each moditem
+				widt += 192;// add for each moditem 
                 $(nuplace).css({ 'width': widt});
 				//$(nuplace).parent().css({'overflow': 'hidden' });// id=tab_# class=tab-pane
                 //console.log('width:',widt);
@@ -124,31 +132,38 @@ $(document).ready(function() {
         // hide if fulfilled
 		//append prerequisite_module_ids 
 		if(mod[0].prerequisite_module_ids != '') {
+            // if prereq id state is not completed show prereq
+            
 			var prereqids=mod[0].prerequisite_module_ids;
             var prename = '';
-            var preids = prereqids.split(',');
+            var preids = prereqids.split(',');// multiple
             
-            var prereq = '<div class="prereq">';
-				prereq +='<div class="ico"><i class="icon-exclamation-triangle"></i> Module Prerequisites<br/></div>';// orange
+            var prereq = '<div class="prereq">';// orange
+				prereq +='<div class="ico"><i class="icon-exclamation-triangle"></i> Module Prerequisites<br/></div>';
                 prereq +='<div class="prereqnote">Before you can start this module you need to complete the following modules:</div>';
                 prereq +='<div class="clearme"></div>';
+            
+            var showPrereq = false;// unless unlocked
             
             for(var pid=0; pid<preids.length; pid++) {
                 var itm = $.grep(modobjs, function(elem,index){
                     return elem.module_id == preids[pid];
                 });
+                console.log('itm:',itm[0]);// undefined for First
                 
                 if(itm.length>0) { prename = itm[0].name; }
-                //console.log('pid:',pid,'prename:',prename);
+                console.log('pid:',pid,'prename:',prename);
+                if(itm[0].state == 'locked'){ showPrereq=true; console.log('Show locked prereqs'); }
                 if(prename != '') {
-				    //prereq +='<li class="ico">'+prename+'</li>';// size 1.3em
                     prereq +='<li>'+prename+'</li>';
                 }
             }
             prereq +='<div class="clearme"></div>';
             prereq +='</div>';// close prereq
-
-            $('#detailed-body').append(prereq);
+            
+            if(showPrereq) {
+                $('#detailed-body').append(prereq);
+            }
 		}
 		
         //append module_items : mod[0].state;//null,locked,unlocked,started,completed
@@ -176,13 +191,13 @@ $(document).ready(function() {
 				item +='<a target="_blank" href="'+moditems[i].html_url+'?module_item_id='+moditems[i].module_item_id+'"> '+moditems[i].title+'</a>';
             }
 			item +='</div>';
-			if(moditems[i].completion_requirement.length > 0) {
-                item += '<div class="required">'+moditems[i].completion_requirement+'</div>';
+		/*	if(moditems[i].completion_requirement.length > 0) {
+                item += '<div class="required">'+moditems[i].completion_requirement+'</div>';//{"type":"must_submit"}
             }
-            
+         */   
             // after link
             if(hasContent && moditems[i].content[0].lock_explanation.length >0) {
-                console.log('lock_ex len:',moditems[i].content[0].lock_explanation.length);
+                //console.log('lock_ex len:',moditems[i].content[0].lock_explanation.length);
                item +='<div class="prereqnote">'+moditems[i].content[0].lock_explanation+'</div>';
             /* WEIRD CONTENT BROKE THIS !!! gets truncated in db !
 			length=255 actualCONTENT.length = 366
@@ -205,12 +220,12 @@ $(document).ready(function() {
     });
 
     // scroll 1 module item per hover and click
-    $('.aror').on('mouseenter click', function(){
+    $('.aror').on('mouseover click', function(){
         var activeTab = $('div.active').attr('id');//console.log('rightscroll:',activeTab);
         var sat = $('#'+activeTab).scrollLeft();
         $('#'+activeTab).animate({ scrollLeft:sat+200 });
     });
-    $('.arol').on('mouseenter click', function(){
+    $('.arol').on('mouseover click', function(){
         var activeTab = $('div.active').attr('id');
         var sat = $('#'+activeTab).scrollLeft();
         $('#'+activeTab).animate({ scrollLeft:sat-200 });
@@ -299,8 +314,9 @@ $(document).ready(function() {
         var starset = '<div class="stars"><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i></div>';
 
         if(score > 0) {
-            //console.log(modid, 'score:',score, 'total:',total);
-            var percent = (score/total) *100;//console.log('percent=',percent);
+            console.log(modid, 'score:',score, 'total:',total);
+            var percent = (score/total) *100;
+            console.log('percent=',percent);
             starset='<div class="stars">';
             for(var s=1; s<6; s++) {
                 if(percent > s*20) {

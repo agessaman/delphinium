@@ -25,11 +25,7 @@ class Modulemap extends ComponentBase
     public function onRun()
     {
         try
-        {
-            $this->addCss("/plugins/delphinium/birdoparadise/assets/css/font-autumn.css");
-            $this->addCss("/plugins/delphinium/birdoparadise/assets/css/bop.css");
-            $this->addJs("/plugins/delphinium/birdoparadise/assets/javascript/bop.js");
-            
+        {   
             if (!isset($_SESSION)) { session_start(); }
 
             // comma delimited string
@@ -81,6 +77,11 @@ class Modulemap extends ComponentBase
                 $submissions = $roots->submissions($req);
                 $this->page['submissions']=json_encode($submissions);// score
             }
+            // ready to go finish loading assets
+            $this->addCss("/plugins/delphinium/birdoparadise/assets/css/font-autumn.css");
+            $this->addCss("/plugins/delphinium/birdoparadise/assets/css/bop.css");
+            $this->addJs("/plugins/delphinium/birdoparadise/assets/javascript/bop.js");
+            
         }
         catch (\GuzzleHttp\Exception\ClientException $e) {
             return;

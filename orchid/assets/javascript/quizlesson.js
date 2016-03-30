@@ -1,3 +1,4 @@
+$(document).ready(function() {
 /*
 	Quiz Lessons:
 	Instructor actions:
@@ -15,7 +16,7 @@
 
 /* Delphinium functions:
 	set up the popover content text and activate it*/
-	$('#popinfo').attr("data-content","Here is some amazing content. It's very engaging. Right?");
+	$('#popinfo').attr("data-content","Instructor: choose a Quiz to place in a page.");
     $('#popinfo').popover();// activate info
     /* set id & course for the POST if they are hidden in fields.yaml
         Add hidden input fields so they will transfer to onUpdate
@@ -38,7 +39,8 @@ var quests=[];// quiz questions to select from
 var selectedQuiz='';// quiz_id
 var selecteditems=[];// quiz question_id array
 var nextcount=0;// index for question details modal
-//$config->quiz_id = '';
+
+$('#questiongroup').hide();
 if(config.quiz_id != '') {
 	selectedQuiz = config.quiz_id;
 	showSelected(selectedQuiz);// from quiz_id
@@ -90,7 +92,7 @@ function showQuizQuestions(id)
 {
 	// close quiz selector quizlist
 	$('#quizlist').hide();
-	
+	$('#questiongroup').show();
 	console.log('view quiz_id:'+id);
 	
 	var quiz= $.grep(quizList, function(elem, indx){
@@ -133,9 +135,20 @@ function showQuizQuestions(id)
 		$('#detailed').modal('show');
 	});
 }
-	
+    
+    //addselected, addtext
+    
+    
+    // choose a different quiz
+    $('#replaceit').on('click', function(e){
+        e.preventDefault();
+        $('#quizlist').show();
+        $('#questiongroup').hide();
+        // empty array ?
+        selecteditems=[];
+    });
 // see question details 
-    $('#nextbtn').click(function(e) {
+    $('#nextbtn').on('click', function(e) {
         e.preventDefault();
         //detailed-body replace content with next question
 		nextcount++;
@@ -220,3 +233,5 @@ function showQuizQuestions(id)
 	submit btn adds questions to quests
 */
 
+//End document.ready
+});

@@ -27,10 +27,14 @@
 .seeit {
 	font-size: 1.2em;
 }
-
+.btngroup {
+    float: right;
+    margin-right: 40px;
+}
 #qtitle {
 	font-size: 1.2em;
 	font-weight: 600;
+    padding: 5px;
 }
 .questype { 
 	/*padding: 3px;*/
