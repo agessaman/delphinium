@@ -556,17 +556,23 @@ function scaleStats() {
         lis.classed('largeLi', true);
     }
 
+    //need to set the width and height of the wrap element so the layout doesn't get messed up
     if(nonstudent===1)
     {
-        //if professor, fix the position of the gear
-        var childWidth = document.getElementById('statsWrapper').offsetWidth;
-        var childHeight = document.getElementById('statsWrapper').offsetHeight;
         var wrap = document.getElementById("instructorWrap");
-        if(wrap!=undefined)
-        {
-            wrap.style.width =childWidth+'px';
-            wrap.style.height =childHeight+'px';
-        }
+    }
+    else
+    {
+        var wrap = document.getElementById("studentWrap");
+    }
+
+    //if professor, fix the position of the gear
+    var childWidth = document.getElementById('statsWrapper').offsetWidth;
+    var childHeight = document.getElementById('statsWrapper').offsetHeight;
+    if(wrap!=undefined)
+    {
+        wrap.style.width =childWidth+'px';
+        wrap.style.height =childHeight+'px';
     }
 }
 
