@@ -38,9 +38,13 @@ $(document).ready(function() {
 var quests=[];// quiz questions to select from
 var selectedQuiz='';// quiz_id
 var selecteditems=[];// quiz question_id array
+var qitems=[];// question divs
+var usedcount=0;// questions used on page
 var nextcount=0;// index for question details modal
 
 $('#questiongroup').hide();
+$('#addsubmit').hide();
+
 if(config.quiz_id != '') {
 	selectedQuiz = config.quiz_id;
 	showSelected(selectedQuiz);// from quiz_id
@@ -108,7 +112,9 @@ function showQuizQuestions(id)
 	
 	// show the quiz questions
 	$('#questionlist').empty();
+	usedcount=0;// reset
 	selecteditems=[];// no questions selected
+	qitems=[];// question divs
 	for(var i=0; i<quests.length; i++)
 	{
 		var txt = quests[i].text;
@@ -118,13 +124,14 @@ function showQuizQuestions(id)
 		//console.log(txt);//<strong>
 		
 		// hide when selected, track id of selecteditems 
-		var content = '<div class="questitem" data-id="'+quests[i].question_id+'">';
-			content+= '<input type="checkbox" class="useit" name="useit" value="'+quests[i].question_id+'"> ';//checkbox
+		var content = '<div class="questitem" id="'+quests[i].question_id+'">';
+			content+= '<input type="checkbox" name="'+quests[i].question_id+'" value="" /> ';//checkbox
 			content+= '<a id="'+i+'" class="seeit" href="#"><i class="icon-star"></i></a> ';// view details icon
 			content+= txt;
 			content+= '</div>';
 		$('#questionlist').append(content);
-		selecteditems.push(quests[i].question_id);// all questions selected
+		//selecteditems.push(quests[i].question_id);// all questions selected
+		qitems.push(content);// each div
 	}
 	//http://api.jquery.com/prop/
 	$('.seeit').on('click',function(e){
@@ -136,9 +143,40 @@ function showQuizQuestions(id)
 	});
 }
     
-    //addselected, addtext
+    //add a text field on page
+    $('#addtext').on('click', function(e){
+        e.preventDefault();
+        
+    });
+	//add selected questions to page $( "input[type=checkbox]" ).on( "click", countChecked );
+	$('#addselected').on('click', function(e){
+		e.preventDefault();
+		
+		var items = $( "input:checked" );
+		//console.log(items.length);
+        for(var i=0; i<items.length; i++){
+			
+			//console.log($(items[i]).attr('name'));
+			//console.log($(items[i]).parent().attr('id'));
+			$(items[i]).parent().hide();// hide it
+			// uncheck items so they dont get counted again
+			$(items[i]).prop( "checked", false );
+			// name = question_id 
+			selecteditems.push($(items[i]).attr('name'));//questions selected
+			usedcount++;// add to used count
+			
+			
+			// add it to page in iframe group ?
+		}
+		//console.log(usedcount, quests.length);
+		// if count = all show Add Submit Quiz button 
+		if(usedcount==quests.length){ $('#addsubmit').show(); }
+    });
     
-    
+	// add submit button to page
+	$('#addsubmit').on('click', function(){
+		// add to page
+	});
     // choose a different quiz
     $('#replaceit').on('click', function(e){
         e.preventDefault();
@@ -154,9 +192,16 @@ function showQuizQuestions(id)
 		nextcount++;
 		if(nextcount==quests.length){ nextcount=0; }
 		constructQuestion(nextcount);
-    });// backbtn ?
-	/* also see selected questions accordion-2 quests[]
-	   currently only game questions quests[]
+    });
+    $('#backbtn').on('click', function(e) {
+        e.preventDefault();
+        //detailed-body replace content with next question
+		nextcount--;
+		if(nextcount<0){ nextcount=quests.length-1; }
+		constructQuestion(nextcount);
+    });
+
+	/*
 	   index is first selected question to see in #detailed modal
        construct: type, points, question, answers and comments
 	*/
