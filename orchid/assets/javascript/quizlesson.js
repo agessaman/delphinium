@@ -11,24 +11,31 @@ $(document).ready(function() {
 	-place a text field between question groups
 	-place a quiz submit button after all questions placed
 	
-	
+	start with a text field
+    in Canvas, append to the body id="tinymce" class="mce-content-body"
 */
 
 /* Delphinium functions:
-	set up the popover content text and activate it*/
-	$('#popinfo').attr("data-content","Instructor: choose a Quiz to place in a page.");
+	set up the popover content text and activate it
+*/
+	$('#popinfo').attr("data-content","Choose a Quiz to place in a page. Then select questions and add them to the page. Be sure to use all questions! Submit Button will grade the quiz.");
     $('#popinfo').popover();// activate info
     /* set id & course for the POST if they are hidden in fields.yaml
         Add hidden input fields so they will transfer to onUpdate
         if a field is set to hidden: true it does not appear in the form at all
     */
     $('#Form-outsideTabs').append('<input type="hidden" name="Quizlesson[id]" value="'+config.id+'" /> ');
-    $('#Form-outsideTabs').append('<input type="hidden" name="Quizlesson[course_id]" value="'+config.course_id+'" /> ');
     
 	function completed(data)
 	{
         /* updated record is returned */
-        location.reload();
+        /* Flash a message then reload page
+        $.oc.flashMsg({
+            'text': 'The record has been successfully saved.',
+            'class': 'success',
+            'interval': 3
+        }); */
+        location.reload();// wait for 3 sec?
 	}
 /* End Delphinium functions*/
 
@@ -42,12 +49,17 @@ var qitems=[];// question divs
 var usedcount=0;// questions used on page
 var nextcount=0;// index for question details modal
 
+// setup tools
 $('#questiongroup').hide();
 $('#addsubmit').hide();
-
-if(config.quiz_id != '') {
+    
+// start with a text field
+$('.show-content').append('<div class="text-content"></div>');
+    
+console.log('quiz_id:', config.quiz_id); 
+if(config.quiz_id != undefined && config.quiz_id != '') {
 	selectedQuiz = config.quiz_id;
-	showSelected(selectedQuiz);// from quiz_id
+	showQuizQuestions(selectedQuiz);// from quiz_id
 } else { showQuizzes(); }
 
 //showQuizzes();// all quizzes to choose from
@@ -97,7 +109,7 @@ function showQuizQuestions(id)
 	// close quiz selector quizlist
 	$('#quizlist').hide();
 	$('#questiongroup').show();
-	console.log('view quiz_id:'+id);
+	console.log('view questions for quiz_id:'+id);
 	
 	var quiz= $.grep(quizList, function(elem, indx){
         return elem.quiz_id == id; }
@@ -146,6 +158,7 @@ function showQuizQuestions(id)
     //add a text field on page
     $('#addtext').on('click', function(e){
         e.preventDefault();
+        $('.show-content').append('<div class="text-content"></div>');
         
     });
 	//add selected questions to page $( "input[type=checkbox]" ).on( "click", countChecked );
@@ -165,8 +178,8 @@ function showQuizQuestions(id)
 			selecteditems.push($(items[i]).attr('name'));//questions selected
 			usedcount++;// add to used count
 			
-			
-			// add it to page in iframe group ?
+			// add it to page in iframe group ? or individual rows
+            $('.show-content').append('<div class="question-content"></div>');
 		}
 		//console.log(usedcount, quests.length);
 		// if count = all show Add Submit Quiz button 
@@ -174,9 +187,19 @@ function showQuizQuestions(id)
     });
     
 	// add submit button to page
-	$('#addsubmit').on('click', function(){
-		// add to page
+	$('#addsubmit').on('click', function(e){
+        e.preventDefault();
+        // wrap in a div and center? or right?
+		// configure button and add to page
+ //<button type="submit" class="btn submit_button quiz_submit btn-secondary" id="submit_quiz_button" data-action="/courses/368564/quizzes/556620/submissions?user_id=1568377">Submit Quiz</button>
+        
+        var subtn = '<div class="form-actions">';
+            subtn +='<button type="submit" class="btn submit_button quiz_submit btn-secondary" id="submit_quiz_button"';
+            subtn +='data-action="" >';//configure button
+            subtn +='Submit Quiz</button></div>';
+        $('.show-content').append(subtn);
 	});
+    
     // choose a different quiz
     $('#replaceit').on('click', function(e){
         e.preventDefault();
@@ -184,7 +207,12 @@ function showQuizQuestions(id)
         $('#questiongroup').hide();
         // empty array ?
         selecteditems=[];
+        // reset the page
+        $('.show-content').empty();
+        $('.show-content').append('<div class="text-content"></div>');
     });
+    
+    
 // see question details 
     $('#nextbtn').on('click', function(e) {
         e.preventDefault();
@@ -277,6 +305,17 @@ function showQuizQuestions(id)
 	Questions are selectable or all
 	submit btn adds questions to quests
 */
+
+/*  
+var currentScroll = 0;
+$(window).scroll(function () {
+	currentScroll = $(window).scrollTop();
+});
+
+var showSnippetNicely = function() {
+	$(".scrollingBox").animate({ "top": currentScroll }, 200);
+};
+*/ 
 
 //End document.ready
 });

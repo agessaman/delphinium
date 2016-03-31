@@ -12,8 +12,3 @@ fields:
     custom:
         label: Custom
         comment: Add text content
-    course_id:
-        label: 'Course id'
-        span: auto
-        type: text
-        comment: 'copy id is generated dynamically'

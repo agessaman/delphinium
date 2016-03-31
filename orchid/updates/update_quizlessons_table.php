@@ -10,9 +10,9 @@ class UpdateQuizlessonsTable extends Migration
     {
         Schema::table('delphinium_orchid_quizlessons', function($table)
         {
+            $table->string('name',255);
             $table->string('quiz_name',255);
             $table->string('quiz_id',255);
-            $table->string('course_id',255);
         });
     }
 
@@ -20,9 +20,9 @@ class UpdateQuizlessonsTable extends Migration
     {
         Schema::table('delphinium_poppies_popquizzes', function($table)
         {
+            $table->dropColumn('name');
             $table->dropColumn('quiz_name');
             $table->dropColumn('quiz_id');
-            $table->dropColumn('course_id');
         });
     }
 

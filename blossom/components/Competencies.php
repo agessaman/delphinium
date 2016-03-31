@@ -42,27 +42,26 @@ class Competencies extends ComponentBase
         */
             if (!isset($_SESSION)) { session_start(); }
             $courseID = $_SESSION['courseID'];
+            $name = $this->alias .'_'. $_SESSION['courseID'];
+            
             // if instance has been set
             if( $this->property('instance') )
             {
                 //instance set in CMS getInstanceOptions()
                 $config = CompetenceModel::find($this->property('instance'));
                 //add $course->id to $config for form field
-                $config->course_id = $_SESSION['courseID'];//$course->id;
-                $config->save();//update original record now in case it did not have course
 
             } else {
                 // look for instances created for this course
-				$instances = CompetenceModel::where('course_id','=', $courseID)->get();
+				$instances = CompetenceModel::where('name','=', $name)->get();
 				
 				if(count($instances) === 0) { 
 					// no record found so create a new dynamic instance
 					$config = new CompetenceModel;// db record
-					$config->name = 'dynamic_';//+ total records count?
+					$config->Name = $name;
 					$config->Size = 'Medium';//$config->size = '20%';
                     $config->Color = '#4d7123';//uvu green
                     $config->Animate = '1';//true
-					$config->course_id = $_SESSION['courseID'];
 					$config->save();// save the new record
 				} else {
 					//use the first record matching course

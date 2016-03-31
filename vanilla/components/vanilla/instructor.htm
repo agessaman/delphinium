@@ -3,7 +3,7 @@
     <a id="popinfo" title="Info" tabindex="0" role="button" data-trigger="focus" data-container="body" data-toggle="popover" data-placement="left" data-content="Setup below" style="position:absolute; top:0; right:0px;">
         <i class="icon-question"></i>
     </a>
-	<div id="cog" data-toggle="modal" href="#content-configuration" style="position:absolute; top:0; right:10px;">
+	<div id="cog" data-toggle="modal" href="#content-configuration" data-trigger-action="enable" style="position:absolute; top:0; right:10px;">
 		<a data-toggle="tooltip" title="Settings" data-placement="bottom"><i class="icon-cog"></i></a>
     </div>
 </div>
@@ -62,12 +62,18 @@
     */
     
     $('#Form-outsideTabs').append('<input type="hidden" name="Vanilla[id]" value="'+config.id+'" /> ');
-    //$('#Form-outsideTabs').append('<input type="hidden" name="Vanilla[course_id]" value="'+config.course_id+'" /> ');
+
     
 	function completed(data)
 	{
-        /* updated record is returned */
-        location.reload();
+        /* updated record is returned in data */
+        /* Flash a message then reload page 
+        $.oc.flashMsg({
+            'text': 'The record has been successfully saved.',
+            'class': 'success',
+            'interval': 3
+        });*/
+        location.reload();// wait for 3 sec?
 	}
 	console.log('instance: id='+config.id,config.name,config.custom,config.course_id);
 </script>

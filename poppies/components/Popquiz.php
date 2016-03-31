@@ -73,25 +73,23 @@ class Popquiz extends ComponentBase
 			if (!isset($_SESSION)) { session_start(); }
 
             $courseID = $_SESSION['courseID'];
+            $name = $this->alias .'_'. $_SESSION['courseID'];
             // if instance has been set
             if( $this->property('instance') )
             {
                 //use the instance set in CMS dropdown
                 $config = popquizModel::find($this->property('instance'));
-                $config->course_id = $_SESSION['courseID'];//$course->id;
-                $config->save();//update original record now in case it did not have course
 
             } else {
                 
 				// find all matching course 
-				$instances = popquizModel::where('course_id','=', $courseID)->get();
+				$instances = popquizModel::where('name','=', $name)->get();
 				
 				if(count($instances) === 0) { 
 					// no record found so create a new dynamic instance
 					$config = new popquizModel;// db record
-					$config->name = 'dynamic_';//+ total records count?
+					$config->name = $name;
 					
-					$config->course_id = $_SESSION['courseID'];
 					$config->save();// save the new record
 				} else {
 					//use the first record matching course
@@ -261,8 +259,6 @@ class Popquiz extends ComponentBase
         $config->quiz_description=$data['quiz_description'];
 		$config->game_style=$data['game_style'];
 		$config->questions=$data['questions'];
-
-		$config->course_id = $data['course_id'];//hidden in frontend
 		$config->save();// update original record 
 		return json_encode($config);// back to instructor view
     }

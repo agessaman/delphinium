@@ -50,10 +50,10 @@ class Quizlesson extends ComponentBase
        // try
        // {
             /*Notes:
-            is an instance set? yes show it
-            else get all instances
-                is there an instance with this course? yes use it
-            else create dynamicInstance, save new instance, show it
+            -When configuring the component on a page we will provide the option of selecting a backend instance of the component. 
+                if an instance has been selected, then we will just use that.
+            -If no instance has been selected, then we will look in the DB for a component with the alias_courseId name. If found, we'll return it.
+            -If not found, then we will create a new instance with the name alias_courseId.
             
 			Requires minimal.htm layout
             Requires the Dev component set up from Here:
@@ -64,27 +64,25 @@ class Quizlesson extends ComponentBase
 			
             if (!isset($_SESSION)) { session_start(); }
             $courseID = $_SESSION['courseID'];
-			
+			$name = $this->alias .'_'. $_SESSION['courseID'];
             // if instance has been set
             if( $this->property('instance') )
             {
                 //use the instance set in CMS dropdown
                 $config = QuizlessonModel::find($this->property('instance'));
-                $config->course_id = $_SESSION['courseID'];
-                $config->save();//update original record in case it is a different course
 
             } else {
 				// look for instances created for this course
-				$instances = QuizlessonModel::where('course_id','=', $courseID)->get();
+				$instances = QuizlessonModel::where('name','=', $name)->get();
 				
 				if(count($instances) === 0) { 
 					// no record found so create a new dynamic instance
 					$config = new QuizlessonModel;// db record
+                    $config->name = $name;
 					// add your fields
 					//$config->size = '20%';
-                    $config->quiz_name = '';
-                    $config->quiz_id = '';
-					$config->course_id = $_SESSION['courseID'];
+                    //$config->quiz_name = '';
+                    //$config->quiz_id = '';
 					$config->save();// save the new record
 				} else {
 					//use the first record matching course
@@ -200,8 +198,6 @@ class Quizlesson extends ComponentBase
 		//$config->size = '20%';// always 100% canvas page !
         $config->quiz_name = '';
         $config->quiz_id = '';
-
-		$config->course_id = $data['course_id'];//hidden in frontend
 		$config->save();// update original record 
 		return json_encode($config);// back to instructor view
     }

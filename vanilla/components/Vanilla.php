@@ -63,17 +63,17 @@ class Vanilla extends ComponentBase
 	}
 **** NEW CODE */
 	/** Added
-	 *  Requires the Dev component in CMS page
+	 *  Requires the Dev component in CMS page and minimal layout
 	 */
     public function onRun()
     {
         try
         {
             /*Notes:
-            is an instance set? yes show it
-            else get all instances
-                is there an instance with this course? yes use it
-            else create dynamicInstance, save new instance, show it
+            -When configuring the component on a page we will provide the option of selecting a backend instance of the component. 
+                if an instance has been selected, then we will just use that.
+            -If no instance has been selected, then we will look in the DB for a component with the alias_courseId name. If found, we'll return it.
+            -If not found, then we will create a new instance with the name alias_courseId.
             
 			Requires minimal.htm layout
             Requires the Dev component set up from Here:
@@ -81,26 +81,24 @@ class Vanilla extends ComponentBase
             */
             if (!isset($_SESSION)) { session_start(); }
             $courseID = $_SESSION['courseID'];
-			
+			$name = $this->alias .'_'. $_SESSION['courseID'];
+            
             // if instance has been set
             if( $this->property('instance') )
             {
                 //use the instance set in CMS dropdown
                 $config = VanillaModel::find($this->property('instance'));
-                $config->course_id = $_SESSION['courseID'];
-                $config->save();//update original record in case it is a different course
 
             } else {
 				// look for instances created for this course
-				$instances = VanillaModel::where('course_id','=', $courseID)->get();
+				$instances = VanillaModel::where('name','=', $name)->get();
 				
 				if(count($instances) === 0) { 
 					// no record found so create a new dynamic instance
 					$config = new VanillaModel;// db record
-					$config->name = 'dynamic_';//+ total records count?
+					$config->name = $name;
 					// add your fields
 					//$config->size = '20%';
-					$config->course_id = $_SESSION['courseID'];
 					$config->save();// save the new record
 				} else {
 					//use the first record matching course
@@ -132,7 +130,16 @@ class Vanilla extends ComponentBase
             // include the backend form with instructions for instructor.htm
             if(stristr($roleStr, 'Instructor'))
 			{
-				//https://medium.com/@matissjanis/octobercms-using-backend-forms-in-frontend-component-fe6c86f9296b#.ge50nlmtc
+				/** Added: 3/30/16 
+                    Flash message when form is updated from the instructor frontend
+                    https://octobercms.com/docs/ui/flashmessage
+                Note: storm-min.js?v316:2886 Uncaught Error: Trigger condition is not specified.
+                */
+                //$this->addCss('/modules/system/assets/ui/storm.css', 'core');
+                //$this->addJs('/modules/system/assets/ui/storm-min.js', 'core');
+                //$this->addCss('/modules/system/assets/ui/storm.less', 'core');
+                
+                //https://medium.com/@matissjanis/octobercms-using-backend-forms-in-frontend-component-fe6c86f9296b#.ge50nlmtc
 				// Build a back-end form with the context of 'frontend'
 				$formController = new \Delphinium\Vanilla\Controllers\Vanilla();
 				$formController->create('frontend');
@@ -197,8 +204,6 @@ class Vanilla extends ComponentBase
         
 		// add your fields to update
         $config->custom = $data['custom'];
-
-		$config->course_id = $data['course_id'];//hidden in frontend
 		$config->save();// update original record 
 		return json_encode($config);// back to instructor view
     }

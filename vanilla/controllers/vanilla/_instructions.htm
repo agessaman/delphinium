@@ -1,22 +1,26 @@
 <!-- Vanilla Instructions partial -->
 <h3>Vanilla Component</h3>
 
-<div style="float:left; width:50%">
-	
-	<p>Write your instructions here. <br />
-		Include an image by placing it in the assets folder and writing the src with jquery
-	</p>
-	<p>&nbsp;<br/></p>
-	<p>Instructions for anyone interested</p>
-	<p>&nbsp;</p>
-</div>
-<div class="hiddenFromTeacher">
-    <!--Instructions in this div will only be shown on the back end and should describe elements that the teacher will not see in Canvas-->
-</div>
-<div class ="displayForBoth">
-    <!--Instructions in this div will appear in both the back end and in Canvas-->
-</div>
 <img id="image0" style="float:right;" src="" width="280" height="120" title="Style the component" alt="style it"/>
+
+<div style="float:left; width:60%">
+    
+    <div class ="displayForBoth">
+    <!--Instructions in this div will appear in both the backend and in Canvas-->
+        <p>Write your instructions here. </p>
+        <p>&nbsp;<br/></p>
+        <p>Instructions for the teacher.</p>
+        <p>&nbsp;<br/><br/></p>
+    </div>
+    
+    <div class="hiddenFromTeacher">
+        <!--Instructions in this div will only be shown on the backend and should describe elements that the teacher will not see in Canvas-->
+        
+        <p>
+            Include an image by placing it in the assets folder and writing the src with jquery
+        </p>
+    </div>
+</div>
 <script>
     // add images by injecting the source path
 	//$('#image0').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/vanilla/assets/images/yourimage.png');
