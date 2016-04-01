@@ -33,8 +33,8 @@ class Stats extends ComponentBase
             ],
             'stats' => [
                 'title' => '(Optional) Stats instance',
-                'description' => 'Select the stats instance to display. if an instance is selected, it will be the configuration for all courses that use this page.
-                Leaving this field blank will allow different configurations for every course',
+                'description' => 'Select the stats instance to display. If an instance is selected, it will be the configuration for all courses that use this page.
+                Leaving this field blank will allow different configurations for every course.',
                 'type' => 'dropdown',
             ]
         ];
