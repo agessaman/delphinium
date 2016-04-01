@@ -58,23 +58,19 @@
 	font-size: 1.2em;/* view question details icon*/
 }
 .btngroup {
-    float: right;
-    margin-right: 40px;
+    /*float: right;
+    margin-right: 40px;*/
+	position: relative;
+	
 }
 #qtitle {
 	font-size: 1.2em;
 	font-weight: 600;
     padding: 5px;
+	position: relative;
+	
 }
-.questype { 
-	/*padding: 3px;*/
-}
-#questcount {
-	float: left;
-	padding: 6px 10px;/*top&botm, l&r*/
-	font-size:  1.2em;
-	font-weight: 600;
-}
+
 .text-content{
     width: 90%;
     height: 100px;
@@ -91,6 +87,15 @@
     border: 1px solid #999;
     margin: 18px 0 -1px;
     padding: 20px;
+}
+.questype { 
+	/*padding: 3px;*/
+}
+#questcount {
+	float: left;
+	padding: 6px 10px;/*top&botm, l&r*/
+	font-size:  1.2em;
+	font-weight: 600;
 }
 
 /*shorten boostrap alert or use buttons btn-sm*/

@@ -51,7 +51,7 @@ var nextcount=0;// index for question details modal
 
 // setup tools
 $('#questiongroup').hide();
-$('#addsubmit').hide();
+$('#addsubmit').attr("disabled","disabled");
     
 // start with a text field
 $('.show-content').append('<div class="text-content"></div>');
@@ -183,7 +183,10 @@ function showQuizQuestions(id)
 		}
 		//console.log(usedcount, quests.length);
 		// if count = all show Add Submit Quiz button 
-		if(usedcount==quests.length){ $('#addsubmit').show(); }
+		if(usedcount==quests.length) {
+			$('#addsubmit').removeAttr( "disabled" );
+			$('#addselected').attr("disabled","disabled");
+		}
     });
     
 	// add submit button to page
@@ -198,6 +201,9 @@ function showQuizQuestions(id)
             subtn +='data-action="" >';//configure button
             subtn +='Submit Quiz</button></div>';
         $('.show-content').append(subtn);
+		// disable addsubmit
+		$('#addsubmit').attr("disabled","disabled");
+		$('#addtext').attr("disabled","disabled");
 	});
     
     // choose a different quiz
@@ -205,6 +211,10 @@ function showQuizQuestions(id)
         e.preventDefault();
         $('#quizlist').show();
         $('#questiongroup').hide();
+		// enable add questions and text, disable addsubmit
+		$('#addselected').removeAttr( "disabled" );
+		$('#addtext').removeAttr( "disabled" );
+		$('#addsubmit').attr("disabled","disabled");
         // empty array ?
         selecteditems=[];
         // reset the page
