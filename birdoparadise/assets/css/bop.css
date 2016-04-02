@@ -104,12 +104,22 @@
 	padding: 10px;/* T,R,B,L */
 	margin-bottom: 5px;
     
-    border-radius: 10px 10px 10px 10px;
+    border-radius: 5px;
     -moz-border-radius: 10px 10px 10px 10px;
     -webkit-border-radius: 10px 10px 10px 10px;
-	border: thin solid #ababab;
-	background-color: #fff;
+	border: 1px solid #D0D0D0;
+	
     color: #888888;
+}
+.assignment:hover{
+    border: 2px solid #D0D0D0;
+}
+.available {
+	background-color: #fafafa;
+	cursor: pointer; /* whole div is clickable */
+}
+.unavailable {
+	background-color: #e0e0e0;
 }
 .required {
     width: 80%;
@@ -134,15 +144,16 @@
 .link {
     width: 80%;
     float: left;
-    border: thin solid #ababab;/*test width*/
+	margin-top: 2px;
+    /*border: thin solid #ababab; test width*/
 }
 .points {
     width: auto;
     float: right;
-    padding: 5px;
+    /*padding: 5px;*/
     font-size: 1.1em;
-    color: #000;
-    border: thin solid #ababab;/*test width*/
+    color: #333;
+   /* border: thin solid #ababab; test width*/
 }
 .clearme {
     clear:both;
