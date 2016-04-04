@@ -1,0 +1,53 @@
+<?php namespace {{studly_author}}\{{studly_plugin}}\Controllers;
+
+use BackendMenu;
+use Backend\Classes\Controller;
+//Uncomment line below once an appropriate model has been created that matches this controller
+//use Delphinium\Blossom\Models\Model as MyModel;
+
+/**
+ * {{title_name}} Back-end Controller
+ */
+class {{studly_name}} extends Controller
+{
+    public $implement = [
+        'Backend.Behaviors.FormController',
+        'Backend.Behaviors.ListController'
+    ];
+
+    public $formConfig = 'config_form.yaml';
+    public $listConfig = 'config_list.yaml';
+
+    public function __construct()
+    {
+        parent::__construct();
+
+		BackendMenu::setContext('Delphinium.Greenhouse', 'greenhouse', 'greenhouse');
+    }
+
+    /**
+     * Delete checked instances.
+     * called from /controllers/list_toolbar.htm Remove button
+     */
+
+    public function index_onDelete()
+    {
+    //Uncomment lines below once a model has been added that corresponds to this controller (see use statement above)
+    /*
+        if (($checkedIds = post('checked')) && is_array($checkedIds) && count($checkedIds)) {
+
+            foreach ($checkedIds as $id) {
+                if (!$obj = MyModel::find($id)) continue;
+                $obj->delete();
+            }
+
+            Flash::success("Successfully deleted");
+        }
+        else {
+            Flash::error("An error occurred when trying to delete this item");
+        }
+
+        return $this->listRefresh();
+    }
+    */
+}

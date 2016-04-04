@@ -1,5 +1,5 @@
 {% if ('Learner' in role) %}
     {% partial __SELF__~'::student' %}
-{% elseif ('Instructor' in role) %}
+{% elseif ('Instructor' in role or 'TeachingAssistant' in role) %}
     {% partial __SELF__~'::instructor' %}
 {% endif %}

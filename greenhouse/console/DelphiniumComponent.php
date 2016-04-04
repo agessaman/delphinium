@@ -1,13 +1,14 @@
 <?php namespace Delphinium\Greenhouse\Console;
+//namespace System\Console;
 
 use Illuminate\Console\Command;
 use System\Classes\UpdateManager;
 use System\Classes\PluginManager;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
-use Delphinium\Greenhouse\Templates\Plugin;
+use Delphinium\Greenhouse\Templates\Component;
 
-class DelphiniumPlugin extends Command
+class DelphiniumComponent extends Command
 {
 
     protected $fileMap = [];
@@ -15,13 +16,13 @@ class DelphiniumPlugin extends Command
      * The console command name.
      * @var string
      */
-    protected $name = 'delphinium:plugin';
+    protected $name = 'delphinium:component';
 
     /**
      * The console command description.
      * @var string
      */
-    protected $description = 'Initializes a delphinium-esque plugin';
+    protected $description = 'Creates a delphinium-esque component';
 
     /**
      * Create a new command instance.
@@ -38,44 +39,44 @@ class DelphiniumPlugin extends Command
      */
     public function fire()
     {
-        $parts = explode('.', $this->argument('name'));
+        $pluginCode = $this->argument('pluginCode');
 
-        if (count($parts) != 2) {
-            $this->error('Invalid plugin name, either too many dots or not enough.');
-            $this->error('Example name: AuthorName.PluginName');
-            return;
-        }
-
-
+        $parts = explode('.', $pluginCode);
         $pluginName = array_pop($parts);
         $authorName = array_pop($parts);
-        $vars = [
-            'name'   => $pluginName,
-            'author' => $authorName,
-        ];
-        $destinationPath = base_path() . '/plugins';
-        Plugin::make($destinationPath, $vars);
 
-        $this->info(sprintf('Successfully generated Plugin named "%s"', $this->argument('name')));
+        $destinationPath = base_path() . '/plugins/' . strtolower($authorName) . '/' . strtolower($pluginName);
+        $componentName = $this->argument('componentName');
+
+        $vars = [
+            'name' => $componentName,
+            'author' => $authorName,
+            'plugin' => $pluginName
+        ];
+
+        Component::make($destinationPath, $vars, $this->option('force'));
+
+        $this->info(sprintf('Successfully generated Component for "%s"', $componentName));
     }
 
     /**
      * Get the console command arguments.
-     * @return array
      */
     protected function getArguments()
     {
         return [
-            ['name', InputArgument::REQUIRED, 'The name of the plugin. E.g., Author.Plugin'],
+            ['pluginCode', InputArgument::REQUIRED, 'The name of the plugin to create. Eg: RainLab.Blog'],
+            ['componentName', InputArgument::REQUIRED, 'The name of the component. Eg: Posts'],
         ];
     }
 
     /**
      * Get the console command options.
-     * @return array
      */
     protected function getOptions()
     {
-        return [];
+        return [
+            ['force', null, InputOption::VALUE_NONE, 'Overwrite existing files with generated ones.']
+        ];
     }
 }
