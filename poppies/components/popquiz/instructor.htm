@@ -176,8 +176,9 @@
 	quizList = {{quizList|raw}};
     //console.log('quizList:', quizList.length, quizList);
     showQuizzes();// all quizzes to choose from
-    
-    if(gameQuest.length > 0) {
+    console.log('if gameQuest:', gameQuest.length);//, gameQuest);
+    if(gameQuest != null && gameQuest.length > 1) {
+        
         gameitems = {{gameQuest|raw}};
         showSelected();// from config.questions
     }

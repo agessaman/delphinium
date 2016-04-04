@@ -68,8 +68,8 @@ class Popquiz extends ComponentBase
 	*/
 	public function onRun()
 	{
-		try
-        {
+//		try
+//        {
 			if (!isset($_SESSION)) { session_start(); }
 
             $courseID = $_SESSION['courseID'];
@@ -147,7 +147,7 @@ class Popquiz extends ComponentBase
 			// code for both
             $gameQuest = $this->getSomeQuestions($config->questions);
             $this->page['gameQuest'] = $gameQuest;
-		}
+/*		}
         catch (\GuzzleHttp\Exception\ClientException $e) {
             return;
         }
@@ -166,7 +166,7 @@ class Popquiz extends ComponentBase
             }
             return \Response::make($this->controller->run('error'), 500);
         }
-	}
+*/	}
 
 	/* Instructor can choose questions from multiple quizzes
         return list of quizzes for instructor to choose questions

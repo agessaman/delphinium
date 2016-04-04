@@ -23,10 +23,10 @@ class LtiConfiguration extends ComponentBase {
     }
 
     public function onRun() {
-        try
-        {
+//        try
+//        {
             $this->doBltiHandshake();
-        }
+/*        }
         catch(\Delphinium\Roots\Exceptions\InvalidRequestException $e)
         {
             return \Response::make($this->controller->run('error'), 500);
@@ -52,7 +52,7 @@ class LtiConfiguration extends ComponentBase {
             }
             return \Response::make($this->controller->run('error'), 500);
         }
-    }
+*/    }
 
     public function defineProperties() {
         return [

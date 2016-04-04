@@ -1452,7 +1452,7 @@ p.nominalBounds = new cjs.Rectangle(-131.8,-423.8,1223.7,1223.7);
 			console.log(questionArray[1].name);
 			console.log(gameQuest[1].name);
 			console.log(questionArray.length);
-			//only needs 15 if more then remove after shuffle?
+			//only needs 15 if more dont worry about it
 			
 		}
 		
@@ -1663,13 +1663,13 @@ p.nominalBounds = new cjs.Rectangle(-131.8,-423.8,1223.7,1223.7);
 			var moveOn = false;
 			phoneUsed=true;
 			questionBox.highlight.visible = false;
-			if(!fiftyClicked)
-			{
+	//		if(!fiftyClicked)
+	//		{
 				for(var i=0; i<optins.length; i+=1)
 				{
 					if(optins[i].isRight) { tempInt=i+1; }
 				}
-				// Hanging up here?
+				
 				console.log("friendClicked: "+tempInt);
 				while(moveOn==false)
 				{
@@ -1716,11 +1716,13 @@ p.nominalBounds = new cjs.Rectangle(-131.8,-423.8,1223.7,1223.7);
 						moveOn = true;
 					}
 				}
-			}
-			// Hanging up here?
+	//		}
+	/*Commented out = +Above: FIXED I think 		
 			if(fiftyClicked)
 			{
                 console.log('while Hangs line 1723');
+                
+                // Hanging up here?
 				//while(moveOn==false){
 					rand1 = Math.round(getRandom(0,100))+30;
 					rand2 = Math.round(getRandom(0,100)) - rand1;
@@ -1795,7 +1797,7 @@ p.nominalBounds = new cjs.Rectangle(-131.8,-423.8,1223.7,1223.7);
 					console.log('finalPercent='+finalPercent);
 				//}
 			}
-			
+	*/
 			lifelinesLeft -= 1;
 			phoneAFriendBox.visible = true;
 			phoneAFriendBox.percentBox.text = finalPercent;
