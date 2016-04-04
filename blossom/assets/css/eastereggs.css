@@ -24,3 +24,11 @@ p{
 #eggs{
 	margin: 10px;
 }
+
+.egg{
+	height: 50px;
+}
+
+.stuff{
+	width: 200px;
+}

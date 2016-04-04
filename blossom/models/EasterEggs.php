@@ -16,7 +16,7 @@ class EasterEggs extends Model
     public $rules = [
         'name'=>'required',
         'menu'=>'required'
-    ];//copy_id & 'course_id' => 'required' created dynamically
+    ];
     
     protected $guarded = ['*'];
     protected $fillable = ['name','menu'];
