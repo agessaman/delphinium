@@ -92,6 +92,7 @@ class TestRoots extends ComponentBase
 //        $this->testIsQuestionAnswered();
 //        $this->testSubmitQuiz();
 //        $this->getQuizSubmissionQuestions();
+        $this->getModuleTree();
     }
 
     private function testBasicModulesRequest()
@@ -782,6 +783,12 @@ class TestRoots extends ComponentBase
     }
 
 
+    public function getModuleTree()
+    {
+        $data = $this->roots->getModuleTree(true);
+        echo json_encode($data);
+        return $data;
+    }
     public function test()
     {
         if(!isset($_SESSION))

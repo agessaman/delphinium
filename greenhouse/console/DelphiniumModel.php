@@ -1,11 +1,11 @@
-<?php namespace October\Rain\Scaffold\Console;
+<?php namespace Delphinium\Greenhouse\Console;
 
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 use Delphinium\Greenhouse\Templates\Model;
 
-class CreateModel extends Command
+class DelphiniumModel extends Command
 {
 
     /**
