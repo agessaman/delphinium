@@ -5,6 +5,8 @@ use Delphinium\Blossom\Models\Experience as ExperienceModel;
 use Delphinium\Blossom\Models\Stats as StatsModel;
 use Delphinium\Blossom\Components\Experience as ExperienceComponent;
 use Delphinium\Roots\Roots;
+use Flash;
+use Redirect;
 
 class Stats extends ComponentBase
 {
@@ -23,10 +25,17 @@ class Stats extends ComponentBase
     public function defineProperties()
     {
         return [
-            'Experience' => [
+            'experience' => [
                 'title' => '(Optional) Experience instance',
-                'description' => 'Select the experience instance to display the student\'s stats',
+                'description' => 'Select the experience instance to display the student\'s stats.
+                Leaving this field blank will automatically select the experience instance for this course.',
                 'type' => 'dropdown'
+            ],
+            'stats' => [
+                'title' => '(Optional) Stats instance',
+                'description' => 'Select the stats instance to display. If an instance is selected, it will be the configuration for all courses that use this page.
+                Leaving this field blank will allow different configurations for every course.',
+                'type' => 'dropdown',
             ]
         ];
     }
@@ -35,9 +44,24 @@ class Stats extends ComponentBase
         $instances = ExperienceModel::all();
 
         if (count($instances) === 0) {
-            return $array_dropdown = ["0" => "No instances available. Component won\'t work"];
+            return $array_dropdown = ["0" => "No instances available."];
         } else {
             $array_dropdown = ["0" => "- select Experience Instance - "];
+            foreach ($instances as $instance) {
+                $array_dropdown[$instance->id] = $instance->name;
+            }
+            return $array_dropdown;
+        }
+    }
+
+    public function getStatsOptions()
+    {
+        $instances = StatsModel::all();
+
+        if (count($instances) === 0) {
+            return $array_dropdown = ["0" => "No instances available"];
+        } else {
+            $array_dropdown = ["0" => "- select Stats Instance - "];
             foreach ($instances as $instance) {
                 $array_dropdown[$instance->id] = $instance->name;
             }
@@ -49,15 +73,19 @@ class Stats extends ComponentBase
     {
 //        try
 //        {
+        $this->addCss('/modules/system/assets/ui/storm.css', 'core');
+        $this->addJs('/modules/system/assets/ui/storm-min.js', 'core');
+        $this->addCss('/modules/system/assets/ui/storm.less', 'core');
+        $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
+        $this->addJs("/plugins/delphinium/blossom/assets/javascript/stats.js");
+        $this->addCss("/plugins/delphinium/blossom/assets/css/stats.css");
+
+        //if no instance exists of this component, create a new one. It will be tied to the experience component they have selected
         $statsInstance = $this->firstOrNewCourseInstance();
         $this->statsInstanceId = $statsInstance->id;
         $this->page['instance_id'] =  $statsInstance->id;
         $experienceInstance = $this->findExperienceInstance();
 
-        //if no instance exists of this component, create a new one. It will be tied to the experience component they have selected
-        $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
-        $this->addJs("/plugins/delphinium/blossom/assets/javascript/stats.js");
-        $this->addCss("/plugins/delphinium/blossom/assets/css/stats.css");
 
 
         $statsInstance = StatsModel::find($this->statsInstanceId);
@@ -76,6 +104,10 @@ class Stats extends ComponentBase
         if(stristr($roleStr, 'Instructor')||stristr($roleStr, 'TeachingAssistant'))
         {//only instructors will be able to configure the component
             $this->instructor();
+        }
+        else
+        {
+            $this->page['nonstudent']=0;
         }
 //        }
 //        catch(\Delphinium\Roots\Exceptions\InvalidRequestException $e)
@@ -118,25 +150,33 @@ class Stats extends ComponentBase
         $courseId = $_SESSION['courseID'];
         $this->courseId = $courseId;
         $courseInstance = null;
-        if(is_null($copyName))
+
+        //if they have selected a backend instance, that will take precedence over creating a dynamic instance based on the component alias
+        if(($this->property('stats'))>0)
         {
-            $copyName =$this->alias;
+            $courseInstance =StatsModel::firstOrNew(array('id' => $this->property('stats')));
         }
-        echo $copyName;
-        $courseInstance =StatsModel::firstOrNew(array('course_id' => $courseId,'name'=>$copyName));
-        $courseInstance->course_id = $courseId;
-        $courseInstance->name = $copyName;
+        else
+        {//didn't select a backend instance. Create the component based on the copy name, or the alias name if the copy name was not provided
+            if(is_null($copyName))
+            {
+                $copyName =$this->alias . "_".$courseId;
+            }
+            $courseInstance =StatsModel::firstOrNew(array('name'=>$copyName));
+            $courseInstance->course_id = $courseId;
+            $courseInstance->name = $copyName;
+        }
+
         if(is_null($courseInstance->animate)){$courseInstance->animate = 1;}
         if(is_null($courseInstance->size)){$courseInstance->size = 'medium';}
         $courseInstance->save();
-
         return $courseInstance;
     }
 
     private function findExperienceInstance()
     {
         $experienceModel=null;
-        if(is_null($this->property('Experience'))||$this->property('Experience')==0)
+        if(is_null($this->property('experience'))||$this->property('experience')==0)
         {//find an instance of experience with the same course id
             if (!isset($_SESSION)) {
                 session_start();
@@ -173,7 +213,7 @@ class Stats extends ComponentBase
         }
         else
         {//use the selected instance
-            $experienceModel= ExperienceModel::find($this->property('Experience'))->first();
+            $experienceModel= ExperienceModel::find($this->property('experience'))->first();
             $this->page['experienceInstanceId'] =$experienceModel->id;
             $this->page['configureExperience']=0;
 
@@ -184,7 +224,6 @@ class Stats extends ComponentBase
 
     private function instructor()
     {//add backend styles
-        $this->addCss('/modules/system/assets/ui/storm.css', 'core');
         $this->page['nonstudent']=1;
         $formController = new \Delphinium\Blossom\Controllers\Stats();
         $formController->create('frontend');
@@ -370,6 +409,7 @@ class Stats extends ComponentBase
         $statsInstance->animate = $data['animate'];
         $statsInstance->course_id = $data['course_id'];
         $statsInstance->save();// update original record
+
         return json_encode($statsInstance);
     }
 }

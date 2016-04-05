@@ -1,8 +1,6 @@
 <?php namespace Delphinium\Blossom\Updates;
-
 use Schema;
 use October\Rain\Database\Updates\Migration;
-
 class AddCompetenciesTable extends Migration
 {
     public function up()
@@ -11,16 +9,13 @@ class AddCompetenciesTable extends Migration
 		Schema::table('delphinium_blossom_competencies', function($table)
 		{
 			$table->string('Color');//hex #FF00FF
-			$table->integer('course_id')->unsigned();
 		});
     }
-
     public function down()
     {
-		Schema::table('delphinium_blossom_competencies', function($table)
+        Schema::table('delphinium_blossom_competencies', function($table)
         {
             $table->dropColumn('Color');
-			$table->dropColumn('course_id');
         });
     }
 }

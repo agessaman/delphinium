@@ -6,8 +6,61 @@ fields:
     id:
         label: ID
         disabled: true
-    Name:
-        label: Name
+    name:
+        label: name
         span: left
         placeholder: Must be named
         comment: Enter a name for this instance
+
+    menu:
+        label: menu
+        type: checkbox
+        span: auto
+        default: false
+        comment: Checked = Show shortcuts
+
+    harlem_shake:
+        label: harlem_shake
+        span: auto
+        comment: Enter a point threshold
+
+    ripples:
+        label: ripples
+        span: auto
+        comment: Enter a point threshold
+
+    asteroids:
+        label: asteroids
+        span: auto
+        comment: Enter a point threshold
+
+    katamari:
+        label: katamari
+        span: auto
+        comment: Enter a point threshold
+
+    bombs:
+        label: bombs
+        span: auto
+        comment: Enter a point threshold
+
+    ponies:
+        label: ponies
+        span: auto
+        comment: Enter a point threshold
+
+    my_little_pony:
+        label: my_little_pony
+        span: auto
+        comment: Enter a point threshold
+
+    course_id:
+        label: 'Course id'
+        span: auto
+        type: text
+        comment: 'copy id is generated dynamically'
+    copy_id:
+        label: 'Copy id'
+        span: auto
+        type: text
+        comment: 'copy id is generated dynamically'

@@ -1,8 +1,6 @@
 <?php namespace Delphinium\Blossom\Updates;
-
 use Schema;
 use October\Rain\Database\Updates\Migration;
-
 class CreateCompetenciesTable extends Migration
 {
     //http://octobercms.com/docs/database/structure
@@ -18,7 +16,6 @@ class CreateCompetenciesTable extends Migration
 			$table->timestamps();
 		});
     }
-
     public function down()
     {
 		Schema::dropIfExists('delphinium_blossom_competencies');

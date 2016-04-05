@@ -7,6 +7,11 @@ columns:
         label: ID
         searchable: true
 
-    Name:
-        label: Name
+    name:
+        label: name
         searchable: true
+
+    menu:
+        label: menu
+        searchable: true
+
