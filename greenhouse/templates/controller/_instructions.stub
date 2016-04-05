@@ -1,18 +1,30 @@
-
 <!-- {{studly_name}} Instructions partial -->
 <h3>{{studly_name}} Component</h3>
 
-<div style="float:left; width:50%">
+<div style="float:left; width:60%">
 
-	<p>Write your instructions here. <br />
-	</p>
-	<p>&nbsp;<br/></p>
-	<p>Instructions for anyone interested</p>
-	<p>&nbsp;</p>
+    <div class ="displayForBoth">
+    <!--Instructions in this div will appear in both the Greenhouse backend and in the teacher view inside Canvas-->
+        <p>Write your instructions here. </p>
+        <p>&nbsp;<br/></p>
+        <p>Instructions for the teacher.</p>
+        <p>&nbsp;<br/><br/></p>
+    </div>
+
+    <div class="hiddenFromTeacher">
+        <!--Instructions in this div will only be shown on the backend and should describe elements that do not apply to the
+         instructor view inside Canvas-->
+
+        <p>
+            Include an image by placing it in the assets folder and writing the src with jquery
+        </p>
+    </div>
+
+
+    <p>Since this partial will be loaded in the teacher's view, we must make it responsive. Images can be responsive by setting them as the
+    background of a div and setting the URL in the CSS block in this file</p>
+    <div id="image1"></div>
 </div>
-Since this partial will be loaded in the teacher's view, we must make it responsive. Images can be responsive by setting them as the
-background of a div and setting the URL in CSS in this file
-<div id="image1"></div>
 
 <style>
 
