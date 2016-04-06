@@ -37,11 +37,9 @@ class Plugin extends PluginBase
      */
     public function registerComponents()
     {
-        return []; // Remove this line to activate
-
-        return [
-            '{{studly_author}}\{{studly_name}}\Components\MyComponent' => 'myComponent',
-        ];
+        /*Do NOT remove these comments!!! They are used to automate the "Delphiniumization" of your plugin!"*/
+        //KEY-registerComponent
+        return [];
     }
 
     /**
@@ -51,7 +49,7 @@ class Plugin extends PluginBase
      */
     public function registerPermissions()
     {
-        return []; // Remove this line to activate
+        //return []; // Remove this line to activate
 
         return [
             '{{lower_author}}.{{lower_name}}.some_permission' => [
