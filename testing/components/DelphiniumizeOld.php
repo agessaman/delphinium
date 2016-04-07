@@ -6,7 +6,7 @@ use Delphinium\Greenhouse\Templates\Component;
 use Delphinium\Greenhouse\Templates\Plugin;
 use Delphinium\Greenhouse\Templates\Controller;
 use Delphinium\Greenhouse\Templates\Model;
-use Delphinium\Testing\Classes\MyNodeVisitor;
+use Delphinium\Testing\Classes\PluginFileNodeVisitor;
 use October\Rain\Filesystem\Filesystem;
 use PhpParser\ParserFactory;
 use PhpParser\Error;
@@ -14,14 +14,14 @@ use PhpParser\PrettyPrinter;
 use PhpParser\NodeTraverser;
 use PhpParser\BuilderFactory;
 
-class MyComponent extends ComponentBase
+class DelphiniumizeOld extends ComponentBase
 {
 
     public function componentDetails()
     {
         return [
-            'name' => 'MyComponent Component',
-            'description' => 'No description provided yet...'
+            'name' => 'Delphiniumize',
+            'description' => 'This component will create a new Delphinium-style plugin, controller, model, and component'
         ];
     }
 
@@ -32,6 +32,15 @@ class MyComponent extends ComponentBase
 
     public function onRun()
     {
+        RETURN;
+        //we must have the pluginCode (Author.Plugin), the controller, model, and component name.
+
+
+        //if we're creating a brand new plugin and we want to delphiniumize everything:
+        //1. Create all the files
+
+        //if we're dealing with existing plugins that we want to delphiniumize:
+
         //$this->randomFunc();
 
         ini_set('xdebug.var_display_max_depth', 5);
@@ -39,20 +48,20 @@ class MyComponent extends ComponentBase
         ini_set('xdebug.var_display_max_data', 2048);
 
         $fileSystem = new Filesystem;
-//        $destinationContent = "My text";
         $fileDestination = "C:/wamp/www/delphinium/plugins/delphinium/uliop/Plugin.php";
         $fileContent = $fileSystem->get($fileDestination);
         $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
         $prettyPrinter = new PrettyPrinter\Standard;
         $traverser     = new NodeTraverser;
-        $traverser->addVisitor(new MyNodeVisitor);
+        $traverser->addVisitor(new PluginFileNodeVisitor);
 
         try {
             $stmts = $parser->parse($fileContent);
             $stmts = $traverser->traverse($stmts);
-
             // pretty print
             $code = $prettyPrinter->prettyPrintFile($stmts);
+            echo "-------------";
+            var_dump($code);
             $fileSystem->put($fileDestination, $code);
             //var_dump($code);
 
@@ -67,6 +76,15 @@ class MyComponent extends ComponentBase
     }
 
 
+    public function createDelphinium()
+    {
+        //create plugin
+        $vars =  array("pluginCode"=>"Delphinium.Uliop", "componentName"=>"NewComp", "controllerName"=>"NewControl", "modelName"=>"NewModel");
+        $this->createPlugin($vars);
+        $this->createComponent($vars);
+        $this->createController($vars);
+        $this->createModel($vars);
+    }
     private function randomFunc()
     {
 
@@ -93,14 +111,29 @@ class MyComponent extends ComponentBase
         $fileSystem = new Filesystem;
         $fileContent = $fileSystem->get($fileDestination);
 
-        ini_set('xdebug.var_display_max_depth', 5);
-        ini_set('xdebug.var_display_max_children', 256);
-        ini_set('xdebug.var_display_max_data', 1024);
+//        ini_set('xdebug.var_display_max_depth', 5);
+//        ini_set('xdebug.var_display_max_children', 256);
+//        ini_set('xdebug.var_display_max_data', 1024);
         echo($fileContent);
         $replace = $searchString . "\n" . $insertString."\n";
         $newFileContent = str_replace($searchString, $replace, $fileContent);
         $fileSystem->put($fileDestination, $newFileContent);
     }
+
+
+    private function onAddItem()
+    {
+        echo "hello";return;
+        ini_set('xdebug.max_nesting_level', 400);
+        //for now we will focus on creating brand new delphinium stuff
+        $vars =  post('New');
+        echo json_encode($vars);
+//        $this->createPlugin($vars);
+//        $this->createComponent($vars);
+//        $this->createController($vars);
+//        $this->createModel($vars);
+    }
+
     private function makeFiles()
     {
         $vars =  array("pluginCode"=>"Delphinium.Uliop", "componentName"=>"NewComp", "controllerName"=>"NewControl", "modelName"=>"NewModel");
@@ -190,8 +223,4 @@ class MyComponent extends ComponentBase
 
         Model::make($destinationPath, $vars);
     }
-
-
-
-
 }

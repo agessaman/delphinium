@@ -100,20 +100,14 @@ abstract class TemplateBase
             return;
 
         $sourceFile = __DIR__ . '/Templates/' . $stubName;
-//        echo $sourceFile."-";
         $destinationFile = $this->targetPath . '/' . $this->fileMap[$stubName];
-//        echo $destinationFile."-";
         $destinationContent = $this->files->get($sourceFile);
-//        echo $destinationContent."-";
-
         /*
          * Parse each variable in to the desintation content and path
          */
         foreach ($this->vars as $key => $var) {
             $destinationContent = str_replace('{{'.$key.'}}', $var, $destinationContent);
-//            echo $destinationContent."-";
             $destinationFile = str_replace('{{'.$key.'}}', $var, $destinationFile);
-//            echo $destinationFile."-";
         }
 
         /*
@@ -168,7 +162,6 @@ abstract class TemplateBase
             }
 
         }
-
         return $vars;
     }
 

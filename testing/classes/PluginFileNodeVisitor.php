@@ -6,16 +6,11 @@ use PhpParser\NodeTraverser;
 use PhpParser\BuilderFactory;
 use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node\Expr;
+use PhpParser\Builder\Namespace_;
 
-class MyNodeVisitor extends NodeVisitorAbstract
+class PluginFileNodeVisitor extends NodeVisitorAbstract
 {
     public function leaveNode(Node $node) {
-//        if ($node instanceof Node\Scalar\String_) {
-//            var_dump($node);
-//        }
-
-
-        //var_dump($node);
     }
 
     public function beforeTraverse(array $nodes)
@@ -31,29 +26,23 @@ class MyNodeVisitor extends NodeVisitorAbstract
             foreach($children as $nodeChild)
             {
                 //check that we have the return statement and that it's an array
-                if($nodeChild instanceof Node\Stmt\Return_)// && $nodeChild instanceof PhpParser\Node\Expr\Array_
+                if($nodeChild instanceof Node\Stmt\Return_)
                 {
-                    $components = $nodeChild->expr->items;// instanceof PhpParser\Node\Expr\Array_)
-
+                    $components = $nodeChild->expr->items;
                     //make new array item
-                    $value = new Node\Scalar\String_('createdcomp');
-                    $key = new Node\Scalar\String_('\Delphinium\Uliop\Components\CreatedComp');
+                    $value = new Node\Scalar\String_("createdcomp");
 
+                    $name = new Node\Name("\\Delphinium\\Uliop\\Components\\CreatedComp");
+                    $something= new Node\Name($name->toString());
 
-                    //THIS LINE ABOVE GETS TRANSLATED TO DOUBLE SLASHES> NEED TO FIX THAT
+                    $key = new Node\Scalar\String_($name->toString());
 
                     $newItem = new ArrayItem($value, $key);
                     $components[]=$newItem;
-
                     $nodeChild->expr->items = $components;
 
-                    var_dump($nodeChild);
                 }
             }
-            //var_dump($children);
-            //PhpParser\Node\Stmt\Return_
-//            $var = $node->getStmts();
-//            var_dump($var);
         }
         else
         {

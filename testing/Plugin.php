@@ -32,7 +32,7 @@ class Plugin extends PluginBase
     public function registerComponents()
     {
         return [
-            'Delphinium\Testing\Components\MyComponent' => 'myComponent',
+            'Delphinium\Testing\Components\Delphiniumize' => 'delphiniumize',
         ];
     }
 

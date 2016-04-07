@@ -1,0 +1,50 @@
+<!--<form
+        data-request="{{ __SELF__ }}::onAddItem">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Add a new delphinium plugin</h3>
+        </div>
+        <div class="input-group">
+            <input type="text" id="input-author" class="form-control" value="author" name="New[author]" placeholder="Enter the author">
+        </div>
+        <div class="input-group">
+            <input type="text" id="input-plugin" class="form-control" value="plugin" name="New[plugin]" placeholder="Enter the plugin name">
+        </div>
+        <div class="input-group">
+            <input type="text" id="input-controller" class="form-control" value="controller" name="New[controller]" placeholder="Enter the controller name">
+        </div>
+        <div class="input-group">
+            <input type="text" id="input-model" class="form-control" value="model" name="New[model]" placeholder="Enterthe model name">
+        </div>
+        <div class="input-group">
+            <input type="text" id="input-component" class="form-control" value="component" name="New[component]" placeholder="Enter the component name">
+        </div>
+
+        <span class="input-group-btn">
+            <button type="submit" class="btn btn btn-primary">Add</button>
+        </span>
+        <ul class="list-group" id="result">
+        </ul>
+    </div>
+</form>
+
+-->
+<form
+        data-request="{{ __SELF__ }}::onAddItem"
+        data-request-success="$('#input-item').val('')">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">To Do List</h3>
+        </div>
+        <div class="panel-body">
+            <div class="input-group">
+                <input type="text" id="input-item" class="form-control" value="" name="newItem" placeholder="What needs to be done?">
+                <span class="input-group-btn">
+                    <button type="submit" class="btn btn btn-primary">Add</button>
+                </span>
+            </div>
+        </div>
+        <ul class="list-group" id="result">
+        </ul>
+    </div>
+</form>
