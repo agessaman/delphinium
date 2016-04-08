@@ -262,15 +262,18 @@ $(document).ready(function() {
 			var url = $(e.currentTarget).attr('data-url');
 			console.log('url:',url);
 			//window.open(url, '_blank');
-			
-			//test: when item clicked call a function in php
+			// or open in an iframe below the tabs?
+			$('#content').attr('src',url);
+			// hide course items modal
+			$('#itemdetails').modal('hide');
+		/*	//test: when item clicked call a function in php
 			$.request('onAjaxTest', {
 				success: function(data) {
 					alert(data);// worked use this to get submissions
 				}
 			});
 			// end test:
-			
+		*/	
 		});
 		
         // trigger modal
@@ -280,9 +283,27 @@ $(document).ready(function() {
 
 	// activate tabs
 	var atab = $('a[href='+tabVisible+']');
-	$(atab).tab('show');//
+	$(atab).tab('show');
 	console.log('tabVisible:',tabVisible);
 	
+	/* Experiment: content in an iframe
+	if using an iframe set its height? */
+	var docHeight = $( document ).height();
+	console.log('docHeight:',docHeight);
+	var tabsHeight = $('#tabs').height();
+	console.log('tabsHeight:',tabsHeight);
+	var availableH = docHeight-tabsHeight-60;
+	console.log('availableH:',availableH);
+	
+	var iframeid = $('iframe');
+	console.log('iframe:',iframeid);
+	if(iframeid != undefined) {
+		// one exists, could it be in the canvas content?
+		iframeid = $('iframe').attr('id');
+		console.log('iframe id:',iframeid);
+		// create one with id of content for assignments
+		var content = $('body').append('<iframe id="content" width="100%" height="'+availableH+'" allowFullscreen/>');
+	}
     /* 
 	   if tab body is < component or window width turn on scroll arrows
        on browser resized, check if arrows are needed
