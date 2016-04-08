@@ -6,3 +6,15 @@ columns:
     id:
         label: ID
         searchable: true
+
+    name:
+        label: Name
+        searchable: true
+
+    animate:
+        label: Animate
+        searchable: true
+
+    size:
+        label: Size
+        searchable: true

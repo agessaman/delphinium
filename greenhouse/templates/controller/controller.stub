@@ -2,8 +2,6 @@
 
 use BackendMenu;
 use Backend\Classes\Controller;
-//Uncomment line below once an appropriate model has been created that matches this controller
-//use Delphinium\Blossom\Models\Model as MyModel;
 
 /**
  * {{title_name}} Back-end Controller
@@ -32,8 +30,6 @@ class {{studly_name}} extends Controller
 
     public function index_onDelete()
     {
-    //Uncomment lines below once a model has been added that corresponds to this controller (see use statement above)
-    /*
         if (($checkedIds = post('checked')) && is_array($checkedIds) && count($checkedIds)) {
 
             foreach ($checkedIds as $id) {
@@ -48,7 +44,7 @@ class {{studly_name}} extends Controller
         }
 
         return $this->listRefresh();
-         */
+
     }
 
 }

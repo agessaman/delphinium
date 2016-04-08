@@ -6,7 +6,9 @@ use Delphinium\Greenhouse\Templates\Component;
 use Delphinium\Greenhouse\Templates\Plugin;
 use Delphinium\Greenhouse\Templates\Controller;
 use Delphinium\Greenhouse\Templates\Model;
-use Delphinium\Testing\Classes\PluginFileNodeVisitor;
+use Delphinium\Testing\Classes\PluginNodeVisitor;
+use Delphinium\Testing\Classes\ControllerNodeVisitor;
+use Delphinium\Testing\Classes\ComponentNodeVisitor;
 use October\Rain\Filesystem\Filesystem;
 use PhpParser\ParserFactory;
 use PhpParser\Error;
@@ -18,6 +20,7 @@ class Delphiniumize extends ComponentBase
 {
 
     protected $newPluginData;
+    protected $readyVars;
     public function componentDetails()
     {
         return [
@@ -31,12 +34,21 @@ class Delphiniumize extends ComponentBase
         return [];
     }
 
+    public function onRun()
+    {
+        $vars =  array("author"=>"author","plugin"=>"newPlugin", "component"=>"newComponent", "controller"=>"newController", "model"=>"newModel");
+
+        $this->readyVars = $this->processVars($vars);
+        $this->newPluginData = $vars;
+        $this->modifyFiles();
+    }
     public function onAddItem()
     {
         $vars =  post('New');
+        $this->readyVars = $this->processVars($vars);
         $this->newPluginData = $vars;
 //        $this->makeFiles();
-        $this->modifyFiles();
+//        $this->modifyFiles();
     }
 
     private function makeFiles()
@@ -122,63 +134,134 @@ class Delphiniumize extends ComponentBase
 
 
     private function modifyFiles()
-    {
-        $this->modifyModel();
-        $this->modifyController();
-        $this->modifyComponent();
+    {//the model doesn't need to be modified
+//        $this->modifyController();
+//        $this->modifyComponent();
         $this->modifyPlugin();
 
     }
 
-    private function modifyModel()
+    private function modifyController()
     {
-        $authorName = $this->newPluginData['author'];
-        $pluginName = $this->newPluginData['plugin'];
-        $modelName = $this->newPluginData['model'];
+        $readyVars = $this->readyVars;
         //path to model
-        $destinationPath = base_path() . '/plugins/' . strtolower($authorName) . '/' . strtolower($pluginName)."/models/".$modelName.".php";
-return;
+        $destinationPath = base_path() . '/plugins/' .$readyVars['studly_author'] . '/' . $readyVars['studly_plugin']."/controllers/".$readyVars['studly_controller'].".php";
+        $modelUseStmt = $readyVars['studly_author'] . '\\' . $readyVars['studly_plugin']."\\Models\\".$readyVars['studly_model'];
+        $controllerNodevisitor = new ControllerNodeVisitor($modelUseStmt, "MyModel");
+
+        $this->openModifySave($destinationPath, $controllerNodevisitor);
+    }
+
+    private function modifyComponent()
+    {
+        $readyVars = $this->readyVars;
+        //path to model
+        $destinationPath = base_path() . '/plugins/' . $readyVars['studly_author'] . '/' .$readyVars['studly_plugin']."/Components/".$readyVars['studly_component'].".php";
+        $modelUseStmt = $readyVars['studly_author'] . '\\' . $readyVars['studly_plugin']."\\Models\\".$readyVars['studly_model'];
+        $controllerUseStmt = $readyVars['studly_author'] . '\\' . $readyVars['studly_plugin']."\\Controllers\\".$readyVars['studly_controller'];
+        $componentNodevisitor = new ComponentNodeVisitor($modelUseStmt, "MyModel", $controllerUseStmt, "MyController");
+
+        $this->openModifySave($destinationPath, $componentNodevisitor);
+    }
+
+    private function modifyPlugin()
+    {
+        $readyVars = $this->readyVars;
+        //path to model
+        $destinationPath = base_path() . '/plugins/' . $readyVars['studly_author'] . '/' .$readyVars['studly_plugin']."/Plugin.php";
+
+        $componentPath = '\\'.$readyVars['studly_author'] . '\\' .$readyVars['studly_plugin']."\\Components\\".$readyVars['studly_component'];
+        $controllerPath = $readyVars['lower_author'] . '/' . $readyVars['lower_plugin'].'/'.$readyVars['lower_controller'];
+
+        $pluginNodeVisitor = new PluginNodeVisitor($componentPath,$readyVars['lower_component'],$controllerPath);
+        $this->openModifySave($destinationPath, $pluginNodeVisitor);
+    }
+
+    private function openModifySave($fileDestination, $nodeVisitor)
+    {
         $fileSystem = new Filesystem;
-        $fileDestination = "C:/wamp/www/delphinium/plugins/delphinium/uliop/Plugin.php";
         $fileContent = $fileSystem->get($fileDestination);
         $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
         $prettyPrinter = new PrettyPrinter\Standard;
-        $traverser     = new NodeTraverser;
-        $traverser->addVisitor(new PluginFileNodeVisitor);
+        $traverser = new NodeTraverser;
+        $traverser->addVisitor($nodeVisitor);
 
         try {
+            //parse the PHP class
             $stmts = $parser->parse($fileContent);
+            //traverse the nodes and make the necessary modifications
             $stmts = $traverser->traverse($stmts);
-            // pretty print
-            $code = $prettyPrinter->prettyPrintFile($stmts);
-            echo "-------------";
-            var_dump($code);
-            $fileSystem->put($fileDestination, $code);
-            //var_dump($code);
 
-            //TO BUILD NODES USE THE BUILDERFACTORY
-//            $factory = new BuilderFactory;
-//            $factory->namespace("a")->addStmt()
-            //PhpParser\Node\Scalar
+//            var_dump($stmts);
+            // pretty print back to code
+            $code = $prettyPrinter->prettyPrintFile($stmts);
+            //save the file back
+            $fileSystem->put($fileDestination, $code);
 
         } catch (Error $e) {
             echo 'Parse Error: ', $e->getMessage();
         }
     }
 
-    private function modifyController()
+    /**
+     * Converts all variables to available modifier and case formats.
+     * Syntax is CASE_MODIFIER_KEY, eg: lower_plural_xxx
+     *
+     * @param array The collection of original variables
+     * @return array A collection of variables with modifiers added
+     */
+    protected function processVars($vars)
     {
+        $cases = ['upper', 'lower', 'snake', 'studly', 'camel', 'title'];
+        $modifiers = ['plural', 'singular', 'title'];
 
+        foreach ($vars as $key => $var) {
+
+            /*
+             * Apply cases, and cases with modifiers
+             */
+            foreach ($cases as $case) {
+                $primaryKey = $case . '_' . $key;
+                $vars[$primaryKey] = $this->modifyString($case, $var);
+
+                foreach ($modifiers as $modifier) {
+                    $secondaryKey = $case . '_' . $modifier . '_' . $key;
+                    $vars[$secondaryKey] = $this->modifyString([$modifier, $case], $var);
+                }
+            }
+
+            /*
+             * Apply modifiers
+             */
+            foreach ($modifiers as $modifier) {
+                $primaryKey = $modifier . '_' . $key;
+                $vars[$primaryKey] = $this->modifyString($modifier, $var);
+            }
+
+        }
+        return $vars;
     }
 
-    private function modifyComponent()
+    /**
+     * Internal helper that handles modify a string, with extra logic.
+     * @param string|array $type
+     * @param string $string
+     * @return string
+     */
+    protected function modifyString($type, $string)
     {
+        if (is_array($type)) {
+            foreach ($type as $_type) {
+                $string = $this->modifyString($_type, $string);
+            }
 
+            return $string;
+        }
+
+        if ($type == 'title') {
+            $string = str_replace('_', ' ', Str::snake($string));
+        }
+
+        return Str::$type($string);
     }
-
-    private function modifyPlugin()
-    {
-
-    }
-
 }

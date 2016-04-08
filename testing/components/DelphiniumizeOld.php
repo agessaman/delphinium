@@ -6,7 +6,7 @@ use Delphinium\Greenhouse\Templates\Component;
 use Delphinium\Greenhouse\Templates\Plugin;
 use Delphinium\Greenhouse\Templates\Controller;
 use Delphinium\Greenhouse\Templates\Model;
-use Delphinium\Testing\Classes\PluginFileNodeVisitor;
+use Delphinium\Testing\Classes\PluginNodeVisitor;
 use October\Rain\Filesystem\Filesystem;
 use PhpParser\ParserFactory;
 use PhpParser\Error;
@@ -53,7 +53,7 @@ class DelphiniumizeOld extends ComponentBase
         $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
         $prettyPrinter = new PrettyPrinter\Standard;
         $traverser     = new NodeTraverser;
-        $traverser->addVisitor(new PluginFileNodeVisitor);
+        $traverser->addVisitor(new PluginNodeVisitor);
 
         try {
             $stmts = $parser->parse($fileContent);

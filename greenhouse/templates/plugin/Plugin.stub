@@ -37,9 +37,8 @@ class Plugin extends PluginBase
      */
     public function registerComponents()
     {
-        /*Do NOT remove these comments!!! They are used to automate the "Delphiniumization" of your plugin!"*/
-        //KEY-registerComponent
-        return [];
+        $componentArray = array();
+        return $componentArray;
     }
 
     /**

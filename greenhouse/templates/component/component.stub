@@ -1,13 +1,6 @@
 <?php namespace {{studly_author}}\{{studly_plugin}}\Components;
 
 use Cms\Classes\ComponentBase;
-/*
-* Lines bellow must be uncommented once a Model and Controller are created for this component.
-* References to MyModel and MyController in this file must be updated with the appropriate classes
-*/
-//use Delphinium\{{studly_plugin}}\Models\Model as MyModel;
-//use Delphinium\{{studly_plugin}}\Controllers\Controller as MyController;
-
 class {{studly_name}} extends ComponentBase
 {
 
@@ -46,7 +39,7 @@ class {{studly_name}} extends ComponentBase
         //In order for this to work, you must create a model and controller to store the instances of this component.
         //Modify use statement above to include the model and controller and uncomment the following code
 
-        /*
+
         $instances = MyModel::all();
 
         if (count($instances) === 0) {
@@ -58,7 +51,7 @@ class {{studly_name}} extends ComponentBase
             }
             return $array_dropdown;
         }
-        */
+
     }
 
     /**
@@ -67,7 +60,7 @@ class {{studly_name}} extends ComponentBase
      */
     public function onRun()
     {
-        /*
+
         try
         {
             //NOTES:
@@ -155,7 +148,7 @@ class {{studly_name}} extends ComponentBase
             }
             return \Response::make($this->controller->run('error'), 500);
         }
-        */
+
     }
 
     /**
@@ -166,7 +159,7 @@ class {{studly_name}} extends ComponentBase
      */
     private function getInstance($name=null)
     {
-        /*
+
         if (!isset($_SESSION)) { session_start(); }
         $courseId = $_SESSION['courseID'];
 
@@ -174,7 +167,7 @@ class {{studly_name}} extends ComponentBase
         if( $this->property('instance') )
         {
             //use the instance set in CMS dropdown
-            //TODO: replace MyModel with your actual model
+
             $config = MyModel::find($this->property('instance'));
 
         } else {
@@ -189,7 +182,7 @@ class {{studly_name}} extends ComponentBase
 
         $config->save();
         return $config;
-        */
+
     }
 
     /**
@@ -198,16 +191,19 @@ class {{studly_name}} extends ComponentBase
      */
     public function onUpdate()
     {
-    /*
+
         $data = post('{{studly_name}}');//component name
         $id = intval($data['id']);// convert string to integer
         $config = MyModel::find($id);// retrieve existing record
 
         //update record with new data coming from POST
         $config->name = $data['name'];
-        $config->course_id = $data['course_id'];//hidden in frontend
+        $config->animate = intval($data['animate']);
+        $config->size = intval($data['size']);
+
+        //TODO: must finish updating the rest of the fields in your table
         $config->save();// update original record
         return json_encode($config);// back to instructor view
-        */
+
     }
 }
