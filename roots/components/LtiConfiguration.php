@@ -131,7 +131,7 @@ class LtiConfiguration extends ComponentBase {
         //Check to see if the lti handshake passes
         $context = new Blti($secret, false, false);
 
-
+        echo "test"; die;
         if ($context->valid) { // query DB to see if user has token, if yes, go to LTI.
 
             $userCheck = $dbHelper->getCourseApprover($_SESSION['courseID']);
