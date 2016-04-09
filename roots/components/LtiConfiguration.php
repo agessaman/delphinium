@@ -135,7 +135,6 @@ class LtiConfiguration extends ComponentBase {
         if ($context->valid) { // query DB to see if user has token, if yes, go to LTI.
 
             $userCheck = $dbHelper->getCourseApprover($_SESSION['courseID']);
-            var_dump($userCheck); die;
             if (!$userCheck) { //if no user is found, redirect to canvas permission page
                 if (stristr($rolesStr, $approverRole)) {
                     //As per my discussion with Jared, we will use the instructor's token only. This is the token that will be stored in the DB
@@ -147,7 +146,9 @@ class LtiConfiguration extends ComponentBase {
 
                     $redirectUri = "{$baseUrlWithSlash}saveUserInfo?lti={$this->property('ltiInstance')}";
                     $url = "https://{$domainWithSlash}login/oauth2/auth?client_id={$clientId}&response_type=code&redirect_uri={$redirectUri}";
-
+                    echo $redirectUri."<br>";
+                    echo $url."<br>";
+                    die;
                     $this->redirect($url);
                 } else {
                     echo ("A(n) {$approverRole} must authorize this course. Please contact your instructor.");
