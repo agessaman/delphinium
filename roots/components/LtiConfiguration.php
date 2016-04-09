@@ -131,10 +131,11 @@ class LtiConfiguration extends ComponentBase {
         //Check to see if the lti handshake passes
         $context = new Blti($secret, false, false);
 
-        echo "test"; die;
+
         if ($context->valid) { // query DB to see if user has token, if yes, go to LTI.
 
             $userCheck = $dbHelper->getCourseApprover($_SESSION['courseID']);
+            var_dump($userCheck); die;
             if (!$userCheck) { //if no user is found, redirect to canvas permission page
                 if (stristr($rolesStr, $approverRole)) {
                     //As per my discussion with Jared, we will use the instructor's token only. This is the token that will be stored in the DB
