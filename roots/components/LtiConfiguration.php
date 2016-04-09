@@ -148,6 +148,9 @@ class LtiConfiguration extends ComponentBase {
                     $url = "https://{$domainWithSlash}login/oauth2/auth?client_id={$clientId}&response_type=code&redirect_uri={$redirectUri}";
                     $redirectUri = str_replace('https', 'http', $redirectUri);
                     $url = str_replace('https', 'http', $url);
+                    echo $redirectUri."<br>";
+                    echo $url."<br>";
+                    die;
                     $this->redirect($url);
                 } else {
                     echo ("A(n) {$approverRole} must authorize this course. Please contact your instructor.");
