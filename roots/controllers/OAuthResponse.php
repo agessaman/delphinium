@@ -28,7 +28,6 @@ class OAuthResponse extends Controller {
 
         $opts = array('http' => array('method' => 'POST',));
         $context = stream_context_create($opts);
-        //$_SESSION['domain'] = str_replace('localhost', '185.44.229.29', $_SESSION['domain']);
         $url = "http://{$_SESSION['domain']}/login/oauth2/token?client_id={$clientId}&client_secret={$developerSecret}&code={$code}";
         $userTokenJSON = file_get_contents($url, false, $context, -1, 40000);
         $userToken = json_decode($userTokenJSON);

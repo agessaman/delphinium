@@ -146,6 +146,8 @@ class LtiConfiguration extends ComponentBase {
 
                     $redirectUri = "{$baseUrlWithSlash}saveUserInfo?lti={$this->property('ltiInstance')}";
                     $url = "https://{$domainWithSlash}login/oauth2/auth?client_id={$clientId}&response_type=code&redirect_uri={$redirectUri}";
+                    echo '$redirectUri = '.$redirectUri.'<br>';
+                    echo '$url = '.$url;
                     $redirectUri = 'http://185.44.229.29/saveUserInfo?lti=1';//str_replace('https', 'http', $redirectUri);
                     $url = 'http://185.44.229.29:3000/login/oauth2/auth?client_id=10000000000002&response_type=code&redirect_uri=http://185.44.229.29/saveUserInfo?lti=1';//str_replace('https', 'http', $url);
                     $this->redirect($url);
