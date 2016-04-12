@@ -1,0 +1,99 @@
+<!-- Instructor View with Settings cog -->
+<div style="position:fixed; top:0px; right:0px; z-index:950;">
+    <a id="popinfo" title="Info" tabindex="0" role="button" data-trigger="focus" data-container="body" data-toggle="popover" data-placement="left" data-content="Setup below" style="position:absolute; top:0; right:5px;">
+        <i class="icon-question"></i>
+    </a>
+	<div id="cog" data-toggle="modal" href="#content-configuration" style="position:absolute; top:0; right:15px;">
+		<a data-toggle="tooltip" title="Settings" data-placement="left"><i class="icon-cog"></i></a>
+    </div>
+</div>
+<!--div style="z-index:10;"></div-->
+<div class="tools">
+    <div id="quizlist" class="quizpanel scrollingBox">
+			<!-- http://getbootstrap.com/css/   .col-xs-6 .col-md-4 -->
+			<div id="col_0" class="col-md-4"></div>
+			<div id="col_1" class="col-md-4"></div>
+			<div id="col_2" class="col-md-4"></div>
+			<div class="clear"></div>
+			
+    </div>
+    <div id="questiongroup" class="scrollingBox">
+        <div class="btngroup">
+			<button class="btn btn-success btn-sm" type="submit" id="addsubmit" name="addsubmit">Add Submit Quiz</button>
+            <button class="btn btn-success btn-sm" type="submit" id="addselected" name="addselected">Add Selected Questions</button>
+            <button class="btn btn-success btn-sm" type="submit" id="addtext" name="addtext">Add a Text Area</button>
+            <button class="btn btn-info btn-sm" type="submit" id="replaceit" name="replaceit">Choose a Diffent Quiz</button>
+        </div>
+        <div id="qtitle"></div>
+        <div id="questionlist"></div>
+    </div>
+</div>
+
+<!-- Configuration modal with Front End Form and Instructions in tabs -->
+<div class="control-popup modal fade" id="content-configuration" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content" style="width:800px; overflow-y: auto;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Component Settings</h4>
+            </div>
+            <div class="modal-body">
+                <!-- Tabs -->
+                <ul class="nav nav-tabs">
+                  <li class="active"><a data-toggle="tab" href="#configure">Configure</a></li>
+                  <li><a data-toggle="tab" href="#instruct">Instructions</a></li>
+                </ul>
+                <div class="tab-content">
+                <!-- Configure instance -->
+                  <div id="configure" class="tab-pane fade in active" style="padding: 5px 0px;">
+                    <form role="form" id="updateForm"
+                      data-request="{{ __SELF__ }}::onUpdate"
+                      data-request-success="$el.hide();$('.confirm-container').removeClass('hide');completed(data);">
+                        {{ form.update(recordId)|raw }}
+                        {{ form.formRender()|raw }}
+                      <div class="form-group">
+                         <button class="btn btn-primary btn-block btn-md" type="submit" value="register" data-load-indicator="Saving ..." >
+                             Update Component
+                          </button>
+                      </div>
+                    </form>
+                  </div>
+                <!-- Instructions -->
+                  <div id="instruct" class="tab-pane fade in" style="padding: 0px 20px;">
+                      {{ instructions|raw }}
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: show details for a selected question -->
+<div class="control-popup modal fade" id="detailed" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content" style="width:800px;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 id="detailed-title" class="modal-title">Quiz Questions</h4>
+            </div>
+            <div id="detailed-body" class="modal-body">
+                <div class="clearfix">
+                    <div id="qtype" class="left questype">Type:</div>
+                    <div id="qpoints" class="right questype">Points:</div>
+                </div>
+				<hr/>
+				<div>
+					<div id="qtext"></div>
+                </div>
+				<div>
+					<div id="qanswers"></div>
+					<div id="qfeedback"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+				<button id="backbtn" type="button" class="btn btn-primary"> <- Back </button>
+                <button id="nextbtn" type="button" class="btn btn-primary"> Next -> </button>
+            </div>
+        </div>
+    </div>
+</div>

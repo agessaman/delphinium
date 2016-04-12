@@ -22,14 +22,6 @@ class EasterEggs extends ComponentBase
                 'title'             => 'EasterEggs Configuration',
                 'description'       => 'Select an instance',
                 'type'              => 'dropdown',
-            ],
-            'copy_id' => [
-                'title'        => 'Copy Name:',
-                'type'         => 'string',
-                'default'      => 'copy-1',
-                'required'     => 'true',
-                'validationPattern' => '^(?!\s*$).+',
-                'validationMessage' => 'This field cannot be left blank.'
             ]
         ];
     }
@@ -38,71 +30,16 @@ class EasterEggs extends ComponentBase
     {
         try
         {
-            /*Notes:
-            is an instance set? yes show it
-
-            else get all instances
-                is copy set?
-                -yes check for an instance that matches copy + course show it
-
-                is there an instance with this course? yes use it
-            else create dynamicInstance, save new instance, show it
             
-            Requires minimal.htm layout
-            Requires the Dev component set up from Here:
-            https://github.com/ProjectDelphinium/delphinium/wiki/3.-Setting-up-a-Project-Delphinium-Dev-environment-on-localhost
-            */
             if (!isset($_SESSION)) { session_start(); }
 
             $courseID = $_SESSION['courseID'];
-            // if instance has been set
-            if( $this->property('instance') )
-            {
-                //use the instance set in CMS dropdown
-                $config = EasterEggsModel::find($this->property('instance'));
-                $config->course_id = $_SESSION['courseID'];//$course->id;
-                $config->save();//update original record now in case it did not have course
 
-            } else {
-                // if copy has a name.
-                // note: it will after the first dynamic is created
-                $copyLength = strlen($this->property('copy_id'));
-                if($copyLength > 0 )
-                {
-                    // find all matching course 
-                    $instances = EasterEggsModel::where('course_id','=', $courseID)->get();
-                    $instCount = count($instances);
-                    if($instCount == 0) { 
-                        // none found so set to catch condition for dynamic
-                        $copyLength = 0;
-                    } else {
-                        // find instance with copy
-                        $flag=false;
-                        foreach ($instances as $instance)
-                        {
-                           if($instance->copy_id == $this->property('copy_id') )
-                           {
-                               $config = $instance;
-                               $flag=true;
-                               break;// got first one found
-                           }
-                        }
-                        //yes found courses but not matching copy. use the first one found with course id
-                        if( !$flag ) { $config = $instances[0]; }
-                    }
-                }
-                // no match found so create new dynamic instance
-                if($copyLength == 0 )
-                {
-                    $config = new EasterEggsModel;// db record
-                    $config->name = 'dynamic_';//+ total records count?
-                    // add your fields
-                    //$config->size = 'Medium';
-                    $config->course_id = $_SESSION['courseID'];
-                    $config->copy_id = $this->property('copy_id');
-                    $config->save();// save the new record
-                }
-            }
+            //use the instance set in CMS dropdown
+            $config = EasterEggsModel::find($this->property('instance'));
+            $config->save();//update original record now in case it did not have course
+
+           
             // use the record in the component and frontend form 
             $this->page['config'] = json_encode($config);
             
@@ -211,9 +148,6 @@ class EasterEggs extends ComponentBase
         
         // add your fields to update
         $config->custom = $data['custom'];
-
-        $config->course_id = $data['course_id'];//hidden in frontend
-        $config->copy_id = $data['copy_id'];//hidden
         $config->save();// update original record 
         return json_encode($config);// back to instructor view
     }

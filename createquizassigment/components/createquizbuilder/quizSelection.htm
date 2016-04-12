@@ -18,22 +18,22 @@
         <div><label>{{counter}}.- {{q[1]}}</label></div>
 
         {% if q[3]   ==  "multipleChoice"  %}
-             {% for answer in q[2] %}
-                <span style="padding-left:20px">
-                 <input type='radio' name="{{ q[0] }}" value="{{ q[0] }}">  {{ answer |trim('",') }}</input>
-                </span>
-                 <br/>
-             {% endfor %} 
-        {% endif %}
-
-        {% if q[3]   ==  "trueFalse"  %} 
             {% for answer in q[2] %}
                 <span style="padding-left:20px">
-                 <input type='radio' name="{{ q[0] }}" value="{{ q[0] }}">  {{ answer |trim('",')}}</input>
+                <input type='radio' name="{{ q[0] }}" value="{{ q[0] }}">  {{ answer |trim('",') }}</input>
                 </span>
-             <br/>
-            {% endfor %}
-          {% endif %} 
+                <br/>
+            {% endfor %}
+        {% endif %}
+
+        {% if q[3]   ==  "trueFalse"  %}
+            {% for answer in q[2] %}
+                <span style="padding-left:20px">
+                <input type='radio' name="{{ q[0] }}" value="{{ q[0] }}">  {{ answer |trim('",')}}</input>
+                </span>
+            <br/>
+           {% endfor %}
+        {% endif %}
 
             {% set answerDiv =  'ans'~q[0]    %}
             <div id="{{answerDiv}}"></div>
@@ -64,7 +64,7 @@
 
 
 <script>
-    document.getElementById(0).style.display='block';
-    document.getElementById(1).style.display='none';
+    //document.getElementById(0).style.display='block';
+    //document.getElementById(1).style.display='none';
 </script>
 

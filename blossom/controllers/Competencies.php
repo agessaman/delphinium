@@ -52,13 +52,4 @@ class Competencies extends Controller
         return $this->listRefresh();
     }
 	
-    public function formExtendFields($form)
-	{
-		// fill values with instance data, must be in controllers
-		// How to get data values
-		//$config = ConfigComp::getConfig();
-		
-		//$form->getField('Name')->value = 'sometext added';
-    }
-	
 }
