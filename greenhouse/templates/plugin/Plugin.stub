@@ -48,7 +48,7 @@ class Plugin extends PluginBase
      */
     public function registerPermissions()
     {
-        //return []; // Remove this line to activate
+        return []; // Remove this line to activate
 
         return [
             '{{lower_author}}.{{lower_name}}.some_permission' => [
@@ -67,17 +67,8 @@ class Plugin extends PluginBase
     {
           Event::listen('backend.menu.extendItems', function($manager) {
 
-                //Uncomment following block and complete missing parameters to activate
-                /*
-                $manager->addSideMenuItems('Delphinium.Greenhouse', 'greenhouse', [
-                    'Name' => [
-                     'label' => '{{name}}',
-                     'icon'  => 'icon-leaf',
-                     'owner' => 'Delphinium.Greenhouse',
-                     'url' => Backend::url('delphinium/{{lower_name}}/mycontroller')
-                    ]
-                 ]);
-                 */
+                $manager->addSideMenuItems('Delphinium.Greenhouse', 'greenhouse', []);
+
           });
     }
 }

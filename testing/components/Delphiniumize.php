@@ -40,7 +40,8 @@ class Delphiniumize extends ComponentBase
 
         $this->readyVars = $this->processVars($vars);
         $this->newPluginData = $vars;
-        $this->modifyFiles();
+//        $this->makeFiles();
+//        $this->modifyFiles();
     }
     public function onAddItem()
     {
@@ -103,7 +104,9 @@ class Delphiniumize extends ComponentBase
          * Determine the model name to use,
          * either supplied or singular from the controller name.
          */
-        $modelName = Str::singular($controllerName);
+        $modelName = $input['model'];
+        if (!$modelName)
+            $modelName = Str::singular($controllerName);
 
         $vars = [
             'name' => $controllerName,
@@ -173,7 +176,9 @@ class Delphiniumize extends ComponentBase
         $componentPath = '\\'.$readyVars['studly_author'] . '\\' .$readyVars['studly_plugin']."\\Components\\".$readyVars['studly_component'];
         $controllerPath = $readyVars['lower_author'] . '/' . $readyVars['lower_plugin'].'/'.$readyVars['lower_controller'];
 
-        $pluginNodeVisitor = new PluginNodeVisitor($componentPath,$readyVars['lower_component'],$controllerPath);
+        $pluginNodeVisitor = new PluginNodeVisitor($componentPath,$readyVars['lower_component'],$controllerPath, $readyVars['studly_controller'],
+                $readyVars['lower_plugin'],$readyVars['lower_author']
+            );
         $this->openModifySave($destinationPath, $pluginNodeVisitor);
     }
 
