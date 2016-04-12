@@ -4,6 +4,7 @@
   "keywords": ["delphinium", "scaffolding", "gamification", "plugin"],
   "license": "MIT",
   "require": {
-    "nikic/php-parser": "^2.0"
+    "nikic/php-parser": "^2.0",
+    "symfony/finder": "^3.0"
   }
 }

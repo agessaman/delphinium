@@ -15,6 +15,8 @@ use PhpParser\Error;
 use PhpParser\PrettyPrinter;
 use PhpParser\NodeTraverser;
 use PhpParser\BuilderFactory;
+use Symfony\Component\Yaml\Parser;
+use Symfony\Component\Yaml\Dumper;
 
 class Delphiniumize extends ComponentBase
 {
@@ -41,7 +43,7 @@ class Delphiniumize extends ComponentBase
         $this->readyVars = $this->processVars($vars);
         $this->newPluginData = $vars;
 //        $this->makeFiles();
-//        $this->modifyFiles();
+        $this->modifyFiles();
     }
     public function onAddItem()
     {
@@ -170,16 +172,80 @@ class Delphiniumize extends ComponentBase
     private function modifyPlugin()
     {
         $readyVars = $this->readyVars;
-        //path to model
-        $destinationPath = base_path() . '/plugins/' . $readyVars['studly_author'] . '/' .$readyVars['studly_plugin']."/Plugin.php";
+//        //path to model
+//        $destinationPath = base_path() . '/plugins/' . $readyVars['studly_author'] . '/' .$readyVars['studly_plugin']."/Plugin.php";
+//
+//        $componentPath = '\\'.$readyVars['studly_author'] . '\\' .$readyVars['studly_plugin']."\\Components\\".$readyVars['studly_component'];
+//        $controllerPath = $readyVars['lower_author'] . '/' . $readyVars['lower_plugin'].'/'.$readyVars['lower_controller'];
+//
+//        $pluginNodeVisitor = new PluginNodeVisitor($componentPath,$readyVars['lower_component'],$controllerPath, $readyVars['studly_controller'],
+//                $readyVars['lower_plugin'],$readyVars['lower_author']
+//            );
+//        $this->openModifySave($destinationPath, $pluginNodeVisitor);
 
-        $componentPath = '\\'.$readyVars['studly_author'] . '\\' .$readyVars['studly_plugin']."\\Components\\".$readyVars['studly_component'];
-        $controllerPath = $readyVars['lower_author'] . '/' . $readyVars['lower_plugin'].'/'.$readyVars['lower_controller'];
+        //we also need to update the yaml file to create the necessary tables.
+        $yamlDestinationPath = base_path() . '/plugins/' . $readyVars['studly_author'] . '/' .$readyVars['studly_plugin']."/updates/version.yaml";
 
-        $pluginNodeVisitor = new PluginNodeVisitor($componentPath,$readyVars['lower_component'],$controllerPath, $readyVars['studly_controller'],
-                $readyVars['lower_plugin'],$readyVars['lower_author']
-            );
-        $this->openModifySave($destinationPath, $pluginNodeVisitor);
+//        $data = yaml_parse($yamlDestinationPath, 0, $ndocs);
+//        var_dump($data);
+
+        $yaml = new Parser();
+
+        $current = $yaml->parse(file_get_contents($yamlDestinationPath));
+//
+        end($current);         // move the internal pointer to the end of the array
+        $key = key($current);  // fetches the key of the element pointed to by the internal pointer
+        $versionManager = new System\Classes\VersionManager;
+//        $versionManager->resetNotes();
+//        if ($this->versionManager->updatePlugin($plugin) !== false) {
+//            $this->note($name);
+//            foreach ($this->versionManager->getNotes() as $note) {
+//                $this->note(' - '.$note);
+//            }
+//        }
+//        return $this;
+        $code = (is_string($plugin)) ? $plugin : $this->pluginManager->getIdentifier($plugin);
+        if ($this->fileVersions !== null && array_key_exists($code, $this->fileVersions)) {
+            return $this->fileVersions[$code];
+        }
+
+        $versionFile = $this->getVersionFile($code);
+        $versionInfo = Yaml::parseFile($versionFile);
+
+        if (!is_array($versionInfo)) {
+            $versionInfo = [];
+        }
+
+        if ($versionInfo) {
+            uksort($versionInfo, function ($a, $b) {
+                return version_compare($a, $b);
+            });
+        }
+
+        return $this->fileVersions[$code] = $versionInfo;
+
+
+
+
+        var_dump($key);
+//        $lastNode = $current[2];
+//        $lastNode = $current[sizeof($current)-1];
+//        var_dump($lastNode);
+        //add the new content to the yaml file
+        //chema::create('{{lower_author}}_{{lower_plugin}}_{{snake_plural_name}}', function($table)
+//        1.0.2:
+//    - Drop grades table
+//    - drop_grades_table.php
+//        $array = array(
+//            'foo' => 'bar',
+//            'bar' => array('foo' => 'bar', 'bar' => 'baz'),
+//        );
+//
+//        $dumper = new Dumper();
+//
+//        $yaml = $dumper->dump($array);
+//
+//        file_put_contents('/path/to/file.yml', $yaml);
     }
 
     private function openModifySave($fileDestination, $nodeVisitor)
