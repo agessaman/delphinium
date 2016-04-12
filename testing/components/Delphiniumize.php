@@ -17,6 +17,7 @@ use PhpParser\NodeTraverser;
 use PhpParser\BuilderFactory;
 use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Dumper;
+use System\Classes\VersionManager;
 
 class Delphiniumize extends ComponentBase
 {
@@ -195,7 +196,8 @@ class Delphiniumize extends ComponentBase
 //
         end($current);         // move the internal pointer to the end of the array
         $key = key($current);  // fetches the key of the element pointed to by the internal pointer
-        $versionManager = new System\Classes\VersionManager;
+//        var_dump($key);
+        $versionManager = new VersionManager;
 //        $versionManager->resetNotes();
 //        if ($this->versionManager->updatePlugin($plugin) !== false) {
 //            $this->note($name);
@@ -204,30 +206,34 @@ class Delphiniumize extends ComponentBase
 //            }
 //        }
 //        return $this;
-        $code = (is_string($plugin)) ? $plugin : $this->pluginManager->getIdentifier($plugin);
-        if ($this->fileVersions !== null && array_key_exists($code, $this->fileVersions)) {
-            return $this->fileVersions[$code];
-        }
+        $pluginManager = PluginManager::instance();
+        $pluginNamespace = '/plugins/' . $readyVars['studly_author'] . '/' .$readyVars['studly_plugin']."/Plugin.php";
+        $code = (is_string($pluginNamespace)) ? $pluginNamespace : $pluginManager->getIdentifier($pluginNamespace);
 
-        $versionFile = $this->getVersionFile($code);
-        $versionInfo = Yaml::parseFile($versionFile);
+        echo $code;
 
-        if (!is_array($versionInfo)) {
-            $versionInfo = [];
-        }
+//        if ($this->fileVersions !== null && array_key_exists($code, $this->fileVersions)) {
+//            return $this->fileVersions[$code];
+//        }
+//
+//        $versionFile = $this->getVersionFile($code);
+//        $versionInfo = Yaml::parseFile($versionFile);
+//
+//        if (!is_array($versionInfo)) {
+//            $versionInfo = [];
+//        }
+//
+//        if ($versionInfo) {
+//            uksort($versionInfo, function ($a, $b) {
+//                return version_compare($a, $b);
+//            });
+//        }
+//
+//        return $this->fileVersions[$code] = $versionInfo;
 
-        if ($versionInfo) {
-            uksort($versionInfo, function ($a, $b) {
-                return version_compare($a, $b);
-            });
-        }
-
-        return $this->fileVersions[$code] = $versionInfo;
 
 
 
-
-        var_dump($key);
 //        $lastNode = $current[2];
 //        $lastNode = $current[sizeof($current)-1];
 //        var_dump($lastNode);
