@@ -24,8 +24,8 @@ class Modulemap extends ComponentBase
 
     public function onRun()
     {
-        try
-        {
+//        try
+//        {   
             if (!isset($_SESSION)) { session_start(); }
 
             // comma delimited string
@@ -40,43 +40,14 @@ class Modulemap extends ComponentBase
             
             // code for both 
             $roots = new Roots();
-            $moduledata = $roots->getModuleTree(false);
+            $moduledata = $roots->getModuleTree(false);//true causes error below
 			$this->page['moduledata'] = json_encode($moduledata);
             
-            if($roleStr == 'Instructor')
-			{
-                //code specific to instructor view goes here
-            }
-            if($roleStr == 'Learner')
-			{
-                //code specific to the student view goes here
-				// assignments & submissions
-                $req = new AssignmentsRequest(ActionType::GET);
-                $res = $roots->assignments($req);
-
-                $assignmentIds = array();// for submissionsRequest
-                $assignments = array();// for points_possible
-                foreach ($res as $assignment) {
-                    array_push($assignmentIds, $assignment["assignment_id"]);
-                    array_push($assignments, $assignment);
-                }
-
-                $this->page['assignments']=json_encode($assignments);
-
-                $studentIds = array($_SESSION['userID']);//['1604486'];//Test Student
-                $allStudents = true;
-                // $assignmentIds from above
-                $allAssignments = true;
-                $multipleStudents = true;
-                $multipleAssignments = true;
-                $includeTags = true;
-                $grouped = true;
-
-                $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments, $includeTags, $grouped);
-
-                $submissions = $roots->submissions($req);
-                $this->page['submissions']=json_encode($submissions);// score
-            }
+            // ready to finish loading assets
+            $this->addCss("/plugins/delphinium/birdoparadise/assets/css/font-autumn.css");
+            $this->addCss("/plugins/delphinium/birdoparadise/assets/css/bop.css");
+            $this->addJs("/plugins/delphinium/birdoparadise/assets/javascript/bop.js");
+/*   undefined property stdClass::$published at CanvasHelper.php line 1480
         }
         catch (\GuzzleHttp\Exception\ClientException $e) {
             return;
@@ -96,8 +67,13 @@ class Modulemap extends ComponentBase
             }
             return \Response::make($this->controller->run('error'), 500);
         }
-
+*/
     }
+	//test: call this function from js
+	public function onAjaxTest()
+	{
+		echo "Called";
+	}
 	
 /* End of class */
 }

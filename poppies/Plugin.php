@@ -19,7 +19,7 @@ class Plugin extends PluginBase
     {
         return [
             'name'        => 'Poppies',
-            'description' => 'No description provided yet...',
+            'description' => 'Quiz Games',
             'author'      => 'Delphinium',
             'icon'        => 'icon-thumbs-o-up'
         ];
@@ -33,7 +33,7 @@ class Plugin extends PluginBase
     public function registerComponents()
     {
         return [
-			'\Delphinium\Poppies\Components\Popquiz' => 'popquiz'
+			'Delphinium\Poppies\Components\Popquiz' => 'popquiz'
 		];
     }
     
@@ -51,46 +51,8 @@ class Plugin extends PluginBase
 			  'group' => 'Orchid',
               'url' => Backend::url('delphinium/poppies/popquiz')
             ]
-          ]);// poppies controller
+          ]);
       });
-    }
-    
-/************** unused ********************/
-    /**
-     * Registers any back-end permissions used by this plugin.
-     *
-     * @return array
-     */
-    public function registerPermissions()
-    {
-        return []; // Remove this line to activate
-
-        return [
-            'delphinium.poppies.some_permission' => [
-                'tab' => 'Poppies',
-                'label' => 'Some permission'
-            ],
-        ];
-    }
-
-    /**
-     * Registers back-end navigation items for this plugin.
-     *
-     * @return array
-     */
-    public function registerNavigation()
-    {
-        return []; // Remove this line to activate
-
-        return [
-            'poppies' => [
-                'label'       => 'Poppies',
-                'url'         => Backend::url('delphinium/poppies/mycontroller'),
-                'icon'        => 'icon-leaf',
-                'permissions' => ['delphinium.poppies.*'],
-                'order'       => 500,
-            ],
-        ];
     }
 
 }

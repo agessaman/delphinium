@@ -1,5 +1,11 @@
 <!-- Student View -->
 <div class="page">
+	<div style="position:relative; z-index:950;">
+		<a id="popinfo" title="Info" tabindex="0" role="button" data-trigger="focus" data-container="body" data-toggle="popover" data-placement="left" data-content="" style="position:absolute; top:0; right:5px;">
+			<i class="icon-question"></i>
+		</a>
+	</div>
+    
 	<div id="tabs">
 		<ul id="tablist" role="tablist" class="nav nav-tabs">
 			<!-- Insert new tabs -->
@@ -30,22 +36,21 @@
 </div>
 
 <script>
-(function() {
-    
-    /*
-        Bird of Paradise: student view will display progress
-    */
-
-	//global var in default.htm is available to .js file
-	assignments={{assignments|raw}};
-    //console.log('assignments:',assignments);
-    var submissions = {{submissions|raw}};// Only available if a student
-	//console.log('submissions:',submissions); 
-	subms = $.grep(submissions, function(elem,index){
-        return elem.score > 0;
-    });
+	/*
+        student view will display progress as stars
+        global vars in default.htm assignments & subms
+        twig is not available to .js file
+    *//*
+        assignments = {{assignments|raw}};
+		//console.log('assignments:',assignments);
+		var submissions = {{submissions|raw}};// Only available if a student
+		console.log('submissions:', submissions.length, submissions); 
+    *//*
+		subms = $.grep(submissions, function(elem,index){
+			return elem.score > 0;
+		});
+	*/
     //console.log('subms:',subms);
-	sumbissions=null;// no longer needed
-    
-})();
+		//sumbissions=null;// no longer needed
+
 </script>
