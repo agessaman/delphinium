@@ -23,35 +23,35 @@ class LtiConfiguration extends ComponentBase {
     }
 
     public function onRun() {
-        try
-        {
+//        try
+//        {
             $this->doBltiHandshake();
-        }
-        catch(\Delphinium\Roots\Exceptions\InvalidRequestException $e)
-        {
-            return \Response::make($this->controller->run('error'), 500);
-        }
-        catch(NonLtiException $e)
-        {
-            if($e->getCode()==584)
-            {
-                return \Response::make($this->controller->run('nonlti'), 500);
-            }
-            else{
-                echo json_encode($e->getMessage());return;
-            }
-        }
-        catch (\GuzzleHttp\Exception\ClientException $e) {
-            return;
-        }
-        catch(\Exception $e)
-        {
-            if($e->getMessage()=='Invalid LMS')
-            {
-                return \Response::make($this->controller->run('nonlti'), 500);
-            }
-            return \Response::make($this->controller->run('error'), 500);
-        }
+//        }
+//        catch(\Delphinium\Roots\Exceptions\InvalidRequestException $e)
+//        {
+//            return \Response::make($this->controller->run('error'), 500);
+//        }
+//        catch(NonLtiException $e)
+//        {
+//            if($e->getCode()==584)
+//            {
+//                return \Response::make($this->controller->run('nonlti'), 500);
+//            }
+//            else{
+//                echo json_encode($e->getMessage());return;
+//            }
+//        }
+//        catch (\GuzzleHttp\Exception\ClientException $e) {
+//            return;
+//        }
+//        catch(\Exception $e)
+//        {
+//            if($e->getMessage()=='Invalid LMS')
+//            {
+//                return \Response::make($this->controller->run('nonlti'), 500);
+//            }
+//            return \Response::make($this->controller->run('error'), 500);
+//        }
     }
 
     public function defineProperties() {
@@ -125,11 +125,11 @@ class LtiConfiguration extends ComponentBase {
 
         //check to see if user is an Instructor
         $rolesStr = \Input::get('roles');
-        $consumerKey = $instanceFromDB['ConsumerKey'];
+        $secret = $instanceFromDB['SharedSecret'];
         $clientId = $instanceFromDB['DeveloperId'];
 
         //Check to see if the lti handshake passes
-        $context = new Blti($consumerKey, false, false);
+        $context = new Blti($secret, false, false);
 
 
         if ($context->valid) { // query DB to see if user has token, if yes, go to LTI.
@@ -140,8 +140,12 @@ class LtiConfiguration extends ComponentBase {
                     //As per my discussion with Jared, we will use the instructor's token only. This is the token that will be stored in the DB
                     //and the one that will be used to make all requests. We will NOT store student's tokens.
                     //TODO: take this redirectUri out into some parameter somewhere...
-                    $redirectUri = "{$_SESSION['baseUrl']}saveUserInfo?lti={$this->property('ltiInstance')}";
-                    $url = "https://{$_SESSION['domain']}/login/oauth2/auth?client_id={$clientId}&response_type=code&redirect_uri={$redirectUri}";
+
+                    $baseUrlWithSlash = rtrim($_SESSION['baseUrl'], '/') . '/';
+                    $domainWithSlash = rtrim($_SESSION['domain'], '/') . '/';
+
+                    $redirectUri = "{$baseUrlWithSlash}saveUserInfo?lti={$this->property('ltiInstance')}";
+                    $url = "https://{$domainWithSlash}login/oauth2/auth?client_id={$clientId}&response_type=code&redirect_uri={$redirectUri}";
 
                     $this->redirect($url);
                 } else {

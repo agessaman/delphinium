@@ -1,67 +1,70 @@
-<!-- Instructor View with Settings cog -->
-<div style="position:relative; z-index:950;">
-    <a id="popinfo" title="Info" tabindex="0" role="button" data-trigger="focus" data-container="body" data-toggle="popover" data-placement="left" data-content="And here's some amazing content. It's very engaging. Right?" style="position:absolute; top:0; right:0px;">
-        <i class="icon-question"></i>
-    </a>
-  <div id="cog" data-toggle="modal" href="#content-configuration" style="position:absolute; top:0; right:10px;">
-    <a data-toggle="tooltip" title="Settings" data-placement="bottom"><i class="icon-cog"></i></a>
-    </div>
-</div>
-<div style="z-index:10;">
-    <!-- component partial -->
-  <div id="eggs"></div>
+<div class="stuff">
+  <!-- Instructor View with Settings cog -->
+  <div style="position:relative; z-index:950;">
+      <a id="popinfo" title="Info" tabindex="0" role="button" data-trigger="focus" data-container="body" data-toggle="popover" data-placement="left" data-content="And here's some amazing content. It's very engaging. Right?" style="position:absolute; top:0; right:0px;">
+          <i class="icon-question"></i>
+      </a>
+    <div id="cog" data-toggle="modal" href="#content-configuration" style="position:absolute; top:0; right:10px;">
+      <a data-toggle="tooltip" title="Settings" data-placement="bottom"><i class="icon-cog"></i></a>
+      </div>
+  </div>
+  <div style="z-index:10;">
+      <!-- component partial -->
+    <div id="eggs"></div>
 
-  <script>
-    var eggs = ['harlem_shake','ripples','asteroids','katamari','bombs','ponies','my_little_pony'];
-    var eggs_div = document.getElementById('eggs');
-    var html = "";
-    for (var i = 0; i < eggs.length; i++) {
-      if(current_grade >= config[eggs[i]]){
-        html+= '<div id=' + eggs[i] + '>';
-          html += '<img src="/delphinium/plugins/delphinium/blossom/assets/images/' + eggs[i] + '-icon.png" >';
-          html += '<p> Press "' + eggs[i][0] + '" and "' + eggs[i][1] + '" at the same time to do the ' + eggs[i] + '</p>';
-        html += '</div>';
+    <script>
+      var eggs = ['harlem_shake','ripples','asteroids','katamari','bombs','ponies','my_little_pony'];
+      var eggs_div = document.getElementById('eggs');
+      var html = "";
+      console.log(config);
+      for (var i = 0; i < eggs.length; i++) {
+        if(current_grade >= config[eggs[i]]){
+          html+= '<div id=' + eggs[i] + ' class="egg">';
+            html += '<img src="/delphinium/plugins/delphinium/blossom/assets/images/' + eggs[i] + '-icon.png" >';
+            html += "<h3>" + config[eggs[i]] + "</h3>";
+          html += '</div>';
+        }
       }
-    }
-    eggs_div.innerHTML = html;
-  </script>
-</div>
+      eggs_div.innerHTML = html;
+    </script>
+  </div>
 
-<!-- Configuration modal with Front End Form and Instructions in tabs -->
-<div class="control-popup modal fade" id="content-configuration" tabindex="-1" role="dialog">
-    <div class="modal-dialog">
-        <div class="modal-content" style="width:800px; overflow-y: auto;">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Component Settings</h4>
-            </div>
-            <div class="modal-body">
-                <!-- Tabs -->
-                <ul class="nav nav-tabs">
-                  <li class="active"><a data-toggle="tab" href="#configure">Configure</a></li>
-                  <li><a data-toggle="tab" href="#instruct">Instructions</a></li>
-                </ul>
-                <div class="tab-content">
-                <!-- Configure instance -->
-                  <div id="configure" class="tab-pane fade in active" style="padding: 5px 0px;">
-                    <form role="form" id="updateForm"
-                      data-request="{{ __SELF__ }}::onUpdate"
-                      data-request-success="$el.hide();completed(data);">
-                        {{ form.update(recordId)|raw }}
-                        {{ form.formRender()|raw }}
-                      <div class="form-group">
-                         <button class="btn btn-primary btn-block btn-md" type="submit" value="register">Update Component</button>
-                      </div>
-                    </form>
+  <!-- Configuration modal with Front End Form and Instructions in tabs -->
+  <div class="control-popup modal fade" id="content-configuration" tabindex="-1" role="dialog">
+      <div class="modal-dialog">
+          <div class="modal-content" style="width:800px; overflow-y: auto;">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                  <h4 class="modal-title">Component Settings</h4>
+              </div>
+              <div class="modal-body">
+                  <!-- Tabs -->
+                  <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#configure">Configure</a></li>
+                    <li><a data-toggle="tab" href="#instruct">Instructions</a></li>
+                  </ul>
+                  <div class="tab-content">
+                  <!-- Configure instance -->
+                    <div id="configure" class="tab-pane fade in active" style="padding: 5px 0px;">
+                      <form role="form" id="updateForm"
+                        data-request="{{ __SELF__ }}::onUpdate"
+                        data-request-success="$el.hide();completed(data);">
+                          {{ form.update(recordId)|raw }}
+                          {{ form.formRender()|raw }}
+                        <div class="form-group">
+                           <button class="btn btn-primary btn-block btn-md" type="submit" value="register">Update Component</button>
+                        </div>
+                      </form>
+                    </div>
+                  <!-- Instructions -->
+                    <div id="instruct" class="tab-pane fade in" style="padding: 0px 20px;">
+                        {{ instructions|raw }}
+                    </div>
                   </div>
-                <!-- Instructions -->
-                  <div id="instruct" class="tab-pane fade in" style="padding: 0px 20px;">
-                      {{ instructions|raw }}
-                  </div>
-                </div>
-            </div>
-        </div>
-    </div>
+              </div>
+          </div>
+      </div>
+  </div>
 </div>
 
 <script>
