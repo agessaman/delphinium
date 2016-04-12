@@ -47,9 +47,6 @@ class Iris extends ComponentBase
 
             $roots = new Roots();
             $moduleData = $roots->modules($req);
-//        echo "hello";
-//        return;
-//        echo json_encode($moduleData);return;
 
             $this->page['rawData'] = json_encode($moduleData);
             $modArr = $moduleData->toArray();
@@ -62,9 +59,10 @@ class Iris extends ComponentBase
                 $filterObj = array_filter(
                     $modArr,
                     function ($e) use ($filter) {
-                        return $e['module_id'] === $filter;
+                        return intval($e['module_id']) === intval($filter);
                     }
                 );
+
                 $obj = array_shift($filterObj);
                 $finalData = $this->buildTree($modArr,$obj['parent_id'], $filter);
 
@@ -152,11 +150,11 @@ class Iris extends ComponentBase
     private function buildTree(array &$elements, $parentId = 1, $moduleFilter=null) {
         $branch = array();
         foreach ($elements as $key=>$module) {
-
             if($module['published'] == "1")//if not published don't include it
             {
                 if(!is_null($moduleFilter)&&($module['module_id']!=$moduleFilter))
                 {//if we have a filter and this module doesn't match the filter, skip the item
+
                     unset($elements[$module['module_id']]);
                     continue;
                 }

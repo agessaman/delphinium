@@ -1,7 +1,9 @@
-<div class="statsWrapper">
+<div id="statsWrapper" style="width:250px">
     <!--<div class="statsTooltip"></div>-->
-    <div class="spinnerStats">
-        <i class="icon-spinner icon-spin icon-3x icon-fw margin-bottom" style="color:rgb(143, 143, 143);"></i>
+    <div class="spinnerStats loading-indicator-container">
+        <div class="loading-indicator">
+            <span></span>
+        </div>
     </div>
     <svg id = "statsSVG">
         <g id="statsView">
@@ -11,16 +13,16 @@
             <text id="gapExp" x="0" y="10" font-family="FontAwesome" font-size="14px" fill="#444444" cursor="pointer" transform="translate(0,7)"></text>
             <rect rx="3" ry="3" height="25" width="250" stroke-width="1" stroke="#444444" fill="none" y="20"></rect>
 
-            <!--Health-->
+            <!--Pace-->
             <line y1="20" y2="45" x1="125" x2="125" stroke-width="1" stroke="#444444" fill="none"></line>
-            <text x="15" y="60" fill="#444444" transform="translate(0,7)">Health</text>
-            <text id="healthExp" x="0" y="60" font-family="FontAwesome" font-size="14px" fill="#444444" cursor="pointer" transform="translate(0,7)"></text>
+            <text x="15" y="60" fill="#444444" transform="translate(0,7)">Pace</text>
+            <text id="paceExp" x="0" y="60" font-family="FontAwesome" font-size="14px" fill="#444444" cursor="pointer" transform="translate(0,7)"></text>
             <rect rx="3" ry="3" height="25" width="250" stroke-width="1" stroke="#444444" fill="none" y="70"></rect>
 
-            <!--Pace-->
+            <!--Health-->
             <line y1="70" y2="95" x1="125" x2="125" stroke-width="1" stroke="#444444" fill="none"></line>
-            <text x="15" y="110" fill="#444444" transform="translate(0,7)">Pace</text>
-            <text id="paceExp" x="0" y="110" font-family="FontAwesome" font-size="14px" fill="#444444" cursor="pointer" transform="translate(0,7)"></text>
+            <text x="15" y="110" fill="#444444" transform="translate(0,7)">Health</text>
+            <text id="healthExp" x="0" y="110" font-family="FontAwesome" font-size="14px" fill="#444444" cursor="pointer" transform="translate(0,7)"></text>
             <rect rx="3" ry="3" height="25" width="250" stroke-width="1" stroke="#444444" fill="none" y="120"></rect>
 
             <defs>

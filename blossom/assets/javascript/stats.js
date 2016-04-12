@@ -125,18 +125,31 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
         staminaInterface();
 
         function paceInterface() {
-            var count = 2;
-            var originalText = getExplanation('pace');
-            var text =originalText;
+            if(!statsAnimate)
+            {
+                delayValue = 0;
+                duration =0;
+            }
+            else
+            {
+                delayValue = count * 1000 + 1000;
+                duration = 1000;
+            }
+            var count = 1;
+            var text ='';
             //BONUS
             if (positivePace > 0) {
                 if((positivePaceWidth)<20) {
-                    text = "<i class='fa fa-lock'></i> Locked in bonuses: "+roundToOne(positivePace)+"<br/>"+originalText;
+                    text = "<i class='fa fa-lock'></i> Locked in bonuses: "+roundToOne(positivePace);
+                }
+                else
+                {
+                    text = "Locked in bonuses: "+roundToOne(positivePace);
                 }
                 drawPositive(text,count, positivePaceWidth);
                 if((positivePaceWidth)>20)
                 {
-                    drawNumber(count, positivePaceX, roundToOne(positivePace), "paceVars");
+                    drawNumber(count, positivePaceX, roundToOne(positivePace), "paceVars", 1,text);
 
                 //apend the lock icon (must be text. inside of svg we can't add span or i)
                 view.append("svg:text")
@@ -147,10 +160,6 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
                     .attr('font-family', 'FontAwesome')
                     .attr('font-size', '8px')
                     .attr("cursor", "pointer")
-                    .attr("fill", function (d) {
-                        var x = positivePace > 0 ? "white" : "gray";
-                        return x;
-                    })
                     .on("mouseover", function (d) {
                         addTooltipStats("Locked in bonus: " + roundToOne(positivePace));
                     })
@@ -159,20 +168,32 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
                     })
                     .text(function (d) {
                         return '\uf023';
-                    });
+                    })
+                    .attr("fill", function (d) {
+                        var x = positivePace > 0 ? "white" : "gray";
+                        return x;
+                    })
+                    .attr("display",'none')
+                    .transition()
+                    .delay(delayValue)
+                    .duration(duration)
+                    .attr("display",'block')
+                    .ease('bounce');
                 }
             }
 
             //PENALTIES
             if (negativePace > 0) {
-                text=originalText;
                 if((negativePaceWidth)<20) {
-                    text = "<i class='fa fa-lock'></i> Locked in penalties: "+roundToOne(-negativePace)+"<br/>"+originalText;
+                    text = "<i class='fa fa-lock'></i> Locked in penalties: "+roundToOne(-negativePace);
+                }
+                else {
+                    text = "Locked in penalties: "+roundToOne(-negativePace);
                 }
                 drawNegative(text, count, negativePaceWidth);
                 if((negativePaceWidth)>20)
                 {
-                    drawNumber(count, negativePaceX, roundToOne(-negativePace), "paceVars");
+                    drawNumber(count, negativePaceX, roundToOne(-negativePace), "paceVars",1, text);
 
                 view.append("svg:text")
                     .attr("x", function (d) {
@@ -186,6 +207,7 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
                         var x = negativePace > 0 ? "white" : "gray";
                         return x;
                     })
+                    .attr("display",'none')
                     .on("mouseover", function (d) {
                         addTooltipStats("Locked in penalties: " + roundToOne(-negativePace));
                     })
@@ -194,21 +216,29 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
                     })
                     .text(function (d) {
                         return '\uf023';
-                    });
+                    })
+                    .transition()
+                    .delay(delayValue)
+                    .duration(duration)
+                    .attr("display",'block')
+                    .ease('bounce');
                 }
             }
 
 
             //POTENTIAL BONUSES
             if (positivePotential > 0) {
-                text=originalText;
                 if((posPotentialWidth)<20) {
-                    text = "<i class='fa fa-clock-o'></i> Potential bonuses: "+roundToOne(positivePotential)+"<br/>"+originalText;
+                    text = "<i class='fa fa-clock-o'></i> Potential bonuses: "+roundToOne(positivePotential);
+                }
+                else
+                {
+                    text = "Potential bonuses: "+roundToOne(positivePotential);
                 }
                 drawPositive(text, count, posPotentialWidth, positivePaceWidth, 0.4);
                 if((posPotentialWidth)>20)
                 {
-                    drawNumber(count, posPotentialX, roundToOne(positivePotential), "paceVars");
+                    drawNumber(count, posPotentialX, roundToOne(positivePotential), "paceVars", 1, text);
 
                 view.append("svg:text")
                     .attr("x", function (d) {
@@ -230,20 +260,29 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
                     })
                     .text(function (d) {
                         return '\uf017';
-                    });
+                    })
+                    .attr("display",'none')
+                    .transition()
+                    .delay(delayValue)
+                    .duration(duration)
+                    .attr("display",'block')
+                    .ease('bounce');
                 }
             }
 
             //POTENTIAL PENALTIES
             if (negativePotential > 0) {
-                text=originalText;
                 if((negPotentialWidth)<20) {
-                    text = "<i class='fa fa-clock-o'></i> Potential penalties: "+roundToOne(-negativePotential)+"<br/>"+originalText;
+                    text = "<i class='fa fa-clock-o'></i> Potential penalties: "+roundToOne(-negativePotential);
+                }
+                else
+                {
+                    text = "Potential penalties: "+roundToOne(-negativePotential);
                 }
                 drawNegative(text,count, negPotentialWidth, negativePaceWidth, 0.4);
                 if((negPotentialWidth)>20)
                 {
-                    drawNumber(count, negPotentialX, roundToOne(-negativePotential), "paceVars");
+                    drawNumber(count, negPotentialX, roundToOne(-negativePotential), "paceVars", 1, text);
 
                 view.append("svg:text")
                     .attr("x", function (d) {
@@ -265,7 +304,13 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
                     })
                     .text(function (d) {
                         return '\uf017';
-                    });
+                    })
+                    .attr("display",'none')
+                    .transition()
+                    .delay(delayValue)
+                    .duration(duration)
+                    .attr("display",'block')
+                    .ease('bounce');
                 }
 
             }
@@ -278,26 +323,23 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
 
         function gapInterface() {
             var count = 0;
-            var text = getExplanation("gap");
+            var word = gap>0?"ahead of":"behind";
+            var encouragement = gap>0?"Good job!":"You need to catch up with the red line to avoid penalty points";
+            var text = "You are "+roundToOne(gap)+" points "+word+ " the red line. "+encouragement;
             y = count * 50 + 10;
             //drawIcon('\uf05a', 0, y, text, "14px", '#444444');
-            if((gapWidth)<20) {
-                text = "Gap: "+roundToOne(gap)+"<br/>"+text;
-            }
+
             if (gap > 0)
                 drawPositive(text,count, gapWidth);
             else
                 drawNegative(text,count, gapWidth);
             drawCenter(count);
-            if((gapWidth)>20)
-            {
-                drawNumber(count, gapX, roundToOne(gap), "gapVars");
-            }
+            drawNumber(count, gapX, roundToOne(gap), "gapVars", 1, text);
         }
 
         function healthInterface() {
-            var count = 1;
-            var text = getExplanation("health");
+            var count = 2;
+            var text = "Your bonus/penalty balance is "+roundToOne(health)+" points";
             y = count * 50 + 10;
             //drawIcon('\uf05a', 0, y, text, "14px", '#444444');
             if((healthWidth)<20) {
@@ -308,17 +350,14 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
             else
                 drawNegative(text,count, healthWidth);
             drawCenter(count);
-            if((healthWidth)>20)
-            {
-                drawNumber(count, healthX, roundToOne(health), "healthVars");
-            }
+            drawNumber(count, healthX, roundToOne(health), "healthVars", 1, text);
+
         }
 
         function staminaInterface() {
-            var text = getExplanation('stamina');
             var count = 3;
             //draw stamina bar
-            variableStamina(text,statsObj.stamina.total, staminaWidth, count, true);
+            variableStamina(statsObj.stamina.total, staminaWidth, count, true);
             //add a checkbox so students can select if they want to see their averages for the last 10 assignments or all their assignments
             var options = ['All', 'Last 10'];
         }
@@ -483,7 +522,7 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
 
 
 function scaleStats() {
-    var wrapper = d3.select(".statsWrapper");
+    var wrapper = d3.select("#statsWrapper");
     var statsView = d3.select("#statsView");
     var statsSVG = d3.select("#statsSVG");
     var switchComp = d3.select("#switch");
@@ -515,6 +554,25 @@ function scaleStats() {
         switchComp.style('left', "115px")
             .style('top', "-106px");
         lis.classed('largeLi', true);
+    }
+
+    //need to set the width and height of the wrap element so the layout doesn't get messed up
+    if(nonstudent===1)
+    {
+        var wrap = document.getElementById("instructorWrap");
+    }
+    else
+    {
+        var wrap = document.getElementById("studentWrap");
+    }
+
+    //if professor, fix the position of the gear
+    var childWidth = document.getElementById('statsWrapper').offsetWidth;
+    var childHeight = document.getElementById('statsWrapper').offsetHeight;
+    if(wrap!=undefined)
+    {
+        wrap.style.width =childWidth+'px';
+        wrap.style.height =childHeight+'px';
     }
 }
 
@@ -566,7 +624,6 @@ function getExplanation(component) {
 }
 
 function toggleStamina(value) {
-    var text = getExplanation('stamina');
     lastTen = value == 10 ? true : false;
     d3.select(".all")
         .classed("on", !lastTen);
@@ -584,18 +641,16 @@ function toggleStamina(value) {
         staminaX = (staminaWidth / 2) + 10;
     }
 
-    variableStamina(text,staminaValue, staminaWidth, 3, false);
+    variableStamina(staminaValue, staminaWidth, 3, false);
 }
 
-function variableStamina(text,number, width, count, delay) {
+function variableStamina(number, width, count, delay) {
 
-    if((width)<20) {
-        text = "Stamina: "+roundToOne(number)+"<br/>"+text+"%";
-    }
     delayValue = 0;
     if (delay) {
         delayValue = 4000;
     }
+    var text = "Your average score is: "+roundToOne(number)+'%';
     var view = d3.select("#statsView");
     var firstColor = '#FF0000', secondColor = '#FF0000', thirdColor = '#FF0000', fourthColor = '#FF0000';
 
@@ -675,19 +730,22 @@ function variableStamina(text,number, width, count, delay) {
             })
             .on("mouseleave", function (d) {
                 removeTooltipStats();
-            });;
+            });
     }
-    if((width)>20)
-    {
-        drawNumber(count, staminaX, roundToOne(number) + "%", "staminaVars", delay);
-    }
+    drawNumber(count, staminaX, roundToOne(number) + "%", "staminaVars", delay, text);
+
 }
 
-function drawNumber(count, x, text, className, delay) {
+function drawNumber(count, x, text, className, delay, tooltipText) {
     delayValue = count * 1000 + 1500;
     if (delay != undefined && !delay)//if defined and set to false
     {
         delayValue = 100;
+    }
+
+    if(!statsAnimate)
+    {
+        delayValue = 0;
     }
     var text = d3.select('#statsView').append("text")
         .attr("fill", "none")
@@ -696,7 +754,19 @@ function drawNumber(count, x, text, className, delay) {
         .attr('x', x)
         .attr('y', count * 50 + 40)
         .attr('class', className)
-        .text((text));
+        .text((text))
+        .on("mouseenter", function (d) {
+            if(tooltipText!=undefined)
+            {
+                addTooltipStats(tooltipText);
+            }
+        })
+        .on("mouseleave", function (d) {
+            if(tooltipText!=undefined)
+            {
+                removeTooltipStats();
+            }
+        });
 
     //if (statsAnimate) {
     text.transition()

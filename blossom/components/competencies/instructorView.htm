@@ -1,13 +1,17 @@
-<!-- Instructor View with Settings cog -->
-<div style="position:relative;">
-    <div id="cog" data-toggle="modal" href="#content-configuration" style="position:absolute; top:0; z-index:950; padding-left:220px;">
-        <a data-toggle="tooltip" title="Settings" data-placement="bottom"><i class="icon-cog"></i></a>
-    </div>
-    <div style="z-index:10;">
-        <!-- competencies component -->
-        {% partial 'competencies::display' %}
+<!-- Instructor View with Settings cog & info popover -->
+<div style="position:relative; z-index:950;">
+    <a id="popinfo" title="Info" tabindex="0" role="button" data-trigger="focus" data-container="body" data-toggle="popover" data-placement="left" data-content="Setup below" style="position:absolute; top:0; right:10px;">
+        <i class="icon-question"></i>
+    </a>
+	<div id="cog" data-toggle="modal" href="#content-configuration" style="position:absolute; top:0; right:20px;">
+		<a data-toggle="tooltip" title="Settings" data-placement="bottom"><i class="icon-cog"></i></a>
     </div>
 </div>
+<div style="z-index:10;">
+	<!-- competencies component -->
+	{% partial __SELF__~'::display' %}
+</div>
+
 
 <!-- Configuration modal with Front End Form and Instructions in tabs -->
 <div class="control-popup modal fade" id="content-configuration" tabindex="-1" role="dialog">
@@ -30,7 +34,7 @@
                       data-request="{{ __SELF__ }}::onUpdate"
                       data-request-success="$el.hide();completed(data);">
 					  {{ form.update(recordId)|raw }}
-                        {{ form.formRender()|raw }}
+                      {{ form.formRender()|raw }}
                       <div class="form-group">
                          <button class="btn btn-primary btn-block btn-md" type="submit" value="register">Update Component</button>
                       </div>
@@ -62,8 +66,11 @@
 </div>
 
 <script>
+/* set up the popover content text and activate it*/
+	$('#popinfo').attr("data-content","Instructor view does not contain submissions. Click a bar to display details.");
+    $('#popinfo').popover();// activate info
+
 /*
-    
     After changing settings, Refresh the component but not the page
 	course_id has been added dynamically to config.course_id
     
@@ -77,13 +84,12 @@
     var assignments=[];// for click bar
     var submissions=[];// N/A unless Learner
     
-    /* set id,course,copy in the POST they are not editable
+    /* set id,course in the POST they are not editable
         Add hidden input fields so they will transfer to onUpdate
-        fields.yaml is set to hidden: true so they do not appear at all
+        if fields are set to hidden: true they do not appear at all
     */
     $('#Form-outsideTabs').append('<input type="hidden" name="Competencies[id]" value="'+config.id+'" /> ');
     $('#Form-outsideTabs').append('<input type="hidden" name="Competencies[course_id]" value="'+config.course_id+'" /> ');
-    $('#Form-outsideTabs').append('<input type="hidden" name="Competencies[copy_id]" value="'+config.copy_id+'" /> ');
     
     // Fix Animate checkbox switch
     $('<div style="height:90px;" class="clearfix"></div>').insertBefore('.checkbox-field').parent;
@@ -107,13 +113,6 @@
     
 	function completed(data)
 	{
-        /*  returned updated record
-            dont reload page
-            if dynamic it will add another record and show it instead
-            Replace: contents
-            <svg id = "competenciesSVG">
-	           <g id="competenciesView"></g></svg>
-        */
         location.reload();
         /*
         config = JSON.parse(data['result']);
@@ -127,7 +126,7 @@
         showCompetencies();// refresh component
         */
         //$('#updateForm').show();// could remove success in form
-		//console.log('instance: '+config.id,config.Name,config.Size,config.Color,config.Animate,config.course_id,config.copy_id);
+		//console.log('instance: '+config.id,config.Name,config.Size,config.Color,config.Animate,config.course_id);
 	}
-	//console.log('instance: '+config.id,config.Name,config.Size,config.Color,config.Animate,config.course_id,config.copy_id);
+	//console.log('instance: '+config.id,config.Name,config.Size,config.Color,config.Animate,config.course_id);
 </script>

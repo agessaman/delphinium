@@ -1,11 +1,9 @@
-<div>
+<div id="instructorWrap">
     <div id="statsSettings">
         <a data-toggle="modal"  data-keyboard="true" data-backdrop="true" onclick="showModal()"><i class="icon-cog"></i></a>
     </div>
     {% partial __SELF__~"::display" %}
-    <div class="confirm-container bg-success hide">
-        <p style="text-align:center;">Successfully Updated Entry!</p>
-    </div>
+
     <div id="configureExperience">
         This component is tied to the Experience component, which hasn't been configured yet.
         Please go to the experience component in professor mode to configure it.
@@ -46,12 +44,10 @@
 
             </div>
             <div style="clear:both; height:1.5em"></div>
-            <!--div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-            </div-->
         </div>
     </div>
 </div>
+
 
 <style>
     /*override backend styles*/
@@ -70,8 +66,12 @@
     {
         $("#modalWindow").on("shown.bs.modal", function () {
             //disable the course id and the copy name
-            document.getElementById('Form-field-Stats-name').readOnly=true;
-            document.getElementById('Form-field-Stats-course_id').readOnly=true;
+            document.getElementById('Form-field-Stats-id-group').style.display='none';
+            document.getElementById('Form-field-Stats-name-group').style.display='none';
+            document.getElementById('Form-field-Stats-course_id-group').style.display='none';
+            document.getElementById('backend-instructions').style.display='none';
+
+
         }).modal('show');
     }
 
@@ -83,6 +83,12 @@
     function completed(data)
     {
         hideModal();
-        location.reload();//reload component with new configuration
+        $.oc.flashMsg({
+            'text': 'The record has been successfully saved.',
+            'class': 'success',
+            'interval': 3
+        });
+        //location.reload();
+        history.go(0);
     }
 </script>

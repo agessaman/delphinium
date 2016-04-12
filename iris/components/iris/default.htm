@@ -1,43 +1,43 @@
 
-    <div id="wrapper{{filter}}">
-        <div id="tooltip" class="hidden">
+<div id="wrapper{{filter}}">
+    <div id="tooltip" class="hidden">
             <span class="imgClose">
                 <span id="stackImgClose" class="fa-stack fa-lg">
                     <span id="circle"></span>
-                    <span class="fa fa-times-thin fa-stack-1x"></span>
+                    <span id="times" class="fa fa-times-thin fa-stack-1x"></span>
                 </span>
             </span>
-            <div class="titleBar">
-                <span id="spTitle">This is my title</span>
-            </div>
-            <div id="divInnerTooltip">
+        <div class="titleBar">
+            <span id="spTitle">This is my title</span>
+        </div>
+        <div id="divInnerTooltip">
 
-                <div id="sequence">
-                    <svg id="trail"></svg>
-                </div>
-                <div id="divPrerequisites">
-                    <i class="fa fa-warning orange"></i><h4>Module Prerequisites</h4>
-                    <p>Before you can start this module you need to finish the following modules:</p>
-                    <ul id="ulPrerequisites"></ul>
-                </div>
-                <div class="bottomDiv">
-                    <div id="content" class="content">
-                        <h5 id="tooltipDesc"></h5>
-                        <div id="divAssignments">
-                            <h4>Content</h4>
-                            <ul id="ulAssignments"></ul>
-                        </div>
-                        <div id="divOptionalAssignments">
-                            <h4>Optional Assignments</h4>
-                            <ul id="ulOptionalAssignments"></ul>
-                        </div>
+            <div id="sequence">
+                <svg id="trail"></svg>
+            </div>
+            <div id="divPrerequisites">
+                <i class="fa fa-warning orange"></i><h4>Module Prerequisites</h4>
+                <p>Before you can start this module you need to finish the following modules:</p>
+                <ul id="ulPrerequisites"></ul>
+            </div>
+            <div class="bottomDiv">
+                <div id="content" class="content">
+                    <h5 id="tooltipDesc"></h5>
+                    <div id="divAssignments">
+                        <h4>Content</h4>
+                        <ul id="ulAssignments"></ul>
+                    </div>
+                    <div id="divOptionalAssignments">
+                        <h4 id="hOptionalAssig">Optional Assignments</h4>
+                        <ul id="ulOptionalAssignments"></ul>
                     </div>
                 </div>
             </div>
-
         </div>
+
     </div>
-    <div id="blocker" class="hidden"></div>	
+</div>
+<div id="blocker" class="hidden"></div>
 
 <script type="text/javascript">
     function Iris (graphData, rawData, filter) {

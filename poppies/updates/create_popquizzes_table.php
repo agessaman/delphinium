@@ -12,10 +12,9 @@ class CreatePopquizzesTable extends Migration
         {
             $table->engine = 'InnoDB';
             $table->increments('id');
-            $table->string('name');
-            $table->string('quiz_name');
-            $table->integer('quiz_id');
-			$table->text('quiz_description')->nullable();
+            $table->string('name',255);
+            $table->string('quiz_name',255);//title
+			$table->string('quiz_description',512);//long
             $table->timestamps();
         });
     }

@@ -51,7 +51,7 @@ class TestRoots extends ComponentBase
         $this->dbHelper = new DbHelper();
 //        $this->refreshCache();
 //        $this->test();
-        $this->testBasicModulesRequest();
+//        $this->testBasicModulesRequest();
 //        $this->testGettingModuleStates();
 //        $this->testBuildTree();
 //        $this->testDeleteTag();
@@ -80,6 +80,7 @@ class TestRoots extends ComponentBase
 //        $this->testGettingSubmissions();
 //        $this->testFileUpload();
 //        $this->testAddingAssignment();
+
 //        $this->testStudentAnalyticsAssignmentData();
 //        $this->testGetCourse();
 //        $this->testGetAccount();
@@ -87,7 +88,7 @@ class TestRoots extends ComponentBase
 //        $this->testGetQuiz();
 //        $this->testGetQuizQuestions();
 //        $this->testGetAllQuizzes();
-//        $this->testGetPages();
+        $this->testGetPages();
 //        $this->testQuizTakingWorkflow();
 //        $this->testIsQuestionAnswered();
 //        $this->testSubmitQuiz();

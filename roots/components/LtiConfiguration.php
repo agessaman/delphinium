@@ -23,10 +23,10 @@ class LtiConfiguration extends ComponentBase {
     }
 
     public function onRun() {
-        try
-        {
+//        try
+//        {
             $this->doBltiHandshake();
-        }
+/*        }
         catch(\Delphinium\Roots\Exceptions\InvalidRequestException $e)
         {
             return \Response::make($this->controller->run('error'), 500);
@@ -52,7 +52,7 @@ class LtiConfiguration extends ComponentBase {
             }
             return \Response::make($this->controller->run('error'), 500);
         }
-    }
+*/    }
 
     public function defineProperties() {
         return [
@@ -125,11 +125,11 @@ class LtiConfiguration extends ComponentBase {
 
         //check to see if user is an Instructor
         $rolesStr = \Input::get('roles');
-        $consumerKey = $instanceFromDB['ConsumerKey'];
+        $secret = $instanceFromDB['SharedSecret'];
         $clientId = $instanceFromDB['DeveloperId'];
 
         //Check to see if the lti handshake passes
-        $context = new Blti($consumerKey, false, false);
+        $context = new Blti($secret, false, false);
 
 
         if ($context->valid) { // query DB to see if user has token, if yes, go to LTI.
