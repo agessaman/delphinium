@@ -105,7 +105,7 @@ class LtiConfiguration extends ComponentBase {
         $_SESSION['baseUrl'] = Config::get('app.url', 'backend');
         $_SESSION['courseID'] = \Input::get('custom_canvas_course_id');
         $_SESSION['userID'] = \Input::get('custom_canvas_user_id');
-        $_SESSION['domain'] = \Input::get('custom_canvas_api_domain');
+        $_SESSION['domain'] = '185.44.229.29:3000';//\Input::get('custom_canvas_api_domain');
         //get the roles
         $roleStr = \Input::get('roles');
         if(stristr($roleStr,'Learner')||stristr($roleStr,'Instructor'))
@@ -145,7 +145,7 @@ class LtiConfiguration extends ComponentBase {
                     $domainWithSlash = rtrim($_SESSION['domain'], '/') . '/';
 
                     $redirectUri = "{$baseUrlWithSlash}saveUserInfo?lti={$this->property('ltiInstance')}";
-                    $url = "https://{$domainWithSlash}login/oauth2/auth?client_id={$clientId}&response_type=code&redirect_uri={$redirectUri}";
+                    $url = "http://{$domainWithSlash}login/oauth2/auth?client_id={$clientId}&response_type=code&redirect_uri={$redirectUri}";
                     echo '$redirectUri = '.$redirectUri.'<br>';
                     echo '$url = '.$url;
                     die;
