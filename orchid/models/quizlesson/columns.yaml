@@ -6,3 +6,8 @@ columns:
     id:
         label: ID
         searchable: true
+    quiz_name:
+        label: Quiz Name
+        type: text
+        searchable: true
+        sortable: true

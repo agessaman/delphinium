@@ -1,11 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
 name: Vanilla
-modelClass: Delphinium\Vanilla\Models\Vanilla
+
+# Model Form Field configuration
 form: $/delphinium/vanilla/models/vanilla/fields.yaml
+
+# Model Class name
+modelClass: Delphinium\Vanilla\Models\Vanilla
+
+# Default redirect location
 defaultRedirect: delphinium/vanilla/vanilla
+
+# Create page
 create:
-    redirect: 'delphinium/vanilla/vanilla/update/:id'
+    title: Create Vanilla
+    redirect: delphinium/vanilla/vanilla/update/:id
     redirectClose: delphinium/vanilla/vanilla
+
+# Update page
 update:
+    title: Edit Vanilla
     redirect: delphinium/vanilla/vanilla
     redirectClose: delphinium/vanilla/vanilla
-preview: {  }
+
+# Preview page
+preview:
+    title: Preview Vanilla

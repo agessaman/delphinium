@@ -25,7 +25,7 @@ class LtiConfiguration extends ComponentBase {
     public function onRun() {
 //        try
 //        {
-            $this->doBltiHandshake();
+        $this->doBltiHandshake();
 //        }
 //        catch(\Delphinium\Roots\Exceptions\InvalidRequestException $e)
 //        {
