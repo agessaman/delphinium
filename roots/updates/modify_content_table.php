@@ -10,7 +10,7 @@ class ModifyContentTable extends Migration
     {
         Schema::table('delphinium_roots_content', function($table)
         {
-            $table->string('lock_explanation', 800)->change();
+            $table->string('lock_explanation', 1000)->change();
         });
     }
 
