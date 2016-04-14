@@ -20,7 +20,7 @@
     height: 130px;
     float: left;
     position: relative;
-    border: medium solid #ababab;
+    border: thin solid #bababa;
     background-color: #fafafa;
     color: #ababab;
 	display: inline-block;
@@ -31,7 +31,7 @@
 	box-shadow:         3px 3px 5px 0px rgba(50, 50, 50, 0.8);
 }
 .title {
-	background-color: #ababab;/* user defined? */
+	background-color: #ababab;/* over ride with state */
 	color: #fafafa;
 	padding: 5px;
 	font-size: 0.9em;
@@ -45,9 +45,9 @@
     color: #ddbb31;/* gold */
 }
 
-.locked {
+.modlocked {
 	position: absolute;
-	top: -16px;
+	top: -14px;
 	right: -9px;
 	z-index: 800;
     font-size: 2.2em;
@@ -104,12 +104,22 @@
 	padding: 10px;/* T,R,B,L */
 	margin-bottom: 5px;
     
-    border-radius: 10px 10px 10px 10px;
+    border-radius: 5px;
     -moz-border-radius: 10px 10px 10px 10px;
     -webkit-border-radius: 10px 10px 10px 10px;
-	border: thin solid #ababab;
-	background-color: #fff;
+	border: 1px solid #D0D0D0;
+	
     color: #888888;
+}
+.assignment:hover{
+    border: 2px solid #D0D0D0;
+}
+.available {
+	background-color: #fafafa;
+	cursor: pointer; /* whole div is clickable */
+}
+.unavailable {
+	background-color: #e0e0e0;
 }
 .required {
     width: 80%;
@@ -134,15 +144,23 @@
 .link {
     width: 80%;
     float: left;
+	margin-top: 2px;
+    /*border: thin solid #ababab; test width*/
 }
 .points {
     width: auto;
     float: right;
-    padding: 5px;
+    /*padding: 5px;*/
     font-size: 1.1em;
-    color: #000;
+    color: #333;
+   /* border: thin solid #ababab; test width*/
 }
 .clearme {
     clear:both;
     height: 1px;
 }
+/* state colors match iris */
+.locked { background-color: #8F8F8F !important; }
+.unlocked { background-color: #588238 !important; }
+.started { background-color: #5eacd4 !important; }
+.completed { background-color: #143D55 !important; }

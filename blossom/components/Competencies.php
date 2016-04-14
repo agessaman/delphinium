@@ -21,15 +21,6 @@ class Competencies extends ComponentBase
 	public function defineProperties()
     {
         return [
-
-            'copy_id' => [
-                'title'        => 'Copy Name:',
-                'type'         => 'string',
-                'default'      => 'copy-1',
-                'required'     => 'true',
-                'validationPattern' => '^(?!\s*$).+',
-                'validationMessage' => 'This field cannot be left blank.'
-            ],
             'instance'	=> [
                 'title'             => 'Configuration:',
                 'description'       => 'Select an instance',
@@ -38,79 +29,44 @@ class Competencies extends ComponentBase
             ]
         ];
     }
-	/*  copy id must have a string 
-        validation above should warn user
-        also in backend New form!!!
-    */
-    //The CMS controller executes this method before the default markup is rendered.
+	
 	public function onRun()
     {
 		try
         {
-        /*
-            is an insance set? yes show it
-
+        /*Notes:
+            is an instance set? yes show it
             else get all instances
-                is copy set?
-                -yes check for an instance that matches copy + course show it
-
                 is there an instance with this course? yes use it
-            else create dynamicInstance, save new instance show it
+            else create dynamicInstance, save new instance, show it
         */
             if (!isset($_SESSION)) { session_start(); }
-
             $courseID = $_SESSION['courseID'];
+            $name = $this->alias .'_'. $_SESSION['courseID'];
+            
             // if instance has been set
             if( $this->property('instance') )
             {
                 //instance set in CMS getInstanceOptions()
                 $config = CompetenceModel::find($this->property('instance'));
                 //add $course->id to $config for form field
-                $config->course_id = $_SESSION['courseID'];//$course->id;
-                $config->save();//update original record now in case it did not have course
 
             } else {
-                // if copy has a name 
-                $copyLength = strlen($this->property('copy_id'));
-                if($copyLength > 0 )
-                {
-                    // find all matching course 
-                    $instances = CompetenceModel::where('course_id','=', $courseID)->get();
-                    $instCount = count($instances);
-                    if($instCount == 0) { 
-                        $copyLength = 0;// none found
-                    } else {
-                        // find instance with copy
-                        $flag=false;
-                        foreach ($instances as $instance)
-                        {
-                           if($instance->copy_id == $this->property('copy_id') )
-                           {
-                               $config = $instance;
-                               $flag=true;
-                               break;// got first found
-                           }
-                        }
-
-                        //yes found courses but not matching copy. use the first one found with course id
-                        if( !$flag ) { $config = $instances[0]; }
-                    }
-                }
-                // no match found so create new one
-                if($copyLength == 0 )
-                {
-                    //$config = dynamicInstance();// undefined use onRun?
-                    $config = new CompetenceModel;// db record
-                    $config->Name = 'dynamic_';//+ total records count?
-                    $config->Size = 'Medium';
+                // look for instances created for this course
+				$instances = CompetenceModel::where('name','=', $name)->get();
+				
+				if(count($instances) === 0) { 
+					// no record found so create a new dynamic instance
+					$config = new CompetenceModel;// db record
+					$config->Name = $name;
+					$config->Size = 'Medium';//$config->size = '20%';
                     $config->Color = '#4d7123';//uvu green
                     $config->Animate = '1';//true
-                    $config->course_id = $_SESSION['courseID'];// or null
-                    $config->copy_id = $this->property('copy_id');//
-                    $config->save();// create new record
-                    ///$this->property('instance', $config->id);// instance=id#
-                    //dont need to set for onSave
-                }
+					$config->save();// save the new record
+				} else {
+					//use the first record matching course
+					$config = $instances[0];
+				}
             }
 
             $this->page['config'] = json_encode($config);
@@ -151,9 +107,9 @@ class Competencies extends ComponentBase
 				
 				// Append the formController to the page
 				$this->page['form'] = $formController;
-                //this is the primary key of the record you want to update
+                // Use the primary key of the record you want to update
                 $this->page['recordId'] = $config->id;
-                // Instructions page
+                // Append Instructions page
                 $instructions = $formController->makePartial('instructions');
                 $this->page['instructions'] = $instructions;
                 
@@ -182,10 +138,6 @@ class Competencies extends ComponentBase
                     $mod->title=$item['name'];
                     $mod->locked=$item['locked'];
                     $mod->items =$item['module_items'];//REPLACES assignments
-
-                    // items contain:
-                    //module_items[i].content[0].title & .url, maybe .type
-                    //module_items[i].content[0].points_possible & .tags
 
                     $simpleModules[] = $mod;
                 }
@@ -266,11 +218,11 @@ class Competencies extends ComponentBase
     }
 	
     /**
-	* update, add course_id & copy_id
+	* update, add course_id
 	* save to database and return updated
     
     * id is disabled in fields.yaml
-    * id, course & copy are also hidden
+    * id & course are also hidden
     * $data gets .id from config setting hidden field
     * called from instructorView configure settings
 	*/
@@ -285,16 +237,8 @@ class Competencies extends ComponentBase
 		$config->Color = $data['Color'];
 		$config->Animate = $data['Animate'];
 		$config->course_id = $data['course_id'];//hidden
-        $config->copy_id = $data['copy_id'];//hidden
 		$config->save();// update original record 
 		return json_encode($config);
     }
-    
-	// test: for controller.formExtendFields
-	public function getConfig()
-    {
-		$config = CompetenceModel::find($this->property('instance'));
-        return $config;
-	}
     
 }

@@ -5,15 +5,17 @@ use System\Classes\UpdateManager;
 use System\Classes\PluginManager;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
+use Delphinium\Greenhouse\Templates\Plugin;
 
-class PluginRefresh extends Command
+class DelphiniumPlugin extends Command
 {
 
+    protected $fileMap = [];
     /**
      * The console command name.
      * @var string
      */
-    protected $name = 'delphinium:init';
+    protected $name = 'delphinium:plugin';
 
     /**
      * The console command description.
@@ -36,26 +38,25 @@ class PluginRefresh extends Command
      */
     public function fire()
     {
-        $pluginName = $this->argument('name');
-        $pluginName = PluginManager::instance()->normalizeIdentifier($pluginName);
-        if (!PluginManager::instance()->exists($pluginName)) {
-            throw new \InvalidArgumentException(sprintf('Plugin "%s" not found.', $pluginName));
+        $parts = explode('.', $this->argument('name'));
+
+        if (count($parts) != 2) {
+            $this->error('Invalid plugin name, either too many dots or not enough.');
+            $this->error('Example name: AuthorName.PluginName');
+            return;
         }
 
-        $manager = UpdateManager::instance()->resetNotes();
 
-        $manager->rollbackPlugin($pluginName);
-        foreach ($manager->getNotes() as $note) {
-            $this->output->writeln($note);
-        }
+        $pluginName = array_pop($parts);
+        $authorName = array_pop($parts);
+        $vars = [
+            'name'   => $pluginName,
+            'author' => $authorName,
+        ];
+        $destinationPath = base_path() . '/plugins';
+        Plugin::make($destinationPath, $vars);
 
-        $manager->resetNotes();
-        $this->output->writeln('<info>Reinstalling plugin...</info>');
-        $manager->updatePlugin($pluginName);
-
-        foreach ($manager->getNotes() as $note) {
-            $this->output->writeln($note);
-        }
+        $this->info(sprintf('Successfully generated Plugin named "%s"', $this->argument('name')));
     }
 
     /**
@@ -65,7 +66,7 @@ class PluginRefresh extends Command
     protected function getArguments()
     {
         return [
-            ['name', InputArgument::REQUIRED, 'The name of the plugin. Eg: AuthorName.PluginName'],
+            ['name', InputArgument::REQUIRED, 'The name of the plugin. E.g., Author.Plugin'],
         ];
     }
 

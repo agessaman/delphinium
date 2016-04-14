@@ -1,0 +1,170 @@
+.center {
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 10px;
+}
+.left {
+    float: left;
+}
+.right {
+    float: right;
+}
+/* col-md-4 replaced
+.thirds {
+    width: 30%;
+    padding: 5px;
+    margin: 5px;
+    /*border: 1px solid #888888;*/
+}
+*/
+.clear { clear: both; }
+
+
+.tools {
+    
+}
+/*
+#quizlist {
+    border: 1px solid #888888;
+    background-color: #dadada;
+    height: auto;
+    float: right;
+}
+#questiongroup {
+    border: 1px solid #888888;
+    background-color: #dadada;
+    height: auto;
+    float: right;
+}
+*/
+.quizpanel {
+    overflow-y: auto;
+}
+/* floats with page */
+.scrollingBox {
+	width: 48%;
+    position: fixed;
+    top: 10px;
+    right: 10px;
+}
+
+.questitem {
+	padding: 5px;
+	border: 1px solid #888888;
+	font-size: 1.0em;
+}
+.seeit {
+	font-size: 1.2em;/* view question details icon*/
+}
+.btngroup {
+    /*float: right;
+    margin-right: 40px;*/
+	position: relative;
+	
+}
+#qtitle {
+	font-size: 1.2em;
+	font-weight: 600;
+    padding: 5px;
+	position: relative;
+	
+}
+
+.text-content{
+    width: 90%;
+    height: 100px;
+    border: 1px solid #888888;
+}
+.question-content {
+    width: 80%;
+    height: 50px;
+    border: 2px solid #88ff88;
+    background-color: #fafafa;
+}
+/* simulate */
+.form-actions {
+    border: 1px solid #999;
+    margin: 18px 0 -1px;
+    padding: 20px;
+}
+.questype { 
+	/*padding: 3px;*/
+}
+#questcount {
+	float: left;
+	padding: 6px 10px;/*top&botm, l&r*/
+	font-size:  1.2em;
+	font-weight: 600;
+}
+
+/*shorten boostrap alert or use buttons btn-sm*/
+.alert {
+    padding: 5px 5px !important;
+    margin-bottom: 4px !important;
+	cursor: pointer;
+}
+
+
+/* UNUSED */
+.headbox {
+    width: 100%;
+    height: auto;
+	display: block;
+    position: relative;
+    text-align: center;
+}
+.questbox {
+	display: block;
+    position: relative;
+    width: 900px;
+    height: auto;
+    margin: 2px auto;
+    padding: 30px;
+    background: tan;
+	font-weight: 700;
+	font-size: 1.1em;
+}
+.shado {
+	-webkit-box-shadow: 3px 3px 5px 0px rgba(50, 50, 50, 0.8);
+	-moz-box-shadow:    3px 3px 5px 0px rgba(50, 50, 50, 0.8);
+	box-shadow:         3px 3px 5px 0px rgba(50, 50, 50, 0.8);
+}
+.valid {
+	/*holds correct answer*/
+	display: block;
+    position: relative;
+	font-weight: 700;
+	font-size: 1.2em;
+    text-align: center;
+}
+.answerbox {
+    width: 100%;
+    height: auto;
+	padding: 10px;
+    position: relative;
+    text-align: center;
+}
+.answer {
+/*makeDraggable */
+	width: auto;
+	height: auto;
+	font-weight: 400;
+}
+#introMessage {
+	position: absolute;
+	top: 20px;
+	left: 60px;
+	width: 100%;
+	padding: 20px;
+	font-size:  1.6em;
+	font-weight: 600;
+	text-align: center;
+	color: #ffffff;
+	background-color: red;// ?
+}
+#comment {
+	padding: 20px;
+	margin-top: 20px;
+	/*neutral,correct,incorrect comment colors ?*/
+}
