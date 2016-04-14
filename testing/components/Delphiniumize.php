@@ -157,7 +157,7 @@ class Delphiniumize extends ComponentBase
     {
         $readyVars = $this->readyVars;
         //path to model
-        $destinationPath = base_path() . '/plugins/' .$readyVars['studly_author'] . '/' . $readyVars['studly_plugin']."/controllers/".$readyVars['studly_controller'].".php";
+        $destinationPath = base_path() . '/plugins/' .$readyVars['lower_author'] . '/' . $readyVars['lower_plugin']."/controllers/".$readyVars['studly_controller'].".php";
         $modelUseStmt = $readyVars['studly_author'] . '\\' . $readyVars['studly_plugin']."\\Models\\".$readyVars['studly_model'];
         $controllerNodevisitor = new ControllerNodeVisitor($modelUseStmt, "MyModel");
 
@@ -168,7 +168,7 @@ class Delphiniumize extends ComponentBase
     {
         $readyVars = $this->readyVars;
         //path to model
-        $destinationPath = base_path() . '/plugins/' . $readyVars['studly_author'] . '/' .$readyVars['studly_plugin']."/Components/".$readyVars['studly_component'].".php";
+        $destinationPath = base_path() . '/plugins/' . $readyVars['lower_author'] . '/' .$readyVars['lower_plugin']."/components/".$readyVars['studly_component'].".php";
         $modelUseStmt = $readyVars['studly_author'] . '\\' . $readyVars['studly_plugin']."\\Models\\".$readyVars['studly_model'];
         $controllerUseStmt = $readyVars['studly_author'] . '\\' . $readyVars['studly_plugin']."\\Controllers\\".$readyVars['studly_controller'];
         $componentNodevisitor = new ComponentNodeVisitor($modelUseStmt, "MyModel", $controllerUseStmt, "MyController", $readyVars['studly_model']);
@@ -180,7 +180,7 @@ class Delphiniumize extends ComponentBase
     {
         $readyVars = $this->readyVars;
         //path to model
-        $destinationPath = base_path() . '/plugins/' . $readyVars['studly_author'] . '/' .$readyVars['studly_plugin']."/Plugin.php";
+        $destinationPath = base_path() . '/plugins/' . $readyVars['lower_author'] . '/' .$readyVars['lower_plugin']."/Plugin.php";
 
         $componentPath = '\\'.$readyVars['studly_author'] . '\\' .$readyVars['studly_plugin']."\\Components\\".$readyVars['studly_component'];
         $controllerPath = $readyVars['lower_author'] . '/' . $readyVars['lower_plugin'].'/'.$readyVars['lower_controller'];
@@ -194,7 +194,7 @@ class Delphiniumize extends ComponentBase
     private function modifyVersion()
     {
         $readyVars = $this->readyVars;
-        $yamlDestinationPath = base_path() . '/plugins/' . $readyVars['studly_author'] . '/' .$readyVars['studly_plugin']."/updates/version.yaml";
+        $yamlDestinationPath = base_path() . '/plugins/' . $readyVars['lower_author'] . '/' .$readyVars['lower_plugin']."/updates/version.yaml";
         $yaml = new Parser();
         $current = $yaml->parse(file_get_contents($yamlDestinationPath));
         end($current);         // move the internal pointer to the end of the array
@@ -225,7 +225,6 @@ class Delphiniumize extends ComponentBase
             //traverse the nodes and make the necessary modifications
             $stmts = $traverser->traverse($stmts);
 
-//            var_dump($stmts);
             // pretty print back to code
             $code = $prettyPrinter->prettyPrintFile($stmts);
             //save the file back
