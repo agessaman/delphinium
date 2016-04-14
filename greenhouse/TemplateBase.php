@@ -99,7 +99,7 @@ abstract class TemplateBase
         if (!isset($this->fileMap[$stubName]))
             return;
 
-        $sourceFile = __DIR__ . '/Templates/' . $stubName;
+        $sourceFile = __DIR__ . '/templates/' . $stubName;
         $destinationFile = $this->targetPath . '/' . $this->fileMap[$stubName];
         $destinationContent = $this->files->get($sourceFile);
         /*
