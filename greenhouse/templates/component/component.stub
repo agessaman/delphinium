@@ -70,9 +70,11 @@ class {{studly_name}} extends ComponentBase
             //    is there an instance with this alias_course? yes use it
             //else create dynamicInstance, save new instance, show it
 
+            //************NOTE:**********
             //Requires minimal.htm layout
             //Requires the Dev component set up from Here:
             //https://github.com/ProjectDelphinium/delphinium/wiki/3.-Setting-up-a-Project-Delphinium-Dev-environment-on-localhost
+            //**************************
 
             $config = $this->getInstance();
             //use the record in the component and frontend form
@@ -83,25 +85,8 @@ class {{studly_name}} extends ComponentBase
             //get LMS roles --used to determine functions and display options
             $roleStr = $_SESSION['roles'];
             $this->page['role'] = $roleStr;
-            if(stristr($roleStr, 'Instructor')||stristr($roleStr, 'TeachingAssistant'))
-            {//only instructors will be able to configure the component
-                //add whatever logic needed for when instructors or TAs come in
-            }
-            else
-            {
-                //add whatever logic needed for when students come in
-            }
 
 
-            //INCLUDE JS AND CSS
-            //include your css. Note: bootstrap.min.css is part of minimal layout.
-            //See #10 in https://github.com/ProjectDelphinium/delphinium/wiki/1.-Installation#setup
-            // javascript had to be added to default.htm to work correctly
-            $this->addJs("/plugins/delphinium/{{lower_name}}/assets/javascript/jquery.min.js");
-            //if you desire to use OctoberCMS' ui library (See https://octobercms.com/docs/ui/form) uncomment the following three lines
-            //$this->addCss('/modules/system/assets/ui/storm.css', 'core');
-            //$this->addJs('/modules/system/assets/ui/storm-min.js', 'core');
-            //$this->addCss('/modules/system/assets/ui/storm.less', 'core');
 
 
             //THIS NEXT SECTION WILL PROVIDE TEACHERS WITH FRONT-EDITING CAPABILITIES OF THE BACKEND INSTANCES.
@@ -110,9 +95,17 @@ class {{studly_name}} extends ComponentBase
             //IN {{studly_author}}\{{studly_plugin}}\controllers\{{studly_name}}\_instructions.htm
 
             // include the backend form with instructions for instructor.htm
-            if(stristr($roleStr, 'Instructor'))
-            {
-                //TODO: Replace MyController with your controller
+            if(stristr($roleStr, 'Instructor')||stristr($roleStr, 'TeachingAssistant'))
+             {
+              //INCLUDE JS AND CSS
+             //include your css. Note: bootstrap.min.css is part of minimal layout.
+             //See #10 in https://github.com/ProjectDelphinium/delphinium/wiki/1.-Installation#setup
+             //if you desire to use OctoberCMS' ui library (See https://octobercms.com/docs/ui/form) uncomment the following three lines
+
+                $this->addCss('/modules/system/assets/ui/storm.css', 'core');
+                $this->addJs('/modules/system/assets/ui/storm-min.js', 'core');
+                $this->addCss('/modules/system/assets/ui/storm.less', 'core');
+
                 $formController = new MyController();
                 $formController->create('frontend');
 
@@ -160,28 +153,29 @@ class {{studly_name}} extends ComponentBase
     private function getInstance($name=null)
     {
 
-        if (!isset($_SESSION)) { session_start(); }
-        $courseId = $_SESSION['courseID'];
-
-        //if instance has been set
-        if( $this->property('instance') )
-        {
-            //use the instance set in CMS dropdown
-
-            $config = MyModel::find($this->property('instance'));
-
-        } else {
-            if(is_null($name))
-            {
-                $name =$this->alias . "_".$courseId;
-            }
-            $config =MyModel::firstOrNew(array('name'=>$name));
-            $config->name = $name;
-
+        if (!isset($_SESSION)) {
+            session_start();
         }
+        $courseId = $_SESSION['courseID'];
+        //if instance has been set
+        if ($this->property('instance')) {
+            echo "instance was set";
+            //use the instance set in CMS dropdown
+            $config = MyModel::find($this->property('instance'));
+        } else {
+            if (is_null($name)) {
+                $name = $this->alias . '_' . $courseId;
+            }
+            $config = MyModel::firstOrNew(array('name' => $name));
+            if(is_null($config->name)){$config->name = $name;}
+            if(is_null($config->animate)){$config->animate = 1;}
+            if(is_null($config->size)){$config->size = 100;}
 
+            //TODO: finish setting some default values
+        }
         $config->save();
         return $config;
+
 
     }
 
@@ -192,9 +186,9 @@ class {{studly_name}} extends ComponentBase
     public function onUpdate()
     {
 
-        $data = post('{{studly_name}}');//component name
-        $id = intval($data['id']);// convert string to integer
-        $config = MyModel::find($id);// retrieve existing record
+        $data = post('{{studly_singular_model}}');//model name
+        $id = $this->page['recordId'];// convert string to integer
+        $config = $config = $this->getInstance($data['name']);// retrieve existing record
 
         //update record with new data coming from POST
         $config->name = $data['name'];

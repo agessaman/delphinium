@@ -14,15 +14,16 @@ class ComponentNodeVisitor extends NodeVisitorAbstract
     protected $modelAlias;
     protected $controllerUseStmt;
     protected $controllerAlias;
+    protected $studlyModel;
     protected $hasModel;
     protected $hasController;
 
-    public function  __construct($modelUseStmt, $modelAlias, $controllerUseStmt, $controllerAlias)
+    public function  __construct($modelUseStmt, $modelAlias, $controllerUseStmt, $controllerAlias, $studlyModel)
     {
         $this->modelUseStmt = $modelUseStmt;
         $this->modelAlias = $modelAlias;
         $this->hasModel = false;
-
+        $this->studlyModel = $studlyModel;
         $this->controllerUseStmt = $controllerUseStmt;
         $this->controllerAlias = $controllerAlias;
         $this->hasController = false;
@@ -41,16 +42,50 @@ class ComponentNodeVisitor extends NodeVisitorAbstract
                 if ($child instanceof Node\Stmt\Use_) {
                     if (count($child->uses) > 0) {
                         $name = ($child->uses[0]->name->parts);
-
                         //check if this use statement matches the use stmt for the model
                         $diffModel = array_diff($modelArr, $name);
-                        $this->hasModel = count($diffModel) == 0 ? true : false;
-
+                        if(count($diffModel)==0 && $name[sizeof($name)-1]=$this->modelAlias)
+                        {
+                            $this->hasModel = true;
+                        }
                         //check if this use statement matches the use stmt for the controller
                         $diffController = array_diff($controllerArr,$name);
-                        $this->hasController = count($diffController) == 0 ? true : false;
+                        if(count($diffController)==0 && $name[sizeof($name)-1]=$this->controllerAlias)
+                        {
+                            $this->hasController = true;
+                        }
+
                     }
-                } else {
+                }
+                else if($child instanceof Node\Stmt\Class_)
+                {
+                    $methods = $child->stmts;
+                    foreach($methods as $method)
+                    {
+                        if($method instanceof Node\Stmt\ClassMethod && $method->name == 'onUpdate')
+                        {
+                            $contents = $method->stmts;
+                            foreach($contents as $content)
+                            {
+                                if($content instanceof Node\Expr\Assign &&
+                                    $content->var instanceof Node\Expr\Variable && $content->var->name == "data")
+                                {
+                                    //modify the first argument and set the $this->studlyModel as an argument
+                                    $args = $content->expr->args;
+                                    if(count($args)>0)
+                                    {
+                                        if($args[0]->value->value!=$this->studlyModel)
+                                        {
+                                            $args[0]->value->value = $this->studlyModel;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
                     NodeTraverser::DONT_TRAVERSE_CHILDREN;
                 }
             }

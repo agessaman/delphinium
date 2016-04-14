@@ -54,6 +54,7 @@ class Delphiniumize extends ComponentBase
     {
         $vars =  post('New');
         $this->readyVars = $this->processVars($vars);
+
         $this->newPluginData = $vars;
         $this->makeFiles();
         $this->modifyFiles();
@@ -170,7 +171,7 @@ class Delphiniumize extends ComponentBase
         $destinationPath = base_path() . '/plugins/' . $readyVars['studly_author'] . '/' .$readyVars['studly_plugin']."/Components/".$readyVars['studly_component'].".php";
         $modelUseStmt = $readyVars['studly_author'] . '\\' . $readyVars['studly_plugin']."\\Models\\".$readyVars['studly_model'];
         $controllerUseStmt = $readyVars['studly_author'] . '\\' . $readyVars['studly_plugin']."\\Controllers\\".$readyVars['studly_controller'];
-        $componentNodevisitor = new ComponentNodeVisitor($modelUseStmt, "MyModel", $controllerUseStmt, "MyController");
+        $componentNodevisitor = new ComponentNodeVisitor($modelUseStmt, "MyModel", $controllerUseStmt, "MyController", $readyVars['studly_model']);
 
         $this->openModifySave($destinationPath, $componentNodevisitor);
     }
