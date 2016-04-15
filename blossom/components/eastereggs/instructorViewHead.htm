@@ -13,15 +13,14 @@
     <div id="eggs"></div>
 
     <script>
-      var eggs = ['harlem_shake','ripples','asteroids','katamari','bombs','ponies','my_little_pony'];
       var eggs_div = document.getElementById('eggs');
       var html = "";
       console.log(config);
       for (var i = 0; i < eggs.length; i++) {
         if(current_grade >= config[eggs[i]]){
           html+= '<div id=' + eggs[i] + ' class="egg">';
-            html += '<img src="/delphinium/plugins/delphinium/blossom/assets/images/' + eggs[i] + '-icon.png" >';
-            html += "<h3>" + config[eggs[i]] + "</h3>";
+            html += '<img src="' + path + 'plugins/delphinium/blossom/assets/images/' + eggs[i] + '-icon.png" >';
+            html += '<p><strong>' + config[eggs[i]] + "</strong> " + comands[i] + '</p>';
           html += '</div>';
         }
       }
