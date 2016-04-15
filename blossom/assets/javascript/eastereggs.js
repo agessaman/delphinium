@@ -1,3 +1,5 @@
+var eggs = ['harlem_shake','ripples','asteroids','katamari','bombs','ponies','my_little_pony'];
+var comands = ['Press "h" and "a" at the same time', 'Press "r" and "i" at the same time and move the mouse', 'Press "a" and "s" at the same time, space to shoot, arrow keys to move', 'Press "k" and "a" at the same time(I cant remember how to make this one move)', 'Press "b" and "o" at the same time, click mouse to drop them', 'Press "p" and "o" at the same time(I cant remember the controls)', 'Press "m" and "y" at the same time(I cant remember the controls)'];
 var keys = {};
 var count = 65;
 var str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -44,7 +46,7 @@ $(document).keydown(function(e) {
       	var s = document.createElement('script');
   			s.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/jquery.ripples.js");
   			document.body.appendChild(s);
-        $('body').css('backgroundImage', 'url(/delphinium/plugins/delphinium/blossom/assets/images/pebbles.png)');
+        $('body').css('backgroundImage', 'url(' + path + 'plugins/delphinium/blossom/assets/images/pebbles.png)');
         setInterval(function() {
           var $el = $('body');
           var x = Math.random() * $el.outerWidth();
