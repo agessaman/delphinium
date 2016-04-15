@@ -1,6 +1,7 @@
 <?php namespace Delphinium\Testing\Components;
 
 use Cms\Classes\ComponentBase;
+use System\Classes\UpdateManager;
 use October\Rain\Support\Str;
 use Delphinium\Greenhouse\Templates\Component;
 use Delphinium\Greenhouse\Templates\Plugin;
@@ -48,8 +49,13 @@ class Delphiniumize extends ComponentBase
         $this->readyVars = $this->processVars($vars);
         $this->newPluginData = $vars;
         $this->makeFiles();
+        var_dump("made files");
         $this->modifyFiles();
+        var_dump("modified files");
+//        $this->octoberUp();
+//        var_dump("october up");
     }
+
     public function onAddItem()
     {
         $vars =  post('New');
@@ -62,10 +68,13 @@ class Delphiniumize extends ComponentBase
 
     private function makeFiles()
     {
+        $old_umask = umask(0);//we will change the umask to make the respective directories and files 777
+        //so that users can edit them after they are created, otherwise only the apache group will be able to edit them
         $this->createPlugin();
         $this->createComponent();
         $this->createController();
         $this->createModel();
+        umask($old_umask);//return to the original mask
     }
 
     private function createPlugin()
@@ -186,8 +195,8 @@ class Delphiniumize extends ComponentBase
         $controllerPath = $readyVars['lower_author'] . '/' . $readyVars['lower_plugin'].'/'.$readyVars['lower_controller'];
 
         $pluginNodeVisitor = new PluginNodeVisitor($componentPath,$readyVars['lower_component'],$controllerPath, $readyVars['studly_controller'],
-                $readyVars['lower_plugin'],$readyVars['lower_author']
-            );
+            $readyVars['lower_plugin'],$readyVars['lower_author']
+        );
         $this->openModifySave($destinationPath, $pluginNodeVisitor);
     }
 
@@ -209,19 +218,53 @@ class Delphiniumize extends ComponentBase
         $dumper = new Dumper();
         $yaml = $dumper->dump($current, 2);
         file_put_contents($yamlDestinationPath, $yaml);
+
+
+//        $this->octoberUp();//after the files have been modified we can run october:up
     }
+
+    private function octoberUp()
+    {
+        //$manager = UpdateManager::instance()->resetNotes()->update();
+        $readyVars = $this->readyVars;
+        $pluginName = $readyVars['studly_author'] . '.' .$readyVars['studly_plugin'];
+        $manager = UpdateManager::instance();
+        $pluginDetails = $manager->requestPluginDetails($pluginName);
+
+        $code = array_get($pluginDetails, 'code');
+        $hash = array_get($pluginDetails, 'hash');
+
+//        $this->output->writeln(sprintf('<info>Downloading plugin: %s</info>', $code));
+//        $manager->downloadPlugin($code, $hash);
+//
+//        $this->output->writeln(sprintf('<info>Unpacking plugin: %s</info>', $code));
+//        $manager->extractPlugin($code, $hash);
+//
+//        /*
+//         * Migrate plugin
+//         */
+//        $this->output->writeln(sprintf('<info>Migrating plugin...</info>', $code));
+        PluginManager::instance()->loadPlugins();
+        $manager->updatePlugin($code);
+
+        foreach ($manager->getNotes() as $note) {
+            var_dump($note);
+        }
+    }
+
     private function openModifySave($fileDestination, $nodeVisitor)
     {
         $fileSystem = new Filesystem;
         $fileContent = $fileSystem->get($fileDestination);
-        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
+        $parser = new \PhpParser\ParserFactory();
+        $newParser = $parser->create(ParserFactory::PREFER_PHP5);
         $prettyPrinter = new PrettyPrinter\Standard;
         $traverser = new NodeTraverser;
         $traverser->addVisitor($nodeVisitor);
 
         try {
             //parse the PHP class
-            $stmts = $parser->parse($fileContent);
+            $stmts = $newParser->parse($fileContent);
             //traverse the nodes and make the necessary modifications
             $stmts = $traverser->traverse($stmts);
 

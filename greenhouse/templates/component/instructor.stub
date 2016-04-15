@@ -55,6 +55,7 @@
     /*override backend styles*/
     .modal-header {background:none !important;border-bottom:1px solid #e5e5e5 !important;color:#333333 !important}
     .modal-header .close{color:black !important;background:transparent !important;}
+	.hiddenFromTeacher{display:none;}
 </style>
 <script>
     $(document).ready(function() {
@@ -70,30 +71,30 @@
         */
 
         //$('#Form-outsideTabs').append('<input type="hidden" name="Vanilla[id]" value="'+config.id+'" /> ');
-
-        function completed(data)
-        {
-            hideModal();
-            $.oc.flashMsg({
-                'text': 'The record has been successfully saved.',
-                'class': 'success',
-                'interval': 3
-            });
-            //location.reload();
-            history.go(0);
-        }
-
-        function showModal()
-        {
-            $("#content-configuration").on("shown.bs.modal", function () {
-                //you may disable fields that should not be edited by professors
-                //document.getElementById('yourid').style.display='none';
-            }).modal('show');
-        }
-
-        function hideModal()
-        {
-            $('#content-configuration').modal('hide');
-        }
     });
+
+    function completed(data)
+    {
+        hideModal();
+        $.oc.flashMsg({
+            'text': 'The record has been successfully saved.',
+            'class': 'success',
+            'interval': 3
+        });
+        //location.reload();
+        history.go(0);
+    }
+
+    function showModal()
+    {
+        $("#content-configuration").on("shown.bs.modal", function () {
+            //you may disable fields that should not be edited by professors
+            //document.getElementById('yourid').style.display='none';
+        }).modal('show');
+    }
+
+    function hideModal()
+    {
+        $('#content-configuration').modal('hide');
+    }
 </script>

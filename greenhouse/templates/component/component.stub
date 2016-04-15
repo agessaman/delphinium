@@ -61,8 +61,8 @@ class {{studly_name}} extends ComponentBase
     public function onRun()
     {
 
-        try
-        {
+        //try
+        //{
             //NOTES:
             //Components have database instances. The logic for how they are created is as follows:
             //is an instance set in this component's properties? yes show it
@@ -122,25 +122,25 @@ class {{studly_name}} extends ComponentBase
             }
 
         //Error handling requires nonlti.htm. See #11 in https://github.com/ProjectDelphinium/delphinium/wiki/1.-Installation#setup
-        }
-        catch (\GuzzleHttp\Exception\ClientException $e) {
-            return;
-        }
-        catch(Delphinium\Roots\Exceptions\NonLtiException $e)
-        {
-            if($e->getCode()==584)
-            {
-                return \Response::make($this->controller->run('nonlti'), 500);
-            }
-        }
-        catch(\Exception $e)
-        {
-            if($e->getMessage()=='Invalid LMS')
-            {
-                return \Response::make($this->controller->run('nonlti'), 500);
-            }
-            return \Response::make($this->controller->run('error'), 500);
-        }
+        //}
+        //catch (\GuzzleHttp\Exception\ClientException $e) {
+        //    return;
+        //}
+        //catch(Delphinium\Roots\Exceptions\NonLtiException $e)
+        //{
+        //    if($e->getCode()==584)
+        //    {
+        //        return \Response::make($this->controller->run('nonlti'), 500);
+        //    }
+        //}
+        //catch(\Exception $e)
+        //{
+        //    if($e->getMessage()=='Invalid LMS')
+        //    {
+        //        return \Response::make($this->controller->run('nonlti'), 500);
+        //    }
+        //    return \Response::make($this->controller->run('error'), 500);
+        //}
 
     }
 

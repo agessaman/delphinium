@@ -2,6 +2,7 @@
 
 use BackendMenu;
 use Backend\Classes\Controller;
+use Flash;
 
 /**
  * {{title_name}} Back-end Controller
