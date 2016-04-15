@@ -10,7 +10,7 @@ html{
 }
 
 img {
-	width: 50px;
+	width: 25px;
 	float: left;
 	margin-right: 10px;
 }
@@ -18,7 +18,7 @@ img {
 p{
 	float: left;
 	width: calc(100% - 50px - 10px);
-	line-height: 50px;
+	line-height: 25px;
 }
 
 #eggs{
@@ -26,9 +26,9 @@ p{
 }
 
 .egg{
-	height: 50px;
+	height: 25px;
 }
 
 .stuff{
-	width: 200px;
+	width: 600px;
 }
