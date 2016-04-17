@@ -24,13 +24,13 @@ $(document).ready(function() {
 	//localStorage["tabVisible"] = tabVisible;// = setItem('tabVisible',tabVisible);
 	//localStorage["tabVisible"];// = getItem('tabVisible');
 	function supportsLocalStorage()
-		{
-	   try {
-		 return 'localStorage' in window && window['localStorage'] !== null;
-	   } catch (e) {
-		 return false;
-	   }
-	 }
+	{
+		try {
+			return 'localStorage' in window && window['localStorage'] !== null;
+		} catch (e) {
+			return false;
+		}
+	}
 /* End Delphinium functions*/
 
 // BOP functions:
@@ -47,8 +47,7 @@ $(document).ready(function() {
     var modlist = [];// modules in current tab only
     var modboxs = [];// all modules in sequence matching tabs
 	
-    //$('.loading-indicator-container').hide();// could not get this to show
-    // create units and modules from data
+    // create tabs and modules from data
     for(var m=0; m<moduledata.length; m++) {
         
         var chld = moduledata[m]['children'];
@@ -68,11 +67,10 @@ $(document).ready(function() {
                 
                 // dont display if unpublished
                 if(modlist[i].published == 0) { continue; }
-                //console.log('published: '+modlist[i].published);
                 //Module box with title, lock, stars & image
             var modbox = '<div id="'+modlist[i].module_id+'" class="moditem" data-locked="'+modlist[i].locked+'">';
                 modbox +='<div class="title '+modlist[i].state+'">'+modlist[i].name+'</div>';
-                console.log('state:',modlist[i].state);//null,locked,unlocked,started,completed
+                //console.log('state:',modlist[i].state);//null,locked,unlocked,started,completed
                 if(modlist[i].state == 'locked') {
                     var prereqids = modlist[i].prerequisite_module_ids;
                     var prename = '';// can have multiple. comma delimited string.
@@ -152,6 +150,8 @@ $(document).ready(function() {
 			}).fail(function (data2) { console.log('failSub:',data2); });
         }).fail(function (data2) { console.log('failAsgn:',data2); });
     }
+	// Done loading remove loader layer
+	$('.loading-indicator-container').hide();// could not get this to show
 	
     /* click module to see module_items */
     $('.moditem').on('click', function(){
@@ -261,19 +261,7 @@ $(document).ready(function() {
 			e.stopPropagation();
 			var url = $(e.currentTarget).attr('data-url');
 			console.log('url:',url);
-			//window.open(url, '_blank');
-			// or open in an iframe below the tabs?
-			$('#content').attr('src',url);
-			// hide course items modal
-			$('#itemdetails').modal('hide');
-		/*	//test: when item clicked call a function in php
-			$.request('onAjaxTest', {
-				success: function(data) {
-					alert(data);// worked use this to get submissions
-				}
-			});
-			// end test:
-		*/	
+			window.open(url, '_blank');	
 		});
 		
         // trigger modal
@@ -284,26 +272,8 @@ $(document).ready(function() {
 	// activate tabs
 	var atab = $('a[href='+tabVisible+']');
 	$(atab).tab('show');
-	console.log('tabVisible:',tabVisible);
+	//console.log('tabVisible:',tabVisible);
 	
-	/* Experiment: content in an iframe
-	if using an iframe set its height? */
-	var docHeight = $( document ).height();
-	console.log('docHeight:',docHeight);
-	var tabsHeight = $('#tabs').height();
-	console.log('tabsHeight:',tabsHeight);
-	var availableH = docHeight-tabsHeight-60;
-	console.log('availableH:',availableH);
-	
-	var iframeid = $('iframe');
-	console.log('iframe:',iframeid);
-	if(iframeid != undefined) {
-		// one exists, could it be in the canvas content?
-		iframeid = $('iframe').attr('id');
-		console.log('iframe id:',iframeid);
-		// create one with id of content for assignments
-		var content = $('body').append('<iframe id="content" width="100%" height="'+availableH+'" allowFullscreen/>');
-	}
     /* 
 	   if tab body is < component or window width turn on scroll arrows
        on browser resized, check if arrows are needed
@@ -333,16 +303,37 @@ $(document).ready(function() {
 		//console.log(tabVisible,tabWidth,docWidth,needArrows);
     }
 	
-    // scroll 1 module item per hover and click
-    $('.aror').on('mouseover click', function(){
-		var sat = $(tabVisible).scrollLeft();
-        $(tabVisible).animate({ scrollLeft:sat+200 });
-    });
-    $('.arol').on('mouseover click', function(){
-		var sat = $(tabVisible).scrollLeft();
-        $(tabVisible).animate({ scrollLeft:sat-200 });
-    });
-
+	/*
+		Scroll the module items by hover on arrows
+		http://stackoverflow.com/questions/2039750/jquery-continuous-animation-on-mouseover
+		$( selector ).hover( handlerIn, handlerOut )
+	*/
+	var scrolling=false;
+	var scrollAmount=0;
+	function scrollTabVisible() {
+		if(scrolling){
+			var sat = $(tabVisible).scrollLeft();
+			$(tabVisible).animate({scrollLeft:sat+scrollAmount}, 300, scrollTabVisible);
+		}
+	}
+	$('.aror').hover(function(){
+		scrolling=true;
+		scrollAmount=100;
+		scrollTabVisible();
+	}, function(){
+		scrolling=false;
+	});
+	$('.arol').hover(function(){
+		scrolling=true;
+		scrollAmount=-100;
+		scrollTabVisible();
+	}, function(){
+		scrolling=false;
+	});
+	
+	/*
+		construct a tab from template object
+	*/
     function addTab(tabname) {
         var label = tabname;
             id = "tab_" + tabCounter,
