@@ -28,7 +28,7 @@ class Stats extends ComponentBase
             'experience' => [
                 'title' => '(Optional) Experience instance',
                 'description' => 'Select the experience instance to display the student\'s stats.
-                Leaving this field blank will automatically select the experience instance for this course.',
+                Leaving this field blank will automatically select the experience instance for the course.',
                 'type' => 'dropdown'
             ],
             'stats' => [
