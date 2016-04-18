@@ -65,10 +65,14 @@
     }
     //console.log(current_grade);
 </script>
-{% if (menu == 1) %}
-    {% if ('Learner' in role) %}
+{% if ('Learner' in role) %}
+    {% if (menu == 1) %}
         {% partial 'eastereggs::studentView' %}
-    {% elseif ('Instructor' in role or 'TeachingAssistant' in role) %}
-        {% partial 'eastereggs::instructorView' %}
     {% endif %}
-{% endif %}    
+{% elseif ('Instructor' in role or 'TeachingAssistant' in role) %}
+    {% if (menu == 1) %}
+        {% partial 'eastereggs::instructorViewHead' %}
+    {% else %}
+        {% partial 'eastereggs::instructorViewHeadless' %}
+    {% endif %} 
+{% endif %}  

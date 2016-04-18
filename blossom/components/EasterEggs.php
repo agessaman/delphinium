@@ -44,6 +44,7 @@ class EasterEggs extends ComponentBase
                 'title'             => 'EasterEggs Configuration',
                 'description'       => 'Select an instance',
                 'type'              => 'dropdown',
+                'default'           => 0
             ]
         ];
     }
@@ -52,16 +53,40 @@ class EasterEggs extends ComponentBase
     {
         try
         {
-            
             if (!isset($_SESSION)) { session_start(); }
-
             $courseID = $_SESSION['courseID'];
+            $name = $this->alias .'_'. $_SESSION['courseID'];
+            
+            // if instance has been set
+            if( $this->property('instance') )
+            {
+                //use the instance set in CMS dropdown
+                $config = EasterEggsModel::find($this->property('instance'));
 
-            //use the instance set in CMS dropdown
-            $config = EasterEggsModel::find($this->property('instance'));
-            $config->save();//update original record now in case it did not have course
-
-           
+            } else {
+                // look for instances created for this course
+                $instances = EasterEggsModel::where('name','=', $name)->get();
+                
+                if(count($instances) === 0) { 
+                    // no record found so create a new dynamic instance
+                    $config = new EasterEggsModel;// db record
+                    $config->name = $name;
+                    $config->menu = 0;
+                    $config->harlem_shake = 0;
+                    $config->ripples = 0;
+                    $config->asteroids = 0;
+                    $config->katamari = 0;
+                    $config->bombs = 0;
+                    $config->ponies = 0;
+                    $config->my_little_pony = 0;
+                    // add your fields
+                    //$config->size = '20%';
+                    $config->save();// save the new record
+                } else {
+                    //use the first record matching course
+                    $config = $instances[0];
+                }
+            }
             // use the record in the component and frontend form 
             $this->page['config'] = json_encode($config);
             
@@ -78,7 +103,7 @@ class EasterEggs extends ComponentBase
                 $roleStr = 'Instructor';
             }
             $this->page['role'] = $roleStr;// only one or the other
-
+            
             $path = \Config::get("app.url");
             $this->page['path'] = $path;
 
@@ -91,8 +116,7 @@ class EasterEggs extends ComponentBase
             
             // include your css note: bootstrap.min.css is part of minimal layout
             $this->addCss("/plugins/delphinium/blossom/assets/css/eastereggs.css");
-            // javascript had to be added to default.htm to work correctly
-            //$this->addJs("/plugins/delphinium/EasterEggs/assets/javascript/jquery.min.js");
+
             
             // include the backend form with instructions for instructor.htm
             if(stristr($roleStr, 'Instructor'))
@@ -144,13 +168,8 @@ class EasterEggs extends ComponentBase
 
     public function getInstanceOptions()
     {
-        /*https://octobercms.com/docs/plugin/components#dropdown-properties
-        *  The method should have a name in the following format: get*Property*Options()
-        *  where Property is the property name
-        * Fill the Competencies Configuration [dropdown] for CMS
-        */
-        $instances = EasterEggsModel::all();//where("Name","!=","")->get();
-        $array_dropdown = ['0'=>'- select Instance - '];//id, text in dropdown
+        $instances = EasterEggsModel::all();
+        $array_dropdown = ['0'=>'- select Instance - '];
 
         foreach ($instances as $instance)
         {

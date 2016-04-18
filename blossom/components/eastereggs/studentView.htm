@@ -22,14 +22,13 @@
 <div id="eggs"></div>
 
 <script>
-  var eggs = ['harlem_shake','ripples','asteroids','katamari','bombs','ponies','my_little_pony'];
   var eggs_div = document.getElementById('eggs');
   var html = "";
   for (var i = 0; i < eggs.length; i++) {
     if(current_grade >= config[eggs[i]]){
       html+= '<div id=' + eggs[i] + '>';
-        html += '<img src="/delphinium/plugins/delphinium/blossom/assets/images/' + eggs[i] + '-icon.png" >';
-        html += '<p> Press "' + eggs[i][0] + '" and "' + eggs[i][1] + '" at the same time to do the ' + eggs[i] + '</p>';
+        html += '<img src="' + path + 'plugins/delphinium/blossom/assets/images/' + eggs[i] + '-icon.png" >';
+        html += '<p>' + comands[i] + '</p>';
       html += '</div>';
     }
   }
