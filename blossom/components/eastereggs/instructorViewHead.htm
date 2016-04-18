@@ -36,11 +36,11 @@
     <script>
       var eggs_div = document.getElementById('eggs');
       var html = "";
-      console.log(config);
+      //console.log(config);
       for (var i = 0; i < eggs.length; i++) {
         if(current_grade >= config[eggs[i]]){
           html+= '<div id=' + eggs[i] + ' class="egg">';
-            html += '<img src="' + path + 'plugins/delphinium/blossom/assets/images/' + eggs[i] + '-icon.png" >';
+            html += '<i class="icon-' + eggsIcons[i] + '"></i>';
             html += '<p><strong>' + config[eggs[i]] + "</strong> " + comands[i] + '</p>';
           html += '</div>';
         }
