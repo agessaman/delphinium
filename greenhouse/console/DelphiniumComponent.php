@@ -1,4 +1,6 @@
-<?php namespace Delphinium\Greenhouse\Console;
+<?php
+
+namespace Delphinium\Greenhouse\Console;
 //namespace System\Console;
 
 use Illuminate\Console\Command;

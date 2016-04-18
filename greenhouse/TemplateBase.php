@@ -1,4 +1,6 @@
-<?php namespace Delphinium\Greenhouse;
+<?php
+
+namespace Delphinium\Greenhouse;
 
 use Exception;
 use October\Rain\Support\Str;
