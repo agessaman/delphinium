@@ -94,6 +94,7 @@ class EasterEggs extends ComponentBase
             
             // include your css note: bootstrap.min.css is part of minimal layout
             $this->addCss("/plugins/delphinium/blossom/assets/css/eastereggs.css");
+            $this->addCss("/plugins/delphinium/blossom/assets/css/font-awesome.css");
 
             
             // include the backend form with instructions for instructor.htm
