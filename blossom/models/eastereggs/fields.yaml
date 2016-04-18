@@ -3,15 +3,6 @@
 # ===================================
 
 fields:
-    id:
-        label: ID
-        disabled: true
-    name:
-        label: name
-        span: left
-        placeholder: Must be named
-        comment: Enter a name for this instance
-
     menu:
         label: menu
         type: checkbox
