@@ -20,7 +20,7 @@ You may not distribute any version of this software, modified or otherwise
 -->
 <!-- Instructor View with Settings cog -->
 <div style="position:relative; z-index:950;">
-    <a id="popinfo" title="Info" tabindex="0" role="button" data-trigger="focus" data-container="body" data-toggle="popover" data-placement="left" data-content="Setup below" style="position:absolute; top:0; right:0px;">
+    <a id="popinfo" title="Info" tabindex="0" role="button" data-trigger-condition="" data-trigger-action="" data-trigger="focus" data-container="body" data-toggle="popover" data-placement="left" data-content="Setup below" style="position:absolute; top:0; right:0px;">
         <i class="icon-question"></i>
     </a>
 	<div id="cog" data-toggle="modal" data-keyboard="true" data-backdrop="true" onclick="showModal()" style="position:absolute; top:0; right:10px;">
@@ -78,44 +78,3 @@ You may not distribute any version of this software, modified or otherwise
 	#Form-field-{{studly_model}}-id-group{display:none;}
 	#Form-field-{{studly_model}}-name-group{display:none;}
 </style>
-<script>
-    $(document).ready(function() {
-        /* set up the popover content text and activate it*/
-        $('#popinfo').attr("data-content","Here is some amazing content. It's very engaging. Right?");
-        $('#popinfo').popover();// activate info
-
-        /* set id & course for the POST if they are hidden in fields.yaml
-            Add hidden input fields so they will transfer to onUpdate
-            if a field is set to hidden: true it does not appear in the form at all
-
-            in Vanilla I only have id hidden
-        */
-
-        //$('#Form-outsideTabs').append('<input type="hidden" name="Vanilla[id]" value="'+config.id+'" /> ');
-    });
-
-    function completed(data)
-    {
-        hideModal();
-        $.oc.flashMsg({
-            'text': 'The record has been successfully saved.',
-            'class': 'success',
-            'interval': 3
-        });
-        //location.reload();
-        history.go(0);
-    }
-
-    function showModal()
-    {
-        $("#content-configuration").on("shown.bs.modal", function () {
-            //you may disable fields that should not be edited by professors
-            //document.getElementById('yourid').style.display='none';
-        }).modal('show');
-    }
-
-    function hideModal()
-    {
-        $('#content-configuration').modal('hide');
-    }
-</script>

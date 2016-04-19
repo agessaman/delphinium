@@ -102,7 +102,9 @@ class {{studly_name}} extends ComponentBase
             $this->page['config'] = json_encode($config);
             //Use the primary key of the record you want to update
             $this->page['recordId'] = $config->id;
-
+            if (!isset($_SESSION)) {
+                 session_start();
+             }
             //get LMS roles --used to determine functions and display options
             $roleStr = $_SESSION['roles'];
             $this->page['role'] = $roleStr;
@@ -126,7 +128,7 @@ class {{studly_name}} extends ComponentBase
                 $this->addCss('/modules/system/assets/ui/storm.css', 'core');
                 $this->addJs('/modules/system/assets/ui/storm-min.js', 'core');
                 $this->addCss('/modules/system/assets/ui/storm.less', 'core');
-
+                $this->addJs('/plugins/{{lower_author}}/{{lower_plugin}}/assets/instructor.js');
                 $formController = new MyController();
                 $formController->create('frontend');
 
