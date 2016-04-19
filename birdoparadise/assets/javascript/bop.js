@@ -139,12 +139,16 @@ $(document).ready(function() {
 		call studentProgress when page loads
 		returns student data and builds stars
 		
-		do we need a button? for update progress?
+		Reload the page to update progress
 		assignments are done in a new tab and would not be updated unless refreshed
     */
 	if(role == 'Learner') {
 		studentProgress();
-	}
+	} else {
+        // Done loading remove loader layer
+        $('.loading-indicator-container').hide();
+        // used storm.css to get the spinner to show but it changes the Modal
+    }
 	function studentProgress() {
 		var modivs = $('.moditem');// array of modules displayed in tabs
 		//console.log(modivs.length, modboxs.length);
@@ -168,11 +172,12 @@ $(document).ready(function() {
 					$(modivs[i]).append(starset);
 				}
 				
+                // Done loading remove loader layer
+                $('.loading-indicator-container').hide();// could not get this to show
+                
 			}).fail(function (data2) { console.log('failSub:',data2); });
         }).fail(function (data2) { console.log('failAsgn:',data2); });
     }
-	// Done loading remove loader layer
-	$('.loading-indicator-container').hide();// could not get this to show
 	
     /* click module to see module_items */
     $('.moditem').on('click', function(){
@@ -407,6 +412,9 @@ $(document).ready(function() {
         filled=20, half=10, open=0
 
         return stars div
+        
+        move this function to RestApi.php
+        http://php.net/manual/en/function.preg-grep.php
     */
     function getStars(modid){
         // construct from modid

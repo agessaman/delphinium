@@ -19,6 +19,12 @@
  * You may not distribute any version of this software, modified or otherwise
  */
 
+/* overide storm.css */
+.modal-header {background:none !important;border-bottom:1px solid #e5e5e5 !important;color:#333333 !important}
+.modal-header .close{color:black !important;background:transparent !important;}
+.modal-body {padding-bottom: 15px;}
+
+a[role=tab] { font-size: 1.1em; }
 .center{
 	text-align: center;
     margin-left: auto;

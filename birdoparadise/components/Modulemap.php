@@ -66,6 +66,7 @@ class Modulemap extends ComponentBase
 			$this->page['moduledata'] = json_encode($moduledata);
             
             // ready to finish loading assets
+            $this->addCss('/modules/system/assets/ui/storm.css');// loader spinner but changes Modal
             $this->addCss("/plugins/delphinium/birdoparadise/assets/css/font-autumn.css");
             $this->addCss("/plugins/delphinium/birdoparadise/assets/css/bop.css");
             $this->addJs("/plugins/delphinium/birdoparadise/assets/javascript/bop.js");
