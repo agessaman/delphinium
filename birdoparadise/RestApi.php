@@ -80,5 +80,4 @@ class RestApi extends Controller
 		//echo json_encode($submissions);
 		return $submissions;
 	}
-
 }
