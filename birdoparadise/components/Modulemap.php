@@ -46,8 +46,8 @@ class Modulemap extends ComponentBase
 
     public function onRun()
     {
-//        try
-//        {   
+        try
+        {
             if (!isset($_SESSION)) { session_start(); }
 
             // comma delimited string
@@ -62,16 +62,17 @@ class Modulemap extends ComponentBase
             
             // code for both 
             $roots = new Roots();
-            $moduledata = $roots->getModuleTree(false);//true causes error below
+            $moduledata = $roots->getModuleTree(false);
 			$this->page['moduledata'] = json_encode($moduledata);
             
             // ready to finish loading assets
             $this->addCss("/plugins/delphinium/birdoparadise/assets/css/font-autumn.css");
             $this->addCss("/plugins/delphinium/birdoparadise/assets/css/bop.css");
             $this->addJs("/plugins/delphinium/birdoparadise/assets/javascript/bop.js");
-/*   undefined property stdClass::$published at CanvasHelper.php line 1480
+			
         }
-        catch (\GuzzleHttp\Exception\ClientException $e) {
+        catch (\GuzzleHttp\Exception\ClientException $e)
+        {
             return;
         }
         catch(Delphinium\Roots\Exceptions\NonLtiException $e)
@@ -89,13 +90,6 @@ class Modulemap extends ComponentBase
             }
             return \Response::make($this->controller->run('error'), 500);
         }
-*/
-    }
-	//test: call this function from js
-	public function onAjaxTest()
-	{
-		echo "Called";
-	}
 	
-/* End of class */
+    }
 }
