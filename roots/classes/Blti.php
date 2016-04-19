@@ -1,4 +1,6 @@
-<?php namespace Delphinium\Roots\Classes;
+<?php
+
+namespace Delphinium\Roots\Classes;
 
 
 use Delphinium\Roots\Models\Developers as LtiConfigurations;
