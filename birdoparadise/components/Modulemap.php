@@ -1,5 +1,8 @@
 <?php namespace Delphinium\BirdoParadise\Components;
-
+/**
+ * Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
+ * .....
+ */
 use Cms\Classes\ComponentBase;
 use Delphinium\Roots\Roots;
 use Delphinium\Roots\Enums\ActionType;

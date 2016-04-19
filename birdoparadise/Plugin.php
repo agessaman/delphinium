@@ -1,5 +1,8 @@
 <?php namespace Delphinium\BirdoParadise;
-
+/**
+ * Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
+ *....
+ */
 use System\Classes\PluginBase;
 use Backend;
 use Event;

@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
+ * .....
+ */
 $(document).ready(function() {
 
 /* Delphinium functions*/

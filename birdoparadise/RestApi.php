@@ -1,5 +1,8 @@
 <?php namespace Delphinium\Birdoparadise;
-
+/**
+ * Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
+ *....
+ */
 use Illuminate\Routing\Controller;
 use Delphinium\Roots\Roots;
 use Delphinium\Roots\Enums\ActionType;
