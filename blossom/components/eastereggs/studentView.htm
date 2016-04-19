@@ -2,12 +2,12 @@
 
 <script>
   var eggs_div = document.getElementById('eggs');
-  var html = "";
+  var html = "<p>First click in the center of the page, then...</p>";
   for (var i = 0; i < eggs.length; i++) {
     if(current_grade >= config[eggs[i]]){
-      html+= '<div id=' + eggs[i] + '>';
-        html += '<img src="' + path + 'plugins/delphinium/blossom/assets/images/' + eggs[i] + '-icon.png" >';
-        html += '<p>' + comands[i] + '</p>';
+      html+= '<div id=' + eggs[i] + ' class="egg"><p>';
+        html += '<i class="icon-' + eggsIcons[i] + '" style="margin-right:10px;"></i>';
+        html += '<strong>' + config[eggs[i]] + "</strong> " + comands[i] + '</p>';
       html += '</div>';
     }
   }

@@ -57,6 +57,7 @@ class EasterEggs extends ComponentBase
                     $config->bombs = 0;
                     $config->ponies = 0;
                     $config->my_little_pony = 0;
+                    $config->snow = 0;
                     // add your fields
                     //$config->size = '20%';
                     $config->save();// save the new record
@@ -94,7 +95,7 @@ class EasterEggs extends ComponentBase
             
             // include your css note: bootstrap.min.css is part of minimal layout
             $this->addCss("/plugins/delphinium/blossom/assets/css/eastereggs.css");
-            $this->addCss("/plugins/delphinium/blossom/assets/css/font-awesome.css");
+            $this->addCss("https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css");
 
             
             // include the backend form with instructions for instructor.htm
@@ -164,10 +165,15 @@ class EasterEggs extends ComponentBase
         $did = intval($data['id']);// convert string to integer
         $config = EasterEggsModel::find($did);// retrieve existing record
         $config->name = $data['name'];// change to new data
-        //echo json_encode($config);//($data);// testing
-        
-        // add your fields to update
-        $config->custom = $data['custom'];
+        $config->menu = $data['menu'];
+        $config->harlem_shake = $data['harlem_shake'];
+        $config->ripples = $data['ripples'];
+        $config->asteroids = $data['asteroids'];
+        $config->katamari = $data['katamari'];
+        $config->bombs = $data['bombs'];
+        $config->ponies = $data['ponies'];
+        $config->my_little_pony = $data['my_little_pony'];
+        $config->snow = $data['snow'];
         $config->save();// update original record 
         return json_encode($config);// back to instructor view
     }

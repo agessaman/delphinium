@@ -44,3 +44,8 @@ fields:
         label: my_little_pony
         span: auto
         comment: Enter a point threshold
+
+    snow:
+        label: snow
+        span: auto
+        comment: Enter a point threshold
