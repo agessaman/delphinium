@@ -19,13 +19,17 @@
   ~ You may not distribute any version of this software, modified or otherwise
   -->
 
+<div class="loading-indicator-container">
+    <div class="loading-indicator indicator-center">
+        <span></span>
+    </div>
+</div>
 <script>
     /*
         get variables from the php with twig
         use twig to determine if the component is seen 
         by an instructor or a student
         init global vars here
-		fill global var there.
     */
     console.log('default.htm');
     var moduledata = {{moduledata|raw}};

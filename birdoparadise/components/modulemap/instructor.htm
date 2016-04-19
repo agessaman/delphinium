@@ -55,17 +55,28 @@
             <div class="modal-body">
                 <!-- Instructions -->
               <div id="instruct" class="tab-pane fade in active" style="padding: 0px 20px;">
-                <p>This component is an alternative way to view modules.</p>
-                <p>Create an empty module in your course for each tab.<br/>
-				   Use Stem to group the modules of your course into each tab.<br/>
-                    You can access Stem in the left hand menu.<br/>
-                   Modules in each group will display as clickable boxes that display assignments.<br/>
-                   Students will see their progress as filled stars.<br/>
-                </p>
-				<p>You can set the width of this component in the markup by wrapping it in a div.<br/>
-				   div style="width: 790px; padding:5px;" component 'modulemap' /div<br/>
-				   Assignments can open in an iframe below the tabs.<br/>
-				</p>
+	
+<div class="displayForBoth">
+<p>This component displays modules and module items, as well as student completion data. 
+You will need to use the Stem interface to create tabs and organize modules. 
+You can access Stem in the left hand menu. 
+Stem allows you to create "parent-child" relationships between modules, or "levels". 
+For this component, you need 3 levels. The first, or top level is mandatory and will be ignored. 
+The second level will be used to organize tabs. 
+The names for second level modules will be used as the tab titles. 
+All module items for the first and second levels will be ignored. 
+Any children of a second level module will be displayed as a module box in a tab with completion stars and locked modules will have lock icons. 
+Module items in these modules will be displayed when a user clicks the module box. 
+In addition to the module item name, the component also displays assignment scores when completed.
+</p>
+[Include a picture of an organized Stem]
+<p>You can set the width of this component in the markup by wrapping it in a div and using CSS to set its width.
+</p>
+</div>
+<div class="hiddenFromTeacher">
+[hide this section from teachers]
+</div>
+
               </div>
             </div>
         </div>
@@ -81,7 +92,7 @@
                 <h4 id="detailed-title" class="modal-title">Item Details</h4>
             </div>
             <div id="detailed-body" class="modal-body">
-                <p>This displays details of module</p>
+                <p>display details of module</p>
             </div>
         </div>
     </div>

@@ -41,7 +41,7 @@ class Plugin extends PluginBase
     {
         return [
             'name'        => 'Bird of Paradise',
-            'description' => 'Mapped modules maker',
+            'description' => 'Mapped modules',
             'author'      => 'Delphinium',
             'icon'        => 'icon-binoculars'
         ];
