@@ -74,7 +74,7 @@ class Delphiniumize extends ComponentBase
 //        var_dump("made files");
         $this->modifyFiles();
 //        var_dump("modified files");
-//        $this->octoberUp();
+        $this->octoberUp();
 //        var_dump("october up");
     }
 
@@ -249,6 +249,29 @@ class Delphiniumize extends ComponentBase
 
     private function octoberUp()
     {
+
+        echo " october up";
+        $readyVars = $this->readyVars;
+        $filename = base_path() . '/plugins/' . $readyVars['lower_author'] . '/' . $readyVars['lower_plugin'].'/models/'.$readyVars['studly_model'] ;
+        echo $filename;
+        if(file_exists($filename))
+        {
+            echo " file exists ";
+        }
+        else
+        {
+            echo " doesn't exists ";
+        }
+        //can only run october up after the plugin files are created
+        while (!file_exists($filename))
+        {
+            sleep(1);
+            var_dump("sleep");
+        }
+        $manager = UpdateManager::instance()->resetNotes()->update();
+
+
+        return;
         //$manager = UpdateManager::instance()->resetNotes()->update();
         $readyVars = $this->readyVars;
         $pluginName = $readyVars['studly_author'] . '.' .$readyVars['studly_plugin'];
