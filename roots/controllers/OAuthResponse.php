@@ -31,7 +31,7 @@ class OAuthResponse extends Controller {
         //$url = "http://{$_SESSION['domain']}/login/oauth2/token?client_id={$clientId}&client_secret={$developerSecret}&code={$code}";
         //$userTokenJSON = file_get_contents($url, false, $context, -1, 40000);
         $userTokenJSON = shell_exec('curl --data "client_id='.$clientId.'&client_secret='.$developerSecret.'&code='.$code.'" http://'.$_SESSION['domain'].'/login/oauth2/token');
-
+        print_r($userTokenJSON); die;
         // $ch = curl_init();
         // $postvars = "client_id={$clientId}&client_secret={$developerSecret}&code={$code}";
         // $url = "http://{$_SESSION['domain']}/login/oauth2/token";
@@ -44,7 +44,7 @@ class OAuthResponse extends Controller {
         // curl_setopt($ch,CURLOPT_TIMEOUT, 20);
         // $userTokenJSON = curl_exec($ch);
         // curl_close ($ch);
-        
+
         $userToken = json_decode($userTokenJSON);
 
         $actualToken = $userToken->access_token;
