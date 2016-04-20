@@ -31,21 +31,10 @@ class OAuthResponse extends Controller {
         //$url = "http://{$_SESSION['domain']}/login/oauth2/token?client_id={$clientId}&client_secret={$developerSecret}&code={$code}";
         //$userTokenJSON = file_get_contents($url, false, $context, -1, 40000);
         $userTokenJSON = shell_exec('curl --data "client_id='.$clientId.'&client_secret='.$developerSecret.'&code='.$code.'" http://'.$_SESSION['domain'].'/login/oauth2/token');
-        print_r($userTokenJSON); die;
-        // $ch = curl_init();
-        // $postvars = "client_id={$clientId}&client_secret={$developerSecret}&code={$code}";
-        // $url = "http://{$_SESSION['domain']}/login/oauth2/token";
-        // curl_setopt($ch,CURLOPT_URL,$url);
-        // curl_setopt($ch, CURLOPT_PORT , 3000);
-        // curl_setopt($ch,CURLOPT_POST, 1);                //0 for a get request
-        // curl_setopt($ch,CURLOPT_POSTFIELDS,$postvars);
-        // curl_setopt($ch,CURLOPT_RETURNTRANSFER, true);
-        // curl_setopt($ch,CURLOPT_CONNECTTIMEOUT ,5);
-        // curl_setopt($ch,CURLOPT_TIMEOUT, 20);
-        // $userTokenJSON = curl_exec($ch);
-        // curl_close ($ch);
 
         $userToken = json_decode($userTokenJSON);
+        
+        print_r($userToken); die;
 
         $actualToken = $userToken->access_token;
         $encryptedToken = \Crypt::encrypt($actualToken);
