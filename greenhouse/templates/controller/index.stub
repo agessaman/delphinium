@@ -35,7 +35,7 @@ You may not distribute any version of this software, modified or otherwise
         </div>
 
         <div id="primarytab-2" class="tab-pane fade in" style="padding: 0px 20px;">
-            <?= $this->makePartial('instructions') ?>
+            <?= $this->makePartial('{{lower_model}}instructions') ?>
         </div>
     </div>
 </div>

@@ -25,15 +25,15 @@ function completed(data)
     history.go(0);
 }
 
-function showModal()
+function show{{studly_model}}Modal()
 {
-    $("#content-configuration").on("shown.bs.modal", function () {
+    $("#{{lower_model}}-content-configuration").on("shown.bs.modal", function () {
         //you may disable fields that should not be edited by professors
         //document.getElementById('yourid').style.display='none';
     }).modal('show');
 }
 
-function hideModal()
+function hide{{studly_model}}Modal()
 {
-    $('#content-configuration').modal('hide');
+    $('#{{lower_model}}-content-configuration').modal('hide');
 }

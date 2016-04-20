@@ -128,16 +128,16 @@ class {{studly_name}} extends ComponentBase
                 $this->addCss('/modules/system/assets/ui/storm.css', 'core');
                 $this->addJs('/modules/system/assets/ui/storm-min.js', 'core');
                 $this->addCss('/modules/system/assets/ui/storm.less', 'core');
-                $this->addJs('/plugins/{{lower_author}}/{{lower_plugin}}/assets/instructor.js');
+                $this->addJs('/plugins/{{lower_author}}/{{lower_plugin}}/assets/{{lower_model}}_instructor.js');
                 $formController = new MyController();
                 $formController->create('frontend');
 
                 //Append the formController to the page
-                $this->page['form'] = $formController;
+                $this->page['{{lower_model}}form'] = $formController;
 
                 //Append the Instructions to the page
-                $instructions = $formController->makePartial('instructions');
-                $this->page['instructions'] = $instructions;
+                $instructions = $formController->makePartial('{{lower_model}}instructions');
+                $this->page['{{lower_model}}instructions'] = $instructions;
             }
             else if(stristr($roleStr, 'Learner'))
             {
@@ -210,7 +210,7 @@ class {{studly_name}} extends ComponentBase
     {
 
         $data = post('{{studly_model}}');//model name
-        $id = $this->page['recordId'];// convert string to integer
+        $id = $this->page['{{lower_model}}recordId'];// convert string to integer
         $config = $this->getInstance($data['name']);// retrieve existing record
 
         //update record with new data coming from POST

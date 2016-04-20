@@ -23,7 +23,7 @@ You may not distribute any version of this software, modified or otherwise
     <a id="popinfo" title="Info" tabindex="0" role="button" data-trigger-condition="" data-trigger-action="" data-trigger="focus" data-container="body" data-toggle="popover" data-placement="left" data-content="Setup below" style="position:absolute; top:0; right:0px;">
         <i class="icon-question"></i>
     </a>
-	<div id="cog" data-toggle="modal" data-keyboard="true" data-backdrop="true" onclick="showModal()" style="position:absolute; top:0; right:10px;">
+	<div id="cog" data-toggle="modal" data-keyboard="true" data-backdrop="true" onclick="show{{studly_model}}Modal()" style="position:absolute; top:0; right:10px;">
         <a data-toggle="tooltip" title="Settings" data-placement="bottom"><i class="icon-cog"></i></a>
     </div>
 </div>
@@ -33,7 +33,7 @@ You may not distribute any version of this software, modified or otherwise
 </div>
 
 <!-- Configuration modal with Front End Form and Instructions in tabs -->
-<div class="control-popup modal fade" id="content-configuration" tabindex="-1" role="dialog">
+<div class="control-popup modal fade" id="{{lower_model}}-content-configuration" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg">
         <div class="modal-content" style="overflow-y: auto;">
             <div class="modal-header">
@@ -43,26 +43,26 @@ You may not distribute any version of this software, modified or otherwise
             <div class="modal-body">
                 <!-- Tabs -->
                 <ul class="nav nav-tabs">
-                  <li class="active"><a data-toggle="tab" href="#configure">Configure</a></li>
-                  <li><a data-toggle="tab" href="#instruct">Instructions</a></li>
+                  <li class="active"><a data-toggle="tab" href="#{{lower_model}}Configure">Configure</a></li>
+                  <li><a data-toggle="tab" href="#{{lower_model}}Instruct">Instructions</a></li>
                 </ul>
                 <div class="tab-content">
                 <!-- Configure instance -->
-                  <div id="configure" class="tab-pane fade in active" style="padding: 5px 0px;">
+                  <div id="{{lower_model}}Configure" class="tab-pane fade in active" style="padding: 5px 0px;">
                     <form role="form" id="updateForm"
                       data-request="{{ __SELF__ }}::onUpdate"
                       data-request-success="$el.hide();completed(data);">
-                        {{ form.update(recordId)|raw }}
-                        {{ form.formRender()|raw }}
+                        {{ {{lower_model}}form.update({{lower_model}}recordId)|raw }}
+                        {{ {{lower_model}}form.formRender()|raw }}
                       <div class="form-group">
                          <button class="btn btn-primary" type="submit" value="register">Update Component</button>
-                         <button type="button" onclick="hideModal()" class="btn btn-default" data-disposable="">Close</button>
+                         <button type="button" onclick="hide{{studly_model}}Modal()" class="btn btn-default" data-disposable="">Close</button>
                       </div>
                     </form>
                   </div>
                 <!-- Instructions -->
-                  <div id="instruct" class="tab-pane fade in" style="padding:20px;">
-                      {{ instructions|raw }}
+                  <div id="{{lower_model}}Instruct" class="tab-pane fade in" style="padding:20px;">
+                      {{ {{lower_model}}instructions|raw }}
                   </div>
                 </div>
             </div>
@@ -74,6 +74,7 @@ You may not distribute any version of this software, modified or otherwise
     /*override backend styles*/
     .modal-header {background:none !important;border-bottom:1px solid #e5e5e5 !important;color:#333333 !important}
     .modal-header .close{color:black !important;background:transparent !important;}
+    .modal-body {padding-bottom: 10px;}
 	.hiddenFromTeacher{display:none;}
 	#Form-field-{{studly_model}}-id-group{display:none;}
 	#Form-field-{{studly_model}}-name-group{display:none;}

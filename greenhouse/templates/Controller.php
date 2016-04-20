@@ -30,7 +30,7 @@ class Controller extends TemplateBase
      * @var array A mapping of stub to generated file.
      */
     protected $fileMap = [
-        'controller/_instructions.stub' => 'controllers/{{lower_name}}/_instructions.htm',
+        'controller/_instructions.stub' => 'controllers/{{lower_name}}/_{{lower_model}}instructions.htm',
         'controller/_list_toolbar.stub' => 'controllers/{{lower_name}}/_list_toolbar.htm',
         'controller/config_form.stub'   => 'controllers/{{lower_name}}/config_form.yaml',
         'controller/config_list.stub'   => 'controllers/{{lower_name}}/config_list.yaml',

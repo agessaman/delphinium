@@ -73,7 +73,13 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
     if (health > 0) {
         healthWidth = health / maxHealth * halfWidth;
         healthX = halfWidth + (healthWidth / 2);
-    } else {
+    }
+    else if(health==0)
+    {
+        healthWidth=0;
+        healthX=0;
+    }
+    else {
         healthWidth = health / minHealth * halfWidth * -1;
         healthX = halfWidth - (healthWidth / 2);
     }
@@ -86,7 +92,14 @@ $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, functi
     if (gap > 0) {
         gapWidth = gap / maxGap * halfWidth;
         gapX = halfWidth + (gapWidth / 2);
-    } else {
+    }
+    else if(gap==0)
+    {
+        gapWidth=0;
+        gapX=0;
+    }
+    else
+    {
         gapWidth = gap / minGap * halfWidth * -1;
         gapX = halfWidth - (gapWidth / 2);
     }
