@@ -30,3 +30,6 @@
 1.0.9:
     - Update EasterEggs
     - modify_easter_eggs_table.php
+1.1.0:
+    - Add Snow to Easter Eggs table
+    - add_snow_to_eggs.php
