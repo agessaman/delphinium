@@ -46,7 +46,7 @@ You may not distribute any version of this software, modified or otherwise
                   <li class="active"><a data-toggle="tab" href="#{{lower_model}}Configure">Configure</a></li>
                   <li><a data-toggle="tab" href="#{{lower_model}}Instruct">Instructions</a></li>
                 </ul>
-                <div class="tab-content">
+                <div class="tab-content" style="padding: 10px 0 10px 0;">
                 <!-- Configure instance -->
                   <div id="{{lower_model}}Configure" class="tab-pane fade in active" style="padding: 5px 0px;">
                     <form role="form" id="updateForm"
