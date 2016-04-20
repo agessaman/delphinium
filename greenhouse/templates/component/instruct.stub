@@ -15,7 +15,7 @@ $(document).ready(function() {
 
 function completed(data)
 {
-    hideModal();
+    hide{{studly_model}}Modal();
     $.oc.flashMsg({
         'text': 'The record has been successfully saved.',
         'class': 'success',
