@@ -18,53 +18,34 @@
   ~ You can modify personal copy of source-code but cannot distribute modifications
   ~ You may not distribute any version of this software, modified or otherwise
   -->
-<?php Block::put('breadcrumb') ?>
 
 
-<ul>
-        <li><a href="<?= Backend::url('delphinium/redwood/pmoauth') ?>">PM OAuth</a></li>
+<div class="control-breadcrumb">
+    <ul>
+        <li><a href="<?= Backend::url('delphinium/redwood/pmoauth') ?>">PM Oauth</a></li>
         <li><?= e($this->pageTitle) ?></li>
     </ul>
-<?php Block::endPut() ?>
+</div>
 
-<?php if (!$this->fatalError): ?>
+<?= Form::open(['class'=>'layout-item stretch layout-column']) ?>
 
-    <?= Form::open(['class' => 'layout']) ?>
+<?= $this->formRender() ?>
 
-        <div class="layout-row">
-            <?= $this->formRender() ?>
-        </div>
+<div class="form-buttons layout-item fix">
+    <div class="loading-indicator-container">
+        <button
+                type="button"
+                data-request="onSave"
+                data-request-data="close:true"
+                data-hotkey="ctrl+enter"
+                data-hotkey-mac="cmd+enter"
+                data-load-indicator="Creating Instance..."
+                class="btn btn-default">
+            Create and Close
+        </button>
+            <span class="btn-text"> or
+            <a href="<?= Backend::url('delphinium/redwood/pmoauth') ?>">Cancel</a></span>
+    </div>
+</div>
 
-        <div class="form-buttons">
-            <div class="loading-indicator-container">
-                <button
-                    type="submit"
-                    data-request="onSave"
-                    data-hotkey="ctrl+s, cmd+s"
-                    data-load-indicator="Creating PMOAuth..."
-                    class="btn btn-primary">
-                    Create
-                </button>
-                <button
-                    type="button"
-                    data-request="onSave"
-                    data-request-data="close:1"
-                    data-hotkey="ctrl+enter, cmd+enter"
-                    data-load-indicator="Creating PMOAuth..."
-                    class="btn btn-default">
-                    Create and Close
-                </button>
-                <span class="btn-text">
-                    or <a href="<?= Backend::url('delphinium/redwood/pmoauth') ?>">Cancel</a>
-                </span>
-            </div>
-        </div>
-
-    <?= Form::close() ?>
-
-<?php else: ?>
-
-    <p class="flash-message static error"><?= e($this->fatalError) ?></p>
-    <p><a href="<?= Backend::url('delphinium/redwood/oauth') ?>" class="btn btn-default">Return to o auth list</a></p>
-
-<?php endif ?>
+<?= Form::close() ?>
