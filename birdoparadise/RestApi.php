@@ -56,13 +56,14 @@ class RestApi extends Controller
 		$res = $roots->assignments($req);
 
 		$assignmentIds = array();// for submissionsRequest
-		//$assignments = array();// for points_possible
+		$assignments = array();// for points_possible
 		foreach ($res as $assignment) {
 			array_push($assignmentIds, $assignment["assignment_id"]);
-			//array_push($assignments, $assignment);
+			array_push($assignments, $assignment);
 		}
 		//$this->page['assignments']=json_encode($assignments);
-
+		// STORE as global assignments
+		
 		$studentIds = array($_SESSION['userID']);//['1604486'];//Test Student
 		$allStudents = true;
 		// $assignmentIds from above
@@ -78,6 +79,52 @@ class RestApi extends Controller
 		//$this->page['submissions']=json_encode($submissions);// score
 		//echo "Called";// success: data is ready
 		//echo json_encode($submissions);
+		// STORE as global submissions
 		return $submissions;
+	}
+	public function calculateStars($modid)
+	{
+		
+		/*
+			do the getStars calculations here then return data for student view
+			will also need each module, get it using id here
+		
+		send modid here and return score, total
+		//console.log(modid, 'score:',score, 'total:',total);
+		
+	//function getStars(modid){
+		// construct for modid = one module by id
+		// get the module matching modid
+        var mod1 = $.grep(modobjs, function(elem,index){ return elem.module_id == modid; });
+        //console.log('mod1:',modid, mod1);
+        var total=0, score=0;
+        var moditems = mod1.module_items;
+		
+		// for each module item add up score & total
+        for(var i=0; i<moditems.length; i++) {
+
+            // find a submission for moditem
+            var title=moditems[i].title;
+            var asgn1 = $.grep(assignments, function(elem,index){ return elem.name == title; });
+
+            if(asgn1.length>0) {
+                if(moditems[i].content.length>0){
+                    total += moditems[i].content[0].points_possible;
+                    var asgnid = asgn1[0].assignment_id;
+                    //console.log(modid,'asgn1.assignment_id:',asgnid);
+                    var subm1 = $.grep(subms, function(elem,index) {
+                        return elem.assignment_id == asgnid;
+                    });
+                    //console.log('subm1:',subm1);
+                    if(subm1.length>0) {
+                        score += subm1[0].score;
+                    }
+                }
+            }
+        }
+		
+		return json_encode( {'score':score,'total':total,'modid':modid} );
+		*/
+		return $modid;
 	}
 }

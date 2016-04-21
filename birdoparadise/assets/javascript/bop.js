@@ -33,7 +33,7 @@ $(document).ready(function() {
         http://daftspunk.github.io/Font-Autumn/
         
         todo:
-        Tooltip or popover for reason locked prerequisites
+        reason locked prerequisites
 		module box background images - upload and location
         assignment links in locked modules are disabled for student view
     */
@@ -81,7 +81,7 @@ $(document).ready(function() {
             var widt = $(nuplace).width();// increase for each new module
             var mods = chld[c].children;
             modlist = [];// modules in this tab
-            // deep search children
+            //recursive deep search children - do this in the php
 			getMyChildren(chld[c]['children']);
             // now display modlist for each tab
             for(i=0; i<modlist.length; i++) {
@@ -147,13 +147,63 @@ $(document).ready(function() {
 	} else {
         // Done loading remove loader layer
         $('.loading-indicator-container').hide();
-        // used storm.css to get the spinner to show but it changes the Modal
+        // used storm.css to get the spinner to show but it changes the Modal. override the css
     }
 	function studentProgress() {
 		var modivs = $('.moditem');// array of modules displayed in tabs
+		for(var i=0; i<modivs.length; i++)
+		{
+			// convert getStars calculation to php function that returns score, total
+			//var starset = getStars(modboxs[i].module_id);//send module id
+			
+			//send module.id : returns score,total
+			var promise = $.get('calculateStars',{modid:modboxs[i].id});// 404 not found
+			//var promise = $.get('calculateStars'/modboxs[i].id);// returns html of bop component
+			//var promise = $.get('calculateStars/'+modboxs[i].id);//missing ) after argument list w/+ 500 server Erro
+			//var promise = $.get('calculateStars?modid='+modboxs[i].id);//404
+			promise.then(function (data) {
+				console.log('promise:',i,data)
+				//console.log(i, data.score, data.total, data);
+				// createStars(score,total);
+				//$(modivs[i]).append(starset);
+				
+				// if i==modivs.length hide loading-indicator-container HERE
+				// Done loading remove loader layer
+				//$('.loading-indicator-container').hide();// could not get this to show
+			}).fail(function (data2) { console.log('failCalcStars:',data2); });
+		}
+		
+		//console.log('TEST', i,modivs.length);// too soon!
+		// Done loading remove loader layer
+		$('.loading-indicator-container').hide();// could not get this to show
+	}
+	function createStars(score,total) {
+		
+		var starset = '<div class="stars"><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i></div>';
+        if(score > 0) {
+            console.log(modid, 'score:',score, 'total:',total);
+            var percent = (score/total) *100;
+            console.log('percent=',percent);
+            starset='<div class="stars">';
+            for(var s=1; s<6; s++) {
+                if(percent > s*20) {
+                    starset += '<i class="icon-star"></i>';
+                } else if(percent < (s*20) && percent >= (s*20)-10) {
+                    starset += '<i class="icon-star-half-o"></i>';
+                } else {
+                    starset += '<i class="icon-star-o"></i>';
+                }
+            }
+            starset += '</div>';
+        }
+        return starset;
+	}
+	
+	function OLDstudentProgress() {
+		var modivs = $('.moditem');// array of modules displayed in tabs
 		//console.log(modivs.length, modboxs.length);
 		//https://laravel.com/docs/5.2/controllers#basic-controllers
-		// call functions in php
+		// call functions in php using RestApi.php
 		var promise = $.get('getAssignments');//faster
         promise.then(function (data) {
             console.log('assignments:',data);
@@ -168,7 +218,12 @@ $(document).ready(function() {
                 
 				for(var i=0; i<modivs.length; i++)
 				{
-					var starset = getStars(modboxs[i].module_id);//find items
+					// convert getStars calculation to php function that returns score, total
+					var starset = getStars(modboxs[i].module_id);//send module id
+					
+					//php: $.get('calculateStars');// returns score,total
+					// createStars(score,total);
+					
 					$(modivs[i]).append(starset);
 				}
 				
@@ -414,7 +469,6 @@ $(document).ready(function() {
         return stars div
         
         move this function to RestApi.php
-        http://php.net/manual/en/function.preg-grep.php
     */
     function getStars(modid){
         // construct from modid

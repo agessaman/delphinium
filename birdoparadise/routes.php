@@ -22,3 +22,5 @@
 
 Route::get('getAssignments', 'Delphinium\Birdoparadise\RestApi@getAssignments');
 Route::get('getSubmissions', 'Delphinium\Birdoparadise\RestApi@getSubmissions');
+//Route::get('calculateStars/{modid}', function ($modid) { return 'Module.id= '.$modid; });
+Route::get('calculateStars/{modid}', 'Delphinium\Birdoparadise\RestApi@calculateStars');

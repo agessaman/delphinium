@@ -23,7 +23,9 @@
 .modal-header {background:none !important;border-bottom:1px solid #e5e5e5 !important;color:#333333 !important}
 .modal-header .close{color:black !important;background:transparent !important;}
 .modal-body {padding-bottom: 15px;}
-
+/* hide instructions that don't apply to the professor */
+.hiddenFromTeacher{display: none;}
+/* larger text in tabs */
 a[role=tab] { font-size: 1.1em; }
 .center{
 	text-align: center;
