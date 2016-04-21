@@ -25,11 +25,13 @@ namespace Delphinium\Birdoparadise;
 use Illuminate\Routing\Controller;
 use Delphinium\Roots\Roots;
 use Delphinium\Roots\Enums\ActionType;
+use Delphinium\Roots\Requestobjects\ModulesRequest;
 use Delphinium\Roots\Requestobjects\AssignmentsRequest;// for submissions
 use Delphinium\Roots\Requestobjects\SubmissionsRequest;// student progress
 
 class RestApi extends Controller 
 {
+    //OBSOLETE//
     public function getAssignments()
 	{
 		//https://laravel.com/docs/5.2/controllers#basic-controllers
@@ -65,38 +67,104 @@ class RestApi extends Controller
 		// STORE as global assignments
 		
 		$studentIds = array($_SESSION['userID']);//['1604486'];//Test Student
-		$allStudents = true;
+		$allStudents = false;
 		// $assignmentIds from above
 		$allAssignments = true;
-		$multipleStudents = true;
+		$multipleStudents = false;
 		$multipleAssignments = true;
-		$includeTags = true;
+		$includeTags = true;//false not used
 		$grouped = true;
 
 		$req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments, $includeTags, $grouped);
 
 		$submissions = $roots->submissions($req);
 		//$this->page['submissions']=json_encode($submissions);// score
-		//echo "Called";// success: data is ready
-		//echo json_encode($submissions);
+		
 		// STORE as global submissions
 		return $submissions;
-	}
-	public function calculateStars($modid)
+	}//OBSOLETE//
+    
+    
+    
+	public function calculateStars()
 	{
-		
+		/* PSEUDO
+            send module.id and return score, total
+            
+            get the module[modid] items
+            get the assignments and submissions that match this module items
+            
+            calculate score & total possible
+            return score & total
+        */
+        /*
+            for each module item
+            add up total from mod_item.content[0].points_possible;
+            find the assignment that matches mod_item.title
+            get its id to find matching submission.score
+            add up score
+            return score,total
+        */
+        $modid = \Input::get('modid');
+        
+		$roots = new Roots();
+        
+        // get the module matching id
+        $moduleId = $modid;
+        $moduleItemId = null;
+        $includeContentDetails = true;
+        $includeContentItems = false;//true;
+        $module = null;
+        $moduleItem = null;
+        $freshData = false;
+        $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems, $includeContentDetails, $module, $moduleItem , $freshData) ;
+        
+        $module = $this->roots->modules($req);
+        
+        // all assignments
+		$req = new AssignmentsRequest(ActionType::GET);
+		$res = $roots->assignments($req);// all
+
+		//$assignmentIds = array();// for submissionsRequest
+		$assignments = array();// for matching id
+		foreach ($res as $assignment) {
+			//array_push($assignmentIds, $assignment["assignment_id"]);
+			array_push($assignments, $assignment);//match mod.item.title to get assignment_id 
+		}
+        
+        $student = $_SESSION['userID'];
+        $total=0;
+        $score=0;
+        
+        foreach ($module as $item) {
+        // find the assignmentid that matches module item title
+            //if has content
+            if (array_key_exists('content', $item)) {
+                //parse error" on line 143
+                //$total = $total + intval($item.content[0].points_possible);
+                $total = $total + intval($item.content.points_possible);
+            
+                $title = $item.title;
+                if(in_array($title, $assignments)) {
+                    $assignment = array_column($assignments, 'assignment_id');
+                }
+                
+                $subScore = getSingleSubmissionSingleUserSingleAssignment($student,$assignment);
+                $score = $score + $subScore;
+            }
+        }
+        //parse error" on line 157
+        return json_encode( {'score':$score,'total':$total,'modid':$modid} );
+        
 		/*
-			do the getStars calculations here then return data for student view
-			will also need each module, get it using id here
+			do the getStars calculations here
+			will also need the module, get it using id
 		
-		send modid here and return score, total
-		//console.log(modid, 'score:',score, 'total:',total);
-		
-	//function getStars(modid){
+	//ORIGINAL:function getStars(modid){
 		// construct for modid = one module by id
 		// get the module matching modid
         var mod1 = $.grep(modobjs, function(elem,index){ return elem.module_id == modid; });
-        //console.log('mod1:',modid, mod1);
+        
         var total=0, score=0;
         var moditems = mod1.module_items;
 		
@@ -123,8 +191,28 @@ class RestApi extends Controller
             }
         }
 		
-		return json_encode( {'score':score,'total':total,'modid':modid} );
+		
 		*/
-		return $modid;
+		//return $modid;
 	}
+    
+    private function getSingleSubmissionSingleUserSingleAssignment($student,$assignment)
+    {
+        $studentIds = array($student);
+        $assignmentIds = array($assignment);
+        $multipleStudents = false;
+        $multipleAssignments = false;
+        $allStudents = false;
+        $allAssignments = false;
+        //can have the student Id param null if multipleUsers is set to false (we'll only get the current user's submissions)
+        $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents,
+            $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
+        
+        $roots = new Roots();
+        $res = $this->roots->submissions($req);
+        
+        //echo json_encode($res);
+        $score = intval($res.score);// ???
+        return $score;
+    }
 }

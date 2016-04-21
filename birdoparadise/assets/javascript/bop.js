@@ -150,6 +150,7 @@ $(document).ready(function() {
         // used storm.css to get the spinner to show but it changes the Modal. override the css
     }
 	function studentProgress() {
+        var count = 0;
 		var modivs = $('.moditem');// array of modules displayed in tabs
 		for(var i=0; i<modivs.length; i++)
 		{
@@ -157,25 +158,21 @@ $(document).ready(function() {
 			//var starset = getStars(modboxs[i].module_id);//send module id
 			
 			//send module.id : returns score,total
-			var promise = $.get('calculateStars',{modid:modboxs[i].id});// 404 not found
-			//var promise = $.get('calculateStars'/modboxs[i].id);// returns html of bop component
-			//var promise = $.get('calculateStars/'+modboxs[i].id);//missing ) after argument list w/+ 500 server Erro
-			//var promise = $.get('calculateStars?modid='+modboxs[i].id);//404
+			var promise = $.get('calculateStars',{modid:modboxs[i].id});
 			promise.then(function (data) {
-				console.log('promise:',i,data)
+				console.log('promise:', i, data);
 				//console.log(i, data.score, data.total, data);
 				// createStars(score,total);
 				//$(modivs[i]).append(starset);
 				
-				// if i==modivs.length hide loading-indicator-container HERE
-				// Done loading remove loader layer
-				//$('.loading-indicator-container').hide();// could not get this to show
+                // Done loading so remove loader layer
+                count += 1;
+				if(count == modivs.length) {
+				    $('.loading-indicator-container').hide();
+                }
+                
 			}).fail(function (data2) { console.log('failCalcStars:',data2); });
 		}
-		
-		//console.log('TEST', i,modivs.length);// too soon!
-		// Done loading remove loader layer
-		$('.loading-indicator-container').hide();// could not get this to show
 	}
 	function createStars(score,total) {
 		

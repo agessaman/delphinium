@@ -20,7 +20,6 @@
  * You may not distribute any version of this software, modified or otherwise
  */
 
-Route::get('getAssignments', 'Delphinium\Birdoparadise\RestApi@getAssignments');
-Route::get('getSubmissions', 'Delphinium\Birdoparadise\RestApi@getSubmissions');
-//Route::get('calculateStars/{modid}', function ($modid) { return 'Module.id= '.$modid; });
-Route::get('calculateStars/{modid}', 'Delphinium\Birdoparadise\RestApi@calculateStars');
+Route::get('getAssignments', 'Delphinium\Birdoparadise\RestApi@getAssignments');//OBSOLETE
+Route::get('getSubmissions', 'Delphinium\Birdoparadise\RestApi@getSubmissions');//OBSOLETE
+Route::get('calculateStars', 'Delphinium\Birdoparadise\RestApi@calculateStars');
