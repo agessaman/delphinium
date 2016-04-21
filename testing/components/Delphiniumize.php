@@ -72,11 +72,8 @@ class Delphiniumize extends ComponentBase
 
         $this->newPluginData = $vars;
         $this->makeFiles();
-//        var_dump("made files");
         $this->modifyFiles();
-//        var_dump("modified files");
         $this->octoberUp();
-//        var_dump("october up");
     }
 
     public function onAddItem()
@@ -243,61 +240,14 @@ class Delphiniumize extends ComponentBase
         $dumper = new Dumper();
         $yaml = $dumper->dump($current, 2);
         file_put_contents($yamlDestinationPath, $yaml);
-
-
-//        $this->octoberUp();//after the files have been modified we can run october:up
     }
 
     private function octoberUp()
     {
-
-        echo " october up";
-        $readyVars = $this->readyVars;
-        $filename = base_path() . '/plugins/' . $readyVars['lower_author'] . '/' . $readyVars['lower_plugin'].'/models/'.$readyVars['studly_model'] ;
-        echo $filename;
-        if(file_exists($filename))
-        {
-            echo " file exists ";
-        }
-        else
-        {
-            echo " doesn't exists ";
-        }
-        //can only run october up after the plugin files are created
-        while (!file_exists($filename))
-        {
-            sleep(1);
-            var_dump("sleep");
-        }
-        $manager = UpdateManager::instance()->resetNotes()->update();
-
-
+        $pluginManager = PluginManager::instance();
+        $pluginManager->loadPlugins();//loads the newly created plugin
+        $manager = UpdateManager::instance()->resetNotes()->update();//updates october's plugins
         return;
-        //$manager = UpdateManager::instance()->resetNotes()->update();
-        $readyVars = $this->readyVars;
-        $pluginName = $readyVars['studly_author'] . '.' .$readyVars['studly_plugin'];
-        $manager = UpdateManager::instance();
-        $pluginDetails = $manager->requestPluginDetails($pluginName);
-
-        $code = array_get($pluginDetails, 'code');
-        $hash = array_get($pluginDetails, 'hash');
-
-//        $this->output->writeln(sprintf('<info>Downloading plugin: %s</info>', $code));
-//        $manager->downloadPlugin($code, $hash);
-//
-//        $this->output->writeln(sprintf('<info>Unpacking plugin: %s</info>', $code));
-//        $manager->extractPlugin($code, $hash);
-//
-//        /*
-//         * Migrate plugin
-//         */
-//        $this->output->writeln(sprintf('<info>Migrating plugin...</info>', $code));
-        PluginManager::instance()->loadPlugins();
-        $manager->updatePlugin($code);
-
-        foreach ($manager->getNotes() as $note) {
-            var_dump($note);
-        }
     }
 
     private function openModifySave($fileDestination, $nodeVisitor)

@@ -20,3 +20,33 @@
   -->
 
 <?= $this->listRender() ?>
+<form
+        data-request="{{ __SELF__ }}::onAddItem">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Add a new delphinium plugin</h3>
+        </div>
+        <div class="input-group">
+            <input type="text" id="input-author" class="form-control" value="author" name="New[author]" placeholder="Enter the author">
+        </div>
+        <div class="input-group">
+            <input type="text" id="input-plugin" class="form-control" value="newPlugin" name="New[plugin]" placeholder="Enter the plugin name">
+        </div>
+        <div class="input-group">
+            <input type="text" id="input-controller" class="form-control" value="newController" name="New[controller]" placeholder="Enter the controller name">
+        </div>
+        <div class="input-group">
+            <input type="text" id="input-model" class="form-control" value="newModel" name="New[model]" placeholder="Enterthe model name">
+        </div>
+        <div class="input-group">
+            <input type="text" id="input-component" class="form-control" value="newComponent" name="New[component]" placeholder="Enter the component name">
+        </div>
+
+        <span class="input-group-btn">
+            <button type="submit" class="btn btn btn-primary">Add</button>
+        </span>
+        <ul class="list-group" id="result">
+        </ul>
+    </div>
+</form>
+<?= $this->widget->delphiniumize->render() ?>

@@ -24,6 +24,7 @@ namespace Delphinium\Testing;
 
 use Backend;
 use System\Classes\PluginBase;
+use Event;
 
 /**
  * Testing Plugin Information File
@@ -54,7 +55,7 @@ class Plugin extends PluginBase
     public function registerComponents()
     {
         return [
-            'Delphinium\Testing\Components\Delphiniumize' => 'delphiniumize',
+            'Delphinium\Testing\Components\Delphiniumize' => 'delphiniumize'
         ];
     }
 
@@ -81,16 +82,20 @@ class Plugin extends PluginBase
     public function registerNavigation()
     {
         return []; // Remove this line to activate
-
-        return [
-            'testing' => [
-                'label'       => 'Testing',
-                'url'         => Backend::url('delphinium/testing/mycontroller'),
-                'icon'        => 'icon-leaf',
-                'permissions' => ['delphinium.testing.*'],
-                'order'       => 500,
-            ],
-        ];
     }
 
+    public function boot()
+    {
+        Event::listen('backend.menu.extendItems', function($manager) {
+
+            $manager->addSideMenuItems('Delphinium.Greenhouse', 'greenhouse', [
+                'Bonus' => [
+                    'label' => 'Delphiniumize',
+                    'icon' => 'icon-heart',
+                    'owner' => 'Delphinium.Greenhouse',
+                    'url' => Backend::url('delphinium/testing/MyController'),
+                    'group' => 'Delphiniumize',
+                ]]);
+        });
+    }
 }
