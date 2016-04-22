@@ -71,9 +71,11 @@ class RestApi extends Controller
         // get all assignments
 		$req = new AssignmentsRequest(ActionType::GET);
 		$res = $roots->assignments($req);// all
-
+        
+        $assignmentIds = array();// for submissionsRequest
 		$assignments = array();// to find matching mod item title then assignment_id
 		foreach ($res as $assignment) {
+            array_push($assignmentIds, $assignment["assignment_id"]);
 			array_push($assignments, $assignment);
 		}
         
@@ -98,7 +100,7 @@ class RestApi extends Controller
                     }
                 }
 
-                //SOME throw error:
+                //SOME throw error: due to student token. Fixed by using Instructor token
                 //An error occurred when attempting to retrieve resource.
                 //Reason: user not authorized to perform that action" on line 100 of .../delphinium/roots/guzzle/GuzzleHelper.php
 
@@ -156,7 +158,7 @@ class RestApi extends Controller
         */
 	}
 
-//OBSOLETE//
+//OLD version//
     public function getAssignments()
 	{
 		//https://laravel.com/docs/5.2/controllers#basic-controllers
@@ -190,15 +192,15 @@ class RestApi extends Controller
 		}
 		//$this->page['assignments']=json_encode($assignments);
 		// STORE as global assignments
-		
-		$studentIds = array($_SESSION['userID']);//['1604486'];//Test Student
+		$student = $_SESSION['userID'];
+		$studentIds = array($student);//['1604486'];//Test Student
 		$allStudents = false;
 		// $assignmentIds from above
 		$allAssignments = true;
 		$multipleStudents = false;
 		$multipleAssignments = true;
-		$includeTags = true;//false not used
-		$grouped = true;
+		$includeTags = false;//true;//tags not used
+		$grouped = false;//true;
 
 		$req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments, $includeTags, $grouped);
 
@@ -208,5 +210,5 @@ class RestApi extends Controller
 		// STORE as global submissions
 		return $submissions;
 	}
-//OBSOLETE//
+//OLD version//
 }

@@ -142,97 +142,7 @@ $(document).ready(function() {
 		Reload the page to update progress
 		assignments are done in a new tab and would not be updated unless refreshed
     */
-	if(role == 'Learner') {
-		studentProgress();
-	} else {
-        // Done loading remove loader layer
-        $('.loading-indicator-container').hide();
-        // used storm.css to get the spinner to show but it changes the Modal. override the css
-    }
-	function studentProgress() {
-        var count = 0;
-		var modivs = $('.moditem');// array of modules displayed in tabs
-		for(var i=0; i<modivs.length; i++)
-		{
-			// convert getStars calculation to php function that returns score, total
-			//var starset = getStars(modboxs[i].module_id);//send module id
-			
-			//send module.id : returns score,total
-			var modid=modivs[i].id;
-			var promise = $.get('calculateStars', {'modid': modid});
-			promise.then(function (data) {
-				
-				//console.log(i, data.score, data.total, data);
-				// createStars(score,total);
-				//$(modivs[i]).append(starset);
-				
-                // Done loading so remove loader layer
-                count += 1;
-				console.log('promise:', count, data);
-				if(count == modivs.length) {
-				    $('.loading-indicator-container').hide();
-                }
-                
-			}).fail(function (data2) { console.log('failCalcStars:',data2); });
-		}
-	}
-	function createStars(score,total) {
 		
-		var starset = '<div class="stars"><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i></div>';
-        if(score > 0) {
-            console.log(modid, 'score:',score, 'total:',total);
-            var percent = (score/total) *100;
-            console.log('percent=',percent);
-            starset='<div class="stars">';
-            for(var s=1; s<6; s++) {
-                if(percent > s*20) {
-                    starset += '<i class="icon-star"></i>';
-                } else if(percent < (s*20) && percent >= (s*20)-10) {
-                    starset += '<i class="icon-star-half-o"></i>';
-                } else {
-                    starset += '<i class="icon-star-o"></i>';
-                }
-            }
-            starset += '</div>';
-        }
-        return starset;
-	}
-	
-	function OLDstudentProgress() {
-		var modivs = $('.moditem');// array of modules displayed in tabs
-		//console.log(modivs.length, modboxs.length);
-		//https://laravel.com/docs/5.2/controllers#basic-controllers
-		// call functions in php using RestApi.php
-		var promise = $.get('getAssignments');//faster
-        promise.then(function (data) {
-            console.log('assignments:',data);
-            assignments= data;
-            
-			var promises = $.get('getSubmissions');
-			promises.then(function (data) {
-				//console.log('submissions:',data);
-				subms = $.grep(data, function(elem,index){ return elem.score > 0; });
-				console.log('subms:',subms);
-				// calc filled stars from submissions and assignments
-                
-				for(var i=0; i<modivs.length; i++)
-				{
-					// convert getStars calculation to php function that returns score, total
-					var starset = getStars(modboxs[i].module_id);//send module id
-					
-					//php: $.get('calculateStars');// returns score,total
-					// createStars(score,total);
-					
-					$(modivs[i]).append(starset);
-				}
-				
-                // Done loading remove loader layer
-                $('.loading-indicator-container').hide();// could not get this to show
-                
-			}).fail(function (data2) { console.log('failSub:',data2); });
-        }).fail(function (data2) { console.log('failAsgn:',data2); });
-    }
-	
     /* click module to see module_items */
     $('.moditem').on('click', function(){
         var modid = $(this).attr('id');
@@ -469,6 +379,99 @@ $(document).ready(function() {
         
         move this function to RestApi.php
     */
+    if(role == 'Learner') {
+        OLDstudentProgress();
+		//studentProgress();// much slower
+	} else {
+        // Done loading remove loader layer
+        $('.loading-indicator-container').hide();
+        // used storm.css to get the spinner to show but it changes the Modal. override the css
+    }
+	function studentProgress() {
+        var count = 0;
+		var modivs = $('.moditem');// array of modules displayed in tabs
+		for(var i=0; i<modivs.length; i++)
+		{
+			// convert getStars calculation to php function that returns score, total
+			//var starset = getStars(modboxs[i].module_id);//send module id
+			
+			//send module.id : returns score,total
+			var modid=modivs[i].id;
+			var promise = $.get('calculateStars', {'modid': modid});
+			promise.then(function (data) {
+                
+				count += 1;
+                
+				console.log(count, data.score, data.total, data);
+				var starset=createStars(data.score, data.total);
+				$(modivs[i]).append(starset);
+				
+                // Done loading so remove loader layer
+				//console.log('promise:', count, data);
+				if(count == modivs.length) {
+				    $('.loading-indicator-container').hide();
+                }
+                
+			}).fail(function (data2) { console.log('failCalcStars:',data2); });
+		}
+	}
+	function createStars(score,total) {
+		
+		var starset = '<div class="stars"><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i></div>';
+        if(score > 0) {
+            //console.log('score:',score, 'total:',total);
+            var percent = (score/total) *100;
+            console.log('percent=',percent);
+            starset='<div class="stars">';
+            for(var s=1; s<6; s++) {
+                if(percent > s*20) {
+                    starset += '<i class="icon-star"></i>';
+                } else if(percent < (s*20) && percent >= (s*20)-10) {
+                    starset += '<i class="icon-star-half-o"></i>';
+                } else {
+                    starset += '<i class="icon-star-o"></i>';
+                }
+            }
+            starset += '</div>';
+        }
+        return starset;
+	}
+	
+	function OLDstudentProgress() {
+		var modivs = $('.moditem');// array of modules displayed in tabs
+		//console.log(modivs.length, modboxs.length);
+		//https://laravel.com/docs/5.2/controllers#basic-controllers
+		// call functions in php using RestApi.php
+		var promise = $.get('getAssignments');//faster
+        promise.then(function (data) {
+            console.log('assignments:',data);
+            assignments= data;
+            
+			var promises = $.get('getSubmissions');
+			promises.then(function (data) {
+				//console.log('submissions:',data);
+				subms = $.grep(data, function(elem,index){ return elem.score > 0; });
+				console.log('subms:',subms);
+				// calc filled stars from submissions and assignments
+                
+				for(var i=0; i<modivs.length; i++)
+				{
+					// convert getStars calculation to php function that returns score, total
+					var starset = getStars(modboxs[i].module_id);//send module id
+					
+					//php: $.get('calculateStars');// returns score,total
+					// createStars(score,total);
+					
+					$(modivs[i]).append(starset);
+				}
+				
+                // Done loading remove loader layer
+                $('.loading-indicator-container').hide();// could not get this to show
+                
+			}).fail(function (data2) { console.log('failSub:',data2); });
+        }).fail(function (data2) { console.log('failAsgn:',data2); });
+    }
+
     function getStars(modid){
         // construct from modid
         var mod1 = $.grep(modobjs, function(elem,index){ return elem.module_id == modid; });
