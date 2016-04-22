@@ -30,8 +30,142 @@ use Delphinium\Roots\Requestobjects\AssignmentsRequest;// for submissions
 use Delphinium\Roots\Requestobjects\SubmissionsRequest;// student progress
 
 class RestApi extends Controller 
-{
-    //OBSOLETE//
+{  
+	public function calculateStars()
+	{
+		/* PSEUDO
+            send module.id and return score, total
+            
+            get the module[modid] items
+            get the assignments and submissions that match this module items
+            
+            calculate score & total possible
+            return score & total
+			---
+            for each module item
+            add up total from mod_item.content[0].points_possible;
+            find the assignment that matches mod_item.title
+            get its id to find matching submission.score
+            add up score
+            return score,total
+        */
+        $modid = \Input::get('modid');
+        $score=5;
+		$total=10;
+		$arr = array('score'=>$score,'total'=>$total,'modid'=>$modid);
+		//return $arr;//test OK
+		
+        // get the module matching id
+        $moduleId = $modid;
+        $moduleItemId = null;
+        $includeContentDetails = true;
+        $includeContentItems = true;
+        $module = null;
+        $moduleItem = null;
+        $freshData = false;
+        $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems, $includeContentDetails, $module, $moduleItem, $freshData) ;
+
+		$roots = new Roots();
+        $module = $roots->modules($req);
+		
+        // all assignments
+		$req = new AssignmentsRequest(ActionType::GET);
+		$res = $roots->assignments($req);// all
+
+		//$assignmentIds = array();
+		$assignments = array();// all to find matching mod item title then assignment_id
+		foreach ($res as $assignment) {
+			//array_push($assignmentIds, $assignment["assignment_id"]);
+			array_push($assignments, $assignment);//match mod.item.title to get assignment_id 
+		}
+        
+        $student = $_SESSION['userID'];
+        $total=0;
+        $score=0;
+		
+		$modArr = $module["module_items"]->toArray();
+        foreach ($modArr as $item) {
+        // find the assignment that matches module item title 
+		// get its id to find matching submission
+            // if module_item has content
+            if (array_key_exists('content', $item)) {
+
+ 				$content=$item["content"][0];// ONLY 1 is throwing: Undefined offset: 0" on line 99
+				$total = $total + intval($content["points_possible"]);
+				
+                $title = $item['title'];
+				
+                if(in_array($title, $assignments)) {
+                    $assignment = array_column($assignments, 'assignment_id');
+					$score = 33;//test No Match found
+				}
+                
+             //   $subScore = getSingleSubmissionSingleUserSingleAssignment($student,$assignment);
+             //   $score = $score + $subScore;
+            }
+        }
+		
+        $arr = array('score'=>$score,'total'=>$total,'modid'=>$modid);
+		return $arr;
+
+		/*
+			do the getStars calculations here
+			will also need the module, get it using id
+		
+	//ORIGINAL:function getStars(modid){
+		// construct for modid = one module by id
+		// get the module matching modid
+        var mod1 = $.grep(modobjs, function(elem,index){ return elem.module_id == modid; });
+        
+        var total=0, score=0;
+        var moditems = mod1.module_items;
+		
+		// for each module item add up score & total
+        for(var i=0; i<moditems.length; i++) {
+
+            // find a submission for moditem
+            var title=moditems[i].title;
+            var asgn1 = $.grep(assignments, function(elem,index){ return elem.name == title; });
+
+            if(asgn1.length>0) {
+                if(moditems[i].content.length>0){
+                    total += moditems[i].content[0].points_possible;
+                    var asgnid = asgn1[0].assignment_id;
+                    //console.log(modid,'asgn1.assignment_id:',asgnid);
+                    var subm1 = $.grep(subms, function(elem,index) {
+                        return elem.assignment_id == asgnid;
+                    });
+                    //console.log('subm1:',subm1);
+                    if(subm1.length>0) {
+                        score += subm1[0].score;
+                    }
+                }
+            }
+        }
+		*/
+	}
+    
+    private function getSingleSubmissionSingleUserSingleAssignment($student,$assignment)
+    {
+        $studentIds = array($student);
+        $assignmentIds = array($assignment);
+        $multipleStudents = false;
+        $multipleAssignments = false;
+        $allStudents = false;
+        $allAssignments = false;
+        //can have the student Id param null if multipleUsers is set to false (we'll only get the current user's submissions)
+        $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents,
+            $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
+        
+        $roots = new Roots();
+        $res = $roots->submissions($req);
+        
+        //echo json_encode($res);
+        $score = intval($res.score);// ???
+        return $score;
+    }
+	
+//OBSOLETE//
     public function getAssignments()
 	{
 		//https://laravel.com/docs/5.2/controllers#basic-controllers
@@ -82,137 +216,6 @@ class RestApi extends Controller
 		
 		// STORE as global submissions
 		return $submissions;
-	}//OBSOLETE//
-    
-    
-    
-	public function calculateStars()
-	{
-		/* PSEUDO
-            send module.id and return score, total
-            
-            get the module[modid] items
-            get the assignments and submissions that match this module items
-            
-            calculate score & total possible
-            return score & total
-        */
-        /*
-            for each module item
-            add up total from mod_item.content[0].points_possible;
-            find the assignment that matches mod_item.title
-            get its id to find matching submission.score
-            add up score
-            return score,total
-        */
-        $modid = \Input::get('modid');
-        
-		$roots = new Roots();
-        
-        // get the module matching id
-        $moduleId = $modid;
-        $moduleItemId = null;
-        $includeContentDetails = true;
-        $includeContentItems = false;//true;
-        $module = null;
-        $moduleItem = null;
-        $freshData = false;
-        $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems, $includeContentDetails, $module, $moduleItem , $freshData) ;
-        
-        $module = $this->roots->modules($req);
-        
-        // all assignments
-		$req = new AssignmentsRequest(ActionType::GET);
-		$res = $roots->assignments($req);// all
-
-		//$assignmentIds = array();// for submissionsRequest
-		$assignments = array();// for matching id
-		foreach ($res as $assignment) {
-			//array_push($assignmentIds, $assignment["assignment_id"]);
-			array_push($assignments, $assignment);//match mod.item.title to get assignment_id 
-		}
-        
-        $student = $_SESSION['userID'];
-        $total=0;
-        $score=0;
-        
-        foreach ($module as $item) {
-        // find the assignmentid that matches module item title
-            //if has content
-            if (array_key_exists('content', $item)) {
-                //parse error" on line 143
-                //$total = $total + intval($item.content[0].points_possible);
-                $total = $total + intval($item.content.points_possible);
-            
-                $title = $item.title;
-                if(in_array($title, $assignments)) {
-                    $assignment = array_column($assignments, 'assignment_id');
-                }
-                
-                $subScore = getSingleSubmissionSingleUserSingleAssignment($student,$assignment);
-                $score = $score + $subScore;
-            }
-        }
-        //parse error" on line 157
-        return json_encode( {'score':$score,'total':$total,'modid':$modid} );
-        
-		/*
-			do the getStars calculations here
-			will also need the module, get it using id
-		
-	//ORIGINAL:function getStars(modid){
-		// construct for modid = one module by id
-		// get the module matching modid
-        var mod1 = $.grep(modobjs, function(elem,index){ return elem.module_id == modid; });
-        
-        var total=0, score=0;
-        var moditems = mod1.module_items;
-		
-		// for each module item add up score & total
-        for(var i=0; i<moditems.length; i++) {
-
-            // find a submission for moditem
-            var title=moditems[i].title;
-            var asgn1 = $.grep(assignments, function(elem,index){ return elem.name == title; });
-
-            if(asgn1.length>0) {
-                if(moditems[i].content.length>0){
-                    total += moditems[i].content[0].points_possible;
-                    var asgnid = asgn1[0].assignment_id;
-                    //console.log(modid,'asgn1.assignment_id:',asgnid);
-                    var subm1 = $.grep(subms, function(elem,index) {
-                        return elem.assignment_id == asgnid;
-                    });
-                    //console.log('subm1:',subm1);
-                    if(subm1.length>0) {
-                        score += subm1[0].score;
-                    }
-                }
-            }
-        }
-		
-		
-		*/
-		//return $modid;
 	}
-    
-    private function getSingleSubmissionSingleUserSingleAssignment($student,$assignment)
-    {
-        $studentIds = array($student);
-        $assignmentIds = array($assignment);
-        $multipleStudents = false;
-        $multipleAssignments = false;
-        $allStudents = false;
-        $allAssignments = false;
-        //can have the student Id param null if multipleUsers is set to false (we'll only get the current user's submissions)
-        $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents,
-            $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
-        
-        $roots = new Roots();
-        $res = $this->roots->submissions($req);
-        
-        //echo json_encode($res);
-        $score = intval($res.score);// ???
-        return $score;
-    }
+//OBSOLETE//
 }

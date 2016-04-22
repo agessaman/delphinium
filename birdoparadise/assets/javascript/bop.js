@@ -158,15 +158,17 @@ $(document).ready(function() {
 			//var starset = getStars(modboxs[i].module_id);//send module id
 			
 			//send module.id : returns score,total
-			var promise = $.get('calculateStars',{modid:modboxs[i].id});
+			var modid=modivs[i].id;
+			var promise = $.get('calculateStars', {'modid': modid});
 			promise.then(function (data) {
-				console.log('promise:', i, data);
+				
 				//console.log(i, data.score, data.total, data);
 				// createStars(score,total);
 				//$(modivs[i]).append(starset);
 				
                 // Done loading so remove loader layer
                 count += 1;
+				console.log('promise:', count, data);
 				if(count == modivs.length) {
 				    $('.loading-indicator-container').hide();
                 }
