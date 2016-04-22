@@ -1260,7 +1260,7 @@ class CanvasHelper
         $urlPieces= array();
         $domain = $_SESSION['domain'];
         $user = !is_null($userId)?$userId:$_SESSION['userID'];
-        if(!$user) $user = 3;
+
         $urlPieces[]= "http://{$domain}/api/v1/users/{$user}";
         $token = \Crypt::decrypt($_SESSION['userToken']);
         $urlArgs = array();
