@@ -101,11 +101,8 @@ class LtiConfiguration extends ComponentBase {
         if (!isset($_SESSION)) {
             session_start();
         }
-        echo "<pre>";
         echo "POST:<br>";
-        var_dump($_POST);
-        echo "GET:<br>";
-        var_dump($_GET);
+        echo json_encode($_POST);
         $_SESSION['baseUrl'] = Config::get('app.url', 'backend');
         $_SESSION['courseID'] = \Input::get('custom_canvas_course_id');
         $_SESSION['userID'] = \Input::get('custom_canvas_user_id');
