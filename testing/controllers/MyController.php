@@ -25,6 +25,7 @@ namespace Delphinium\Testing\Controllers;
 use BackendMenu;
 use Backend\Classes\Controller;
 use Delphinium\Testing\Widgets\Delphiniumize;
+use RainLab\Builder\Widgets\PluginList;
 
 /**
  * My Controller Back-end Controller
@@ -47,5 +48,6 @@ class MyController extends Controller
         BackendMenu::setContext('Delphinium.Greenhouse', 'greenhouse', 'greenhouse');
 
         new Delphiniumize($this, 'delphiniumize');
+        new PluginList($this, 'pluginList');
     }
 }
