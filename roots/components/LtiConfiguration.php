@@ -101,6 +101,7 @@ class LtiConfiguration extends ComponentBase {
         if (!isset($_SESSION)) {
             session_start();
         }
+        echo "<pre>";
         echo "POST:<br>";
         var_dump($_POST);
         echo "GET:<br>";
