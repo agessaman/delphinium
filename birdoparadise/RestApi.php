@@ -33,26 +33,26 @@ class RestApi extends Controller
 {  
 	public function calculateStars()
 	{
-		/* PSEUDO
-            send module.id and return score, total
+		/*
+            send module id and return score, total
             
             get the module[modid] items
-            get the assignments and submissions that match this module items
+            get all assignments
             
-            calculate score & total possible
-            return score & total
-			---
             for each module item
-            add up total from mod_item.content[0].points_possible;
-            find the assignment that matches mod_item.title
-            get its id to find matching submission.score
-            add up score
-            return score,total
+                add to total using module_items.content[0].points_possible
+
+                find the assignment that matches the module item title
+                use the assignment id & student id to get the submission score
+
+                add to score
+            
+            return score & total 
         */
         $modid = \Input::get('modid');
-        $score=5;
-		$total=10;
-		$arr = array('score'=>$score,'total'=>$total,'modid'=>$modid);
+        //$score=5;// test
+		//$total=10;
+		//$arr = array('score'=>$score,'total'=>$total,'modid'=>$modid);
 		//return $arr;//test OK
 		
         // get the module matching id
@@ -68,15 +68,13 @@ class RestApi extends Controller
 		$roots = new Roots();
         $module = $roots->modules($req);
 		
-        // all assignments
+        // get all assignments
 		$req = new AssignmentsRequest(ActionType::GET);
 		$res = $roots->assignments($req);// all
 
-		//$assignmentIds = array();
-		$assignments = array();// all to find matching mod item title then assignment_id
+		$assignments = array();// to find matching mod item title then assignment_id
 		foreach ($res as $assignment) {
-			//array_push($assignmentIds, $assignment["assignment_id"]);
-			array_push($assignments, $assignment);//match mod.item.title to get assignment_id 
+			array_push($assignments, $assignment);
 		}
         
         $student = $_SESSION['userID'];
@@ -85,35 +83,48 @@ class RestApi extends Controller
 		
 		$modArr = $module["module_items"]->toArray();
         foreach ($modArr as $item) {
-        // find the assignment that matches module item title 
-		// get its id to find matching submission
-            // if module_item has content
-            if (array_key_exists('content', $item)) {
+            // only items with points
+            if(count($item["content"])>0) {
+                $total = $total + intval($item["content"][0]["points_possible"]);
 
- 				$content=$item["content"][0];// ONLY 1 is throwing: Undefined offset: 0" on line 99
-				$total = $total + intval($content["points_possible"]);
-				
-                $title = $item['title'];
-				
-                if(in_array($title, $assignments)) {
-                    $assignment = array_column($assignments, 'assignment_id');
-					$score = 33;//test No Match found
-				}
-                
-             //   $subScore = getSingleSubmissionSingleUserSingleAssignment($student,$assignment);
-             //   $score = $score + $subScore;
+                $title = $item['title'];// OK
+
+                // find the assignment that matches module item title 
+                // get its id to find matching submission
+                foreach($assignments as $key ) {
+                    if(in_array($title, $key)) {
+                        $assignment = $key["assignment_id"];// id for submission
+                        //$score = $assignment;// test
+                    }
+                }
+
+                //SOME throw error:
+                //An error occurred when attempting to retrieve resource.
+                //Reason: user not authorized to perform that action" on line 100 of .../delphinium/roots/guzzle/GuzzleHelper.php
+
+                // get submission for this student, this assignment
+                $studentIds = array($student);
+                $assignmentIds = array($assignment);
+                $multipleStudents = false;
+                $multipleAssignments = false;
+                $allStudents = false;
+                $allAssignments = false;
+
+                $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents,
+                    $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
+
+                $res = $roots->submissions($req);
+                //$score = $res;// test
+                $score = $score + intval($res[0]["score"]);
             }
         }
 		
         $arr = array('score'=>$score,'total'=>$total,'modid'=>$modid);
 		return $arr;
 
-		/*
-			do the getStars calculations here
-			will also need the module, get it using id
+        /*
+        //ORIGINAL JS: function getStars(modid){
 		
-	//ORIGINAL:function getStars(modid){
-		// construct for modid = one module by id
 		// get the module matching modid
         var mod1 = $.grep(modobjs, function(elem,index){ return elem.module_id == modid; });
         
@@ -142,29 +153,9 @@ class RestApi extends Controller
                 }
             }
         }
-		*/
+        */
 	}
-    
-    private function getSingleSubmissionSingleUserSingleAssignment($student,$assignment)
-    {
-        $studentIds = array($student);
-        $assignmentIds = array($assignment);
-        $multipleStudents = false;
-        $multipleAssignments = false;
-        $allStudents = false;
-        $allAssignments = false;
-        //can have the student Id param null if multipleUsers is set to false (we'll only get the current user's submissions)
-        $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents,
-            $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
-        
-        $roots = new Roots();
-        $res = $roots->submissions($req);
-        
-        //echo json_encode($res);
-        $score = intval($res.score);// ???
-        return $score;
-    }
-	
+
 //OBSOLETE//
     public function getAssignments()
 	{
