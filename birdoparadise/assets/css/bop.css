@@ -66,11 +66,14 @@ a[role=tab] { font-size: 1.1em; }
 	box-shadow:         3px 3px 5px 0px rgba(50, 50, 50, 0.8);
 }
 .title {
-	background-color: #ababab;/* over ride with state */
-	color: #fafafa;
-	padding: 5px;
 	font-size: 0.9em;
 	font-weight: 400;
+	color: #fafafa;
+	
+	background-color: #ababab;/* over ride with state */
+	/* simulate Dashboard style */
+	padding: 5px;/* 5px 20px 5px; */
+	height: 75px;
 }
 .stars {
 	position: absolute;
@@ -80,13 +83,25 @@ a[role=tab] { font-size: 1.1em; }
     color: #ddbb31;/* gold */
 }
 
+.modcompleted {
+	position: absolute;
+	top: 40px;
+	right: 5px;
+	z-index: 800;
+    font-size: 1.8em;
+	color: #ddd;
+}
+
 .modlocked {
 	position: absolute;
-	top: -14px;
-	right: -9px;
+/*	top: -13px;
+	right: -9px; */
+	top: 35px;/* bottom right */
+	right: 8px;
 	z-index: 800;
     font-size: 2.2em;
-	color: #666666;
+	/*color: #666666; */
+	color: #333;
 }
 .items {
     /* for testing show id & item count */

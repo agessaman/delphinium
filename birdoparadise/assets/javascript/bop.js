@@ -90,6 +90,9 @@ $(document).ready(function() {
             var modbox = '<div id="'+modlist[i].module_id+'" class="moditem" data-locked="'+modlist[i].locked+'">';
                 modbox +='<div class="title '+modlist[i].state+'">'+modlist[i].name+'</div>';
                 //console.log('state:',modlist[i].state);//null,locked,unlocked,started,completed
+				if(modlist[i].state == 'completed') {
+					modbox +='<div class="modcompleted" data-toggle="tooltip" data-placement="bottom" title="Completed"><i class="icon-check-square-o"></i></div>';
+				}
                 if(modlist[i].state == 'locked') {
                     var prereqids = modlist[i].prerequisite_module_ids;
                     var prename = '';// can have multiple. comma delimited string.
@@ -108,7 +111,7 @@ $(document).ready(function() {
 						console.log('prerequisite id:',preids[pid], 'name:',prename);
 						//if(itm[0].state == 'locked'){ console.log('Show locked prereqs'); }
                     }
-				    modbox +='<div class="modlocked" data-toggle="tooltip" data-placement="bottom" title="'+prename+'"><i class="icon-lock"></i></div>';   
+				    modbox +='<div class="modlocked" data-toggle="tooltip" data-placement="bottom" title="'+prename+'"><i class="icon-lock"></i></div>';
                 }
 				//modbox +='<div class="items">'+modlist[i].module_id+' Items: '+modlist[i].items_count+'</div>';// testing
                 
@@ -342,7 +345,7 @@ $(document).ready(function() {
                 ico='icon-question-circle';
                 break;
             case 'SubHeader':
-                ico='icon-file-text-o';
+                ico='icon-paragraph';//'icon-header';//'icon-file-text-o';
                 break;
         }
         return '<i class='+ico+'></i>';
@@ -363,11 +366,14 @@ $(document).ready(function() {
         filled=20, half=10, open=0
     */
     if(role == 'Learner') {
+		// get assignments, submissions, modulescores with RestApi?
+		
 		// for each modulescores createStars
-		console.log('modulescores:',modulescores.length);//26
+		console.log('modulescores:',modulescores.length);
 		var modivs = $('.moditem');
 		for(var i=0; i<modivs.length; i++)
 		{
+			// find matching array[index] by id
 			var module=$.grep(modulescores, function(elem,index) {
 				return elem.modid == modivs[i].id;
 			});
