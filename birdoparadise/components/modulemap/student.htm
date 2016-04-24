@@ -55,3 +55,17 @@
         </div>
     </div>
 </div>
+<script>
+	/*
+		These 3 variables are only available if Student
+		They cannot be loaded in default.htm if Instructor
+	*/
+	if(role == "Learner") {
+		var modulescores = {{modulescores|raw}};
+		//console.log('modulescores:', modulescores);
+		var submissions = {{submissions|raw}};
+		console.log('submissions:', submissions.length, submissions);
+		var assignments = {{assignments|raw}};
+		console.log('assignments:', assignments.length, assignments);
+	}
+</script>
