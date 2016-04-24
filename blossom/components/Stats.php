@@ -250,12 +250,12 @@ class Stats extends ComponentBase
         $formController = new \Delphinium\Blossom\Controllers\Stats();
         $formController->create('frontend');
         // Append the formController to the page
-        $this->page['form'] = $formController;
-        $this->page['recordId'] = $this->statsInstanceId;
+        $this->page['statsForm'] = $formController;
+        $this->page['statsRecordId'] = $this->statsInstanceId;
 
         //add the instructions page for the teacher
-        $instructions = $formController->makePartial('instructions');
-        $this->page['instructions'] = $instructions;
+        $instructions = $formController->makePartial('statsinstructions');
+        $this->page['statsinstructions'] = $instructions;
     }
 
     public function getStatsData($experienceInstanceId)

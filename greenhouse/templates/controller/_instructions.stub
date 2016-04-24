@@ -40,12 +40,12 @@ You may not distribute any version of this software, modified or otherwise
 
     <p>In order to make this partial responsive images must be set as the
     background of a div. Then set the background URL of the div with CSS</p>
-    <div id="image1"></div>
+    <div id="imageExample"></div>
 </div>
 
 <style>
 
-    #image1{
+    #imageExample{
         width: 100%;
         height: 72px;//set the height of your image
         background-image: url('<?= Config::get("app.url", "backend") ?>plugins/{{lower_author}}/{{lower_plugin}}/assets/images/yourimage.png');

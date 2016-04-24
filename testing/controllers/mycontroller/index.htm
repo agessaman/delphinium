@@ -19,4 +19,26 @@
   ~ You may not distribute any version of this software, modified or otherwise
   -->
 
-<?= $this->listRender() ?>
+
+<div class="layout-row min-size">
+    <ul class="nav nav-tabs" data-disposable="">
+        
+        <li class="active"><a href="#primarytab-2" data-toggle="tab" title="New"><span class="title"><span>New Instance</span></span></a><span class="tab-close"></span></li>
+        <li class=""><a href="#primarytab-3" data-toggle="tab" title="Instructions"><span class="title"><span>Instructions</span></span></a><span class="tab-close"></span></li>
+    </ul>
+</div>
+<div>
+    <div class="tab-content">
+
+
+        <div id="primarytab-2" class="tab-pane fade in active" style="padding: 5px 0px;">
+            <?= $this->widget->delphiniumize->render() ?>
+        </div>
+
+        <div id="primarytab-3" class="tab-pane fade in" style="padding: 0px 20px;">
+            <?= $this->makePartial('instructions') ?>
+        </div>
+    </div>
+</div>
+
+

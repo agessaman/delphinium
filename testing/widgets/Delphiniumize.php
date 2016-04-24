@@ -11,18 +11,17 @@
  * Dissemination of this information or reproduction of this material is strictly forbidden unless prior written permission is obtained
  * from Project Delphinium.
  *
- * THE RECEIPT OR POSSESSION OF THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS
- * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.
+ * THE RECEIPT OR POSSESSION OF THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS  
+ * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.                
  *
  * Unauthorized copying of this file, via any medium is strictly prohibited
  * Non-commercial use only, you may not charge money for the software
  * You can modify personal copy of source-code but cannot distribute modifications
  * You may not distribute any version of this software, modified or otherwise
  */
+namespace Delphinium\Testing\Widgets;
 
-namespace Delphinium\Testing\Components;
-
-use Cms\Classes\ComponentBase;
+use Backend\Classes\WidgetBase;
 use System\Classes\UpdateManager;
 use October\Rain\Support\Str;
 use Delphinium\Greenhouse\Templates\Component;
@@ -40,41 +39,42 @@ use PhpParser\NodeTraverser;
 use PhpParser\BuilderFactory;
 use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Dumper;
-use System\Classes\VersionManager;
 use System\Classes\PluginManager;
 use Yaml;
+use Flash;
 
-class Delphiniumize extends ComponentBase
+
+class Delphiniumize extends WidgetBase
 {
+    use \Backend\Traits\SearchableWidget;
+    use \Backend\Traits\SelectableWidget;
+
+    protected $theme;
+
+    public $noRecordsMessage = 'rainlab.builder::lang.database.no_records';
 
     protected $newPluginData;
     protected $readyVars;
     protected $fileVersions;
     protected $pluginManager;
-    public function componentDetails()
+
+    public function __construct($controller, $alias)
     {
-        return [
-            'name'        => 'Delphiniumize Component',
-            'description' => 'No description provided yet...'
-        ];
+        $this->alias = $alias;
+
+        parent::__construct($controller, []);
+        $this->bindToController();
     }
 
-    public function defineProperties()
+    /**
+     * Renders the widget.
+     * @return string
+     */
+    public function render()
     {
-        return [];
+        return $this->makePartial('delphiniumize');
     }
 
-    public function onRun()
-    {
-        $vars =  array("author"=>"author","plugin"=>"newPlugin", "component"=>"newComponent", "controller"=>"newController", "model"=>"newModel");
-
-        $this->readyVars = $this->processVars($vars);
-
-        $this->newPluginData = $vars;
-        $this->makeFiles();
-        $this->modifyFiles();
-        $this->octoberUp();
-    }
 
     public function onAddItem()
     {
@@ -84,6 +84,9 @@ class Delphiniumize extends ComponentBase
         $this->newPluginData = $vars;
         $this->makeFiles();
         $this->modifyFiles();
+        $this->octoberUp();
+
+        Flash::success("Successfully created {$this->readyVars['author']}.{$this->readyVars['plugin']} plugin");
     }
 
     private function makeFiles()
