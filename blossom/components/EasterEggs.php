@@ -25,6 +25,7 @@ namespace Delphinium\Blossom\Components;
 use Cms\Classes\ComponentBase;
 use Delphinium\Blossom\Models\EasterEggs as EasterEggsModel;
 use Delphinium\Blossom\Components\Experience as ExperienceComponent;
+use Flash;
 
 class EasterEggs extends ComponentBase
 {
@@ -129,13 +130,20 @@ class EasterEggs extends ComponentBase
                 $formController->create('frontend');
                 
                 //this is the primary key of the record you want to update
-                $this->page['recordId'] = $config->id;
+                $this->page['eggsRecordId'] = $config->id;
                 // Append the formController to the page
-                $this->page['form'] = $formController;
+                $this->page['eggsForm'] = $formController;
                 
                 // Append Instructions page
-                $instructions = $formController->makePartial('instructions');
-                $this->page['instructions'] = $instructions;
+                $instructions = $formController->makePartial('eggsinstructions');
+                $this->page['eggsinstructions'] = $instructions;
+
+                $this->addJs("/plugins/delphinium/blossom/assets/javascript/popover.js");
+
+                $this->addCss('/modules/system/assets/ui/storm.css', 'core');
+                $this->addJs('/modules/system/assets/ui/storm-min.js', 'core');
+                $this->addCss('/modules/system/assets/ui/storm.less', 'core');
+
                 
                 //code specific to instructor.htm goes here
             }

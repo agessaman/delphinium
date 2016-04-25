@@ -21,7 +21,7 @@
 
 var eggs = ['harlem_shake','ripples','asteroids','katamari','bombs','ponies','my_little_pony','snow'];
 var eggsIcons = ['bolt','bullseye','rocket','fa fa-soccer-ball-o','fa fa-bomb','linux','github-alt','gears'];
-var comands = ['Press "h" and "a" at the same time', 'Press "r" and "i" at the same time and move the mouse', 'Press "a" and "s" at the same time, space to shoot, arrow keys to move', 'Press "k" and "a" at the same time, follow instructions', 'Press "b" and "o" at the same time, click mouse in text to drop them', 'Press "p" and "o" at the same time, space to plant, arrow keys to move', 'Press "m" and "y" at the same time, watch and enjoy','Press "s" and "n" at the same time, watch and enjoy'];
+var comands = ['Press "h" and "a" at the same time, make sure your sound is on', 'Press "r" and "i" at the same time and move the mouse', 'Press "a" and "s" at the same time, space to shoot, arrow keys to move', 'Press "k" and "a" at the same time, follow instructions', 'Press "b" and "o" at the same time, click mouse in text to drop them', 'Press "p" and "o" at the same time, space to re-spawn, arrow keys to move', 'Press "m" and "y" at the same time, watch and enjoy','Press "s" and "n" at the same time, watch and enjoy, follows mouse, break lights', 'Press "r" and "p" at the same time, make sure your sound is on'];
 var keys = {};
 var count = 65;
 var str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
