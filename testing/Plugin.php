@@ -89,7 +89,7 @@ class Plugin extends PluginBase
         Event::listen('backend.menu.extendItems', function($manager) {
 
             $manager->addSideMenuItems('Delphinium.Greenhouse', 'greenhouse', [
-                'Bonus' => [
+                'Delphiniumize' => [
                     'label' => 'Delphiniumize',
                     'icon' => 'icon-heart',
                     'owner' => 'Delphinium.Greenhouse',
