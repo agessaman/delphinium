@@ -20,5 +20,5 @@
  * You may not distribute any version of this software, modified or otherwise
  */
 
-Route::get('getAssignments', 'Delphinium\Birdoparadise\RestApi@getAssignments');
-Route::get('getSubmissions', 'Delphinium\Birdoparadise\RestApi@getSubmissions');
+// assignments, submissions, modulescores
+Route::get('getModuleItemData', 'Delphinium\Birdoparadise\RestApi@getModuleItemData');

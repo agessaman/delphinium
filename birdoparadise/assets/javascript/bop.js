@@ -22,7 +22,7 @@
 $(document).ready(function() {
 
 /* Delphinium functions*/
-	/* Add the content message dynamically, could be different for role */
+	/* Add the content message dynamically, could be different for each role */
 	$('#popinfo').attr('data-content','Click a module to see assignments. Refresh the page to update progress.');
     $('#popinfo').popover();// activate info
     /*
@@ -33,9 +33,8 @@ $(document).ready(function() {
         http://daftspunk.github.io/Font-Autumn/
         
         todo:
-        Tooltip or popover for reason locked prerequisites
+        reason locked prerequisites
 		module box background images - upload and location
-        assignment links in locked modules are disabled for student view
     */
 	
 	//http://diveintohtml5.info/storage.html
@@ -66,7 +65,6 @@ $(document).ready(function() {
     // display module items when modbox clicked
     var modobjs = [moduledata[0]];// all modules for search include First
     var modlist = [];// modules in current tab only
-    var modboxs = [];// all modules in sequence matching tabs
 	
     // create tabs and modules from data
     for(var m=0; m<moduledata.length; m++) {
@@ -81,7 +79,7 @@ $(document).ready(function() {
             var widt = $(nuplace).width();// increase for each new module
             var mods = chld[c].children;
             modlist = [];// modules in this tab
-            // deep search children
+            //recursive deep search children - do this in the php
 			getMyChildren(chld[c]['children']);
             // now display modlist for each tab
             for(i=0; i<modlist.length; i++) {
@@ -92,6 +90,9 @@ $(document).ready(function() {
             var modbox = '<div id="'+modlist[i].module_id+'" class="moditem" data-locked="'+modlist[i].locked+'">';
                 modbox +='<div class="title '+modlist[i].state+'">'+modlist[i].name+'</div>';
                 //console.log('state:',modlist[i].state);//null,locked,unlocked,started,completed
+				if(modlist[i].state == 'completed') {
+					modbox +='<div class="modcompleted" data-toggle="tooltip" data-placement="bottom" title="Completed"><i class="icon-check-square-o"></i></div>';
+				}
                 if(modlist[i].state == 'locked') {
                     var prereqids = modlist[i].prerequisite_module_ids;
                     var prename = '';// can have multiple. comma delimited string.
@@ -110,12 +111,12 @@ $(document).ready(function() {
 						console.log('prerequisite id:',preids[pid], 'name:',prename);
 						//if(itm[0].state == 'locked'){ console.log('Show locked prereqs'); }
                     }
-				    modbox +='<div class="modlocked" data-toggle="tooltip" data-placement="bottom" title="'+prename+'"><i class="icon-lock"></i></div>';   
+				    modbox +='<div class="modlocked" data-toggle="tooltip" data-placement="bottom" title="'+prename+'"><i class="icon-lock"></i></div>';
                 }
 				//modbox +='<div class="items">'+modlist[i].module_id+' Items: '+modlist[i].items_count+'</div>';// testing
                 
                 if(role != 'Learner') {
-                    // Instructor view no scores available
+                    // Instructor view has no scores available so don't see stars?
                     modbox +='<div class="stars"><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i></div>';
                 }
                 
@@ -127,53 +128,11 @@ $(document).ready(function() {
 				//$(nuplace).parent().css({'overflow': 'hidden' });// id=tab_# class=tab-pane
                 //console.log('width:',widt);
                 $(nuplace).append(modbox);
-				modboxs.push(modlist[i]);
             }
         }
     }
     //console.log('modobjs:', modobjs);// to search from
-    
-	/*
-		tabs are built, now add stars if student
 		
-		call studentProgress when page loads
-		returns student data and builds stars
-		
-		do we need a button? for update progress?
-		assignments are done in a new tab and would not be updated unless refreshed
-    */
-	if(role == 'Learner') {
-		studentProgress();
-	}
-	function studentProgress() {
-		var modivs = $('.moditem');// array of modules displayed in tabs
-		//console.log(modivs.length, modboxs.length);
-		//https://laravel.com/docs/5.2/controllers#basic-controllers
-		// call functions in php
-		var promise = $.get('getAssignments');//faster
-        promise.then(function (data) {
-            console.log('assignments:',data);
-            assignments= data;
-            
-			var promises = $.get('getSubmissions');
-			promises.then(function (data) {
-				//console.log('submissions:',data);
-				subms = $.grep(data, function(elem,index){ return elem.score > 0; });
-				console.log('subms:',subms);
-				// calc filled stars from submissions and assignments
-                
-				for(var i=0; i<modivs.length; i++)
-				{
-					var starset = getStars(modboxs[i].module_id);//find items
-					$(modivs[i]).append(starset);
-				}
-				
-			}).fail(function (data2) { console.log('failSub:',data2); });
-        }).fail(function (data2) { console.log('failAsgn:',data2); });
-    }
-	// Done loading remove loader layer
-	$('.loading-indicator-container').hide();// could not get this to show
-	
     /* click module to see module_items */
     $('.moditem').on('click', function(){
         var modid = $(this).attr('id');
@@ -183,9 +142,9 @@ $(document).ready(function() {
         console.log(modid, mod[0].name, mod);
         var moditems= mod[0].module_items;
         console.log('moditems:',moditems);
-        // display in modal detailed-body
+        // display module_items in modal detailed-body
         
-        $('#detailed-body').empty();
+		$('#detailed-body').empty();
         
         // hide if fulfilled
 		//append prerequisite_module_ids 
@@ -207,11 +166,12 @@ $(document).ready(function() {
                 var itm = $.grep(modobjs, function(elem,index){
                     return elem.module_id == preids[pid];
                 });
-                //console.log('itm:',itm[0]);// undefined for First
+                //console.log('itm:',itm[0]);// undefined for First or a tab
                 
                 if(itm.length>0) { prename = itm[0].name; }
                 console.log('pid:',pid,'prename:',prename);
-                if(itm[0].state == 'locked'){ showPrereq=true; console.log('Show locked prereqs'); }
+				// IF itm is a tab then error
+                if(itm[0].state == 'locked') { showPrereq=true; console.log('Show locked prereqs'); }
                 if(prename != '') {
                     prereq +='<li>'+prename+'</li>';
                 }
@@ -224,7 +184,7 @@ $(document).ready(function() {
             }
 		}
 		
-        //append module_items : mod[0].state;//null,locked,unlocked,started,completed
+        //append module_items
         for(var i=0; i<moditems.length; i++) {
 			var hasContent=false;
             var item='';//'<div class="assignment">';
@@ -234,8 +194,6 @@ $(document).ready(function() {
                 // before link & icon float:right
                 inner+='<div class="points">';
                 if(role == 'Learner') {
-                // if student 'Score: ##/possible'
-                    //JUST .title
                     inner += 'Score: '+getScore(moditems[i].title)+'/'+moditems[i].content[0].points_possible+'</div>';
                 } else {
                     inner +='--/'+moditems[i].content[0].points_possible+' pts.</div>';// close points
@@ -243,37 +201,30 @@ $(document).ready(function() {
             }
             inner +='<div class="ico">'+chooseIcon(moditems[i].type)+'</div>';
             inner +='<div class="link">';
+			//null, locked, unlocked, started, completed
 			if(mod[0].state == 'locked') {
-				item='<div class="assignment unavailable">';
-				//inner += ' '+moditems[i].title;// not a link if locked
+				item='<div class="assignment unavailable">';// not a link
 			} else {
-				item='<div class="assignment available"';
+				item='<div class="assignment available"';// whole div is clickable
 				item +='data-url="'+moditems[i].html_url+'?module_item_id='+moditems[i].module_item_id+'">';
-				//inner += ' '+moditems[i].title;
-				/* whole div is clickable */
+			}
+			if(moditems[i].type=='SubHeader') { 
+				item='<div class="subheader">';// not an assignment
 			}
 			inner +=' '+moditems[i].title+'</div>';
 		/*	if(moditems[i].completion_requirement.length > 0) {
-                inner += '<div class="required">'+moditems[i].completion_requirement+'</div>';//{"type":"must_submit"}
-            }
-         */   
+				inner += '<div class="required">'+moditems[i].completion_requirement+'</div>';//{"type":"must_submit"}
+			}
+		*/   
             // after link
             if(hasContent && moditems[i].content[0].lock_explanation.length > 0) {
                 //console.log('lock_ex len:',moditems[i].content[0].lock_explanation.length);
                inner +='<div class="prereqnote">'+moditems[i].content[0].lock_explanation+'</div>';
-            /* WEIRD CONTENT BROKE THIS !!! gets truncated in db !
-			length=255 actualCONTENT.length = 366
-            lock_explanation:
-            "This quiz is part of the module <b>Organizational Controls</b> and hasn&#39;t been unlocked yet.
-            <br/>
-            <div class='spinner'></div>
-            <a style='display: none;' class='module_prerequisites_fallback' href='https://uvu.instructure.com/courses/343331/modules#module"
-            */
             }
             //closer 
             var closer = '<div class="clearme"></div>';
 				closer +='</div>';//item
-            $('#detailed-body').append(item+inner+closer);//(item);
+            $('#detailed-body').append(item+inner+closer);
         }
 		
 		//open available assignments in a new window
@@ -296,9 +247,9 @@ $(document).ready(function() {
 	//console.log('tabVisible:',tabVisible);
 	
     /* 
-	   if tab body is < component or window width turn on scroll arrows
-       on browser resized, check if arrows are needed
-	   on tab change event, check if needed for current tabWidth
+		if tab body is < component or window width turn on scroll arrows
+		on browser resized, check if arrows are needed
+		on tab change event, check if needed for current tabWidth
 		http://getbootstrap.com/javascript/#tabs
 	*/
 	var docWidth = $( document ).width();
@@ -334,19 +285,19 @@ $(document).ready(function() {
 	function scrollTabVisible() {
 		if(scrolling){
 			var sat = $(tabVisible).scrollLeft();
-			$(tabVisible).animate({scrollLeft:sat+scrollAmount}, 300, scrollTabVisible);
+			$(tabVisible).animate({scrollLeft:sat+scrollAmount}, 150, scrollTabVisible);
 		}
 	}
 	$('.aror').hover(function(){
 		scrolling=true;
-		scrollAmount=100;
+		scrollAmount=50;
 		scrollTabVisible();
 	}, function(){
 		scrolling=false;
 	});
 	$('.arol').hover(function(){
 		scrolling=true;
-		scrollAmount=-100;
+		scrollAmount=-50;
 		scrollTabVisible();
 	}, function(){
 		scrolling=false;
@@ -367,7 +318,9 @@ $(document).ready(function() {
 		if(tabCounter==0){ $("tab_" + tabCounter).addClass('in'); }
         tabCounter++; 
     }
-
+	/* send module_item.type
+		return icon to use
+	*/
     function chooseIcon(type) {
         //console.log('type:',type);
         var ico = 'icon-book';
@@ -392,55 +345,58 @@ $(document).ready(function() {
                 ico='icon-question-circle';
                 break;
             case 'SubHeader':
-                ico='icon-file-text-o';
+                ico='icon-paragraph';//'icon-header';//'icon-file-text-o';
                 break;
         }
         return '<i class='+ico+'></i>';
     }
-    /*
+	
+	/*
+		tabs are built, if student, add stars for score
+		
+		assignments are done in a new tab
+		Reload the page to update progress
+		
         for each module
             total = each item points_possible
             if submission for module item
-                earned = each item subm score
-        5 stars = percent completed
+                score = each item submission score
+        5 stars = 100% percent
         each star = 20% check nearest 10%
         filled=20, half=10, open=0
-
-        return stars div
     */
-    function getStars(modid){
-        // construct from modid
-        var mod1 = $.grep(modobjs, function(elem,index){ return elem.module_id == modid; });
-        //console.log('mod1:',modid, mod1);
-        var total=0, score=0;
-        var moditems = mod1[0].module_items;
-        for(var i=0; i<moditems.length; i++) {
-
-            // find a submission for moditem
-            var title=moditems[i].title;
-            var asgn1 = $.grep(assignments, function(elem,index){ return elem.name == title; });
-
-            if(asgn1.length>0) {
-                if(moditems[i].content.length>0){
-                    total += moditems[i].content[0].points_possible;
-                    var asgnid = asgn1[0].assignment_id;
-                    //console.log(modid,'asgn1.assignment_id:',asgnid);
-                    var subm1 = $.grep(subms, function(elem,index) {
-                        return elem.assignment_id == asgnid;
-                    });
-                    //console.log('subm1:',subm1);
-                    if(subm1.length>0) {
-                        score += subm1[0].score;
-                    }
-                }
-            }
-        }
-        // default: no score yet empty stars
-        var starset = '<div class="stars"><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i></div>';
-
-        if(score > 0) {
-            console.log(modid, 'score:',score, 'total:',total);
-            var percent = (score/total) *100;
+    if(role == 'Learner') {
+		// get assignments, submissions, modulescores with RestApi?
+		
+		// for each modulescores createStars
+		console.log('modulescores:',modulescores.length);
+		var modivs = $('.moditem');
+		for(var i=0; i<modivs.length; i++)
+		{
+			// find matching array[index] by id
+			var module=$.grep(modulescores, function(elem,index) {
+				return elem.modid == modivs[i].id;
+			});
+			console.log('modid:',module[0]);
+			var starset=createStars(module[0].score, module[0].total);
+			$(modivs[i]).append(starset);
+		}
+		// Done loading remove loader layer
+		$('.loading-indicator-container').hide();
+	} else {
+		//Instructor
+        $('.loading-indicator-container').hide();
+        // used storm.css to show the spinner but it changes the Modal. override the css
+    }
+	
+	function createStars(score,total) {
+		//console.log('score:',score, 'total:',total);
+		var starset = '<div class="stars"><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i><i class="icon-star-o"></i></div>';
+        if(total == 0) {
+			starset='<div class="stars"></div>';//no assignments = no stars!
+		}
+		if(score > 0) {
+            var percent = (score/total) * 100;
             console.log('percent=',percent);
             starset='<div class="stars">';
             for(var s=1; s<6; s++) {
@@ -455,39 +411,35 @@ $(document).ready(function() {
             starset += '</div>';
         }
         return starset;
-    }
-    
-    // getScore for 1 module_item.title
+	}
+	
+    /* if Learner get Score for 1 module_item.title
+		find assignment matching title
+		find submission matching assignment_id
+		return score
+	*/
     function getScore(title) {
-        // find a submission for moditem
-        var score='--';// no score
-        //var title=moditem.title;
-        var asgn1 = $.grep(assignments, function(elem,index){ return elem.name == title; });
-        if(asgn1.length>0) {
-            //if(moditem.content.length>0){
-                var asgnid = asgn1[0].assignment_id;
-                //console.log(modid,'asgn1.assignment_id:',asgnid);
-                var subm1 = $.grep(subms, function(elem,index) {
-                    return elem.assignment_id == asgnid;
-                });
-                //console.log('subm1:',subm1);
-                if(subm1.length>0) {
-                    score = subm1[0].score;
-                }
-            //}
-        }
-        return score;
+		// find a submission for moditem
+		var score='--';// no score
+		var asgn1 = $.grep(assignments, function(elem,index){ return elem.name == title; });
+		if(asgn1.length>0) {
+			var asgnid = asgn1[0].assignment_id;
+			var subm1 = $.grep(submissions, function(elem,index) {
+				return elem.assignment_id == asgnid;
+			});
+			//console.log('subm1:',subm1);
+			if(subm1.length>0) {
+				score = subm1[0].score;
+			}
+		}
+		return score;
     }
     
-	//console.log('moduledata[0]:', moduledata[0]);
-    //var cmods = [];// test deep search for ['children']
-	//var chld = moduledata[0]['children'];// 4 tabs
-	//getMyChildren(chld[1]['children']);// tab 2 children
+	/* recursive deep search children */
 	function getMyChildren(theObj) {
 		var result = null;
 		for(var i=0; i<theObj.length; i++) {
 			if('children' in theObj[i]) {
-				//cmods.push(theObj[i]);// test: comment out modobjs & modlist
 				modobjs.push(theObj[i]);// all objects
 				modlist.push(theObj[i]);// build moduledata
 				result = getMyChildren(theObj[i].children);

@@ -27,10 +27,10 @@ use Delphinium\Roots\Roots;
 use Delphinium\Roots\Enums\ActionType;
 use Delphinium\Roots\Requestobjects\AssignmentsRequest;// for submissions
 use Delphinium\Roots\Requestobjects\SubmissionsRequest;// student progress
+use Delphinium\Roots\Requestobjects\ModulesRequest;// for modulescores
 
 class Modulemap extends ComponentBase
 {
-
     public function componentDetails()
     {
         return [
@@ -46,8 +46,8 @@ class Modulemap extends ComponentBase
 
     public function onRun()
     {
-        try
-        {
+		try
+		{
             if (!isset($_SESSION)) { session_start(); }
 
             // comma delimited string
@@ -65,11 +65,17 @@ class Modulemap extends ComponentBase
             $moduledata = $roots->getModuleTree(false);
 			$this->page['moduledata'] = json_encode($moduledata);
             
+			// Learner getStars from modulescores
+			if($roleStr == 'Learner') {
+				$this->getModuleItemData();// assignments, submissions & modulescores
+			}
+			
             // ready to finish loading assets
+            $this->addCss("/modules/system/assets/ui/storm.css");// loader spinner but changes Modal override css
             $this->addCss("/plugins/delphinium/birdoparadise/assets/css/font-autumn.css");
             $this->addCss("/plugins/delphinium/birdoparadise/assets/css/bop.css");
             $this->addJs("/plugins/delphinium/birdoparadise/assets/javascript/bop.js");
-			
+		
         }
         catch (\GuzzleHttp\Exception\ClientException $e)
         {
@@ -90,6 +96,116 @@ class Modulemap extends ComponentBase
             }
             return \Response::make($this->controller->run('error'), 500);
         }
-	
     }
+	
+	public function getModuleItemData()
+	{
+		// assignments to match module item title and find assignment_id
+		$roots = new Roots();
+		$req = new AssignmentsRequest(ActionType::GET);
+		$res = $roots->assignments($req);
+		
+		$assignments = array();// title & id
+		foreach ($res as $assignment) {
+			array_push($assignments, $assignment);
+		}
+		//$this->assignments = $assignments;
+		// STORED as global assignments
+		$this->page['assignments'] = json_encode($assignments);
+		
+		// submissions to calculate score & total
+		if(!isset($_SESSION)) { session_start(); }
+		$student = $_SESSION['userID'];
+		//if($student == null) { $student='1604486'; }
+		$studentIds = array($student);//['1604486'];//Test Student
+		$assignmentIds = array();
+		$allStudents = false;
+		$allAssignments = true;
+		$multipleStudents = false;
+		$multipleAssignments = true;
+		
+		$req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
+		
+		$submitted = $roots->submissions($req);
+		
+		// get rid of any that are null or 0
+		$valid = array();// score > 0
+		foreach ($submitted as $submission) {
+			if($submission["score"] > 0) {
+				array_push($valid, $submission);
+			}
+		}
+		$submissions = $valid;// submissions
+		// STORED as global submissions and in page
+		$this->page['submissions'] = json_encode($valid);
+		
+		// modules
+        $moduleId = null;
+        $moduleItemId = null;
+        $includeContentDetails = true;
+        $includeContentItems = true;
+        $module = null;
+        $moduleItem = null;
+        $freshData = false;
+        $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems, $includeContentDetails, $module, $moduleItem, $freshData);
+		
+        $modules = $roots->modules($req);
+	
+		/*
+            //for each module id STORE id, score, total
+            
+            get the module[modid] items
+            for each module item
+                add to total using module_items.content[0].points_possible
+                find the assignment that matches the module item title
+                use the assignment id to get the submission score
+                add to score
+            return score & total
+        */
+        $total=0;
+		$score=0;
+		$asgnIds= array();
+		foreach ($modules as $module) {
+			$moditems = $module["module_items"]->toArray();
+			$modid = $module["module_id"];
+			$total=0;// reset for each module
+			$score=0;
+			$asgnIds= array();
+			
+			foreach ($moditems as $item) {
+				$assignmentId=null;
+				$title='';
+				$subScore=0;// reset for each item
+				// only items with points
+				if(count($item["content"])>0) {
+					$total = $total + intval($item["content"][0]["points_possible"]);
+					
+					$title = $item['title'];
+					
+					// find the assignment name that matches module item title 
+					// get its id to find matching submission
+					foreach($assignments as $key ) {
+						if($title == $key["name"]) {
+							$assignmentId = $key["assignment_id"];// id for submission
+								array_push($asgnIds, $assignmentId);// test
+							break;// done
+						}
+					}
+					// get submission assignment_id that matches this assignment_id
+					foreach($submissions as $sub ) {
+						if($assignmentId == $sub["assignment_id"]) {
+							$subScore = $sub["score"];
+							$score = $score + intval($subScore);
+							break;// done
+						}
+					}
+				}
+			}
+			
+			$arr = array('modid'=>$modid,'score'=>$score,'total'=>$total,'asgnIds'=>$asgnIds);
+			$modulescores[] = $arr;
+		}
+		$this->page['modulescores']=json_encode($modulescores);
+	}
+	
 }

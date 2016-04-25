@@ -25,59 +25,116 @@ namespace Delphinium\Birdoparadise;
 use Illuminate\Routing\Controller;
 use Delphinium\Roots\Roots;
 use Delphinium\Roots\Enums\ActionType;
+use Delphinium\Roots\Requestobjects\ModulesRequest;
 use Delphinium\Roots\Requestobjects\AssignmentsRequest;// for submissions
 use Delphinium\Roots\Requestobjects\SubmissionsRequest;// student progress
 
 class RestApi extends Controller 
 {
-    public function getAssignments()
+	public function getModuleItemData()
 	{
-		//https://laravel.com/docs/5.2/controllers#basic-controllers
-		// assignments
+		// assignments to match module item title and find assignment_id
 		$roots = new Roots();
 		$req = new AssignmentsRequest(ActionType::GET);
 		$res = $roots->assignments($req);
-
-		//$assignmentIds = array();// for submissionsRequest
-		$assignments = array();// for points_possible
+		
+		$assignments = array();// title & id
 		foreach ($res as $assignment) {
-			//array_push($assignmentIds, $assignment["assignment_id"]);
 			array_push($assignments, $assignment);
 		}
-		//$this->page['assignments']=json_encode($assignments);
-		//echo json_encode($assignments);
-		return $assignments;
-	}
-	public function getSubmissions()
-	{
-		// submissions
-		$roots = new Roots();
-		$req = new AssignmentsRequest(ActionType::GET);
-		$res = $roots->assignments($req);
-
-		$assignmentIds = array();// for submissionsRequest
-		//$assignments = array();// for points_possible
-		foreach ($res as $assignment) {
-			array_push($assignmentIds, $assignment["assignment_id"]);
-			//array_push($assignments, $assignment);
-		}
-		//$this->page['assignments']=json_encode($assignments);
-
-		$studentIds = array($_SESSION['userID']);//['1604486'];//Test Student
-		$allStudents = true;
-		// $assignmentIds from above
+		//$this->page['assignments'] = json_encode($assignments);
+		
+		// submissions to calculate score & total
+		if(!isset($_SESSION)) { session_start(); }
+		$student = $_SESSION['userID'];
+		$studentIds = array($student);//['1604486'];//Test Student
+		$assignmentIds = array();
+		$allStudents = false;
 		$allAssignments = true;
-		$multipleStudents = true;
+		$multipleStudents = false;
 		$multipleAssignments = true;
-		$includeTags = true;
-		$grouped = true;
-
-		$req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments, $includeTags, $grouped);
-
-		$submissions = $roots->submissions($req);
-		//$this->page['submissions']=json_encode($submissions);// score
-		//echo "Called";// success: data is ready
-		//echo json_encode($submissions);
-		return $submissions;
+		
+		$req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
+		$submitted = $roots->submissions($req);
+		
+		// get rid of any that are null or 0
+		$valid = array();
+		foreach ($submitted as $submission) {
+			if($submission["score"] > 0) {
+				array_push($valid, $submission);
+			}
+		}
+		$submissions = $valid;
+		//$this->page['submissions'] = json_encode($valid);
+		
+		// modules
+        $moduleId = null;
+        $moduleItemId = null;
+        $includeContentDetails = true;
+        $includeContentItems = true;
+        $module = null;
+        $moduleItem = null;
+        $freshData = false;
+		
+        $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems, $includeContentDetails, $module, $moduleItem, $freshData);
+        $modules = $roots->modules($req);
+	
+		/*
+            for each module id return id, score, total
+            
+            get the module[modid] items
+            for each module item
+                add to total using module_items.content[0].points_possible
+                find the assignment that matches the module item title
+                use the assignment id to get the matching submission score
+                add to score
+            construct array module.id, score, total
+        */
+        $total=0;
+		$score=0;
+		$asgnIds= array();
+		foreach ($modules as $module) {
+			$moditems = $module["module_items"]->toArray();
+			$modid = $module["module_id"];
+			$total=0;// reset for each module
+			$score=0;
+			$asgnIds= array();
+			
+			foreach ($moditems as $item) {
+				$assignmentId=null;
+				$title='';// reset for each item
+				$subScore=0;
+				// only module_items with points
+				if(count($item["content"])>0) {
+					$total = $total + intval($item["content"][0]["points_possible"]);
+					
+					$title = $item['title'];
+					
+					// find the assignment name that matches module item title 
+					// get its id to find matching submission
+					foreach($assignments as $key ) {
+						if($title == $key["name"]) {
+							$assignmentId = $key["assignment_id"];// id for submission
+								array_push($asgnIds, $assignmentId);// test
+							break;// done
+						}
+					}
+					// find submission assignment_id that matches this assignment_id
+					// get submission score
+					foreach($submissions as $sub ) {
+						if($assignmentId == $sub["assignment_id"]) {
+							$subScore = $sub["score"];
+							$score = $score + intval($subScore);
+							break;// done
+						}
+					}
+				}
+			}
+			
+			$arr = array('modid'=>$modid,'score'=>$score,'total'=>$total,'asgnIds'=>$asgnIds);
+			$modulescores[] = $arr;
+		}
+		//$this->page['modulescores']=json_encode($modulescores);
+		return ('assignments'=>$assignments, 'submissions'=>$submissions, 'modulescores'=>$modulescores);
 	}
 }
