@@ -19,6 +19,14 @@
  * You may not distribute any version of this software, modified or otherwise
  */
 
+/* overide storm.css */
+.modal-header {background:none !important;border-bottom:1px solid #e5e5e5 !important;color:#333333 !important}
+.modal-header .close{color:black !important;background:transparent !important;}
+.modal-body {padding-bottom: 15px;}
+/* hide instructions that don't apply to the professor */
+.hiddenFromTeacher{display: none;}
+/* larger text in tabs */
+a[role=tab] { font-size: 1.1em; }
 .center{
 	text-align: center;
     margin-left: auto;
@@ -39,7 +47,7 @@
 .loading-indicator-container {
 	position: absolute;
 	width: 100%;
-	height: 190px;/* overlay tabs */
+	height: 190px;/* overlay tabs 190px */
 	z-index: 1000;
 }
 .moditem {
@@ -58,11 +66,14 @@
 	box-shadow:         3px 3px 5px 0px rgba(50, 50, 50, 0.8);
 }
 .title {
-	background-color: #ababab;/* over ride with state */
-	color: #fafafa;
-	padding: 5px;
 	font-size: 0.9em;
 	font-weight: 400;
+	color: #fafafa;
+	
+	background-color: #ababab;/* over ride with state */
+	/* simulate Dashboard style */
+	padding: 5px;/* 5px 20px 5px; */
+	height: 75px;
 }
 .stars {
 	position: absolute;
@@ -72,13 +83,25 @@
     color: #ddbb31;/* gold */
 }
 
+.modcompleted {
+	position: absolute;
+	top: 40px;
+	right: 5px;
+	z-index: 800;
+    font-size: 1.8em;
+	color: #ddd;
+}
+
 .modlocked {
 	position: absolute;
-	top: -14px;
-	right: -9px;
+/*	top: -13px;
+	right: -9px; */
+	top: 35px;/* bottom right */
+	right: 8px;
 	z-index: 800;
     font-size: 2.2em;
-	color: #666666;
+	/*color: #666666; */
+	color: #333;
 }
 .items {
     /* for testing show id & item count */
@@ -146,7 +169,7 @@
 	cursor: pointer; /* whole div is clickable */
 }
 .unavailable {
-	background-color: #e0e0e0;
+	background-color: #eeeeee;
 }
 .required {
     width: 80%;
@@ -185,6 +208,11 @@
 .clearme {
     clear:both;
     height: 1px;
+}
+.subheader {
+	height: auto;
+	padding: 10px;/* T,R,B,L */
+	margin-bottom: 5px;
 }
 /* state colors match iris */
 .locked { background-color: #8F8F8F !important; }
