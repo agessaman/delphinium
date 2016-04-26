@@ -66,12 +66,13 @@ class Delphiniumize extends ComponentBase
 
     public function onRun()
     {
-        $vars =  array("author"=>"author","plugin"=>"newPlugin", "component"=>"newComponent", "controller"=>"newController", "model"=>"newModel");
+        $vars =  array("author"=>"Queen","plugin"=>"Rhapsody", "component"=>"Bohemiancomp", "controller"=>"Bohemian", "model"=>"Bohemianmod");
+//        $vars =  array("author"=>"author","plugin"=>"newPlugin", "component"=>"newComponent", "controller"=>"newController", "model"=>"newModel");
 
         $this->readyVars = $this->processVars($vars);
 
         $this->newPluginData = $vars;
-        $this->makeFiles();
+//        $this->makeFiles();
         $this->modifyFiles();
         $this->octoberUp();
     }
