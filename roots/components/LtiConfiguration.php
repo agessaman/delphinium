@@ -106,6 +106,7 @@ class LtiConfiguration extends ComponentBase {
         $_SESSION['courseID'] = \Input::get('custom_canvas_course_id');
         $_SESSION['userID'] = \Input::get('custom_canvas_user_id');
         $_SESSION['domain'] = '185.44.229.29:3000';//\Input::get('custom_canvas_api_domain');
+        //echo json_encode($_POST); die;
         //get the roles
         $roleStr = \Input::get('roles');
         if(stristr($roleStr,'Learner')||stristr($roleStr,'Instructor'))
