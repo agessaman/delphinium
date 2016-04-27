@@ -143,7 +143,7 @@ class Data extends ComponentBase
 
                     $this->redirect($url);
                 } else {
-                    echo("A(n) {$approverRole} must authorize this course. Please contact your instructor.");
+                    echo("An error has occurred. Please contact your instructor.");
                     return;
                 }
             } else {
