@@ -135,8 +135,11 @@ class Data extends ComponentBase
                     //As per my discussion with Jared, we will use the instructor's token only. This is the token that will be stored in the DB
                     //and the one that will be used to make all requests. We will NOT store student's tokens.
                     //TODO: take this redirectUri out into some parameter somewhere...
-                    $redirectUri = "{$_SESSION['baseUrl']}saveUserInfo?lti={$this->property('ltiInstance')}";
-                    $url = "https://{$_SESSION['domain']}/login/oauth2/auth?client_id={$clientId}&response_type=code&redirect_uri={$redirectUri}";
+                    $baseUrlWithSlash = rtrim($_SESSION['baseUrl'], '/') . '/';
+                    $domainWithSlash = rtrim($_SESSION['domain'], '/') . '/';
+
+                    $redirectUri = "{$baseUrlWithSlash}saveUserInfo?lti={$this->property('ltiInstance')}";
+                    $url = "https://{$domainWithSlash}login/oauth2/auth?client_id={$clientId}&response_type=code&redirect_uri={$redirectUri}";
 
                     $this->redirect($url);
                 } else {
