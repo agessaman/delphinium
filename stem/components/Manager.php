@@ -141,7 +141,7 @@ class Manager extends ComponentBase
             $final = array();
 
             //The parent will be the first PUBLISHED item
-            $firstItem;
+            $firstItem = '';
             foreach($moduleData as $item)
             {
                 if($item['published'] == "1")
