@@ -119,11 +119,12 @@ class Data extends ComponentBase
 
         //check to see if user is an Instructor
         $rolesStr = \Input::get('roles');
+        $secret = $instanceFromDB['SharedSecret'];
         $consumerKey = $instanceFromDB['ConsumerKey'];
         $clientId = $instanceFromDB['DeveloperId'];
 
         //Check to see if the lti handshake passes
-        $context = new Blti($consumerKey, false, false);
+        $context = new Blti($secret, false, false);
 
 
         if ($context->valid) { // query DB to see if user has token, if yes, go to LTI.
