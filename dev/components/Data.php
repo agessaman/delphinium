@@ -25,14 +25,14 @@ class Data extends ComponentBase
     public function onRun()
     {
         // try {
-        //     $this->doBltiHandshake();
+             $this->doBltiHandshake();
         // } catch (NonLtiException $e) {
-            if ($e->getCode() == 584) {
-                return \Response::make($this->controller->run('nonlti'), 500);
-            } else {
-                echo json_encode($e->getMessage());
-                return;
-            }
+        //    if ($e->getCode() == 584) {
+        //        return \Response::make($this->controller->run('nonlti'), 500);
+        //    } else {
+        //        echo json_encode($e->getMessage());
+        //        return;
+        //    }
         // } catch (\GuzzleHttp\Exception\ClientException $e) {
         //     return;
         // } catch (\Exception $e) {
