@@ -142,11 +142,13 @@ class Manager extends ComponentBase
 
             //The parent will be the first PUBLISHED item
             $firstItem;
+            echo json_encode($moduleData);
             foreach($moduleData as $item)
             {
                 if($item['published'] == "1")
                 {
                     $firstItem = $item;
+                    var_dump($firstItem);
                     break;
                 }
             }
