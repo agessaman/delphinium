@@ -116,7 +116,7 @@ class Manager extends ComponentBase
 
         $roots = new Roots();
         $moduleData = $roots->modules($req);
-        $modArr = $moduleData->toArray();
+	$modArr = $moduleData->toArray();
 
         $simpleModules = array();
         foreach($modArr as $item)

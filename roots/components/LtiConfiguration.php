@@ -156,6 +156,7 @@ class LtiConfiguration extends ComponentBase {
 
                 //set the professor's token
                 $_SESSION['userToken'] = $userCheck->encrypted_token;
+
                 //get the timezone
                 $roots = new Roots();
                 $course = $roots->getCourse();
