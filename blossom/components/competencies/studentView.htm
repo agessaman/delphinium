@@ -1,10 +1,45 @@
+<!--
+  ~ Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
+  ~
+  ~ This file is subject to the terms and conditions defined in
+  ~ file 'https://github.com/ProjectDelphinium/delphinium/blob/master/EULA',
+  ~ which is part of this source code package.
+  ~
+  ~ NOTICE:  All information contained herein is, and remains the property of Project Delphinium. The intellectual and technical concepts contained
+  ~ herein are proprietary to Project Delphinium and may be covered by U.S. and Foreign Patents, patents in process, and are protected by trade secret or copyright law.
+  ~ Dissemination of this information or reproduction of this material is strictly forbidden unless prior written permission is obtained
+  ~ from Project Delphinium.
+  ~
+  ~ THE RECEIPT OR POSSESSION OF THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS
+  ~ TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.
+  ~
+  ~ Unauthorized copying of this file, via any medium is strictly prohibited
+  ~ Non-commercial use only, you may not charge money for the software
+  ~ You can modify personal copy of source-code but cannot distribute modifications
+  ~ You may not distribute any version of this software, modified or otherwise
+  -->
+
 <!-- Student View : element for d3 to place competencies -->
+<div style="position:relative; z-index:950">
+    <a id="popinfo" title="Info" tabindex="0" role="button" data-trigger="focus" data-container="body" data-toggle="popover" data-placement="left" data-content="add info with script" style="position:absolute; top:0; right:0px;">
+        <i class="icon-question"></i>
+    </a>
+</div>
+
 <script>
+/* set up the popover content text and activate it*/
+	$('#popinfo').attr("data-content","Click a bar to display details.");
+    $('#popinfo').popover();// activate info
+
+	// get data before showing component
     var assignments={{assignments|raw}};//json
     var submissions = {{submissions|raw}};// Only available if DevConfig is student
 </script>
-{% partial 'competencies::display' %}
 
+<div style="z-index:10;">
+	<!-- competencies component -->
+	{% partial __SELF__~'::display' %}
+</div>
 <!-- Modal: when a bar is clicked show details for the competency -->
 <div class="control-popup modal fade" id="detailed" tabindex="-1" role="dialog">
     <div class="modal-dialog"><!--  modal-lg -->

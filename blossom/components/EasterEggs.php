@@ -1,4 +1,26 @@
-<?php namespace Delphinium\Blossom\Components;
+<?php
+/**
+ * Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
+ *
+ * This file is subject to the terms and conditions defined in
+ * file 'https://github.com/ProjectDelphinium/delphinium/blob/master/EULA',
+ * which is part of this source code package.
+ *
+ * NOTICE:  All information contained herein is, and remains the property of Project Delphinium. The intellectual and technical concepts contained
+ * herein are proprietary to Project Delphinium and may be covered by U.S. and Foreign Patents, patents in process, and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material is strictly forbidden unless prior written permission is obtained
+ * from Project Delphinium.
+ *
+ * THE RECEIPT OR POSSESSION OF THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS
+ * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.
+ *
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Non-commercial use only, you may not charge money for the software
+ * You can modify personal copy of source-code but cannot distribute modifications
+ * You may not distribute any version of this software, modified or otherwise
+ */
+
+namespace Delphinium\Blossom\Components;
 
 use Cms\Classes\ComponentBase;
 use Delphinium\Blossom\Models\EasterEggs as EasterEggsModel;
@@ -22,14 +44,7 @@ class EasterEggs extends ComponentBase
                 'title'             => 'EasterEggs Configuration',
                 'description'       => 'Select an instance',
                 'type'              => 'dropdown',
-            ],
-            'copy_id' => [
-                'title'        => 'Copy Name:',
-                'type'         => 'string',
-                'default'      => 'copy-1',
-                'required'     => 'true',
-                'validationPattern' => '^(?!\s*$).+',
-                'validationMessage' => 'This field cannot be left blank.'
+                'default'           => 0
             ]
         ];
     }
@@ -38,69 +53,39 @@ class EasterEggs extends ComponentBase
     {
         try
         {
-            /*Notes:
-            is an instance set? yes show it
-
-            else get all instances
-                is copy set?
-                -yes check for an instance that matches copy + course show it
-
-                is there an instance with this course? yes use it
-            else create dynamicInstance, save new instance, show it
-            
-            Requires minimal.htm layout
-            Requires the Dev component set up from Here:
-            https://github.com/ProjectDelphinium/delphinium/wiki/3.-Setting-up-a-Project-Delphinium-Dev-environment-on-localhost
-            */
             if (!isset($_SESSION)) { session_start(); }
-
             $courseID = $_SESSION['courseID'];
+            $name = $this->alias .'_'. $_SESSION['courseID'];
+            
             // if instance has been set
             if( $this->property('instance') )
             {
                 //use the instance set in CMS dropdown
                 $config = EasterEggsModel::find($this->property('instance'));
-                $config->course_id = $_SESSION['courseID'];//$course->id;
-                $config->save();//update original record now in case it did not have course
 
             } else {
-                // if copy has a name.
-                // note: it will after the first dynamic is created
-                $copyLength = strlen($this->property('copy_id'));
-                if($copyLength > 0 )
-                {
-                    // find all matching course 
-                    $instances = EasterEggsModel::where('course_id','=', $courseID)->get();
-                    $instCount = count($instances);
-                    if($instCount == 0) { 
-                        // none found so set to catch condition for dynamic
-                        $copyLength = 0;
-                    } else {
-                        // find instance with copy
-                        $flag=false;
-                        foreach ($instances as $instance)
-                        {
-                           if($instance->copy_id == $this->property('copy_id') )
-                           {
-                               $config = $instance;
-                               $flag=true;
-                               break;// got first one found
-                           }
-                        }
-                        //yes found courses but not matching copy. use the first one found with course id
-                        if( !$flag ) { $config = $instances[0]; }
-                    }
-                }
-                // no match found so create new dynamic instance
-                if($copyLength == 0 )
-                {
+                // look for instances created for this course
+                $instances = EasterEggsModel::where('name','=', $name)->get();
+                
+                if(count($instances) === 0) { 
+                    // no record found so create a new dynamic instance
                     $config = new EasterEggsModel;// db record
-                    $config->name = 'dynamic_';//+ total records count?
+                    $config->name = $name;
+                    $config->menu = 0;
+                    $config->harlem_shake = 0;
+                    $config->ripples = 0;
+                    $config->asteroids = 0;
+                    $config->katamari = 0;
+                    $config->bombs = 0;
+                    $config->ponies = 0;
+                    $config->my_little_pony = 0;
+                    $config->snow = 0;
                     // add your fields
-                    //$config->size = 'Medium';
-                    $config->course_id = $_SESSION['courseID'];
-                    $config->copy_id = $this->property('copy_id');
+                    //$config->size = '20%';
                     $config->save();// save the new record
+                } else {
+                    //use the first record matching course
+                    $config = $instances[0];
                 }
             }
             // use the record in the component and frontend form 
@@ -119,7 +104,7 @@ class EasterEggs extends ComponentBase
                 $roleStr = 'Instructor';
             }
             $this->page['role'] = $roleStr;// only one or the other
-
+            
             $path = \Config::get("app.url");
             $this->page['path'] = $path;
 
@@ -132,8 +117,8 @@ class EasterEggs extends ComponentBase
             
             // include your css note: bootstrap.min.css is part of minimal layout
             $this->addCss("/plugins/delphinium/blossom/assets/css/eastereggs.css");
-            // javascript had to be added to default.htm to work correctly
-            //$this->addJs("/plugins/delphinium/EasterEggs/assets/javascript/jquery.min.js");
+            $this->addCss("https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css");
+
             
             // include the backend form with instructions for instructor.htm
             if(stristr($roleStr, 'Instructor'))
@@ -185,13 +170,8 @@ class EasterEggs extends ComponentBase
 
     public function getInstanceOptions()
     {
-        /*https://octobercms.com/docs/plugin/components#dropdown-properties
-        *  The method should have a name in the following format: get*Property*Options()
-        *  where Property is the property name
-        * Fill the Competencies Configuration [dropdown] for CMS
-        */
-        $instances = EasterEggsModel::all();//where("Name","!=","")->get();
-        $array_dropdown = ['0'=>'- select Instance - '];//id, text in dropdown
+        $instances = EasterEggsModel::all();
+        $array_dropdown = ['0'=>'- select Instance - '];
 
         foreach ($instances as $instance)
         {
@@ -207,13 +187,15 @@ class EasterEggs extends ComponentBase
         $did = intval($data['id']);// convert string to integer
         $config = EasterEggsModel::find($did);// retrieve existing record
         $config->name = $data['name'];// change to new data
-        //echo json_encode($config);//($data);// testing
-        
-        // add your fields to update
-        $config->custom = $data['custom'];
-
-        $config->course_id = $data['course_id'];//hidden in frontend
-        $config->copy_id = $data['copy_id'];//hidden
+        $config->menu = $data['menu'];
+        $config->harlem_shake = $data['harlem_shake'];
+        $config->ripples = $data['ripples'];
+        $config->asteroids = $data['asteroids'];
+        $config->katamari = $data['katamari'];
+        $config->bombs = $data['bombs'];
+        $config->ponies = $data['ponies'];
+        $config->my_little_pony = $data['my_little_pony'];
+        $config->snow = $data['snow'];
         $config->save();// update original record 
         return json_encode($config);// back to instructor view
     }

@@ -1,15 +1,3 @@
-/*
- * jQuery spritely 0.6.7
- * http://spritely.net/
- *
- * Documentation:
- * http://spritely.net/documentation/
- *
- * Copyright 2010-2011, Peter Chater, Artlogic Media Ltd, http://www.artlogic.net/
- * Dual licensed under the MIT or GPL Version 2 licenses.
- *
- */
-
 (function($) {
     $._spritely = {
         // shared methods and variables used by spritely plugin

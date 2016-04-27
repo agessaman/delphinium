@@ -1,3 +1,24 @@
+<!--
+  ~ Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
+  ~
+  ~ This file is subject to the terms and conditions defined in
+  ~ file 'https://github.com/ProjectDelphinium/delphinium/blob/master/EULA',
+  ~ which is part of this source code package.
+  ~
+  ~ NOTICE:  All information contained herein is, and remains the property of Project Delphinium. The intellectual and technical concepts contained
+  ~ herein are proprietary to Project Delphinium and may be covered by U.S. and Foreign Patents, patents in process, and are protected by trade secret or copyright law.
+  ~ Dissemination of this information or reproduction of this material is strictly forbidden unless prior written permission is obtained
+  ~ from Project Delphinium.
+  ~
+  ~ THE RECEIPT OR POSSESSION OF THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS
+  ~ TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.
+  ~
+  ~ Unauthorized copying of this file, via any medium is strictly prohibited
+  ~ Non-commercial use only, you may not charge money for the software
+  ~ You can modify personal copy of source-code but cannot distribute modifications
+  ~ You may not distribute any version of this software, modified or otherwise
+  -->
+
 <!-- Competencies Instructions partial -->
         <h3>Competencies Component</h3>   
         <div style="float:left;">
@@ -10,18 +31,19 @@
 		<div style="clear:both; padding:20px;">&nbsp;</div>
 		
 		<div style="float:left;">
-		<img id="image1" style="float:right; padding-left:10px;" src="" width="350" title="Select An Instance" alt="select instance"/>
+		
         <h4>Using the component:</h4>
 		<p>In the CMS tab add a New Page and select the Blossom Competencies component.<br/>
-        Click the component to select the instance you want to use from the drop down list.
-		<br/><br/>
+        <br/>
         </p>
 		
 		<h4>Setting up Competencies:</h4>
         <p>Using Stem create tags for assignments and quizzes.<br/>
             Tags for competencies are designated using the prefix C: followed by a name.<br/>
             Each name represents a group of assignments that belong to the competency.<br/>
-            When the component runs on a page it gathers all assignments and submissions, sorts them by the tag names and compares the amount completed to the total possible, then presents this as percent completed for each group.
+            When the component runs on a page it gathers all assignments and submissions, 
+			sorts them by the tag names and compares the amount completed to the total possible, 
+			then presents this as percent completed for each group.
         </p>
 		</div>
 		
@@ -49,6 +71,5 @@
 //console.log("<?= Backend::url() ?>");//http://localhost/delphinium/backend
 //console.log("<?= Config::get('app.url', 'backend') ?>");//http://localhost/delphinium/
 	$('#image0').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/competenciesNew.png');
-    $('#image1').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/competenciesDropdown.png');
     $('#image2').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/competenciesComp.png');
 </script>

@@ -1,12 +1,36 @@
+<!--
+  ~ Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
+  ~
+  ~ This file is subject to the terms and conditions defined in
+  ~ file 'https://github.com/ProjectDelphinium/delphinium/blob/master/EULA',
+  ~ which is part of this source code package.
+  ~
+  ~ NOTICE:  All information contained herein is, and remains the property of Project Delphinium. The intellectual and technical concepts contained
+  ~ herein are proprietary to Project Delphinium and may be covered by U.S. and Foreign Patents, patents in process, and are protected by trade secret or copyright law.
+  ~ Dissemination of this information or reproduction of this material is strictly forbidden unless prior written permission is obtained
+  ~ from Project Delphinium.
+  ~
+  ~ THE RECEIPT OR POSSESSION OF THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS
+  ~ TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.
+  ~
+  ~ Unauthorized copying of this file, via any medium is strictly prohibited
+  ~ Non-commercial use only, you may not charge money for the software
+  ~ You can modify personal copy of source-code but cannot distribute modifications
+  ~ You may not distribute any version of this software, modified or otherwise
+  -->
+
 <!-- Instructor View with Settings cog -->
-<div style="position:relative;">
-    <div id="cog" data-toggle="modal" href="#content-configuration" style="position:absolute; top:0; z-index:950; padding-left:220px;">
-        <a data-toggle="tooltip" title="Settings" data-placement="bottom"><i class="icon-cog"></i></a>
+<div style="position:relative; z-index:950;">
+    <a id="popinfo" title="Info" tabindex="0" role="button" data-trigger="focus" data-container="body" data-toggle="popover" data-placement="left" data-content="Setup below" style="position:absolute; top:0; right:0px;">
+        <i class="icon-question"></i>
+    </a>
+	<div id="cog" data-toggle="modal" href="#content-configuration" data-trigger-action="enable" style="position:absolute; top:0; right:10px;">
+		<a data-toggle="tooltip" title="Settings" data-placement="bottom"><i class="icon-cog"></i></a>
     </div>
-    <div style="z-index:10;">
-        <!-- component partial -->
-        <h3>Instructor view</h3>
-    </div>
+</div>
+<div style="z-index:10;">
+    <!-- component partial -->
+    <h3>Instructor view</h3>
 </div>
 
 <!-- Configuration modal with Front End Form and Instructions in tabs -->
@@ -47,22 +71,30 @@
 </div>
 
 <script>
-    
-    /* set id,course,copy in the POST if they are hidden in fields.yaml
+	/* set up the popover content text and activate it*/
+	$('#popinfo').attr("data-content","Here is some amazing content. It's very engaging. Right?");
+    $('#popinfo').popover();// activate info
+	
+    /* set id & course for the POST if they are hidden in fields.yaml
         Add hidden input fields so they will transfer to onUpdate
-        fields.yaml is set to hidden: true do not appear in the form at all
+        if a field is set to hidden: true it does not appear in the form at all
         
         in Vanilla I only have id hidden
     */
     
     $('#Form-outsideTabs').append('<input type="hidden" name="Vanilla[id]" value="'+config.id+'" /> ');
-    //$('#Form-outsideTabs').append('<input type="hidden" name="Vanilla[course_id]" value="'+config.course_id+'" /> ');
-    //$('#Form-outsideTabs').append('<input type="hidden" name="Vanilla[copy_id]" value="'+config.copy_id+'" /> ');
+
     
 	function completed(data)
 	{
-        /* updated record is returned */
-        location.reload();
+        /* updated record is returned in data */
+        /* Flash a message then reload page 
+        $.oc.flashMsg({
+            'text': 'The record has been successfully saved.',
+            'class': 'success',
+            'interval': 3
+        });*/
+        location.reload();// wait for 3 sec?
 	}
-	console.log('instance: id='+config.id,config.name,config.course_id,config.copy_id);
+	console.log('instance: id='+config.id,config.name,config.custom,config.course_id);
 </script>

@@ -1,3 +1,32 @@
+/*
+ * Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
+ *
+ * This file is subject to the terms and conditions defined in
+ * file 'https://github.com/ProjectDelphinium/delphinium/blob/master/EULA',
+ * which is part of this source code package.
+ *
+ * NOTICE:  All information contained herein is, and remains the property of Project Delphinium. The intellectual and technical concepts contained
+ * herein are proprietary to Project Delphinium and may be covered by U.S. and Foreign Patents, patents in process, and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material is strictly forbidden unless prior written permission is obtained
+ * from Project Delphinium.
+ *
+ * THE RECEIPT OR POSSESSION OF THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS
+ * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.
+ *
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Non-commercial use only, you may not charge money for the software
+ * You can modify personal copy of source-code but cannot distribute modifications
+ * You may not distribute any version of this software, modified or otherwise
+ */
+
+/* overide storm.css */
+.modal-header {background:none !important;border-bottom:1px solid #e5e5e5 !important;color:#333333 !important}
+.modal-header .close{color:black !important;background:transparent !important;}
+.modal-body {padding-bottom: 15px;}
+/* hide instructions that don't apply to the professor */
+.hiddenFromTeacher{display: none;}
+/* larger text in tabs */
+a[role=tab] { font-size: 1.1em; }
 .center{
 	text-align: center;
     margin-left: auto;
@@ -15,12 +44,18 @@
 	overflow: hidden;
 	width: 100%; height: 190px;
 }
+.loading-indicator-container {
+	position: absolute;
+	width: 100%;
+	height: 190px;/* overlay tabs 190px */
+	z-index: 1000;
+}
 .moditem {
     width: 180px;
     height: 130px;
     float: left;
     position: relative;
-    border: medium solid #ababab;
+    border: thin solid #bababa;
     background-color: #fafafa;
     color: #ababab;
 	display: inline-block;
@@ -31,11 +66,14 @@
 	box-shadow:         3px 3px 5px 0px rgba(50, 50, 50, 0.8);
 }
 .title {
-	background-color: #ababab;/* user defined? */
-	color: #fafafa;
-	padding: 5px;
 	font-size: 0.9em;
 	font-weight: 400;
+	color: #fafafa;
+	
+	background-color: #ababab;/* over ride with state */
+	/* simulate Dashboard style */
+	padding: 5px;/* 5px 20px 5px; */
+	height: 75px;
 }
 .stars {
 	position: absolute;
@@ -45,13 +83,25 @@
     color: #ddbb31;/* gold */
 }
 
-.locked {
+.modcompleted {
 	position: absolute;
-	top: -16px;
-	right: -9px;
+	top: 40px;
+	right: 5px;
+	z-index: 800;
+    font-size: 1.8em;
+	color: #ddd;
+}
+
+.modlocked {
+	position: absolute;
+/*	top: -13px;
+	right: -9px; */
+	top: 35px;/* bottom right */
+	right: 8px;
 	z-index: 800;
     font-size: 2.2em;
-	color: #666666;
+	/*color: #666666; */
+	color: #333;
 }
 .items {
     /* for testing show id & item count */
@@ -104,12 +154,22 @@
 	padding: 10px;/* T,R,B,L */
 	margin-bottom: 5px;
     
-    border-radius: 10px 10px 10px 10px;
+    border-radius: 5px;
     -moz-border-radius: 10px 10px 10px 10px;
     -webkit-border-radius: 10px 10px 10px 10px;
-	border: thin solid #ababab;
-	background-color: #fff;
+	border: 1px solid #D0D0D0;
+	
     color: #888888;
+}
+.available:hover{
+    border: 2px solid #D0D0D0;
+}
+.available {
+	background-color: #fafafa;
+	cursor: pointer; /* whole div is clickable */
+}
+.unavailable {
+	background-color: #eeeeee;
 }
 .required {
     width: 80%;
@@ -134,15 +194,28 @@
 .link {
     width: 80%;
     float: left;
+	margin-top: 2px;
+    /*border: thin solid #ababab; test width*/
 }
 .points {
     width: auto;
     float: right;
-    padding: 5px;
+    /*padding: 5px;*/
     font-size: 1.1em;
-    color: #000;
+    color: #333;
+   /* border: thin solid #ababab; test width*/
 }
 .clearme {
     clear:both;
     height: 1px;
 }
+.subheader {
+	height: auto;
+	padding: 10px;/* T,R,B,L */
+	margin-bottom: 5px;
+}
+/* state colors match iris */
+.locked { background-color: #8F8F8F !important; }
+.unlocked { background-color: #588238 !important; }
+.started { background-color: #5eacd4 !important; }
+.completed { background-color: #143D55 !important; }

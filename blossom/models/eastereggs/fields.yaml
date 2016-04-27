@@ -3,15 +3,6 @@
 # ===================================
 
 fields:
-    id:
-        label: ID
-        disabled: true
-    name:
-        label: name
-        span: left
-        placeholder: Must be named
-        comment: Enter a name for this instance
-
     menu:
         label: menu
         type: checkbox
@@ -54,13 +45,7 @@ fields:
         span: auto
         comment: Enter a point threshold
 
-    course_id:
-        label: 'Course id'
+    snow:
+        label: snow
         span: auto
-        type: text
-        comment: 'copy id is generated dynamically'
-    copy_id:
-        label: 'Copy id'
-        span: auto
-        type: text
-        comment: 'copy id is generated dynamically'
+        comment: Enter a point threshold

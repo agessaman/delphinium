@@ -1,4 +1,26 @@
-<?php namespace Delphinium\Poppies\Updates;
+<?php
+/**
+ * Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
+ *
+ * This file is subject to the terms and conditions defined in
+ * file 'https://github.com/ProjectDelphinium/delphinium/blob/master/EULA',
+ * which is part of this source code package.
+ *
+ * NOTICE:  All information contained herein is, and remains the property of Project Delphinium. The intellectual and technical concepts contained
+ * herein are proprietary to Project Delphinium and may be covered by U.S. and Foreign Patents, patents in process, and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material is strictly forbidden unless prior written permission is obtained
+ * from Project Delphinium.
+ *
+ * THE RECEIPT OR POSSESSION OF THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS
+ * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.
+ *
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Non-commercial use only, you may not charge money for the software
+ * You can modify personal copy of source-code but cannot distribute modifications
+ * You may not distribute any version of this software, modified or otherwise
+ */
+
+namespace Delphinium\Poppies\Updates;
 
 use Schema;
 use October\Rain\Database\Updates\Migration;
@@ -12,10 +34,9 @@ class CreatePopquizzesTable extends Migration
         {
             $table->engine = 'InnoDB';
             $table->increments('id');
-            $table->string('name');
-            $table->string('quiz_name');
-            $table->integer('quiz_id');
-			$table->text('quiz_description')->nullable();
+            $table->string('name',255);
+            $table->string('quiz_name',255);//title
+			$table->string('quiz_description',512);//long
             $table->timestamps();
         });
     }

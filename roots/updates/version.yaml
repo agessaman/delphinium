@@ -34,3 +34,6 @@
 1.0.8:
     - Add sis_login_id to users table
     - modify_users_table_add_login_id.php
+1.0.9:
+    - Increase column size in content table
+    - modify_content_table.php
