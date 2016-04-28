@@ -56,6 +56,38 @@ class ControllerNodeVisitor extends NodeVisitorAbstract
 
     public function enterNode(\PhpParser\Node $node)
     {//the model use statement in array form
+//        var_dump($node);
+
+//        if($node instanceof Node\Stmt\Namespace_)
+//        {
+//            var_dump($node);
+//        }
+//
+//        return;
+
+        if($node instanceof Node\Stmt\Namespace_)
+        {
+            var_dump($node);
+        }else
+        {
+            NodeTraverser::DONT_TRAVERSE_CHILDREN;
+        }
+        return;
+        if($node instanceof Comment\Doc)
+        {
+            var_dump($node);
+            return;
+        }
+        else
+        {
+            NodeTraverser::DONT_TRAVERSE_CHILDREN;
+        }
+
+
+return;
+
+
+
         $modelArr = explode('\\', $this->modelUseStmt);
 
         if ($node instanceof Node\Stmt\Namespace_)//if namespace

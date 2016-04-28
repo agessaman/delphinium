@@ -89,13 +89,24 @@ class Plugin extends PluginBase
         Event::listen('backend.menu.extendItems', function($manager) {
 
             $manager->addSideMenuItems('Delphinium.Greenhouse', 'greenhouse', [
-                'Bonus' => [
+                'Delphiniumize' => [
                     'label' => 'Delphiniumize',
                     'icon' => 'icon-heart',
                     'owner' => 'Delphinium.Greenhouse',
                     'url' => Backend::url('delphinium/testing/MyController'),
                     'group' => 'Delphiniumize',
                 ]]);
+
+            $manager->addSideMenuItems('Rainlab.Builder', 'Builder', [
+                'Delphiniumize' => [
+                    'label' => 'Delphiniumize',
+                    'icon' => 'icon-heart',
+                    'url'         => 'javascript:;',
+                    'attributes'  => ['data-menu-item'=>'testing/MyController'],
+                    'permissions' => ['rainlab.builder.manage_plugins']
+                ]]);
+
+//            $manager->removeSideMenuItem('Rainlab.Builder', 'Builder', 'database');
         });
     }
 }

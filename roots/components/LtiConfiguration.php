@@ -155,13 +155,45 @@ class LtiConfiguration extends ComponentBase {
             } else {
 
                 //set the professor's token
+                $courseId =$_SESSION['courseID'];
                 $_SESSION['userToken'] = $userCheck->encrypted_token;
                 //get the timezone
                 $roots = new Roots();
-                $course = $roots->getCourse();
+                try
+                {
+                    $course = $roots->getCourse();
+                }
+                catch(\GuzzleHttp\Exception\RequestException $e)
+                {
+                    if($e->getCode()==401)
+                    {//unauthorized, meaning the token we have in the DB has been deleted from Canvas. We must request a new token
+                        $dbHelper->deleteInvalidApproverToken($courseId);
+
+                        //launch the approval process again, try three times at most
+                        if(isset($_COOKIE['token_attempts']))
+                        {
+                            $attempts = $_COOKIE['token_attempts'] +1;
+                            setcookie("token_attempts", $attempts, time() + (300), "/"); //5 minutes
+                        }
+                        else
+                        {
+                            setcookie("token_attempts", 1, time() + (300), "/"); //5 minutes
+                        }
+
+                        if($_COOKIE['token_attempts']>3)
+                        {
+                            echo "Unable to obtain access to your Canvas account. Reached the max number of attempts. Please verify your configuration and try again in 5 minutes.";
+                            return;
+                        }
+                        else
+                        {
+                            $this->onRun();//the cookie is done to prevent infinite loops
+                        }
+                    }
+
+                }
                 $account_id = $course->account_id;
                 $account = $roots->getAccount($account_id);
-                $courseId =$_SESSION['courseID'];
 
                 $_SESSION['timezone'] = new \DateTimeZone($account->default_time_zone);
                 //to maintain the users table synchronized with Canvas, everytime a student comes in we'll check to make sure they're in the DB.

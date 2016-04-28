@@ -119,11 +119,12 @@ class Data extends ComponentBase
 
         //check to see if user is an Instructor
         $rolesStr = \Input::get('roles');
+        $secret = $instanceFromDB['SharedSecret'];
         $consumerKey = $instanceFromDB['ConsumerKey'];
         $clientId = $instanceFromDB['DeveloperId'];
 
         //Check to see if the lti handshake passes
-        $context = new Blti($consumerKey, false, false);
+        $context = new Blti($secret, false, false);
 
 
         if ($context->valid) { // query DB to see if user has token, if yes, go to LTI.
@@ -134,12 +135,15 @@ class Data extends ComponentBase
                     //As per my discussion with Jared, we will use the instructor's token only. This is the token that will be stored in the DB
                     //and the one that will be used to make all requests. We will NOT store student's tokens.
                     //TODO: take this redirectUri out into some parameter somewhere...
-                    $redirectUri = "{$_SESSION['baseUrl']}saveUserInfo?lti={$this->property('ltiInstance')}";
-                    $url = "https://{$_SESSION['domain']}/login/oauth2/auth?client_id={$clientId}&response_type=code&redirect_uri={$redirectUri}";
+                    $baseUrlWithSlash = rtrim($_SESSION['baseUrl'], '/') . '/';
+                    $domainWithSlash = rtrim($_SESSION['domain'], '/') . '/';
+
+                    $redirectUri = "{$baseUrlWithSlash}saveUserInfo?lti={$this->property('ltiInstance')}";
+                    $url = "https://{$domainWithSlash}login/oauth2/auth?client_id={$clientId}&response_type=code&redirect_uri={$redirectUri}";
 
                     $this->redirect($url);
                 } else {
-                    echo("A(n) {$approverRole} must authorize this course. Please contact your instructor.");
+                    echo("An error has occurred. Please contact your instructor.");
                     return;
                 }
             } else {
