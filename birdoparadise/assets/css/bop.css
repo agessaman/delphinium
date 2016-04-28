@@ -222,7 +222,7 @@ a[role=tab] { font-size: 1.1em; }
 .unlocked { background-color: #588238 !important; }
 .started { background-color: #5eacd4 !important; }
 .completed { background-color: #143D55 !important; }
-.instructext { width: 450px; }
+.instructext { width: 49%; }
 .instructimage {
 	width: 400px;
 	height: 430px;
