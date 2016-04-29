@@ -32,14 +32,20 @@ use Delphinium\Roots\DB\DbHelper;
 
 class OAuthResponse extends Controller {
 
-    public function saveUserInfo() 
+    public function saveUserInfo()
     {
-        if (!isset($_SESSION)) 
+        if (!isset($_SESSION))
         {
             session_start();
         }
         $code = \Input::get('code');
         $lti = \Input::get('lti');
+
+        if(is_null($code))//meaning, they cancelled rather than authorize the LTI app
+        {
+            echo "You have canceled authorizing this app. If you want to use this app, you must authorize it. Please reload this page.";
+            return;
+        }
 
         $instanceFromDB = LtiConfigurations::find($lti);
 
@@ -56,6 +62,8 @@ class OAuthResponse extends Controller {
         $encryptedToken = \Crypt::encrypt($actualToken);
         $_SESSION['userToken'] = $encryptedToken;
 
+        setcookie("token_attempts", 0, time() + (300), "/"); //5 minutes
+
         //store encrypted token in the database
         $courseId = $_SESSION['courseID'];
         $userId = $_SESSION['userID'];
@@ -66,7 +74,7 @@ class OAuthResponse extends Controller {
         $roots->getUser($userId);
         $dbHelper = new DbHelper();
         $role = $dbHelper->getRole('Approver');
-        
+
         $userCourse = UserCourse::firstOrNew(array('user_id' => $userId, 'course_id' => $courseId));
         $userCourse->user_id = $userId;
         $userCourse->course_id = $courseId;

@@ -160,7 +160,7 @@ $(document).ready(function() {
                 prereq +='<div class="prereqnote">Before you can start this module you need to complete the following modules:</div>';
                 prereq +='<div class="clearme"></div>';
             
-            var showPrereq = false;// unless unlocked
+            var showPrereq = false;// if locked
             
             for(var pid=0; pid<preids.length; pid++) {
                 var itm = $.grep(modobjs, function(elem,index){
@@ -168,13 +168,15 @@ $(document).ready(function() {
                 });
                 //console.log('itm:',itm[0]);// undefined for First or a tab
                 
-                if(itm.length>0) { prename = itm[0].name; }
-                console.log('pid:',pid,'prename:',prename);
-				// IF itm is a tab then error
-                if(itm[0].state == 'locked') { showPrereq=true; console.log('Show locked prereqs'); }
-                if(prename != '') {
-                    prereq +='<li>'+prename+'</li>';
-                }
+                if(itm.length>0) {
+					prename = itm[0].name; 
+					console.log('pid:',pid,'prename:',prename);
+					//if itm is a tab then ERROR:  Cannot read property 'state' of undefined
+					if(itm[0].state == 'locked') { showPrereq=true; console.log('Show locked prereqs'); }
+					if(prename != '') {
+						prereq +='<li>'+prename+'</li>';
+					}
+				}
             }
             prereq +='<div class="clearme"></div>';
             prereq +='</div>';// close prereq
@@ -187,19 +189,31 @@ $(document).ready(function() {
         //append module_items
         for(var i=0; i<moditems.length; i++) {
 			var hasContent=false;
+			var displayItem = '<div class="normal">';// addClass if 'description'
             var item='';//'<div class="assignment">';
             var inner = '';// construct separately outer+inner+closer
             if(moditems[i].content.length > 0) { hasContent=true; }
-            if(hasContent && moditems[i].content[0].points_possible > 0) {
-                // before link & icon float:right
-                inner+='<div class="points">';
-                if(role == 'Learner') {
-                    inner += 'Score: '+getScore(moditems[i].title)+'/'+moditems[i].content[0].points_possible+'</div>';
-                } else {
-                    inner +='--/'+moditems[i].content[0].points_possible+' pts.</div>';// close points
-                }
+            if(hasContent) {
+				// tags: Optional (see iris)
+				//var tags = moditems[i].content[0].tags;
+				//if(tags.indexOf('Optional') != -1) {
+				//	console.log('tags:',tags);
+				//	displayItem='<div class="normal last">';
+				//}
+				
+				if(moditems[i].content[0].points_possible > 0) {	
+					// before link & icon float:right
+					inner+='<div class="points">';
+					if(role == 'Learner') {
+						inner += 'Score: '+getScore(moditems[i].title)+'/'+moditems[i].content[0].points_possible+'</div>';
+					} else {
+						inner +='--/'+moditems[i].content[0].points_possible+' pts.</div>';// close points
+					}
+				}
             }
-            inner +='<div class="ico">'+chooseIcon(moditems[i].type)+'</div>';
+			if(moditems[i].type!='SubHeader') {
+				inner +='<div class="ico">'+chooseIcon(moditems[i].type)+'</div>';
+			}
             inner +='<div class="link">';
 			//null, locked, unlocked, started, completed
 			if(mod[0].state == 'locked') {
@@ -210,6 +224,12 @@ $(document).ready(function() {
 			}
 			if(moditems[i].type=='SubHeader') { 
 				item='<div class="subheader">';// not an assignment
+				// if description tag then sort to top of display
+				var tags = moditems[i].content[0].tags;
+				if(tags.indexOf('Description') != -1) {
+					console.log('tags:',tags);// first in list
+					displayItem='<div class="first normal">';
+				}
 			}
 			inner +=' '+moditems[i].title+'</div>';
 		/*	if(moditems[i].completion_requirement.length > 0) {
@@ -224,8 +244,40 @@ $(document).ready(function() {
             //closer 
             var closer = '<div class="clearme"></div>';
 				closer +='</div>';//item
-            $('#detailed-body').append(item+inner+closer);
+				
+			//check if Optional tag needs extra div
+			// since this is a loop it is added to each
+			if(hasContent) {
+				// tags: Optional (see iris)
+				var tags = moditems[i].content[0].tags;
+				if(tags.indexOf('Optional') != -1) {
+					console.log('tags:',tags);
+					displayItem='<div class="normal last">';
+					displayItem+='<div>Optional</div>';
+				}
+			}
+			displayItem += item+inner+closer+'</div>';
+            //display.push(displayItem);
+			//$('#detailed-body').append(item+inner+closer);
+			$('#detailed-body').append(displayItem);
         }
+		// sort and place 'description' tag first
+		var people = $('#detailed-body'),
+			peopleli = people.children('.normal');
+
+		peopleli.sort(function(a,b){
+			var an = a.getAttribute('class'),
+				bn = b.getAttribute('class');
+
+			if(an > bn) {
+				return 1;
+			}
+			if(an < bn) {
+				return -1;
+			}
+			return 0;
+		});
+		peopleli.detach().appendTo(people);
 		
 		//open available assignments in a new window
 		$('.available').on('click',function(e){
@@ -364,6 +416,10 @@ $(document).ready(function() {
         5 stars = 100% percent
         each star = 20% check nearest 10%
         filled=20, half=10, open=0
+		
+		Change:
+		indicate % of assignments completed out of total # of assignments. 
+		I want stars to tell students how many assignments are left in each module
     */
     if(role == 'Learner') {
 		// get assignments, submissions, modulescores with RestApi?

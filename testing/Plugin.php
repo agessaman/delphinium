@@ -96,6 +96,17 @@ class Plugin extends PluginBase
                     'url' => Backend::url('delphinium/testing/MyController'),
                     'group' => 'Delphiniumize',
                 ]]);
+
+            $manager->addSideMenuItems('Rainlab.Builder', 'Builder', [
+                'Delphiniumize' => [
+                    'label' => 'Delphiniumize',
+                    'icon' => 'icon-heart',
+                    'url'         => 'javascript:;',
+                    'attributes'  => ['data-menu-item'=>'testing/MyController'],
+                    'permissions' => ['rainlab.builder.manage_plugins']
+                ]]);
+
+//            $manager->removeSideMenuItem('Rainlab.Builder', 'Builder', 'database');
         });
     }
 }

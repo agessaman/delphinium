@@ -683,4 +683,15 @@ class DbHelper
     {
         return Role::where('role_name','=',$role_name)->first();
     }
+
+    public function deleteInvalidApproverToken($courseId)
+    {
+        $role = Role::where('role_name','=','Approver')->first();
+        $user = UserCourse::where(array(
+            'role' => $role->id,
+            'course_id'=> $courseId
+        ))->first();
+
+        $user->delete();
+    }
 }
