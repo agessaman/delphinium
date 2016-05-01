@@ -20,15 +20,35 @@
   -->
 
 <!-- Competencies Instructions partial -->
+<style>
+/* instructions images */
+#competenciesNew {
+    width: 680%;
+    height: 250px;
+	float:left;
+    background-image: url('<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/competenciesNew.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+#competenciesComp {
+    width: 750px;
+    height: 250px;
+    background-image: url('<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/competenciesComp.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+#competenciesInstruct { overflow-x: hidden; }
+</style>
+	<div id="competenciesInstruct">
         <h3>Competencies Component</h3>   
         <div style="float:left;">
 		<p>Select the New Competencies Instance button.<br/>
 		Type a Name, select the Color for the amount, toggle the Animate switch and select a Size for the component.
 		</p>
-		<img id="image0" style="float:left;" src="" width="680" height="250" title="Style the component" alt="style it"/>
+		<div id="competenciesNew" width="680" height="250" title="Style the component"></div>
 		</div>
           
-		<div style="clear:both; padding:20px;">&nbsp;</div>
+		<div style="clear:both; padding:20px 0px 20px 0px;;">&nbsp;</div>
 		
 		<div style="float:left;">
 		
@@ -47,10 +67,10 @@
         </p>
 		</div>
 		
-        <div style="clear:both; padding:20px;">&nbsp;</div>
+        <div style="clear:both; padding:20px 0px 20px 0px;">&nbsp;</div>
         
 		<div style="float:left;">
-        <img id="image2" src="" width="750" height="250" title="What it looks like" alt="competencies"/>
+        <div id="competenciesComp" width="750" height="250" title="What it looks like"></div>
 
         <ul>
             <li>The competency bar graph is divided by tenths and displays the percent earned.</li>
@@ -66,10 +86,7 @@
             <li>Assignments can have other tags for other uses.</li>
             <li>Assignments can belong to multiple competencies.</li>
         </ul>
+		<br/>
 		</div>
-<script>
-//console.log("<?= Backend::url() ?>");//http://localhost/delphinium/backend
-//console.log("<?= Config::get('app.url', 'backend') ?>");//http://localhost/delphinium/
-	$('#image0').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/competenciesNew.png');
-    $('#image2').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/competenciesComp.png');
-</script>
+	</div>
+	

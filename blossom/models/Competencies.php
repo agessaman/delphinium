@@ -41,7 +41,7 @@ class Competencies extends Model
 		'Color'=>'required',
         'Animate'=>'required',
         'Size' => 'required'
-    ];//copy_id & 'course_id' => 'required' created dynamically
+    ];
     
     protected $guarded = ['*'];
     protected $fillable = ['Name','Color','Animate','Size'];
