@@ -152,14 +152,14 @@ a[role=tab] { font-size: 1.1em; }
 .assignment {
     height: auto;
 	padding: 10px;/* T,R,B,L */
-	margin-bottom: 5px;
+	margin-bottom: 10px;
     
     border-radius: 5px;
     -moz-border-radius: 10px 10px 10px 10px;
     -webkit-border-radius: 10px 10px 10px 10px;
 	border: 1px solid #D0D0D0;
 	
-    color: #888888;
+    color: #000000;
 }
 .available:hover{
     border: 2px solid #D0D0D0;
@@ -169,6 +169,7 @@ a[role=tab] { font-size: 1.1em; }
 	cursor: pointer; /* whole div is clickable */
 }
 .unavailable {
+	color: #b4b4b4 !important;
 	background-color: #eeeeee;
 }
 .required {
@@ -202,7 +203,7 @@ a[role=tab] { font-size: 1.1em; }
     float: right;
     /*padding: 5px;*/
     font-size: 1.1em;
-    color: #333;
+    /*color: #333;*/
    /* border: thin solid #ababab; test width*/
 }
 .clearme {
@@ -213,9 +214,18 @@ a[role=tab] { font-size: 1.1em; }
 	height: auto;
 	padding: 10px;/* T,R,B,L */
 	margin-bottom: 5px;
+	font-size: 1.2em;
+	font-weight: 600;
 }
 /* state colors match iris */
-.locked { background-color: #8F8F8F !important; }
+.locked { background-color: #8f8f8f !important; }
 .unlocked { background-color: #588238 !important; }
 .started { background-color: #5eacd4 !important; }
 .completed { background-color: #143D55 !important; }
+.instructext { width: 49%; }
+.instructimage {
+	width: 400px;
+	height: 430px;
+	background: url(../images/stemsmall.png) center center no-repeat;
+	border: 2px solid #c8d8e3;
+}
