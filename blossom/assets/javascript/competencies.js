@@ -516,8 +516,8 @@ function displayDetails(item) {
             var tags=assignment[0].tags.split(",");
             if(tags.indexOf('C:'+item.name) != -1 ) {
                 content += '<div class="alert alert-success available">';
-				//content += '<div class="link" data-url="'+assignment[0].html_url+'">'+assignment[0].name+'</div>';
-                content += '<div class="link" data-url="'+assignment[0].html_url+'?module_item_id='+assignment[0].module_item_id+'">'+assignment[0].name+'</div>';
+				content += '<div class="link" data-url="'+assignment[0].html_url+'">'+assignment[0].name+'</div>';
+                //content += '<div class="link" data-url="'+assignment[0].html_url+'?module_item_id='+assignment[0].module_item_id+'">'+assignment[0].name+'</div>';
                 content += ' Worth '+assignment[0].points_possible+' points.';
                 content += ' ( Tags: '+assignment[0].tags+' )';
                 content += '</div>';

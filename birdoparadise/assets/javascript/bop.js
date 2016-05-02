@@ -196,7 +196,8 @@ $(document).ready(function() {
 				item='<div class="assignment unavailable">';
 			} else {
 				item='<div class="assignment available"';// whole div is clickable
-				item +='data-url="'+moditems[i].html_url+'?module_item_id='+moditems[i].module_item_id+'">';
+				item +='data-url="'+moditems[i].html_url+'">';
+                //item +='data-url="'+moditems[i].html_url+'?module_item_id='+moditems[i].module_item_id+'">';
 			}
 			if(moditems[i].type=='SubHeader') { 
 				item='<div class="subheader">';// not an assignment
