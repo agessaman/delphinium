@@ -28,9 +28,9 @@ use Delphinium\Roots\Enums\ActionType;
 use Delphinium\Roots\Models\Quizquestion;
 use Delphinium\Roots\Requestobjects\QuizRequest;
 use Delphinium\Roots\Models\Assignment;
-use Delphinium\Roots\Requestobjects\AssignmentsRequest;// Add Update?
+use Delphinium\Roots\Requestobjects\AssignmentsRequest;
 use Delphinium\Poppies\Models\Popquiz as popquizModel;
-//TEST
+
 use Delphinium\Roots\Models\Quizquestion as questionsModel;
 use \DateTime;
 
@@ -57,10 +57,10 @@ class Popquiz extends ComponentBase
         ];
     }
 	
-	/* This is added as an Assignment.
-		How can we get this assignment object
+	/* This is added to LMS as an Assignment.
+		How can we get this assignment object?
 		Need Intro text and points to display in game
-			if not done as a Canvas Assignment
+			if not done as a Canvas Assignment then ...
 		
 		Pop Quiz Game:
 		Instructor
@@ -90,12 +90,12 @@ class Popquiz extends ComponentBase
 	*/
 	public function onRun()
 	{
-//		try
-//        {
+		try
+        {
 			if (!isset($_SESSION)) { session_start(); }
 
             $courseID = $_SESSION['courseID'];
-            $name = $this->alias .'_'. $_SESSION['courseID'];
+            $name = $this->alias .'_'. $_SESSION['courseID'];// = component_courseid
             // if instance has been set
             if( $this->property('instance') )
             {
@@ -111,7 +111,6 @@ class Popquiz extends ComponentBase
 					// no record found so create a new dynamic instance
 					$config = new popquizModel;// db record
 					$config->name = $name;
-					
 					$config->save();// save the new record
 				} else {
 					//use the first record matching course
@@ -135,7 +134,13 @@ class Popquiz extends ComponentBase
             }
             $this->page['role'] = $role;// either Learner or Instructor
 			
-            $this->addCss("/plugins/delphinium/poppies/assets/css/popquiz.css");
+			/* if questions stored, both will use them
+				get questions from $config->questions and show game chosen
+				selected questions are stored in db as array of question_id
+				retrieve questions from delphinium_roots_quiz_questions
+			*/
+            $gameQuest = $this->getTheseQuestions($config->questions);
+            $this->page['gameQuest'] = $gameQuest;
 			
 			if($role=='Instructor')
 			{
@@ -144,32 +149,31 @@ class Popquiz extends ComponentBase
 				$formController->create('frontend');
 				
                 // Use the primary key of the record you want to update
-                $this->page['recordId'] = $config->id;
+                $this->page['poppiesrecordId'] = $config->id;
 				// Append the formController to the page
-				$this->page['form'] = $formController;
+				$this->page['poppiesform'] = $formController;
                 
                 // Append Instructions page
-                $instructions = $formController->makePartial('instructions');
+                $instructions = $formController->makePartial('poppiesinstructions');
 				
 				// instructor code component specific
-                $this->page['instructions'] = $instructions;
+                $this->page['poppiesinstructions'] = $instructions;
 				$quizList = $this->getAllQuizzes();// choose quiz questions to use
 				$this->page['quizList'] = $quizList;
                 
-                //if questions stored then need them too
+				/* ready to finish loading assets
+					only the instructor uses the component
+				*/
+				$this->addCss("/plugins/delphinium/poppies/assets/css/popquiz.css");
+				$this->addJs("/plugins/delphinium/poppies/assets/javascript/jquery-ui.min.js");
+				$this->addJs("/plugins/delphinium/poppies/assets/javascript/jquery.spritely.js");
+				$this->addJs("/plugins/delphinium/poppies/assets/javascript/popquiz.js");
 			}
 			if($role=='Learner')
 			{
-				/*get questions from $config->questions and show game chosen
-                    selected questions are stored in db as array of question_id
-                    retrieve questions from delphinium_roots_quiz_questions
-                */
-                
+				//default.htm will load learner.htm and view the game which loads quest gameQuest
 			}
-			// code for both
-            $gameQuest = $this->getSomeQuestions($config->questions);
-            $this->page['gameQuest'] = $gameQuest;
-/*		}
+		}
         catch (\GuzzleHttp\Exception\ClientException $e) {
             return;
         }
@@ -188,17 +192,17 @@ class Popquiz extends ComponentBase
             }
             return \Response::make($this->controller->run('error'), 500);
         }
-*/	}
+		
+	}
 
 	/* Instructor can choose questions from multiple quizzes
-        return list of quizzes for instructor to choose questions
+        return all quizzes for instructor to choose questions
 	*/
 	public function getAllQuizzes()
     {
-        $fresh_data = false;//true;
+        $fresh_data = false;//true if recently created?
 		$roots = new Roots();
 		$req = new QuizRequest(ActionType::GET, null, $fresh_data, true);
-        //echo json_encode($roots->quizzes($req));
 		
 		// remove quizzes with no questions
 		
@@ -208,11 +212,8 @@ class Popquiz extends ComponentBase
     
     /* Learner needs question objects for game
         use Delphinium\Roots\Models\Quizquestion as questionsModel; 
-        
-        $gameQuest = $this->getSomeQuestions($config->questions);
-        $this->page['gameQuest'] = $gameQuest;
     */
-    public function getSomeQuestions($idList)
+    public function getTheseQuestions($idList)
     {
         $ids = explode(",", $idList);
         $length = count($ids);
@@ -230,7 +231,7 @@ class Popquiz extends ComponentBase
 	/*UNUSED SO FAR
 		How can we get (this) assignment object
 		Need Intro text and points to display in game
-			if not done as a Canvas Assignment
+			if not done as a Canvas Assignment then ...
 	*/
 	public function getSingleAssignment()
     {
@@ -276,8 +277,6 @@ class Popquiz extends ComponentBase
         $did = intval($data['id']);// convert string to integer
         $config = popquizModel::find($did);// retrieve existing record
         $config->quiz_name = $data['quiz_name'];// change to new data
-        //echo json_encode($config);//($data);// testing
-        
         $config->quiz_description=$data['quiz_description'];
 		$config->game_style=$data['game_style'];
 		$config->questions=$data['questions'];

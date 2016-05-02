@@ -19,18 +19,13 @@
   ~ You may not distribute any version of this software, modified or otherwise
   -->
 
-<script type="text/javascript" src="plugins/delphinium/poppies/assets/javascript/jquery.min.js"></script>
-<script type="text/javascript" src="plugins/delphinium/poppies/assets/javascript/jquery-ui.min.js"></script>
-<script type="text/javascript" src="plugins/delphinium/poppies/assets/javascript/jquery.spritely.js"></script>
-<script type="text/javascript" src="plugins/delphinium/poppies/assets/javascript/bootstrap.min.js"></script>
-<script type="text/javascript" src="plugins/delphinium/poppies/assets/javascript/popquiz.js"></script>
 <script>
 		
 	var role = '{{role}}';
-    console.log('Role: ',role);//string
+    //console.log('Role: ',role);//string
 	
 	var config = {{config|raw}};
-	console.log('config',config);
+	//console.log('config',config);
 	
 	// instructor vars
 	var quizList = [];// all quizzes
@@ -39,7 +34,7 @@
 	// game vars
 	var scoreis=0, misses=0;
 	var current=0;// questnum
-	var gameQuest=[];//questions used in game
+	var gameQuest={{gameQuest|raw}};//questions used in game
 
 </script>
 {% if ('Learner' in role) %}
