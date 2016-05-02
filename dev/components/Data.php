@@ -102,9 +102,8 @@ class Data extends ComponentBase
         $_SESSION['courseID'] = \Input::get('custom_canvas_course_id');
         $_SESSION['userID'] = \Input::get('custom_canvas_user_id');
         $_SESSION['domain'] = \Input::get('custom_canvas_api_domain');
-
-
-        //get the roles
+;
+	     //get the roles
         $roleStr = \Input::get('roles');
         if (stristr($roleStr, 'Learner')) {
             $_SESSION['roles'] = $roleStr;
@@ -147,7 +146,6 @@ class Data extends ComponentBase
                     return;
                 }
             } else {
-
                 $_SESSION['userToken'] = $userCheck->encrypted_token;
                 $decrypted = \Crypt::decrypt($userCheck->encrypted_token);
                 //get the timezone

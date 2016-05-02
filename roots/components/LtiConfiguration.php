@@ -105,8 +105,7 @@ class LtiConfiguration extends ComponentBase {
         $_SESSION['baseUrl'] = Config::get('app.url', 'backend');
         $_SESSION['courseID'] = \Input::get('custom_canvas_course_id');
         $_SESSION['userID'] = \Input::get('custom_canvas_user_id');
-        $_SESSION['domain'] = '185.44.229.29:3000';//\Input::get('custom_canvas_api_domain');
-        //echo json_encode($_POST); die;
+        $_SESSION['domain'] = '185.44.229.29:3000';//\Input::get('custom_canvas_api_domain');;
         //get the roles
         $roleStr = \Input::get('roles');
         if(stristr($roleStr,'Learner')||stristr($roleStr,'Instructor'))
@@ -160,6 +159,7 @@ class LtiConfiguration extends ComponentBase {
 
                 //get the timezone
                 $roots = new Roots();
+
                 try
                 {
                     $course = $roots->getCourse();
@@ -193,6 +193,10 @@ class LtiConfiguration extends ComponentBase {
                     }
 
                 }
+
+                $course = $roots->getCourse();
+
+
                 $account_id = $course->account_id;
                 $account = $roots->getAccount($account_id);
 
