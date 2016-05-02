@@ -65,26 +65,26 @@ class ControllerNodeVisitor extends NodeVisitorAbstract
 //
 //        return;
 
-        if($node instanceof Node\Stmt\Namespace_)
-        {
-            var_dump($node);
-        }else
-        {
-            NodeTraverser::DONT_TRAVERSE_CHILDREN;
-        }
-        return;
-        if($node instanceof Comment\Doc)
-        {
-            var_dump($node);
-            return;
-        }
-        else
-        {
-            NodeTraverser::DONT_TRAVERSE_CHILDREN;
-        }
-
-
-return;
+//        if($node instanceof Node\Stmt\Namespace_)
+//        {
+//            var_dump($node);
+//        }else
+//        {
+//            NodeTraverser::DONT_TRAVERSE_CHILDREN;
+//        }
+//        return;
+//        if($node instanceof Comment\Doc)
+//        {
+//            var_dump($node);
+//            return;
+//        }
+//        else
+//        {
+//            NodeTraverser::DONT_TRAVERSE_CHILDREN;
+//        }
+//
+//
+//        return;
 
 
 

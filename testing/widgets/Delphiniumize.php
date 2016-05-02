@@ -50,7 +50,7 @@ class Delphiniumize extends WidgetBase
     use \Backend\Traits\SelectableWidget;
 
     protected $theme;
-
+    protected $controller;
     public $noRecordsMessage = 'rainlab.builder::lang.database.no_records';
 
     protected $newPluginData;
@@ -75,6 +75,41 @@ class Delphiniumize extends WidgetBase
         return $this->makePartial('delphiniumize');
     }
 
+//    protected function getRenderData()
+//    {
+//        $activePluginVector = $this->controller->getBuilderActivePluginVector();
+//
+//        return [
+//            'pluginVector'=>$activePluginVector
+//        ];
+//return;
+//        $items = $this->getControllerList($activePluginVector->pluginCodeObj);
+//
+//        $searchTerm = Str::lower($this->getSearchTerm());
+//        if (strlen($searchTerm)) {
+//            $words = explode(' ', $searchTerm);
+//            $result = [];
+//
+//            foreach ($items as $controller) {
+//                if ($this->textMatchesSearch($words, $controller)) {
+//                    $result[] = $controller;
+//                }
+//            }
+//
+//            $items = $result;
+//        }
+//
+//        return [
+//            'pluginVector'=>$activePluginVector,
+//            'items'=>$items
+//        ];
+//    }
+//
+//
+//    public function refreshActivePlugin()
+//    {
+//        return ['#'.$this->getId('body') => $this->makePartial('widget-contents', $this->getRenderData())];
+//    }
 
     public function onAddItem()
     {
