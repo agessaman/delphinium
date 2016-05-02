@@ -85,6 +85,7 @@ class Delphiniumize extends ComponentBase
         $this->newPluginData = $vars;
         $this->makeFiles();
         $this->modifyFiles();
+        $this->octoberUp();
     }
 
     private function makeFiles()

@@ -25,6 +25,7 @@ namespace Delphinium\Testing\Controllers;
 use BackendMenu;
 use Backend\Classes\Controller;
 use Delphinium\Testing\Widgets\Delphiniumize;
+use System\Classes\PluginManager;
 
 /**
  * My Controller Back-end Controller
@@ -46,6 +47,36 @@ class MyController extends Controller
 //        BackendMenu::setContext('Delphinium.Testing', 'testing', 'mycontroller');
         BackendMenu::setContext('Delphinium.Greenhouse', 'greenhouse', 'greenhouse');
 
+        $plugins = $this->getPluginList();
+        var_dump($plugins);
         new Delphiniumize($this, 'delphiniumize');
+    }
+
+    protected function getPluginList()
+    {
+        $plugins = PluginManager::instance()->getPlugins();
+
+        $result = [];
+        foreach ($plugins as $code=>$plugin) {
+            $pluginInfo = $plugin->pluginDetails();
+
+            $itemInfo = [
+                'name' => isset($pluginInfo['name']) ? $pluginInfo['name'] : 'No name provided',
+                'description' => isset($pluginInfo['description']) ? $pluginInfo['description'] : 'No description provided',
+                'icon' => isset($pluginInfo['icon']) ? $pluginInfo['icon'] : null
+            ];
+
+            list($namespace) = explode('\\', get_class($plugin));
+            $itemInfo['namespace'] = trim($namespace);
+            $itemInfo['full-text'] = trans($itemInfo['name']).' '.trans($itemInfo['description']);
+
+            $result[$code] = $itemInfo;
+        }
+
+        uasort($result, function($a, $b) {
+            return strcmp(trans($a['name']), trans($b['name']));
+        });
+
+        return $result;
     }
 }

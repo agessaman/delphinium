@@ -13,48 +13,61 @@ use Config;
 use Carbon\Carbon;
 use Delphinium\Roots\Exceptions\NonLtiException;
 
-class LtiConfiguration extends ComponentBase {
+class LtiConfiguration extends ComponentBase
+{
 
-    public function componentDetails() {
+    public function componentDetails()
+    {
         return [
             'name' => 'LTI Configuration Component',
             'description' => 'Handles the LTI Configuration required for communicating with Canvas'
         ];
     }
 
-    public function onRun() {
-//        try
-//        {
-        $this->doBltiHandshake();
-//        }
-//        catch(\Delphinium\Roots\Exceptions\InvalidRequestException $e)
-//        {
-//            return \Response::make($this->controller->run('error'), 500);
-//        }
-//        catch(NonLtiException $e)
-//        {
-//            if($e->getCode()==584)
-//            {
-//                return \Response::make($this->controller->run('nonlti'), 500);
-//            }
-//            else{
-//                echo json_encode($e->getMessage());return;
-//            }
-//        }
-//        catch (\GuzzleHttp\Exception\ClientException $e) {
-//            return;
-//        }
-//        catch(\Exception $e)
-//        {
-//            if($e->getMessage()=='Invalid LMS')
-//            {
-//                return \Response::make($this->controller->run('nonlti'), 500);
-//            }
-//            return \Response::make($this->controller->run('error'), 500);
-//        }
+    public function onRun()
+    {
+        $this->checkLTIMessageType();
     }
 
-    public function defineProperties() {
+
+    function checkLTIMessageType()
+    {
+        if (isset($_POST['lti_message_type'])) {
+            $this->page['messageType'] = $_POST['lti_message_type'];
+            switch ($this->page['messageType']) {
+                case 'ContentItemSelectionRequest':
+                    $this->page['return_url'] = $_POST["content_item_return_url"];
+                    break;
+                case 'basic-lti-launch-request':
+                default:
+                    try {
+                        $this->doBltiHandshake();
+                    } catch (\Delphinium\Roots\Exceptions\InvalidRequestException $e) {
+                        return \Response::make($this->controller->run('error'), 500);
+                    } catch (NonLtiException $e) {
+                        if ($e->getCode() == 584) {
+                            return \Response::make($this->controller->run('nonlti'), 500);
+                        } else {
+                            echo json_encode($e->getMessage());
+                            return;
+                        }
+                    } catch (\GuzzleHttp\Exception\ClientException $e) {
+                        return;
+                    } catch (\Exception $e) {
+                        if ($e->getMessage() == 'Invalid LMS') {
+                            return \Response::make($this->controller->run('nonlti'), 500);
+                        }
+                        return \Response::make($this->controller->run('error'), 500);
+                    }
+            }
+        } else {
+            $vars = $_POST;
+            $this->returnXML($vars);
+        }
+    }
+
+    public function defineProperties()
+    {
         return [
             'ltiInstance' => [
                 'title' => 'LTI Instance',
@@ -66,11 +79,46 @@ class LtiConfiguration extends ComponentBase {
                 'description' => 'The approver must have the right permissions to access the data needed for this component',
                 'type' => 'dropdown',
                 'default' => 'Instructor',
+            ],
+            'type' =>[
+                'title'=>'Type',
+                'description' => 'Whether this content should appear inside a Canva\'s text editor',
+                'type' => 'dropdown',
+                'default' => 'Navigation',
+            ],
+            'title' =>[
+                'title'=>'Link Title',
+                'description' => 'Enter the name of the link as you would like it to show in the LMS',
+                'type' => 'string',
+                'required'=>true,
+                'validationPattern' => '^[a-zA-Z0-9]+$',
+                'validationMessage' => 'Link Title is required'
+            ],
+            'visibility' =>[
+                'title'=>'Visibility',
+                'description' => 'Select who will be able to see this content. Default is public.',
+                'type' => 'dropdown',
+                'default' => 'Public',
+            ],
+            'width' =>[
+                'title'=>'(optional) Width',
+                'description' => 'Enter the width of the iFrame that will show this content',
+                'type' => 'string',
+                'validationPattern' => '^[0-9]+$',
+                'validationMessage' => 'Width must be an integer'
+            ],
+            'height' =>[
+                'title'=>'(optional) Height',
+                'description' => 'Enter the height of the iFrame that will show this content',
+                'type' => 'string',
+                'validationPattern' => '^[0-9]+$',
+                'validationMessage' => 'Height must be an integer'
             ]
         ];
     }
 
-    public function getLtiInstanceOptions() {
+    public function getLtiInstanceOptions()
+    {
         $instances = LtiConfigurations::all();
         $array_dropdown = ['0' => '- select an LTI configuration - '];
 
@@ -81,7 +129,8 @@ class LtiConfiguration extends ComponentBase {
         return $array_dropdown;
     }
 
-    public function getApproverOptions() {
+    public function getApproverOptions()
+    {
         $arr = array(
             "0" => "Instructor",
             "1" => "Administrator",
@@ -90,7 +139,17 @@ class LtiConfiguration extends ComponentBase {
         return $arr;
     }
 
-    public function doBltiHandshake() {
+    public function getTypeOptions()
+    {
+        return array(0=>'Navigation',1=>'Editor');
+    }
+
+    public function getVisibilityOptions()
+    {
+        return array(0=>'Public',1=>'Members',2=>'Admin');
+    }
+    public function doBltiHandshake()
+    {
         //first obtain the details of the LTI configuration they chose
         $dbHelper = new DbHelper();
         $instanceFromDB = LtiConfigurations::find($this->property('ltiInstance'));
@@ -108,15 +167,11 @@ class LtiConfiguration extends ComponentBase {
         $_SESSION['domain'] = \Input::get('custom_canvas_api_domain');
         //get the roles
         $roleStr = \Input::get('roles');
-        if(stristr($roleStr,'Learner')||stristr($roleStr,'Instructor'))
-        {
+        if (stristr($roleStr, 'Learner') || stristr($roleStr, 'Instructor')) {
             $_SESSION['roles'] = $roleStr;
-        }
-        else
-        {
+        } else {
             $parts = explode("lis/", $roleStr);
-            if(count($parts)>=2)
-            {
+            if (count($parts) >= 2) {
                 $_SESSION['roles'] = ($parts[1]);
             }
         }
@@ -149,44 +204,34 @@ class LtiConfiguration extends ComponentBase {
 
                     $this->redirect($url);
                 } else {
-                    echo ("A(n) {$approverRole} must authorize this course. Please contact your instructor.");
+                    echo("A(n) {$approverRole} must authorize this course. Please contact your instructor.");
                     return;
                 }
             } else {
 
                 //set the professor's token
-                $courseId =$_SESSION['courseID'];
+                $courseId = $_SESSION['courseID'];
                 $_SESSION['userToken'] = $userCheck->encrypted_token;
                 //get the timezone
                 $roots = new Roots();
-                try
-                {
+                try {
                     $course = $roots->getCourse();
-                }
-                catch(\GuzzleHttp\Exception\RequestException $e)
-                {
-                    if($e->getCode()==401)
-                    {//unauthorized, meaning the token we have in the DB has been deleted from Canvas. We must request a new token
+                } catch (\GuzzleHttp\Exception\RequestException $e) {
+                    if ($e->getCode() == 401) {//unauthorized, meaning the token we have in the DB has been deleted from Canvas. We must request a new token
                         $dbHelper->deleteInvalidApproverToken($courseId);
 
                         //launch the approval process again, try three times at most
-                        if(isset($_COOKIE['token_attempts']))
-                        {
-                            $attempts = $_COOKIE['token_attempts'] +1;
+                        if (isset($_COOKIE['token_attempts'])) {
+                            $attempts = $_COOKIE['token_attempts'] + 1;
                             setcookie("token_attempts", $attempts, time() + (300), "/"); //5 minutes
-                        }
-                        else
-                        {
+                        } else {
                             setcookie("token_attempts", 1, time() + (300), "/"); //5 minutes
                         }
 
-                        if($_COOKIE['token_attempts']>3)
-                        {
+                        if ($_COOKIE['token_attempts'] > 3) {
                             echo "Unable to obtain access to your Canvas account. Reached the max number of attempts. Please verify your configuration and try again in 5 minutes.";
                             return;
-                        }
-                        else
-                        {
+                        } else {
                             $this->onRun();//the cookie is done to prevent infinite loops
                         }
                     }
@@ -200,8 +245,7 @@ class LtiConfiguration extends ComponentBase {
                 //If they're not, we will pull all the students from Canvas and refresh our users table.
                 $dbHelper = new DbHelper();
                 $user = $dbHelper->getUserInCourse($courseId, $_SESSION['userID']);
-                if(is_null($user))
-                {//get all students from Canvas
+                if (is_null($user)) {//get all students from Canvas
                     $roots = new Roots();
                     $users = $roots->getStudentsInCourse();
 
@@ -215,17 +259,15 @@ class LtiConfiguration extends ComponentBase {
                 $updatedDate = $approver->updated_at;
 
                 $diff = $updatedDate->diffInHours($now, false);
-                if($diff>24)
-                {
+                if ($diff > 24) {
                     $allStudentsDb = $dbHelper->getUsersInCourseWithRole($_SESSION['courseID'], 'Learner');
                     $allStudentsFromCanvas = $roots->getStudentsInCourse();
-                    foreach($allStudentsDb as $dbStudent)
-                    {
-                        $filteredItems = array_values(array_filter($allStudentsFromCanvas, function($elem) use($dbStudent) {
+                    foreach ($allStudentsDb as $dbStudent) {
+                        $filteredItems = array_values(array_filter($allStudentsFromCanvas, function ($elem) use ($dbStudent) {
                             return intval($elem->user_id) === intval($dbStudent->user_id);
                         }));
 
-                        if(count($filteredItems)<1)//meaning they are in our DB but they are not in Canvas anymore
+                        if (count($filteredItems) < 1)//meaning they are in our DB but they are not in Canvas anymore
                         {
                             $dbHelper->deleteUserFromRole($courseId, $dbStudent->user_id, 'Learner');
                         }
@@ -241,7 +283,8 @@ class LtiConfiguration extends ComponentBase {
         }
     }
 
-    function redirect($url) {
+    function redirect($url)
+    {
         echo '<script type="text/javascript">';
         echo 'window.location.href="' . $url . '";';
         echo '</script>';
@@ -249,6 +292,97 @@ class LtiConfiguration extends ComponentBase {
         echo '<meta http-equiv="refresh" content="0;url=' . $url . '" />';
         echo '</noscript>';
         exit;
+    }
+
+    function returnXML()
+    {
+        $baseUrlWithoutSlash = rtrim(\Config::get('app.url'), '/');
+        $url = $baseUrlWithoutSlash . $this->page->url;
+        $typeOpts = $this->getTypeOptions();
+        $type= $typeOpts[$this->property('type')];
+
+        $linkTitle = $this->property('title');
+        $width = $this->property('width');
+        $height = $this->property('height');
+
+        $visibilityOpts = $this->getVisibilityOptions();
+        $visibility= $visibilityOpts[$this->property('visibility')];
+        $domain = \Config::get('app.url');
+        $favicon = \Backend::skinAsset('assets/images/favicon.png');
+
+        $desc = is_null($this->page->description)?'':$this->page->description;
+
+        $widthXML='';
+        $heightXML = '';
+        $typeXML='';
+        $string='';
+        if(!is_null($width))
+        {
+            $widthXML = "<lticm:property name='selection_width'>$width</lticm:property>";
+        }
+
+        if(!is_null($height))
+        {
+            $heightXML = "<lticm:property name='selection_height'>$height</lticm:property>";
+        }
+
+
+        if ($type == 'Navigation'){
+            $typeXML = <<<XML
+			<lticm:options name='course_navigation'>
+                <lticm:property name='visibility'>$visibility</lticm:property>
+                <lticm:property name='default'>enabled</lticm:property>
+                <lticm:property name='url'>$url</lticm:property>
+                <lticm:property name='text'>$linkTitle</lticm:property>
+                <lticm:property name='enabled'>true</lticm:property>
+          </lticm:options>
+XML;
+        }elseif ($type == 'Editor'){
+            $typeXML = <<<XML
+			<lticm:options name='editor_button'>
+				<lticm:property name='icon_url'>$favicon</lticm:property>
+				$widthXML
+				$heightXML
+				<lticm:property name='url'>$url</lticm:property>
+                <lticm:property name='text'>$linkTitle</lticm:property>
+                <lticm:property name='enabled'>true</lticm:property>
+          </lticm:options>
+XML;
+        }
+
+
+        $string = <<<XML
+<?xml version='1.0' encoding='UTF-8'?>
+<cartridge_basiclti_link xmlns='http://www.imsglobal.org/xsd/imslticc_v1p0'
+    xmlns:blti = 'http://www.imsglobal.org/xsd/imsbasiclti_v1p0'
+    xmlns:lticm ='http://www.imsglobal.org/xsd/imslticm_v1p0'
+    xmlns:lticp ='http://www.imsglobal.org/xsd/imslticp_v1p0'
+    xmlns:xsi = 'http://www.w3.org/2001/XMLSchema-instance'
+    xsi:schemaLocation = 'http://www.imsglobal.org/xsd/imslticc_v1p0 http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticc_v1p0.xsd
+    http://www.imsglobal.org/xsd/imsbasiclti_v1p0 http://www.imsglobal.org/xsd/lti/ltiv1p0/imsbasiclti_v1p0.xsd
+    http://www.imsglobal.org/xsd/imslticm_v1p0 http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticm_v1p0.xsd
+    http://www.imsglobal.org/xsd/imslticp_v1p0 http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticp_v1p0.xsd'>
+    <blti:title>$linkTitle</blti:title>
+    <blti:description>$desc</blti:description>
+    <blti:icon>$favicon</blti:icon>
+    <blti:launch_url>$url</blti:launch_url>
+    <blti:extensions platform='canvas.instructure.com'>
+          <lticm:property name='tool_id'>$linkTitle</lticm:property>
+          <lticm:property name='privacy_level'>public</lticm:property>
+          <lticm:property name='domain'>$domain</lticm:property>
+                $typeXML
+    </blti:extensions>
+    <cartridge_bundle identifierref='BLTI001_Bundle'/>
+    <cartridge_icon identifierref='BLTI001_Icon'/>
+</cartridge_basiclti_link>
+
+
+XML;
+
+        $xml = new \SimpleXMLElement($string);
+
+        echo $xml->asXML();
+        die();
     }
 
 }
