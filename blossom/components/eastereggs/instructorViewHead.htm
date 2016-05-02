@@ -68,8 +68,8 @@
                       <form role="form" id="updateForm"
                         data-request="{{ __SELF__ }}::onUpdate"
                         data-request-success="$el.hide();completed(data);">
-                          {{ eggsForm.update(eggsRecordId)|raw }}
-                          {{ eggsForm.formRender()|raw }}
+                          {{ Form.update(RecordId)|raw }}
+                          {{ Form.formRender()|raw }}
                         <div class="form-group">
                            <button class="btn btn-primary btn-block btn-md" type="submit" value="register">Update Component</button>
                         </div>
@@ -77,11 +77,31 @@
                     </div>
                   <!-- Instructions -->
                     <div id="instruct" class="tab-pane fade in" style="padding: 0px 20px;">
-                        {{ eggsinstructions|raw }}
+                        {{ instructions|raw }}
                     </div>
                   </div>
               </div>
           </div>
       </div>
   </div>
+  <script>
+  $('#popinfo').popover();// activate info
+    /* set id,course,copy in the POST if they are hidden in fields.yaml
+        Add hidden input fields so they will transfer to onUpdate
+        fields.yaml is set to hidden: true do not appear in the form at all
+        
+        in Vanilla I only have id hidden
+    */
+    
+    $('#Form-outsideTabs').append('<input type="hidden" name="Vanilla[id]" value="'+config.id+'" /> ');
+    //$('#Form-outsideTabs').append('<input type="hidden" name="Vanilla[course_id]" value="'+config.course_id+'" /> ');
+    //$('#Form-outsideTabs').append('<input type="hidden" name="Vanilla[copy_id]" value="'+config.copy_id+'" /> ');
+    
+  function completed(data)
+  {
+        /* updated record is returned */
+        location.reload();
+  }
+  //console.log('instance: id='+config.id,config.name,config.custom,config.course_id,config.copy_id);
+</script>
 </div>
