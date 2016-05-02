@@ -38,32 +38,55 @@ $(document).ready(function() {
         .attr("class", "tooltip")
         .style("opacity", 0);
     
-	////var assignments={{assignments|raw}};
     //console.log(assignments.length, assignments);//has points_possible
-    
-    ////var submissions = {{submissions|raw}};//json
     //console.log(submissions.length, submissions);//has all tags & score
     // related by assignment_id
 
+	/* Delphinium options */
+	$('#popinfo').popover();// activate info
+	
     /* if Learner, filterData then showCompetencies
         else 
         create assignments using Module Items
-        showCompetencies data,details
+        showCompetencies data, details
         plus configure Settings
     */
     if(role == 'Learner') {
+		/* set up the popover content text */
+		$('#popinfo').attr("data-content","Click a bar to display details.");
+		
         filterData();
         showCompetencies();
-    } else { 
+		
+    } else {
+		/* set up the popover text for instructor */
+		$('#popinfo').attr("data-content","Instructor view does not contain submissions. Click a bar to display details.");
+	
+		/* set id,course in the POST they are not editable in the form
+			Add hidden input fields so they will transfer to onUpdate
+			if fields are set to hidden: true, they do not appear in the post
+		*/
+		$('#Form-outsideTabs').append('<input type="hidden" name="Competencies[id]" value="'+config.id+'" /> ');
+		$('#Form-outsideTabs').append('<input type="hidden" name="Competencies[course_id]" value="'+config.course_id+'" /> ');
+		
+		// Fix Animate checkbox switch
+		$('<div style="height:90px;" class="clearfix"></div>').insertBefore('.checkbox-field').parent;
+		$('.checkbox-field').attr('style','margin-left:20px').removeClass('span-right').addClass('span-left');
+		$('#Form-field-Competencies-Name-group').hide();// not useful
+		
+		// custom-color dataLocker
+		$('div #ColorPicker-formColor-Color').attr('data-data-locker',config.Color);
+		//console.log('instance: '+config.id,config.Name,config.Size,config.Color,config.Animate,config.course_id);
+		
         filterModuleTags();
         showCompetencies();
     }
-});
+});// end document.ready
 
 function filterModuleTags() {
     
-    ///var modules={{modules|raw}};// use items to build data
-    console.log(modules.length, modules);
+    //var modules={{modules|raw}};// twig inside instructorView use module items to build data
+    //console.log(modules.length, modules);
     // replace assignments with modAssignments that have tags
     assignments=[];
     var modAssignments = [];
@@ -152,6 +175,7 @@ function filterModuleTags() {
 
 function filterData() {
     console.log('submissions:',submissions);
+	console.log('assignments:',assignments);
     //find all submissions that have tags
     var tagged =$.grep(submissions, function(elem, indx){
         return elem['tags'] != "";
@@ -221,7 +245,7 @@ function filterData() {
     //console.log(details.length,details);
 }/* END filterData */
 
-/********************************************
+/* *******************************************
     check if object has tag needed
     used from filterData & filterModuleTags
 */
@@ -252,24 +276,25 @@ function showCompetencies() {
 	var competenciesWidth = 250;// could be a property?
 	var competenciesHeight = data.length*rowHeight;
 	
-    ////var competenciesSize=config.Size.toLowerCase();
+    //var competenciesSize=config.Size.toLowerCase();// twig in default.htm
 	//console.log('competenciesSize',competenciesSize);
-	if(competenciesSize == "small"){
+	if(competenciesSize == "small") {
 		competenciesSVG.attr('width', competenciesWidth / 1.5)
 						.attr('height', competenciesHeight / 1.5);
 		competenciesView.attr('transform', "scale(.66)");
-	}else if(competenciesSize == "large"){
+	} else if (competenciesSize == "large") {
 		competenciesSVG.attr('width', competenciesWidth * 1.5)
 						.attr('height', competenciesHeight * 1.5);
         competenciesView.attr('transform', "scale(1.5)");
-	}else{
+	} else {
 		// default
 		competenciesSVG.attr('width', competenciesWidth)
 						.attr('height', competenciesHeight);
 	}
     
 	// remove preloader
-	$('.outline').removeClass('spinner');
+	//$('#outline').removeClass('spinner');
+	$('.loading-indicator-container').hide();// remove
     // Only show the d3 if data is valid
     //TEST data=[];
     if(data.length == 0 ) {
@@ -278,9 +303,10 @@ function showCompetencies() {
 		Show a border using the Color to define the Size with instructions to setup Stem.
 		use the details modal to notify user? $('.modal-body').html(content);
 		$('#outline:style').css({'border': '1px solid '+competenciesColor, 'width':competenciesWidth+'px', 'height':'250px'});
-		instructions to setup stem
+		instructions to set up stem
 	*/
-	$(".competenciesSVG").hide();//Nothing to show
+	$(".competenciesSVG").hide();// Nothing to show
+		//Alternative display Set up Stem
     /*    var compview = d3.selectAll(".competenciesSVG");
             compview.attr('height', 160)
                 .append('rect')
@@ -291,7 +317,7 @@ function showCompetencies() {
                 .attr("stroke-width",2)
 				.attr('stroke', competenciesColor)
             compview.append('text')
-                .text('Now Setup Stem')
+                .text('Set up Stem')
                 .attr('x',14).attr('y',80)
                 .attr('font-size', '2em')
 				.attr('fill',competenciesColor);
@@ -363,7 +389,7 @@ function showCompetencies() {
 					.attr('x', 10)
 					.attr('y', i*rowHeight+31);
 			
-			//invisble btn of each bar for tooltip
+			//invisble btn on each bar for tooltip
 			//also stores data[i] info
 			competencies.append('rect')
 				.style('cursor','pointer')
@@ -423,12 +449,13 @@ function removeTooltip()
 }
 
 /*
-	display assignments that match submissions tag groups
+	display assignments that match tag group
 	display rows for details[{'name': align, assignment_id:[{#, #, #, #}]}]
 
-	grey = locked : NA unless compare locked_at w/ current date?
-	blue = done : also if score = 0 Not Red?
-	green=available to do still
+	grey = locked : compare locked_at w/ current date?
+	blue = done : also if score = 0
+	green= available to do still
+	
 */
 function displayDetails(item) {
     //console.log('item:',item);
@@ -453,24 +480,27 @@ function displayDetails(item) {
             if(submitted[0].score == null) { 
 
                 // if assignment locked use gray FIGURE OUT MODULE LOCKED !
-                if(assignment[0].lock_at == null) {
-                    content += '<div class="alert alert-success">';//Available green
+				//$states = $roots->getModuleStates($req);
+				//compare today date with lock_at (2015-09-01 06:00:00) 
+				if(assignment[0].locked_for_user == 0) {
+                //if(assignment[0].lock_at == null) {
+                    content += '<div class="alert alert-success available">';//Available green
                 } else {
-                    content += '<div class="alert">';//Locked grey [figure out locked]
+                    content += '<div class="alert unavailable">';//Locked grey [figure out locked]
                     locked=true;
                 }
                 //content += '<div class="alert fade in">';
                 //submitted[0].score='0';// instead of null
 
             }else if(submitted[0].score == 0){
-                content += '<div class="alert alert-info">';// red alert-danger
+                content += '<div class="alert alert-info available">';// red alert-danger
             }else{
-                content += '<div  class="alert alert-info">';//Done blue
+                content += '<div  class="alert alert-info available">';//Done blue
             }
-            content += '<a target="_blank" href="'+assignment[0].html_url+'">'+assignment[0].name+'</a>';
-			//content += '<a target="_blank" href="'+assignment[0].html_url+'?module_item_id='+assignment[0].module_item_id+'">'+assignment[0].name+'</a>';
+            content += '<div class="link" data-url="'+assignment[0].html_url+'">'+assignment[0].name+'</div>';
+			//content += '<div class="link" data-url="'+assignment[0].html_url+'?module_item_id='+assignment[0].module_item_id+'">'+assignment[0].name+'</div>';
             if(locked){ 
-                content += ' Locked not available yet';
+                content += ' Locked, not available yet';
             } else {
                 if(submitted[0].score == null) {
                     content += ' Available to earn '+assignment[0].points_possible+' additional points';
@@ -479,23 +509,34 @@ function displayDetails(item) {
                     content += ' out of '+assignment[0].points_possible+' points possible';
                 }
             }
-            content += '</div>';
+            content += '</div>';// close it
         }
 
         if(role == 'Instructor') {
             var tags=assignment[0].tags.split(",");
             if(tags.indexOf('C:'+item.name) != -1 ) {
-                content += '<div class="alert alert-success">';
-                content += '<a target="_blank" href="'+assignment[0].html_url+'?module_item_id='+assignment[0].module_item_id+'">'+assignment[0].name+'</a>';
-				//item +='<a target="_blank" href="'+moditems[i].html_url+'?module_item_id='+moditems[i].module_item_id+'"> '+moditems[i].title+'</a>';
+                content += '<div class="alert alert-success available">';
+				content += '<div class="link" data-url="'+assignment[0].html_url+'">'+assignment[0].name+'</div>';
+                //content += '<div class="link" data-url="'+assignment[0].html_url+'?module_item_id='+assignment[0].module_item_id+'">'+assignment[0].name+'</div>';
                 content += ' Worth '+assignment[0].points_possible+' points.';
-                content += ' Tags: '+assignment[0].tags;
+                content += ' ( Tags: '+assignment[0].tags+' )';
                 content += '</div>';
+				//TEST see which one works student or instructor view
+				//I think : assignment[0].html_url+'?module_item_id='+assignment[0].module_item_id)
             }
         }
     }
+	
+	$('#detailed-body').html(content);
+	$('#detailed').modal();
+	
+	$('.available').on('click',function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		var url = $(e.currentTarget).find('.link').attr('data-url');
+		console.log('url:',url);
+		window.open(url, '_blank');	
+	});
     //console.log(assignment.length, assignment);
     //console.log(submitted.length, submitted);
-    $('#detailed-body').html(content);
-    $('#detailed').modal();
 }

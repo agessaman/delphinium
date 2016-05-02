@@ -65,13 +65,13 @@ class Modulemap extends ComponentBase
             $moduledata = $roots->getModuleTree(false);
 			$this->page['moduledata'] = json_encode($moduledata);
             
-			// Learner getStars from modulescores
+			// Learner getStars & state from modulescores
 			if($roleStr == 'Learner') {
 				$this->getModuleItemData();// assignments, submissions & modulescores
 			}
 			
             // ready to finish loading assets
-            $this->addCss("/modules/system/assets/ui/storm.css");// loader spinner but changes Modal override css
+            $this->addCss("/modules/system/assets/ui/storm.css");// loader spinner storm changes modal-header override css
             $this->addCss("/plugins/delphinium/birdoparadise/assets/css/font-autumn.css");
             $this->addCss("/plugins/delphinium/birdoparadise/assets/css/bop.css");
             $this->addJs("/plugins/delphinium/birdoparadise/assets/javascript/bop.js");
@@ -102,18 +102,13 @@ class Modulemap extends ComponentBase
 	{
 		// assignments to match module item title and find assignment_id
 		$roots = new Roots();
-		$req = new AssignmentsRequest(ActionType::GET);
-		$res = $roots->assignments($req);
 		
-		$assignments = array();// title & id
-		foreach ($res as $assignment) {
-			array_push($assignments, $assignment);
-		}
-		//$this->assignments = $assignments;
-		// STORED as global assignments
+		$req = new AssignmentsRequest(ActionType::GET);
+		$assignments = $roots->assignments($req);
+		
 		$this->page['assignments'] = json_encode($assignments);
 		
-		// submissions to calculate score & total
+		// submissions to calculate score
 		if(!isset($_SESSION)) { session_start(); }
 		$student = $_SESSION['userID'];
 		//if($student == null) { $student='1604486'; }
@@ -125,34 +120,41 @@ class Modulemap extends ComponentBase
 		$multipleAssignments = true;
 		
 		$req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
-		
 		$submitted = $roots->submissions($req);
 		
-		// get rid of any that are null or 0
-		$valid = array();// score > 0
+		// get rid of any that are null or 0 we're looking for the total score
+		$submissions = array();// score > 0
 		foreach ($submitted as $submission) {
 			if($submission["score"] > 0) {
-				array_push($valid, $submission);
+				array_push($submissions, $submission);
 			}
 		}
-		$submissions = $valid;// submissions
-		// STORED as global submissions and in page
-		$this->page['submissions'] = json_encode($valid);
+
+		$this->page['submissions'] = json_encode($submissions);
 		
-		// modules
-        $moduleId = null;
+		// module states
+		$moduleId = null;
         $moduleItemId = null;
-        $includeContentDetails = true;
-        $includeContentItems = true;
+        $includeContentDetails = false;
+        $includeContentItems = false;
         $module = null;
         $moduleItem = null;
-        $freshData = false;
+        $freshData = true;
+                
         $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems, $includeContentDetails, $module, $moduleItem, $freshData);
+		$states = $roots->getModuleStates($req);
+		//$this->page['moduleStates'] = json_encode($states);// count 24
 		
-        $modules = $roots->modules($req);
+		// modules with items for total & title
+        $includeContentDetails = true;
+        $includeContentItems = true;
+        $freshData = false;// true causes error
+		
+        $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems, $includeContentDetails, $module, $moduleItem, $freshData);
+        $modules = $roots->modules($req);// count 26
 	
 		/*
-            //for each module id STORE id, score, total
+           for each module id return id, score, total
             
             get the module[modid] items
             for each module item
@@ -172,6 +174,16 @@ class Modulemap extends ComponentBase
 			$score=0;
 			$asgnIds= array();
 			
+			/* add $state->state to $arr */
+			$modState=null;
+			if(count($states) <= count($modules)) {
+				foreach($states as $state) {
+					if($state->module_id == $module["module_id"]) {
+						$modState = $state->state;
+						break;// done
+					}
+				}
+			}
 			foreach ($moditems as $item) {
 				$assignmentId=null;
 				$title='';
@@ -182,16 +194,16 @@ class Modulemap extends ComponentBase
 					
 					$title = $item['title'];
 					
-					// find the assignment name that matches module item title 
-					// get its id to find matching submission
+					/*	find the assignment name that matches module item title 
+						get its id to find matching submission */
 					foreach($assignments as $key ) {
 						if($title == $key["name"]) {
 							$assignmentId = $key["assignment_id"];// id for submission
-								array_push($asgnIds, $assignmentId);// test
+							array_push($asgnIds, $assignmentId);// TEST matching ids
 							break;// done
 						}
 					}
-					// get submission assignment_id that matches this assignment_id
+					/* get submission assignment_id that matches this assignment_id */
 					foreach($submissions as $sub ) {
 						if($assignmentId == $sub["assignment_id"]) {
 							$subScore = $sub["score"];
@@ -200,9 +212,9 @@ class Modulemap extends ComponentBase
 						}
 					}
 				}
-			}
-			
-			$arr = array('modid'=>$modid,'score'=>$score,'total'=>$total,'asgnIds'=>$asgnIds);
+			} 
+			$arr = array('modid'=>$modid,'state'=>$modState,'score'=>$score,'total'=>$total);
+			//$arr = array('modid'=>$modid, 'score'=>$score,'total'=>$total,'asgnIds'=>$asgnIds);
 			$modulescores[] = $arr;
 		}
 		$this->page['modulescores']=json_encode($modulescores);
