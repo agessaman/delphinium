@@ -5,19 +5,29 @@ function $(sID) {
   return document.getElementById(sID);
 }
 
-var Y = {
- // shortcuts
- A: YAHOO.util.Anim,
- D: YAHOO.util.Dom,
- E: YAHOO.util.Event,
- UE: YAHOO.util.Easing,
- CA: YAHOO.util.ColorAnim,
- BG: YAHOO.util.BgPosAnim
+function start() {
+     if(window.YAHOO) {
+           Y = {
+             // shortcuts
+             A: YAHOO.util.Anim,
+             D: YAHOO.util.Dom,
+             E: YAHOO.util.Event,
+             UE: YAHOO.util.Easing,
+             CA: YAHOO.util.ColorAnim,
+             BG: YAHOO.util.BgPosAnim
+            }
+     } else {
+          setTimeout(start, 50);
+     }
 }
+
+start();
+
+  var urlBase = path + '/plugins/delphinium/blossom/assets/';
+  soundManager.url = './';
 
 function XLSF(oTarget,urlBase) {
   var writeDebug = soundManager._wD;
-  var urlBase = (urlBase?urlBase:'lights/');
   writeDebug('XLSF()');
   var IS_MOON_COMPUTER = false;
   var isIE = navigator.userAgent.match(/msie/i);
@@ -83,7 +93,7 @@ function XLSF(oTarget,urlBase) {
 	for (var i=0; i<6; i++) {
 	  soundManager.createSound({
 	    id: 'smash'+i,
-	    url: urlBase+'sound/glass'+i+'.mp3',
+	    url: path + '/plugins/delphinium/blossom/assets/sound/glass'+i+'.mp3',
 	    autoLoad: true,
 	    multiShot: true,
 		volume:50
@@ -255,7 +265,7 @@ function XLSF(oTarget,urlBase) {
     this.h = xlsf.lightClasses[sSizeClass];
     this.x = x;
     this.y = y;
-    this.bg = urlBase+'image/bulbs-'+this.w+'x'+this.h+'-'+this.sClass+'.png';
+    this.bg = path + '/plugins/delphinium/blossom/assets/images/bulbs-'+this.w+'x'+this.h+'-'+this.sClass+'.png';
     this.o.style.width = this.w+'px';
     this.o.style.height = this.h+'px';
     this.o.style.background = 'url('+this.bg+') no-repeat 0px 0px';
@@ -458,7 +468,7 @@ function smashInit() {
 soundManager.setup({
   flashVersion: 9,
   preferFlash: false,
-  url: 'lights/',
+  url: path + '/plugins/delphinium/blossom/assets/',
   onready: function() {
     smashInit();
   },

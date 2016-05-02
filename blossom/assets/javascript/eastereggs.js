@@ -208,19 +208,27 @@ $(document).keydown(function(e) {
           s.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/snowstorm.js");
           document.body.appendChild(s);
           var b = document.createElement('script');
-          b.setAttribute('src', path + "plugins/delphinium/blossom/assets/lights/soundmanager2-nodebug-jsmin.js");
+          b.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/soundmanager2-nodebug-jsmin.js");
           document.body.appendChild(b);
           var a = document.createElement('script');
           a.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/animation-min.js");
           document.body.appendChild(a);
           var c = document.createElement('script');
-          c.setAttribute('src', path + "plugins/delphinium/blossom/assets/lights/christmaslights.js");
+          c.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/christmaslights.js");
           document.body.appendChild(c);
+          var f = document.createElement('script');
+          f.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/soundmanager2-nodebug-jsmin.js");
+          document.body.appendChild(f);
           var d =document.createElement("link");
           d.setAttribute("rel", "stylesheet");
           d.setAttribute("type", "text/css");
           d.setAttribute("href", path + "/plugins/delphinium/blossom/assets/css/snow.css");
           document.body.appendChild(d);
+          var e =document.createElement("link");
+          e.setAttribute("rel", "stylesheet");
+          e.setAttribute("type", "text/css");
+          e.setAttribute("href", path + "/plugins/delphinium/blossom/assets/css/christmaslights.css");
+          document.body.appendChild(e);
         }
       }
     }
