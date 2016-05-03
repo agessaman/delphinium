@@ -201,6 +201,7 @@ class Competencies extends ComponentBase
 			
 			// ready to finish loading assets
 			$this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
+            $this->addJs("/plugins/delphinium/blossom/assets/javascript/bootstrap.min.js");
 			$this->addCss("/plugins/delphinium/blossom/assets/css/competencies.css");
 			$this->addJs("/plugins/delphinium/blossom/assets/javascript/competencies.js");
        }
