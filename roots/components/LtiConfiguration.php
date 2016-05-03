@@ -82,7 +82,7 @@ class LtiConfiguration extends ComponentBase
             ],
             'type' =>[
                 'title'=>'Type',
-                'description' => 'Whether this content should appear inside a Canva\'s text editor',
+                'description' => 'Whether this LTI should appear in a left hand menu item or in the editor toolbar.',
                 'type' => 'dropdown',
                 'default' => 'Navigation',
             ],
@@ -91,7 +91,7 @@ class LtiConfiguration extends ComponentBase
                 'description' => 'Enter the name of the link as you would like it to show in the LMS',
                 'type' => 'string',
                 'required'=>true,
-                'validationPattern' => '^[a-zA-Z0-9]+$',
+                'validationPattern' => '^[a-zA-Z0-9\s]+$',
                 'validationMessage' => 'Link Title is required'
             ],
             'visibility' =>[
@@ -101,14 +101,14 @@ class LtiConfiguration extends ComponentBase
                 'default' => 'Public',
             ],
             'width' =>[
-                'title'=>'(optional) Width',
+                'title'=>'Width (Editor type only)',
                 'description' => 'Enter the width of the iFrame that will show this content',
                 'type' => 'string',
                 'validationPattern' => '^[0-9]+$',
-                'validationMessage' => 'Width must be an integer'
+                'validationMessage' => 'Width must be an integer',
             ],
             'height' =>[
-                'title'=>'(optional) Height',
+                'title'=>'Height (Editor type only)',
                 'description' => 'Enter the height of the iFrame that will show this content',
                 'type' => 'string',
                 'validationPattern' => '^[0-9]+$',
@@ -380,7 +380,7 @@ XML;
 XML;
 
         $xml = new \SimpleXMLElement($string);
-
+        header("Content-type: text/xml; charset=utf-8");
         echo $xml->asXML();
         die();
     }
