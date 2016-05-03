@@ -3,16 +3,16 @@
 # ===================================
 
 # Model List Column configuration
-list: $/delphinium/vanilla/models/vanilla/columns.yaml
+list: $/delphinium/vanilla/models/new/columns.yaml
 
 # Model Class name
-modelClass: Delphinium\Vanilla\Models\Vanilla
+modelClass: Delphinium\Vanilla\Models\New
 
 # List Title
-title: Manage Vanillas
+title: Manage News
 
 # Link URL for each record
-recordUrl: delphinium/vanilla/vanilla/update/:id
+recordUrl: delphinium/vanilla/new/update/:id
 
 # Message to display if the list is empty
 noRecordsMessage: backend::lang.list.no_records
@@ -32,7 +32,7 @@ showSorting: true
 #     direction: desc
 
 # Display checkboxes next to each record
-showCheckboxes: true
+# showCheckboxes: true
 
 # Toolbar widget configuration
 toolbar:

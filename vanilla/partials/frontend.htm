@@ -1,0 +1,134 @@
+<!--
+  ~ Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
+  ~
+  ~ This file is subject to the terms and conditions defined in
+  ~ file 'https://github.com/ProjectDelphinium/delphinium/blob/master/EULA',
+  ~ which is part of this source code package.
+  ~
+  ~ NOTICE:  All information contained herein is, and remains the property of Project Delphinium. The intellectual and technical concepts contained
+  ~ herein are proprietary to Project Delphinium and may be covered by U.S. and Foreign Patents, patents in process, and are protected by trade secret or copyright law.
+  ~ Dissemination of this information or reproduction of this material is strictly forbidden unless prior written permission is obtained
+  ~ from Project Delphinium.
+  ~
+  ~ THE RECEIPT OR POSSESSION OF THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS
+  ~ TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.
+  ~
+  ~ Unauthorized copying of this file, via any medium is strictly prohibited
+  ~ Non-commercial use only, you may not charge money for the software
+  ~ You can modify personal copy of source-code but cannot distribute modifications
+  ~ You may not distribute any version of this software, modified or otherwise
+  -->
+{% if messageType == "ContentItemSelectionRequest" %}
+
+
+<h1 style="padding-left:.5em">Greenhouse</h1>
+    <div style="padding-left:3em">
+
+        <h3>Select a Component to Embed</h3>
+        
+        <ul>
+            <li><a href='#' onclick='contentItems("experience", true)'>Experience</a></li>
+            <li><a href='#' onclick='contentItems("timer", true)'>Timer</a></li>
+            <li><a href='#' onclick='contentItems("progress" true)'>Progress</a></li>
+            <li><a href='#' onclick='contentItems("iris" true)'>Iris</a></li>
+        </ul>
+
+        <h3 style="margin-top:2em">
+            Optional - Configure LTI
+        </h3>
+        <form>
+            <table style="margin-left:2em;">
+                    <tr style="height:2.5em">
+                        <td align="right">
+                            <label for="instance" >Instance:&nbsp;&nbsp;</label>
+                        </td>
+                        <td>
+                            <select name="instance" id="instance">
+                                <option value="1" selected="selected">Jared</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right">
+                            <label for="approver" >Approver:&nbsp;&nbsp;</label>
+                        </td>
+                        <td>
+                            <select name="approver" id="approver">
+                                <option value="0" selected="selected">Instructor</option>
+                                <option value="1">Administrator</option>
+                                <option value="2">Student</option>
+                            </select>                            
+                        </td>
+                    </tr>
+            </table>
+        </form>
+
+    </div>
+    
+    <form action="{{return_url}}" method="post" id="componentSelector" encType="application/x-www-form-urlencoded">
+        <input type="hidden" name="lti_message_type" value="ContentItemSelection" />
+        <input type="hidden" name="lti_version" value="LTI-1p0" />
+        <input type="hidden" id="content_items" name="content_items" />
+    </form>
+
+    <script>
+        function contentItems(component, createInstance){
+            createInstance = typeof createInstance !== 'undefined' ? createInstance : false;
+            if(createInstance){
+                $.request('onCreateComponentInstance', {
+                    data: {component: component}, //send php component type
+                    success: function(data) {
+                        instanceID = data.instanceID; //recieve back component instance id from php
+                        buildForm(component);
+                        document.getElementById("componentSelector").submit();
+                    }
+                })
+                
+            }else{
+                buildForm(component);
+                document.getElementById("componentSelector").submit();
+            }
+        }
+    
+        function buildForm(component){
+            var e = document.getElementById("instance");
+            var instance = e.options[e.selectedIndex].value;
+            
+            var e = document.getElementById("approver");
+            var approver = e.options[e.selectedIndex].value;
+            
+            var parameters = "ltiInstance=" + instance  + "&approver=" + approver;
+            
+            switch(component){
+                case "experience":
+                    var parameters = parameters + "&component=experience&properties=%7B%22Instance%22%3A" + instanceID + "%7D";
+                    var height = 600;
+                    var width = 600;
+                    break;
+                   
+                case "timer":
+                    var parameters = parameters + "&component=timer&properties=";
+                    var height = 600;
+                    var width = 600;
+                    break;
+                   
+                case "progress":
+                    var parameters = parameters + "&component=progress&properties=";
+                    var height = 300;
+                    var width = 400;
+                    break;
+                   
+                case "iris":
+                    var parameters = parameters + "&component=iris&properties=%7B%22Filter%22%3A380200%7D";
+                    var height = 600;
+                    var width = 600;
+                    break;
+            }
+            
+            document.getElementById("content_items").value = '{"@context": "http://purl.imsglobal.org/ctx/lti/v1/ContentItem", "@graph": [{"@type": "LtiLinkItem","@id": "{{ url_full() }}","url": "{{ url_full() }}?' + parameters + '","title": "Greenhouse","text": "Embed Greenhouse components","mediaType": "application/vnd.ims.lti.v1.launch+json","placementAdvice": {"displayWidth" : ' + width + ',"presentationDocumentTarget" : "iframe","displayHeight" : ' + height + '}}]}';
+        }
+    </script>    
+
+{% elseif messageType == "basic-lti-launch-request" %}
+    {% component 'alias'%}
+{% endif %}

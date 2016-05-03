@@ -1,28 +1,5 @@
-<?php
-/**
- * Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
- *
- * This file is subject to the terms and conditions defined in
- * file 'https://github.com/ProjectDelphinium/delphinium/blob/master/EULA',
- * which is part of this source code package.
- *
- * NOTICE:  All information contained herein is, and remains the property of Project Delphinium. The intellectual and technical concepts contained
- * herein are proprietary to Project Delphinium and may be covered by U.S. and Foreign Patents, patents in process, and are protected by trade secret or copyright law.
- * Dissemination of this information or reproduction of this material is strictly forbidden unless prior written permission is obtained
- * from Project Delphinium.
- *
- * THE RECEIPT OR POSSESSION OF THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS
- * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.
- *
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Non-commercial use only, you may not charge money for the software
- * You can modify personal copy of source-code but cannot distribute modifications
- * You may not distribute any version of this software, modified or otherwise
- */
+<?php namespace Delphinium\Vanilla;
 
-namespace Delphinium\Vanilla;
-
-use Event;
 use Backend;
 use System\Classes\PluginBase;
 
@@ -54,26 +31,14 @@ class Plugin extends PluginBase
      */
     public function registerComponents()
     {
+        return []; // Remove this line to activate
+
         return [
-            'Delphinium\Vanilla\Components\Vanilla' => 'vanilla',
+            'Delphinium\Vanilla\Components\MyComponent' => 'myComponent',
         ];
     }
 
-	public function boot()
-	{
-	  Event::listen('backend.menu.extendItems', function($manager) {
-		$manager->addSideMenuItems('Delphinium.Greenhouse', 'greenhouse', [
-			'Vanilla' => [
-			  'label' => 'Vanilla',
-			  'icon'  => 'icon-bar-chart',
-			  'owner' => 'Delphinium.Greenhouse',
-			  'url' => Backend::url('delphinium/vanilla/vanilla')
-			]
-		  ]);
-	  });
-	}
-
-    /** UNUSED
+    /**
      * Registers any back-end permissions used by this plugin.
      *
      * @return array
@@ -97,12 +62,10 @@ class Plugin extends PluginBase
      */
     public function registerNavigation()
     {
-        return []; // Remove this line to activate
-
         return [
             'vanilla' => [
                 'label'       => 'Vanilla',
-                'url'         => Backend::url('delphinium/vanilla/mycontroller'),
+                'url'         => \Backend::url('delphinium/vanilla/delphiniumize'),
                 'icon'        => 'icon-leaf',
                 'permissions' => ['delphinium.vanilla.*'],
                 'order'       => 500,
@@ -110,4 +73,9 @@ class Plugin extends PluginBase
         ];
     }
 
+    public function register()
+    {
+        \BackendMenu::registerContextSidenavPartial('Delphinium.Vanilla', 'vanilla', '@/plugins/delphinium/vanilla/partials/_sidebar.htm');
+    }
 }
+

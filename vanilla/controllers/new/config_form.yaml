@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: New
+
+# Model Form Field configuration
+form: $/delphinium/vanilla/models/new/fields.yaml
+
+# Model Class name
+modelClass: Delphinium\Vanilla\Models\New
+
+# Default redirect location
+defaultRedirect: delphinium/vanilla/new
+
+# Create page
+create:
+    title: Create New
+    redirect: delphinium/vanilla/new/update/:id
+    redirectClose: delphinium/vanilla/new
+
+# Update page
+update:
+    title: Edit New
+    redirect: delphinium/vanilla/new
+    redirectClose: delphinium/vanilla/new
+
+# Preview page
+preview:
+    title: Preview New
