@@ -1,4 +1,24 @@
 <?php
+/**
+ * Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
+ *
+ * This file is subject to the terms and conditions defined in
+ * file 'https://github.com/ProjectDelphinium/delphinium/blob/master/EULA',
+ * which is part of this source code package.
+ *
+ * NOTICE:  All information contained herein is, and remains the property of Project Delphinium. The intellectual and technical concepts contained
+ * herein are proprietary to Project Delphinium and may be covered by U.S. and Foreign Patents, patents in process, and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material is strictly forbidden unless prior written permission is obtained
+ * from Project Delphinium.
+ *
+ * THE RECEIPT OR POSSESSION OF THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS
+ * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.
+ *
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Non-commercial use only, you may not charge money for the software
+ * You can modify personal copy of source-code but cannot distribute modifications
+ * You may not distribute any version of this software, modified or otherwise
+ */
 
 namespace Delphinium\Roots\Controllers;
 
@@ -12,14 +32,20 @@ use Delphinium\Roots\DB\DbHelper;
 
 class OAuthResponse extends Controller {
 
-    public function saveUserInfo() 
+    public function saveUserInfo()
     {
-        if (!isset($_SESSION)) 
+        if (!isset($_SESSION))
         {
             session_start();
         }
         $code = \Input::get('code');
         $lti = \Input::get('lti');
+
+        if(is_null($code))//meaning, they cancelled rather than authorize the LTI app
+        {
+            echo "You have canceled authorizing this app. If you want to use this app, you must authorize it. Please reload this page.";
+            return;
+        }
 
         $instanceFromDB = LtiConfigurations::find($lti);
 
@@ -38,6 +64,8 @@ class OAuthResponse extends Controller {
         $encryptedToken = \Crypt::encrypt($actualToken);
         $_SESSION['userToken'] = $encryptedToken;
 
+        setcookie("token_attempts", 0, time() + (300), "/"); //5 minutes
+
         //store encrypted token in the database
         $courseId = $_SESSION['courseID'];
         $userId = $_SESSION['userID'];
@@ -48,7 +76,7 @@ class OAuthResponse extends Controller {
         $roots->getUser($userId);
         $dbHelper = new DbHelper();
         $role = $dbHelper->getRole('Approver');
-        
+
         $userCourse = UserCourse::firstOrNew(array('user_id' => $userId, 'course_id' => $courseId));
         $userCourse->user_id = $userId;
         $userCourse->course_id = $courseId;

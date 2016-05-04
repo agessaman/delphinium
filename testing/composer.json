@@ -1,0 +1,10 @@
+{
+  "name": "delphinium/testing",
+  "description": "A plugin used to delphinimize other plugins",
+  "keywords": ["delphinium", "scaffolding", "gamification", "plugin"],
+  "license": "MIT",
+  "require": {
+    "nikic/php-parser": "^2.0",
+    "symfony/finder": "^3.0"
+  }
+}

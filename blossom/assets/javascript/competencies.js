@@ -1,9 +1,33 @@
-/* competencies.js 
+/*
+ * Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
+ *
+ * This file is subject to the terms and conditions defined in
+ * file 'https://github.com/ProjectDelphinium/delphinium/blob/master/EULA',
+ * which is part of this source code package.
+ *
+ * NOTICE:  All information contained herein is, and remains the property of Project Delphinium. The intellectual and technical concepts contained
+ * herein are proprietary to Project Delphinium and may be covered by U.S. and Foreign Patents, patents in process, and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material is strictly forbidden unless prior written permission is obtained
+ * from Project Delphinium.
+ *
+ * THE RECEIPT OR POSSESSION OF THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS
+ * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.
+ *
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Non-commercial use only, you may not charge money for the software
+ * You can modify personal copy of source-code but cannot distribute modifications
+ * You may not distribute any version of this software, modified or otherwise
+ */
+
+/* competencies.js
     data & details are setup by View partials
     
     Uses:
     submissions for tags & scores
     assignments for points_possible
+	
+	Stem:
+	assignments must contain special tags starting with C:
 */
 
 var div;// tooltip
@@ -39,7 +63,7 @@ $(document).ready(function() {
 function filterModuleTags() {
     
     ///var modules={{modules|raw}};// use items to build data
-    //console.log(modules.length, modules);
+    console.log(modules.length, modules);
     // replace assignments with modAssignments that have tags
     assignments=[];
     var modAssignments = [];
@@ -88,7 +112,7 @@ function filterModuleTags() {
             }
         }
     }
-    //console.log('tagList:', tagList.length, tagList);
+    console.log('tagList:', tagList.length, tagList);
     //console.log('modAssignments:', modAssignments.length, modAssignments);
     //console.log('assignments:',assignments.length, assignments);
     
@@ -108,10 +132,13 @@ function filterModuleTags() {
         
 		// for each group of assignments
         for(var g=0; g<group.length; g++) {
-            // add up points possible for all assignments with this tag
-            gTotal += group[g].points_possible;
-            details[l]['assignments'].push(group[g]);
-            // for Instructor click bar
+			
+			if(group[g].points_possible){
+				// add up points possible for all assignments with this tag
+				gTotal += group[g].points_possible;
+				// for Instructor click bar
+				details[l]['assignments'].push(group[g]);
+			}
         }
         
         // construct data for D3
@@ -124,7 +151,7 @@ function filterModuleTags() {
 }/* END filterModuleTags */
 
 function filterData() {
-    
+    console.log('submissions:',submissions);
     //find all submissions that have tags
     var tagged =$.grep(submissions, function(elem, indx){
         return elem['tags'] != "";
@@ -151,7 +178,7 @@ function filterData() {
         var tdetails = 'subm['+i+']';
             tdetails+= ' tags:'+tagged[i].tags+' [score:'+tagged[i].score+']<br/>';
     }
-    //console.log(tagList.length, 'tagList:'+tagList);
+    console.log(tagList.length, 'tagList:'+tagList);
 
 	/*
     loop thru tagList to sort tagged submissions into groups, 
@@ -178,9 +205,11 @@ function filterData() {
 			//add up scores and points possible
             for(var a=0; a<assignments.length; a++) {
                 if(assignments[a].assignment_id == group[g].assignment_id) {
-                    gTotal += assignments[a].points_possible;
-                    // add matching assignments ids for modal view
-                    details[l]['assignments'].push({'id':assignments[a].assignment_id});
+					if(assignments[a].points_possible){
+						gTotal += assignments[a].points_possible;
+						// add matching assignments ids for modal view
+						details[l]['assignments'].push({'id':assignments[a].assignment_id});
+					}
                 }
             }    
         }
@@ -251,7 +280,8 @@ function showCompetencies() {
 		$('#outline:style').css({'border': '1px solid '+competenciesColor, 'width':competenciesWidth+'px', 'height':'250px'});
 		instructions to setup stem
 	*/
-        var compview = d3.selectAll(".competenciesSVG");
+	$(".competenciesSVG").hide();//Nothing to show
+    /*    var compview = d3.selectAll(".competenciesSVG");
             compview.attr('height', 160)
                 .append('rect')
                 .attr('x',2).attr('y', 2)
@@ -264,8 +294,8 @@ function showCompetencies() {
                 .text('Now Setup Stem')
                 .attr('x',14).attr('y',80)
                 .attr('font-size', '2em')
-                .attr('fill',competenciesColor);
-        
+				.attr('fill',competenciesColor);
+        */
     } else {
         // Show the component
 		////var competenciesAnimate=config.Animate;
@@ -411,7 +441,7 @@ function displayDetails(item) {
         var assignment = $.grep(assignments, function(elem, indx){
             return elem['assignment_id'] == theId;
         });
-        //console.log('assignment:',assignment.length, assignment);
+        console.log('assignment:',assignment.length, assignment);
         
         if(role == 'Learner') {
             //console.log(assignment);// NO module id
@@ -438,6 +468,7 @@ function displayDetails(item) {
                 content += '<div  class="alert alert-info">';//Done blue
             }
             content += '<a target="_blank" href="'+assignment[0].html_url+'">'+assignment[0].name+'</a>';
+			//content += '<a target="_blank" href="'+assignment[0].html_url+'?module_item_id='+assignment[0].module_item_id+'">'+assignment[0].name+'</a>';
             if(locked){ 
                 content += ' Locked not available yet';
             } else {
@@ -455,7 +486,8 @@ function displayDetails(item) {
             var tags=assignment[0].tags.split(",");
             if(tags.indexOf('C:'+item.name) != -1 ) {
                 content += '<div class="alert alert-success">';
-                content += '<a target="_blank" href="'+assignment[0].html_url+'">'+assignment[0].name+'</a>';
+                content += '<a target="_blank" href="'+assignment[0].html_url+'?module_item_id='+assignment[0].module_item_id+'">'+assignment[0].name+'</a>';
+				//item +='<a target="_blank" href="'+moditems[i].html_url+'?module_item_id='+moditems[i].module_item_id+'"> '+moditems[i].title+'</a>';
                 content += ' Worth '+assignment[0].points_possible+' points.';
                 content += ' Tags: '+assignment[0].tags;
                 content += '</div>';

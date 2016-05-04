@@ -1,9 +1,35 @@
+<!--
+  ~ Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
+  ~
+  ~ This file is subject to the terms and conditions defined in
+  ~ file 'https://github.com/ProjectDelphinium/delphinium/blob/master/EULA',
+  ~ which is part of this source code package.
+  ~
+  ~ NOTICE:  All information contained herein is, and remains the property of Project Delphinium. The intellectual and technical concepts contained
+  ~ herein are proprietary to Project Delphinium and may be covered by U.S. and Foreign Patents, patents in process, and are protected by trade secret or copyright law.
+  ~ Dissemination of this information or reproduction of this material is strictly forbidden unless prior written permission is obtained
+  ~ from Project Delphinium.
+  ~
+  ~ THE RECEIPT OR POSSESSION OF THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS
+  ~ TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.
+  ~
+  ~ Unauthorized copying of this file, via any medium is strictly prohibited
+  ~ Non-commercial use only, you may not charge money for the software
+  ~ You can modify personal copy of source-code but cannot distribute modifications
+  ~ You may not distribute any version of this software, modified or otherwise
+  -->
+
 <!-- Instructor View with Settings cog -->
 <div class="page">
-	<div id="cog" data-toggle="modal" href="#content-configuration" style="position:absolute; top:10px; right:50px; z-index:950;">
-		<a data-toggle="tooltip" title="Settings" data-placement="bottom"><i class="icon-cog"></i></a>
+	<div style="position:relative; z-index:950;">
+		<a id="popinfo" title="Info" tabindex="0" role="button" data-trigger="focus" data-container="body" data-toggle="popover" data-placement="left" data-content="Setup in js" data-trigger-condition="" data-trigger-action="" style="position:absolute; top:0; right:5px;">
+			<i class="icon-question"></i>
+		</a>
+		<div id="cog" data-toggle="modal" href="#content-configuration" style="position:absolute; top:0; right:15px;">
+			<a data-toggle="tooltip" title="Settings" data-placement="left"><i class="icon-cog"></i></a>
+		</div>
 	</div>
-
+    
 	<div id="tabs">
 		<ul id="tablist" role="tablist" class="nav nav-tabs">
 			<!-- Insert new tabs -->
@@ -20,7 +46,7 @@
 
 <!--text Instructions only -->
 <div class="control-popup modal fade" id="content-configuration" tabindex="-1" role="dialog">
-    <div class="modal-dialog" style="width:800px; overflow-y: auto;">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content" >
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -28,13 +54,36 @@
             </div>
             <div class="modal-body">
                 <!-- Instructions -->
-              <div id="instruct" class="tab-pane fade in active" style="padding: 0px 20px;">
-                <p>This component is an alternative view of modules.</p>
-                <p>Use Stem to structure the modules of your course into groups.<br />
-                    Groups will display as tabs, modules in each group will display as clickable boxes.<br/>
-                    Students will see their progress as filled stars.<br/>
-                </p>
-              </div>
+				<div id="instruct" class="tab-pane fade in active" style="padding: 0px 20px;">
+	
+				<div class="displayForBoth">
+				<div style="float:right;" class="instructimage"></div>
+				<div style="float:left;" class="instructext">
+				<p>This component displays modules and module items, as well as student completion data. 
+				You will need to use the Stem interface to create tabs and organize modules. 
+				You can access Stem in the left hand menu. 
+				Stem allows you to create "parent-child" relationships between modules, or "levels". 
+				</p>
+				<p>
+				For this component, you need 3 levels. The first, or top level is mandatory and will be ignored. 
+				The second level will be used to organize tabs. 
+				The names for second level modules will be used as the tab titles. 
+				All module items for the first and second levels will be ignored. 
+				Any children of a second level module will be displayed as a module box in a tab with completion stars and locked modules will have lock icons. 
+				</p>
+				<p>
+				Module items in these modules will be displayed when a user clicks the module box. 
+				In addition to the module item name, the component also displays assignment scores when completed.
+				</p>
+				<p>You can set the width of this component in the markup by wrapping it in a div and using CSS to set its width.
+				</p>
+				</div>
+				</div>
+				<div class="hiddenFromTeacher">
+
+				</div>
+				
+				</div>
             </div>
         </div>
     </div>
@@ -49,7 +98,7 @@
                 <h4 id="detailed-title" class="modal-title">Item Details</h4>
             </div>
             <div id="detailed-body" class="modal-body">
-                <p>This displays details of module</p>
+                <p>display details of module</p>
             </div>
         </div>
     </div>

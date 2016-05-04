@@ -1,4 +1,5 @@
 <?php
+
 namespace Delphinium\Threads\Classes;
 
 class SearchGoogle extends \Thread

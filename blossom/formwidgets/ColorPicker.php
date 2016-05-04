@@ -1,4 +1,6 @@
-<?php namespace Delphinium\Blossom\FormWidgets;
+<?php
+
+namespace Delphinium\Blossom\FormWidgets;
 
 use Backend\Classes\FormWidgetBase;
 

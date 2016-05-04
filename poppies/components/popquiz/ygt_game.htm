@@ -1,8 +1,29 @@
-<!-- You Got This Game partial -->
+<!--
+  ~ Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
+  ~
+  ~ This file is subject to the terms and conditions defined in
+  ~ file 'https://github.com/ProjectDelphinium/delphinium/blob/master/EULA',
+  ~ which is part of this source code package.
+  ~
+  ~ NOTICE:  All information contained herein is, and remains the property of Project Delphinium. The intellectual and technical concepts contained
+  ~ herein are proprietary to Project Delphinium and may be covered by U.S. and Foreign Patents, patents in process, and are protected by trade secret or copyright law.
+  ~ Dissemination of this information or reproduction of this material is strictly forbidden unless prior written permission is obtained
+  ~ from Project Delphinium.
+  ~
+  ~ THE RECEIPT OR POSSESSION OF THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS
+  ~ TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.
+  ~
+  ~ Unauthorized copying of this file, via any medium is strictly prohibited
+  ~ Non-commercial use only, you may not charge money for the software
+  ~ You can modify personal copy of source-code but cannot distribute modifications
+  ~ You may not distribute any version of this software, modified or otherwise
+  -->
 
+<!-- You Got This Game partial -->
 <div class="bkground"></div>
     <div class="page">
         <div class="title">
+			<div id="introMessage"></div>
             <div id="you"></div>
             <div id="this"></div>
             <div id="got"></div>
@@ -26,43 +47,62 @@
                 <div id="a3" class="makeDraggable answer">Answer 3</div>
                 <div id="nextaro"></div>
             </div>
+			<div id="comment"></div>
             <div id="star"></div>
             <div id="wrong"></div>
         </div>
     </div>
 </div>
 <!--script type="text/javascript" src="plugins/delphinium/poppies/assets/javascript/jquery.spritely.js"></script-->
+<!--script type="text/javascript" src="plugins/delphinium/poppies/assets/javascript/ygt_game.js"></script-->
 <script>
 /* To Do:
 assets/javascript/ygt_game.js
-	get game questions from db?
 	
-	updateScore & missed
-	timer
+	timer?
+    center animated title?
+	instructions
+if	gameIntro? from Assignment text? or config.description
 	gameOver();
-*/
+//ONLY? if type == "multiple_choice_question" ONLY?
+
+// init in default.htm
 var scoreis=0, misses=0;
 var current=0;// questnum
-var gameQuest=[];
+var gameQuest=[];// array of questions
+
+Questions are stored in db as array of question_id
+in php if Learner, 
+retrieve questions in config.questions from delphinium_roots_quiz_questions
+*/
+
+gameQuest = {{gameQuest|raw}};
+//console.log('ygt gameQuest:',gameQuest.length, gameQuest);
+//console.log('ygt role:',role);
+if(role == 'Learner') { showIntro(); }
 
 function showIntro()
 {
 	// reset intro elements
-	$('#you').css({'left':11,'opacity':0});
+	$('#you').css({'left':90,'opacity':0});
 	$('#got').css({'top':1,'opacity':0});
 	$('#this').css({'left':555,'opacity':0});
 	$('#yep').css({'top':555,'opacity':0});
-	current=scoreis=misses=0;
+	
 	$('#nextaro').hide();
 	$('gameplay').hide();
 	$('title').show();
-	
+	current=scoreis=misses=0;
+    
 	console.log('show intro');
-	/*
-		animated title as js file ???
-		click Play Now #gobtn
-		todo: center animated title
-	*/
+	console.log('gameQuest:',gameQuest);
+	if(gameQuest.length==0) {
+		$('#introMessage').html('Sorry, No Questions to play with');
+		$('#gobtn').hide();
+	} else {
+		$('#introMessage').hide();
+		$('#gobtn').show(); }
+	
 	$('#you')
 	   .animate({
 		  left: 335, opacity: 1
@@ -85,14 +125,12 @@ function showIntro()
 		.animate({
 			top: 392, opacity: 1
 		}, 300);
-
+    /* click Play Now #gobtn */
 	$('#gobtn')
 		.delay(1600)
 		.animate({opacity: 1}, 400);
 }
 
-// begin
-showIntro();
 /*
     click Play Now animates title off
     play area onto screen
@@ -101,8 +139,11 @@ $('#gobtn').on('click', function(){
     $('.title').animate({left: -1000, opacity: 0}, 500, function(){ $('.title').hide(); });
     $('.bkground').animate({opacity:0.2},800);
     $('.gameplay').show();
-    showQuestion(current);
-    //conclusion gameOver and play again?
+	if(gameQuest.length>0) {
+		showQuestion(current);
+	} else {
+		$('#introMessage').html('Sorry, No Questions to play with');
+	}
 });
 
 /* http://spritely.net/ sprites */
@@ -127,30 +168,33 @@ function shoWrong() {
 $('#nextaro').sprite({fps: 6, no_of_frames: 4}).active();
 $('#nextaro').hide();
 function showNextaro() {
-    $('#nextaro').show();
-    
+    $('#nextaro').show();// sprite
 }
 $('#nextaro').on('click', function(){
     $('#nextaro').hide();
+	$('#comment').html('').hide();
 	current++;
 	if(current==gameitems.length){ 
 		current=0;
-		//gameOver
+		//gameOver();//conclusion and play again?
+	} else {
+		showQuestion(current);//show next question
 	}
-    showQuestion(current);//show next question
-	//$('.makeDraggable').show();// all answers
 });
 
-//animate onto screen from top?
+//animate onto screen from top? or fade in
 function showQuestion(index) {
 	$('.valid').empty();
 	$('.makeDraggable').hide();// all answers
-	// animate question onto screen or fade in
-	$('.questbox').attr('data-points', gameQuest[index][0].points_possible)
-		.html(gameQuest[index][0].text);
-	var answers= $.parseJSON(gameQuest[index][0].answers);
+	//console.log('showQuestion');
+	var txt = gameQuest[index].text;
+		txt = $.parseHTML(txt);
+		txt = txt[0].textContent;
+	$('.questbox').attr('data-points', gameQuest[index].points_possible);
+	$('.questbox').html(txt);
+	var answers= $.parseJSON(gameQuest[index].answers);
 	//console.log(answers);
-	// animate answers onto screen from bottom?
+	// animate answers onto screen from bottom? or fade in
 	for(var i=0; i<answers.length; i++){
 		$('#a'+i).html(answers[i].text)
 			.attr('weight', answers[i].weight)
@@ -158,7 +202,7 @@ function showQuestion(index) {
 			.show();// only answers with content
 	}
 }
-// ToDo: score, missed, timer, gameOver
+
 function updateScore() {
 	scoreis += parseInt($('.questbox').attr('data-points'));
 	$('.score').html('Score: '+scoreis);
@@ -168,7 +212,6 @@ function updateMissed() {
 	$('.missd').html('oops: '+misses);
 }
 /*
-    http://www.elated.com/articles/drag-and-drop-with-jquery-your-essential-guide/
     http://api.jqueryui.com/draggable/
 	http://getbootstrap.com/css/
 */
@@ -179,31 +222,43 @@ $('.makeDraggable').draggable({
     iframeFix: true,
     distance: 10,
 	revert: true,
-	start: function(){ $(this).removeClass('shado'); }
+	start: function(){
+		$(this).removeClass('shado');
+		$('#comment').html('').hide();
+	}
 });
 
 $('.questbox').droppable({
     drop: handleDropEvent
 });
 function handleDropEvent( event, ui ) {
-        
+    
+	var comdiv='';
     var id = ui.draggable.attr('weight');
     //console.log( 'dropped ID "' + id + '" was dropped onto me!' );
 	//multiple answers points/weight = score: totalWeight=100 = done
-	// if id>0 valid append ui.draggable.hide if wcnt == 100
+	// if id>0 valid append ui.draggable.hide if weightcnt == 100
     if(id == '100') {
         showStar();//play correct sprite
         updateScore();//console.log("correct");
         $('.makeDraggable').hide();// all answers
         $('.valid').append($(ui.draggable).html());// show answer
 		$('.valid').show();
-		
-        showNextaro();
+        showNextaro();// play next arrow button
+		if(gameQuest[current].correct_comments!= "") {
+			comdiv+=gameQuest[current].correct_comments;
+		}
     } else {
-       updateMissed(); 
-       shoWrong();//play wrong
+		updateMissed(); 
+		shoWrong();//play wrong
+		if(gameQuest[current].incorrect_comments != "") {
+			comdiv+=gameQuest[current].incorrect_comments;
+		}
     }
+	if(gameQuest[current].neutral_comments != "") {
+		comdiv+=gameQuest[current].neutral_comments;
+	}
+	$('#comment').html(comdiv).show('slow');//slides in from upper left
 }
-
 
 </script>
