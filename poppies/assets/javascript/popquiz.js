@@ -50,8 +50,293 @@ is it possible to get question_banks instead?
 // globals
 var selecteditems=[];// quiz question_id selections
 var chosenitems=[];// question_id of gameitems to use, remove clear all
-var gameitems=[];// questions selected for game
 var quests=[];// quiz questions to selected from
+
+
+/* delphinium functions MOVE TO JS STILL role=='Instructor' */
+    $('#popinfo').attr('data-content','Select a Quiz, Add Selected Questions, Modify the question list as needed then Click Use These Questions. Your students will receive points for playing the game. What a great way to learn.');
+	$('#popinfo').popover();// activate ? instructions
+    /* hide the instance name field */
+    $('#Form-field-Popquiz-name-group').hide();
+	/* these form fields are hidden in fields.yaml so repopulate form for submit */
+	$('#Form-outsideTabs').append('<input type="hidden" name="Popquiz[id]" value="'+config.id+'" /> ');
+    
+	/* show instructions first? */
+    
+    /* manually activate the modal */
+    $('#cog').on('click', function() {
+        $('#poppies-configuration').modal('toggle');
+    });
+    /*  updated record is returned 
+        form can be submitted from cog.Update button or useit.submit()
+    */
+    function completed(data) {
+        //console.log('completed:',data);
+        //console.log('config:',config);
+        $('#poppies-configuration').modal('hide');// if cog
+	}
+	
+	/* component functions */
+	/*	Note: these functions are only for instructor view
+		may get moved to /assets/popquiz.js
+		list of all quizzes for instructor
+		to choose questions for game
+        //ONLY? if type == "multiple_choice_question" ONLY?
+        ToDo:
+        instructions are in the cog instructions tab
+        remove accordion-3
+    */
+	//quizList = {{quizList|raw}};
+    //console.log('quizList:', quizList.length, quizList);
+    showQuizzes();// all quizzes to choose from
+    console.log('if gameQuest:', gameQuest.length);//, gameQuest);
+    if(gameQuest != null && gameQuest.length > 1) {
+        //gameitems = {{gameQuest|raw}};
+        showSelected();// from config.questions
+    }
+    
+	nextcount=0;//index for question details
+	
+	
+    
+	/* activate accordion and button functions */
+    $('.accordion-section-title').click(function(e) {
+        e.preventDefault();
+		// Grab current anchor value
+		var currentAttrValue = $(this).attr('href');
+		if($(e.target).is('.active')) {
+			close_accordion_section();
+		}else {
+			close_accordion_section();
+			// Add active class to section title
+			$(this).addClass('active');
+            if(currentAttrValue == '#accordion-5') { showIntro(); }
+			// Open up the hidden content panel
+			$('.accordion ' + currentAttrValue).slideDown(300).addClass('open'); 
+		}
+	});
+    
+    /* accordion-2 selected questions
+        http://api.jqueryui.com/1.12/selectable/
+        single click, drag or control click
+    */
+    $("#quizselectable").selectable({
+        // on mouse up
+        selected: function() {
+            selecteditems=[];// accumulated selections if mouse dragged
+            $( ".ui-selected", this ).each(function() {
+             var index = $( "#quizselectable li" ).index( this );// list[index]
+             var qid = $(this).attr('data-id');
+            if(qid) { selecteditems.push(qid); }
+            });// or only one clicked
+            console.log('selecteditems:',selecteditems);// array of question_ids
+        }
+    });
+    
+    /* accordion-4 selected game questions */
+    $("#gameselectable").selectable({
+        // on mouse up
+        selected: function() {
+            chosenitems=[];// accumulated selections if mouse dragged
+            var items=$( ".ui-selected", this ).each(function() {
+             var index = $( "#gameselectable li" ).index( this );// list[index]
+             var qid = $(this).attr('data-id');
+             chosenitems.push(qid);// push id for each to an array
+            });// or only one clicked
+            console.log('chosenitems:',chosenitems);// array of question_ids
+			//set nextcount to gameitems.indexOf(chosenitems[0]) for constructQuestion
+			for(var i=0; i<gameitems.length; i++) {
+				if(chosenitems[0]==gameitems[i].question_id){ nextcount=i; }
+			}
+			console.log('nextcount:',nextcount);
+        }
+    });
+    
+    /* Add Selected Questions button in accordion-2 */
+    $('#confirmit').click(function(e) {
+        e.preventDefault();
+        // selecteditems is array of question_id
+        // transfer selecteditems[question_id,] to qameitems[question object,]
+		console.log('selecteditems:',selecteditems);
+        for(var i=0; i<selecteditems.length; i++)
+        {
+            var quest = $.grep(quests, function(elem, index){
+                return elem.question_id == selecteditems[i];
+            });
+            gameitems.push(quest[0]);//quest[0] array of objects fix this
+        }
+        console.log('gameitems:',gameitems);
+        // should be array of objects
+        // reset gameselectable list
+        showSelected();
+        selecteditems=[];
+    });
+    
+     /* Remove All Questions button from gameitems */
+    $('#clearit').click(function(e) {
+        e.preventDefault();
+		current=0;// questnum
+		nextcount=0;// see question
+        gameitems=[];
+        chosenitems=[];
+		$('#questcount').html(gameitems.length+' Questions');
+        $('#gameselectable').empty();
+    });
+    
+    /* Remove Selected Questions btn in chosenitems from gameitems */
+    $('#removeit').click(function(e) {
+        e.preventDefault();
+        for(var i=0; i<chosenitems.length; i++)
+        {
+            var item = 0;
+            for(var c=0; c<gameitems.length; c++) {
+                if(gameitems[c].question_id == chosenitems[i]) { item=c; break; }
+            }
+            gameitems.splice(item,1);// remove from array
+            // remove <li>st node
+            $('#gameselectable').find('[data-id='+chosenitems[i]+']').remove();
+			$('#questcount').html(gameitems.length+' Game Questions');
+        }
+        //console.log('chosenitems:',chosenitems);
+        //console.log('gameitems:',gameitems);
+        chosenitems=[];
+		nextcount = 0;//none selected
+    });
+    
+    /*  use gameitems to play game 
+		save gameitem to db questions as array of question_id
+		retrieve questions from delphinium_roots_quiz_questions
+	*/
+    $('#useit').click(function(e) {
+        e.preventDefault();
+        
+		//console.log('gameitems:',gameitems.length, gameitems);
+		if(gameitems.length>0) { 
+            /* gameitems = questions to use in game */
+			gameQuest=gameitems;
+			/* gameQuest is Array of questions in game
+                store config.questions[question_id, ...]
+                in delphinium_poppies_popquizzes
+                to retrieve question objects 
+                from delphinium_roots_quiz_questions
+                construct array then submit the form
+                ends up as a comma delimited string 
+            */
+			var idArray = [];
+			for(var i=0; i<gameitems.length; i++) {
+            //ONLY? if type == "multiple_choice_question" ONLY?
+				idArray.push(gameitems[i].question_id);
+			}
+			//console.log('idArray:',idArray);
+            /* update the form and config
+                then submit to onSave in Poppies.php
+                which returns to completed(data) above
+            */
+			$('#Form-field-Popquiz-questions').val(idArray);
+            config.questions=idArray;// and internal array
+            console.log('config:',config.questions);
+			$('#updateForm').submit();// update the db record
+			//open the game
+			close_accordion_section();
+			$('#accordion-5').addClass('active');
+			$('.accordion #accordion-5').slideDown(300).addClass('open');
+			showIntro();// restart game with updated questions
+		}
+		// else no questions to use
+	});
+
+    /*  see details of each question with answers and comments
+        in #detailed modal
+        nextcount is index of starting question
+        use next btn to view each question
+    */
+	$('#seeit').click(function(e) {
+        e.preventDefault();
+		if(gameitems.length>0) { 
+			constructQuestion(nextcount);
+			$('#detailed').modal('show');
+		 }
+		 // else no questions to see
+    });
+    $('#nextbtn').click(function(e) {
+        e.preventDefault();
+        //detailed-body replace content with next question
+		nextcount++;
+		if(nextcount==gameitems.length){ nextcount=0; }
+		constructQuestion(nextcount);
+    });// backbtn ?
+	/* also see selected questions accordion-2 quests[]
+	   currently only game questions gameitems[]
+	   index is first selected question to see in #detailed modal
+       construct: type, points, question, answers and comments
+	*/
+	function constructQuestion(index)
+	{	
+		var quest = gameitems[index];
+		$('#detailed-title').html('Question '+(index+1));
+		$('#qtype').html('Type: '+gameitems[index].type);
+		$('#qpoints').html('Points: '+gameitems[index].points_possible);
+		var txt = gameitems[index].text;//.toString();
+			txt = $.parseHTML(txt);
+			txt = txt[0].textContent;
+		$('#qtext').html(txt);
+		var answers= $.parseJSON(gameitems[index].answers);
+		var ansdiv='';
+		console.log(answers);//for each
+		for(var i=0; i<answers.length; i++)
+		{
+			if(answers[i].weight==0){
+				ansdiv+='<div class="alert alert-danger">';
+			} else {
+				ansdiv+='<div class="alert alert-success">';
+			}
+			ansdiv+=answers[i].text;
+			ansdiv+='</div>';
+		}
+		$('#qanswers').html('<hr/>Answers:<br/>'+ansdiv);
+		
+		var comdiv='';
+		if(gameitems[index].correct_comments!= "")
+		{
+			comdiv+='<div class=bg-success>';
+			comdiv+=gameitems[index].correct_comments;
+			comdiv+='</div>';
+		}
+		if(gameitems[index].incorrect_comments != "")
+		{
+			comdiv+='<div class=bg-danger>';
+			comdiv+=gameitems[index].incorrect_comments;
+			comdiv+='</div>';
+		}
+		if(gameitems[index].neutral_comments != "")
+		{
+			comdiv+='<div class=bg-warning>';
+			comdiv+=gameitems[index].neutral_comments;
+			comdiv+='</div>';
+		}
+		$('#qfeedback').html('<hr/>Comments:<br/>'+comdiv);
+	}
+
+/* question object
+    answers: "[
+        {"weight":0,"id":2028,"migration_id":"RESPONSE_1113","text":"Organizational change is..."},
+        {"weight":60,"id":5595,"migration_id":"RESPONSE_2746","text":"Organizational change..."},
+        {"weight":40,"id":6439,"migration_id":"RESPONSE_8703","text":"Organizational change..."},
+        {"weight":0,"id":5998,"migration_id":"RESPONSE_1895","text":"Organizational change..."}]"
+    
+    name: "1.a Which of the followi"
+    incorrect_comments: ""
+    correct_comments: ""
+    neutral_comments: "Organizational change can take many forms."
+    points_possible: 1
+    position: 1
+    question_id: 8369896
+    quiz_id: 464878
+    text: "Which of the following statements regarding change is INCORRECT?"
+    type: "multiple_choice_question"
+    created_at: "2016-03-04 20:12:19"
+*/
+
 
 function validateQuizzes()
 {

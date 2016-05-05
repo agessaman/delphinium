@@ -21,10 +21,10 @@
 
 <!-- Instructor View with Settings cog & info popover -->
 <div style="position:relative; z-index:950;">
-    <a id="popinfo" title="Info" tabindex="0" role="button" data-trigger="focus" data-container="body" data-toggle="popover" data-placement="left" data-content="Setup below" style="position:absolute; top:0; right:10px;">
+    <a id="popinfo" title="Info" tabindex="0" role="button" data-trigger-condition="" data-trigger-action="" data-trigger="focus" data-container="body" data-toggle="popover" data-placement="left" data-content="Setup below" style="position:absolute; top:0; right:10px;">
         <i class="icon-question"></i>
     </a>
-	<div id="cog" data-toggle="modal" href="#content-configuration" style="position:absolute; top:0; right:20px;">
+	<div id="cog" href="#competence-configuration" style="position:absolute; top:0; right:20px;">
 		<a data-toggle="tooltip" title="Settings" data-placement="bottom"><i class="icon-cog"></i></a>
     </div>
 </div>
@@ -35,9 +35,9 @@
 
 
 <!-- Configuration modal with Front End Form and Instructions in tabs -->
-<div class="control-popup modal fade" id="content-configuration" tabindex="-1" role="dialog">
-    <div class="modal-dialog">
-        <div class="modal-content" style="width:800px; overflow-y: auto;">
+<div class="control-popup modal fade" id="competence-configuration" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title">Competencies Settings</h4>
@@ -54,16 +54,16 @@
                     <form role="form" id="updateForm"
                       data-request="{{ __SELF__ }}::onUpdate"
                       data-request-success="$el.hide();completed(data);">
-					  {{ form.update(recordId)|raw }}
-                      {{ form.formRender()|raw }}
+					  {{ competencyform.update(competencyrecordId)|raw }}
+                      {{ competencyform.formRender()|raw }}
                       <div class="form-group">
-                         <button class="btn btn-primary btn-block btn-md" type="submit" value="register">Update Component</button>
+                         <button class="btn btn-primary btn-lg" type="submit" value="register">Update Component</button>
                       </div>
                     </form>
                   </div>
                 <!-- Instructions -->
                   <div id="instruct" class="tab-pane fade in" style="padding: 0px 20px;">
-                      {{ instructions|raw }}
+                      {{ competencyinstructions|raw }}
                   </div>
                 </div>
             </div>
@@ -87,67 +87,12 @@
 </div>
 
 <script>
-/* set up the popover content text and activate it*/
-	$('#popinfo').attr("data-content","Instructor view does not contain submissions. Click a bar to display details.");
-    $('#popinfo').popover();// activate info
-
-/*
-    After changing settings, Refresh the component but not the page
-	course_id has been added dynamically to config.course_id
-    
-    get tags from module items to build data & details
-    bars clickable with assignments but no submissions yet
-    
-    https://medium.com/@matissjanis/octobercms-using-backend-forms-in-frontend-component-fe6c86f9296b#.ge50nlmtc
-*/
-    var modules={{modules|raw}};// use items to build data
-    console.log('modules:',modules.length, modules);
+    var modules={{modules|raw}};// use module_items to build data
+    //console.log('modules:',modules.length, modules);
     var assignments=[];// for click bar
     var submissions=[];// N/A unless Learner
-    
-    /* set id,course in the POST they are not editable
-        Add hidden input fields so they will transfer to onUpdate
-        if fields are set to hidden: true they do not appear at all
-    */
-    $('#Form-outsideTabs').append('<input type="hidden" name="Competencies[id]" value="'+config.id+'" /> ');
-    $('#Form-outsideTabs').append('<input type="hidden" name="Competencies[course_id]" value="'+config.course_id+'" /> ');
-    
-    // Fix Animate checkbox switch
-    $('<div style="height:90px;" class="clearfix"></div>').insertBefore('.checkbox-field').parent;
-	$('.checkbox-field').attr('style','margin-left:20px').removeClass('span-right').addClass('span-left');
-    $('#Form-field-Competencies-Name-group').hide();// not useful
-    
-	//ToDo: custom-color dataLocker
-    //jsAPI: $('div#someElement').colorPicker({ dataLocker: 'input#locker' })
-    //$('div #ColorPicker-formColor-Color').colorPicker({ dataLocker: config.Color });// not a function
-//HACK figure out dataLocker
-//    $('#ColorPicker-formColor-Color-input-Color').val(config.Color);
-//    $('.custom-color').addClass('active');
-//    $('.custom-color span').attr('style','background:'+config.Color);
-    
-	//var configVal=[config.Name, config.Size, config.Color, config.Animate];
-	//var fieldIDs=['Form-field-Competencies-Name','Form-field-Competencies-Size','ColorPicker-formColor-input-Color','Form-field-Competencies-Animate'];
-    //fill the form with current configuration
- //   for(var i=0; i<configVal.length; i++) {
- //      $('#'+fieldIDs[i]).val(configVal[i]);
- //   }
-    
-	function completed(data)
-	{
+	
+	function completed(data) {
         location.reload();
-        /*
-        config = JSON.parse(data['result']);
-		competenciesColor=config.Color;//string
-		competenciesSize=config.Size.toLowerCase();//string
-		competenciesAnimate=config.Animate;//boolean
-		
-        // replace the svg content
-        ///$('.outline').addClass('spinner');
-        $('#competenciesView').empty();
-        showCompetencies();// refresh component
-        */
-        //$('#updateForm').show();// could remove success in form
-		//console.log('instance: '+config.id,config.Name,config.Size,config.Color,config.Animate,config.course_id);
 	}
-	//console.log('instance: '+config.id,config.Name,config.Size,config.Color,config.Animate,config.course_id);
 </script>
