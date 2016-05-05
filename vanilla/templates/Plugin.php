@@ -1,4 +1,4 @@
-<?php namespace Delphinium\Vanilla\Updates;
+<?php
 /**
  * Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
  *
@@ -19,25 +19,18 @@
  * You can modify personal copy of source-code but cannot distribute modifications
  * You may not distribute any version of this software, modified or otherwise
  */
-use Schema;
-use October\Rain\Database\Updates\Migration;
 
-class CreateDelphiniumizesTable extends Migration
+namespace Delphinium\Vanilla\Templates;
+
+use Delphinium\Vanilla\TemplateBase;
+
+class Plugin extends TemplateBase
 {
-
-    public function up()
-    {
-        Schema::create('delphinium_vanilla_delphiniumizes', function($table)
-        {
-            $table->engine = 'InnoDB';
-            $table->increments('id');
-            $table->timestamps();
-        });
-    }
-
-    public function down()
-    {
-        Schema::dropIfExists('delphinium_vanilla_delphiniumizes');
-    }
-
+    /**
+     * @var array A mapping of stub to generated file.
+     */
+    protected $fileMap = [
+        'plugin/plugin.stub'  => '{{lower_author}}/{{lower_name}}/Plugin.php',
+        'plugin/version.stub' => '{{lower_author}}/{{lower_name}}/updates/version.yaml',
+    ];
 }

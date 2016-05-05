@@ -1,4 +1,4 @@
-<?php namespace Delphinium\Vanilla\Updates;
+<?php namespace Delphinium\Vanilla\Controllers;
 /**
  * Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
  *
@@ -19,25 +19,45 @@
  * You can modify personal copy of source-code but cannot distribute modifications
  * You may not distribute any version of this software, modified or otherwise
  */
-use Schema;
-use October\Rain\Database\Updates\Migration;
+use BackendMenu;
+use Backend\Classes\Controller;
+use Delphinium\Vanilla\Models\Editor as MyModel;
 
-class CreateDelphiniumizesTable extends Migration
+/**
+ * Editor Back-end Controller
+ */
+class Editor extends Controller
 {
+    public $implement = [
+        'Backend.Behaviors.FormController',
+        'Backend.Behaviors.ListController'
+    ];
 
-    public function up()
+    public $formConfig = 'config_form.yaml';
+    public $listConfig = 'config_list.yaml';
+
+
+    public function __construct()
     {
-        Schema::create('delphinium_vanilla_delphiniumizes', function($table)
-        {
-            $table->engine = 'InnoDB';
-            $table->increments('id');
-            $table->timestamps();
+        parent::__construct();
+
+        BackendMenu::setContext('Delphinium.Vanilla', 'vanilla', 'delphiniumize');
+
+        new Widget($this, 'delphiniumize');
+        return;
+
+        Editor::extendFormFields(function($form, $model, $context){
+echo "here";
+            if (!$model instanceof MyModel)
+                return;
+
+            $form->addFields([
+                'editor' => [
+                    'label'   => 'Code editor',
+                    'comment' => 'This is a custom field I have added.',
+                ],
+            ]);
+
         });
     }
-
-    public function down()
-    {
-        Schema::dropIfExists('delphinium_vanilla_delphiniumizes');
-    }
-
 }

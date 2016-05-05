@@ -22,12 +22,12 @@
 use Schema;
 use October\Rain\Database\Updates\Migration;
 
-class CreateDelphiniumizesTable extends Migration
+class CreateNewcontentsTable extends Migration
 {
 
     public function up()
     {
-        Schema::create('delphinium_vanilla_delphiniumizes', function($table)
+        Schema::create('delphinium_vanilla_newcontents', function($table)
         {
             $table->engine = 'InnoDB';
             $table->increments('id');
@@ -37,7 +37,7 @@ class CreateDelphiniumizesTable extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('delphinium_vanilla_delphiniumizes');
+        Schema::dropIfExists('delphinium_vanilla_newcontents');
     }
 
 }

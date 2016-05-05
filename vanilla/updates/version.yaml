@@ -1,1 +1,6 @@
 1.0.1: First version of Vanilla
+1.0.2:
+    - Create tables
+    - create_delphiniumizes_table.php
+    - create_editors_table.php
+    - create_newcontents_table.php

@@ -82,7 +82,7 @@ class LtiConfiguration extends ComponentBase
             ],
             'type' =>[
                 'title'=>'Type',
-                'description' => 'Whether this content should appear inside a Canva\'s text editor',
+                'description' => 'Whether this LTI should appear in a left hand menu item or in the editor toolbar.',
                 'type' => 'dropdown',
                 'default' => 'Navigation',
             ],
@@ -91,7 +91,7 @@ class LtiConfiguration extends ComponentBase
                 'description' => 'Enter the name of the link as you would like it to show in the LMS',
                 'type' => 'string',
                 'required'=>true,
-                'validationPattern' => '^[a-zA-Z0-9]+$',
+                'validationPattern' => '^[a-zA-Z0-9\s]+$',
                 'validationMessage' => 'Link Title is required'
             ],
             'visibility' =>[
@@ -101,18 +101,20 @@ class LtiConfiguration extends ComponentBase
                 'default' => 'Public',
             ],
             'width' =>[
-                'title'=>'(optional) Width',
-                'description' => 'Enter the width of the iFrame that will show this content',
+                'title'=>'Width (Editor type only)',
+                'description' => 'This setting applies to the \'Editor\' type only. Enter the width of the iframe that will display this content in the text editor',
                 'type' => 'string',
                 'validationPattern' => '^[0-9]+$',
-                'validationMessage' => 'Width must be an integer'
+                'validationMessage' => 'Width must be an integer',
+                'default' => '600',
             ],
             'height' =>[
-                'title'=>'(optional) Height',
-                'description' => 'Enter the height of the iFrame that will show this content',
+                'title'=>'Height (Editor type only)',
+                'description' => 'This setting applies to the \'Editor\' type only.  Enter the height of the iframe that will display this content in the text editor',
                 'type' => 'string',
                 'validationPattern' => '^[0-9]+$',
-                'validationMessage' => 'Height must be an integer'
+                'validationMessage' => 'Height must be an integer',
+                'default' => '800',
             ]
         ];
     }
@@ -294,8 +296,17 @@ class LtiConfiguration extends ComponentBase
         exit;
     }
 
-    function returnXML()
+    function returnXML($vars)
     {
+        // $canvasDomain = $vars['custom_canvas_api_domain'];
+        // $courseId = $vars['custom_canvas_course_id'];
+        // $userId = $vars['custom_canvas_user_id'];
+        // $loginId = $vars['custom_canvas_user_login_id'];
+        // $email = $vars['custom_lis_person_contact_email_primary'];
+        // $userImage = $vars['custom_user_image'];
+        // $offeringSourcedId = $vars['custom_lis_course_offering_sourcedid'];
+        // $personSourcedId = $vars['custom_lis_person_sourcedid'];
+
         $baseUrlWithoutSlash = rtrim(\Config::get('app.url'), '/');
         $url = $baseUrlWithoutSlash . $this->page->url;
         $typeOpts = $this->getTypeOptions();
@@ -315,6 +326,7 @@ class LtiConfiguration extends ComponentBase
         $widthXML='';
         $heightXML = '';
         $typeXML='';
+        $varsXml='';
         $string='';
         if(!is_null($width))
         {
@@ -346,7 +358,21 @@ XML;
 				<lticm:property name='url'>$url</lticm:property>
                 <lticm:property name='text'>$linkTitle</lticm:property>
                 <lticm:property name='enabled'>true</lticm:property>
+                <lticm:property name="message_type">ContentItemSelectionRequest</lticm:property>
           </lticm:options>
+XML;
+
+            $varsXml = <<<XML
+            <blti:custom>
+                    <lticm:property name="custom_canvas_api_domain">\$Canvas.api.domain</lticm:property>
+					<lticm:property name="custom_canvas_course_id">\$Canvas.course.id</lticm:property>
+					<lticm:property name="custom_canvas_user_id">\$Canvas.user.id</lticm:property>
+					<lticm:property name="custom_canvas_user_login_id">\$Canvas.user.loginId</lticm:property>
+					<lticm:property name="lis_person_contact_email_primary">\$Person.email.primary</lticm:property>
+					<lticm:property name="user_image">\$User.image</lticm:property>
+					<lticm:property name="lis_course_offering_sourcedid">\$CourseSection.sourcedId</lticm:property>
+					<lticm:property name="lis_person_sourcedid">\$Person.sourcedId</lticm:property>
+            </blti:custom>
 XML;
         }
 
@@ -372,15 +398,14 @@ XML;
           <lticm:property name='domain'>$domain</lticm:property>
                 $typeXML
     </blti:extensions>
+    $varsXml
     <cartridge_bundle identifierref='BLTI001_Bundle'/>
     <cartridge_icon identifierref='BLTI001_Icon'/>
 </cartridge_basiclti_link>
-
-
 XML;
 
         $xml = new \SimpleXMLElement($string);
-
+        header("Content-type: text/xml; charset=utf-8");
         echo $xml->asXML();
         die();
     }

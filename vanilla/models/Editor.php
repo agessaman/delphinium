@@ -1,4 +1,4 @@
-<?php namespace Delphinium\Vanilla\Updates;
+<?php namespace Delphinium\Vanilla\Models;
 /**
  * Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
  *
@@ -19,25 +19,40 @@
  * You can modify personal copy of source-code but cannot distribute modifications
  * You may not distribute any version of this software, modified or otherwise
  */
-use Schema;
-use October\Rain\Database\Updates\Migration;
+use Model;
 
-class CreateDelphiniumizesTable extends Migration
+/**
+ * Editor Model
+ */
+class Editor extends Model
 {
 
-    public function up()
-    {
-        Schema::create('delphinium_vanilla_delphiniumizes', function($table)
-        {
-            $table->engine = 'InnoDB';
-            $table->increments('id');
-            $table->timestamps();
-        });
-    }
+    /**
+     * @var string The database table used by the model.
+     */
+    public $table = 'delphinium_vanilla_editors';
 
-    public function down()
-    {
-        Schema::dropIfExists('delphinium_vanilla_delphiniumizes');
-    }
+    /**
+     * @var array Guarded fields
+     */
+    protected $guarded = ['*'];
+
+    /**
+     * @var array Fillable fields
+     */
+    protected $fillable = [];
+
+    /**
+     * @var array Relations
+     */
+    public $hasOne = [];
+    public $hasMany = [];
+    public $belongsTo = [];
+    public $belongsToMany = [];
+    public $morphTo = [];
+    public $morphOne = [];
+    public $morphMany = [];
+    public $attachOne = [];
+    public $attachMany = [];
 
 }

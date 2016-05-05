@@ -1,4 +1,4 @@
-<?php namespace Delphinium\Vanilla\Updates;
+<?php
 /**
  * Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
  *
@@ -19,25 +19,31 @@
  * You can modify personal copy of source-code but cannot distribute modifications
  * You may not distribute any version of this software, modified or otherwise
  */
+
+namespace {{studly_author}}\{{studly_plugin}}\Updates;
+
 use Schema;
 use October\Rain\Database\Updates\Migration;
 
-class CreateDelphiniumizesTable extends Migration
+class Create{{studly_plural_name}}Table extends Migration
 {
 
     public function up()
     {
-        Schema::create('delphinium_vanilla_delphiniumizes', function($table)
+        Schema::create('{{lower_author}}_{{lower_plugin}}_{{snake_plural_name}}', function($table)
         {
             $table->engine = 'InnoDB';
             $table->increments('id');
+            $table->string('name');
+            $table->boolean('animate');
+            $table->integer('size');
             $table->timestamps();
         });
     }
 
     public function down()
     {
-        Schema::dropIfExists('delphinium_vanilla_delphiniumizes');
+        Schema::dropIfExists('{{lower_author}}_{{lower_plugin}}_{{snake_plural_name}}');
     }
 
 }

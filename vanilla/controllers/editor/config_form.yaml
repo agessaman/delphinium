@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Editor
+
+# Model Form Field configuration
+form: $/delphinium/vanilla/models/editor/fields.yaml
+
+# Model Class name
+modelClass: Delphinium\Vanilla\Models\Editor
+
+# Default redirect location
+defaultRedirect: delphinium/vanilla/editor
+
+# Create page
+create:
+    title: Create Editor
+    redirect: delphinium/vanilla/editor/update/:id
+    redirectClose: delphinium/vanilla/editor
+
+# Update page
+update:
+    title: Edit Editor
+    redirect: delphinium/vanilla/editor
+    redirectClose: delphinium/vanilla/editor
+
+# Preview page
+preview:
+    title: Preview Editor

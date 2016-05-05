@@ -1,6 +1,4 @@
-<?php namespace Delphinium\Vanilla\Updates;
-/**
- * Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
+/** Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
  *
  * This file is subject to the terms and conditions defined in
  * file 'https://github.com/ProjectDelphinium/delphinium/blob/master/EULA',
@@ -19,25 +17,3 @@
  * You can modify personal copy of source-code but cannot distribute modifications
  * You may not distribute any version of this software, modified or otherwise
  */
-use Schema;
-use October\Rain\Database\Updates\Migration;
-
-class CreateDelphiniumizesTable extends Migration
-{
-
-    public function up()
-    {
-        Schema::create('delphinium_vanilla_delphiniumizes', function($table)
-        {
-            $table->engine = 'InnoDB';
-            $table->increments('id');
-            $table->timestamps();
-        });
-    }
-
-    public function down()
-    {
-        Schema::dropIfExists('delphinium_vanilla_delphiniumizes');
-    }
-
-}
