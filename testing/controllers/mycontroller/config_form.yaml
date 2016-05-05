@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: My Controller
+
+# Model Form Field configuration
+form: $/delphinium/testing/models/mycontroller/fields.yaml
+
+# Model Class name
+modelClass: Delphinium\Testing\Models\MyController
+
+# Default redirect location
+defaultRedirect: delphinium/testing/mycontroller
+
+# Create page
+create:
+    title: Create My Controller
+    redirect: delphinium/testing/mycontroller/update/:id
+    redirectClose: delphinium/testing/mycontroller
+
+# Update page
+update:
+    title: Edit My Controller
+    redirect: delphinium/testing/mycontroller
+    redirectClose: delphinium/testing/mycontroller
+
+# Preview page
+preview:
+    title: Preview My Controller

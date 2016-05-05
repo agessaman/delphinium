@@ -1,4 +1,26 @@
-<?php namespace Delphinium\Blossom\Components;
+<?php
+/**
+ * Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
+ *
+ * This file is subject to the terms and conditions defined in
+ * file 'https://github.com/ProjectDelphinium/delphinium/blob/master/EULA',
+ * which is part of this source code package.
+ *
+ * NOTICE:  All information contained herein is, and remains the property of Project Delphinium. The intellectual and technical concepts contained
+ * herein are proprietary to Project Delphinium and may be covered by U.S. and Foreign Patents, patents in process, and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material is strictly forbidden unless prior written permission is obtained
+ * from Project Delphinium.
+ *
+ * THE RECEIPT OR POSSESSION OF THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS
+ * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.
+ *
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Non-commercial use only, you may not charge money for the software
+ * You can modify personal copy of source-code but cannot distribute modifications
+ * You may not distribute any version of this software, modified or otherwise
+ */
+
+namespace Delphinium\Blossom\Components;
 
 use Cms\Classes\ComponentBase;
 use Delphinium\Blossom\Models\Competencies as CompetenceModel;
@@ -21,15 +43,6 @@ class Competencies extends ComponentBase
 	public function defineProperties()
     {
         return [
-
-            'copy_id' => [
-                'title'        => 'Copy Name:',
-                'type'         => 'string',
-                'default'      => 'copy-1',
-                'required'     => 'true',
-                'validationPattern' => '^(?!\s*$).+',
-                'validationMessage' => 'This field cannot be left blank.'
-            ],
             'instance'	=> [
                 'title'             => 'Configuration:',
                 'description'       => 'Select an instance',
@@ -38,79 +51,44 @@ class Competencies extends ComponentBase
             ]
         ];
     }
-	/*  copy id must have a string 
-        validation above should warn user
-        also in backend New form!!!
-    */
-    //The CMS controller executes this method before the default markup is rendered.
+	
 	public function onRun()
     {
 		try
         {
-        /*
-            is an insance set? yes show it
-
+        /* Notes:
+            is an instance set? yes show it
             else get all instances
-                is copy set?
-                -yes check for an instance that matches copy + course show it
-
                 is there an instance with this course? yes use it
-            else create dynamicInstance, save new instance show it
+            else create dynamicInstance, save new instance, show it
         */
             if (!isset($_SESSION)) { session_start(); }
-
             $courseID = $_SESSION['courseID'];
+            $name = $this->alias .'_'. $_SESSION['courseID'];
+            
             // if instance has been set
             if( $this->property('instance') )
             {
                 //instance set in CMS getInstanceOptions()
                 $config = CompetenceModel::find($this->property('instance'));
                 //add $course->id to $config for form field
-                $config->course_id = $_SESSION['courseID'];//$course->id;
-                $config->save();//update original record now in case it did not have course
 
             } else {
-                // if copy has a name 
-                $copyLength = strlen($this->property('copy_id'));
-                if($copyLength > 0 )
-                {
-                    // find all matching course 
-                    $instances = CompetenceModel::where('course_id','=', $courseID)->get();
-                    $instCount = count($instances);
-                    if($instCount == 0) { 
-                        $copyLength = 0;// none found
-                    } else {
-                        // find instance with copy
-                        $flag=false;
-                        foreach ($instances as $instance)
-                        {
-                           if($instance->copy_id == $this->property('copy_id') )
-                           {
-                               $config = $instance;
-                               $flag=true;
-                               break;// got first found
-                           }
-                        }
-
-                        //yes found courses but not matching copy. use the first one found with course id
-                        if( !$flag ) { $config = $instances[0]; }
-                    }
-                }
-                // no match found so create new one
-                if($copyLength == 0 )
-                {
-                    //$config = dynamicInstance();// undefined use onRun?
-                    $config = new CompetenceModel;// db record
-                    $config->Name = 'dynamic_';//+ total records count?
-                    $config->Size = 'Medium';
+                // look for instances created for this course
+				$instances = CompetenceModel::where('name','=', $name)->get();
+				
+				if(count($instances) === 0) { 
+					// no record found so create a new dynamic instance
+					$config = new CompetenceModel;// db record
+					$config->Name = $name;// component_courseid
+					$config->Size = 'Medium';//$config->size = '20%';
                     $config->Color = '#4d7123';//uvu green
                     $config->Animate = '1';//true
-                    $config->course_id = $_SESSION['courseID'];// or null
-                    $config->copy_id = $this->property('copy_id');//
-                    $config->save();// create new record
-                    ///$this->property('instance', $config->id);// instance=id#
-                    //dont need to set for onSave
-                }
+					$config->save();// save the new record
+				} else {
+					//use the first record matching course
+					$config = $instances[0];
+				}
             }
 
             $this->page['config'] = json_encode($config);
@@ -124,7 +102,7 @@ class Competencies extends ComponentBase
             }
             $this->page['role'] = $roleStr;// only one or the other
 
-			/*get Assignments & Submissions ***** & enrolled students?
+			/* get Assignments & Submissions ***** & enrolled students?
 				submissions data is only available if viewed by a Learner
 				Module Items data is used if Instructor
                 
@@ -133,46 +111,51 @@ class Competencies extends ComponentBase
 				todo: Instructor can choose a student to view their progress?
                 todo: Instructor can configure Stem from here?
 			**************************************************/
-            $this->addCss("/plugins/delphinium/blossom/assets/css/bootstrap.min.css");
-            $this->addCss("/plugins/delphinium/blossom/assets/css/competencies.css");//overide alert !important
+			
 			$roots = new Roots();
-            $roleStr = $_SESSION['roles'];
-            if(stristr($roleStr, 'Instructor'))
+            
+            if($roleStr=='Instructor')
 			{
 				//https://medium.com/@matissjanis/octobercms-using-backend-forms-in-frontend-component-fe6c86f9296b#.ge50nlmtc
-				$this->addCss('/plugins/delphinium/blossom/formwidgets/colorpicker/assets/vendor/colpick/css/colpick.css', 'delphinium.blossom');
-				$this->addJs('/plugins/delphinium/blossom/formwidgets/colorpicker/assets/vendor/colpick/js/colpick.js', 'delphinium.blossom');
-				$this->addCss('/plugins/delphinium/blossom/formwidgets/colorpicker/assets/css/colorpicker.css', 'delphinium.blossom');
-				$this->addJs('/plugins/delphinium/blossom/formwidgets/colorpicker/assets/js/colorpicker.js', 'delphinium.blossom');
+				$this->addCss("/modules/system/assets/ui/storm.css", "core");// loader storm changes modal-header override css
+				$this->addJs('/modules/system/assets/ui/storm-min.js', 'core');
+				///$this->addCss('/modules/system/assets/ui/storm.less', 'core');
+				
+				$this->addCss("/plugins/delphinium/blossom/formwidgets/colorpicker/assets/vendor/colpick/css/colpick.css", "delphinium.blossom");
+				$this->addJs("/plugins/delphinium/blossom/formwidgets/colorpicker/assets/vendor/colpick/js/colpick.js", "delphinium.blossom");
+				$this->addCss("/plugins/delphinium/blossom/formwidgets/colorpicker/assets/css/colorpicker.css", "delphinium.blossom");
+				$this->addJs("/plugins/delphinium/blossom/formwidgets/colorpicker/assets/js/colorpicker.js", "delphinium.blossom");
+				
 				
 				// Build a back-end form with the context of 'frontend'
 				$formController = new \Delphinium\Blossom\Controllers\Competencies();
 				$formController->create('frontend');
 				
 				// Append the formController to the page
-				$this->page['form'] = $formController;
-                //this is the primary key of the record you want to update
-                $this->page['recordId'] = $config->id;
-                // Instructions page
-                $instructions = $formController->makePartial('instructions');
-                $this->page['instructions'] = $instructions;
+				$this->page['competencyform'] = $formController;
+                // Use the primary key of the record you want to update
+                $this->page['competencyrecordId'] = $config->id;
+                // Append Instructions page
+                $instructions = $formController->makePartial('competencyinstructions');
+                $this->page['competencyinstructions'] = $instructions;
                 
                 //simplified modules data *** testing if better than assignments includes locked
-                $freshData = false;
-
+				// or add $states = $roots->getModuleStates($req);// [id,state]
                 $moduleId = null;
                 $moduleItemId = null;
                 $includeContentDetails = true;
                 $includeContentItems = true;
                 $module = null;
                 $moduleItem = null;
-
+				$freshData = false;
+				
                 $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems,
                     $includeContentDetails, $module, $moduleItem , $freshData);
 
                 $moduleData = $roots->modules($req);
+				
+				/* simplify the module data */
                 $modArr = $moduleData->toArray();
-
                 $simpleModules = array();
                 foreach($modArr as $item)
                 {
@@ -180,31 +163,19 @@ class Competencies extends ComponentBase
 
                     $mod->id = $item['module_id'];
                     $mod->title=$item['name'];
-                    $mod->locked=$item['locked'];
-                    $mod->items =$item['module_items'];//REPLACES assignments
-
-                    // items contain:
-                    //module_items[i].content[0].title & .url, maybe .type
-                    //module_items[i].content[0].points_possible & .tags
+					$mod->locked=$item['locked'];// cannot getModuleStates unless Learner
+					$mod->items =$item['module_items'];//REPLACES assignments
 
                     $simpleModules[] = $mod;
                 }
                 $this->page['modules'] = json_encode($simpleModules);
-                ///$this->page['modata'] = json_encode($moduleData);// complete array remove when done
+                //$this->page['modata'] = json_encode($moduleData);// complete array unused
 			}
             
-            //if($_SESSION['roles'] == 'Learner')
-            if(stristr($roleStr, 'Learner'))
+            if($roleStr=='Learner')
 			{
 				$req = new AssignmentsRequest(ActionType::GET);
-				$res = $roots->assignments($req);
-
-				$assignmentIds = array();// for submissionsRequest
-				$assignments = array();// for points_possible // REPLACE
-				foreach ($res as $assignment) {
-					array_push($assignmentIds, $assignment["assignment_id"]);
-					array_push($assignments, $assignment);
-				}
+				$assignments = $roots->assignments($req);
 				
 				$this->page['assignments']=json_encode($assignments);
 				
@@ -215,6 +186,7 @@ class Competencies extends ComponentBase
 
                 $studentIds = array($_SESSION['userID']);
                 $allStudents = false;
+				$assignmentIds = array();
                 $allAssignments = true;
                 $multipleStudents = false;
                 $multipleAssignments = true;
@@ -222,10 +194,15 @@ class Competencies extends ComponentBase
                 $grouped = true;
 
                 $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments, $includeTags, $grouped);
-
 				$submissions = $roots->submissions($req);
+				
 				$this->page['submissions']=json_encode($submissions);// score
             }
+			
+			// ready to finish loading assets
+			$this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
+			$this->addCss("/plugins/delphinium/blossom/assets/css/competencies.css");
+			$this->addJs("/plugins/delphinium/blossom/assets/javascript/competencies.js");
        }
         catch (\GuzzleHttp\Exception\ClientException $e) {
             return;
@@ -245,15 +222,15 @@ class Competencies extends ComponentBase
             }
             return \Response::make($this->controller->run('error'), 500);
         }
-
+	
     }
 
     public function getInstanceOptions()
     {
-        /*https://octobercms.com/docs/plugin/components#dropdown-properties
+        /* https://octobercms.com/docs/plugin/components#dropdown-properties
 		*  The method should have a name in the following format: get*Property*Options()
 		*  where Property is the property name
-        * Fill the Competencies Configuration [dropdown] in CMS
+        *  Fill the Competencies Configuration [dropdown] in CMS
 		*/
 		$instances = CompetenceModel::all();
         $array_dropdown = ['0'=>'- select Instance - '];//id, text in dropdown
@@ -266,11 +243,11 @@ class Competencies extends ComponentBase
     }
 	
     /**
-	* update, add course_id & copy_id
+	* update, add course_id :  Need to remove this one???
 	* save to database and return updated
     
     * id is disabled in fields.yaml
-    * id, course & copy are also hidden
+    * id & course are also hidden
     * $data gets .id from config setting hidden field
     * called from instructorView configure settings
 	*/
@@ -279,22 +256,13 @@ class Competencies extends ComponentBase
         $data = post('Competencies');
         $did = intval($data['id']);
         $config = CompetenceModel::find($did);
-        //echo json_encode($config);
 		$config->Name = $data['Name'];
 		$config->Size = $data['Size'];
 		$config->Color = $data['Color'];
 		$config->Animate = $data['Animate'];
-		$config->course_id = $data['course_id'];//hidden
-        $config->copy_id = $data['copy_id'];//hidden
+		$config->course_id = $data['course_id'];//hidden field
 		$config->save();// update original record 
 		return json_encode($config);
     }
-    
-	// test: for controller.formExtendFields
-	public function getConfig()
-    {
-		$config = CompetenceModel::find($this->property('instance'));
-        return $config;
-	}
     
 }

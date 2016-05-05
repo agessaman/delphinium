@@ -1,6 +1,27 @@
+<!--
+  ~ Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
+  ~
+  ~ This file is subject to the terms and conditions defined in
+  ~ file 'https://github.com/ProjectDelphinium/delphinium/blob/master/EULA',
+  ~ which is part of this source code package.
+  ~
+  ~ NOTICE:  All information contained herein is, and remains the property of Project Delphinium. The intellectual and technical concepts contained
+  ~ herein are proprietary to Project Delphinium and may be covered by U.S. and Foreign Patents, patents in process, and are protected by trade secret or copyright law.
+  ~ Dissemination of this information or reproduction of this material is strictly forbidden unless prior written permission is obtained
+  ~ from Project Delphinium.
+  ~
+  ~ THE RECEIPT OR POSSESSION OF THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS
+  ~ TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.
+  ~
+  ~ Unauthorized copying of this file, via any medium is strictly prohibited
+  ~ Non-commercial use only, you may not charge money for the software
+  ~ You can modify personal copy of source-code but cannot distribute modifications
+  ~ You may not distribute any version of this software, modified or otherwise
+  -->
+
 <div id="instructorWrap">
     <div id="statsSettings">
-        <a data-toggle="modal"  data-keyboard="true" data-backdrop="true" onclick="showModal()"><i class="icon-cog"></i></a>
+        <a data-toggle="modal"  data-keyboard="true" data-backdrop="true" onclick="statsShowModal()"><i class="icon-cog"></i></a>
     </div>
     {% partial __SELF__~"::display" %}
 
@@ -8,7 +29,7 @@
         This component is tied to the Experience component, which hasn't been configured yet.
         Please go to the experience component in professor mode to configure it.
     </div>
-    <div class="control-popup modal fade" id="modalWindow" tabindex="-1" role="dialog">
+    <div class="control-popup modal fade" id="stats-modalWindow" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -17,27 +38,27 @@
                 <div class="modal-body">
                     <!-- Tabs -->
                     <ul class="nav nav-tabs">
-                        <li class="active"><a data-toggle="tab" href="#configure">Configure</a></li>
-                        <li><a data-toggle="tab" href="#instruct">Instructions</a></li>
+                        <li class="active"><a data-toggle="tab" href="#statsConfigure">Configure</a></li>
+                        <li><a data-toggle="tab" href="#statsInstruct">Instructions</a></li>
                     </ul>
-                    <div class="tab-content">
+                    <div class="tab-content"  style="padding: 10px 0 10px 0;">
                         <!-- Configure instance -->
-                        <div id="configure" class="tab-pane fade in active" style="padding: 5px 0px;">
+                        <div id="statsConfigure" class="tab-pane fade in active" style="padding: 5px 0px;">
                             <form role="form" id="updateForm"
                                   data-request="{{ __SELF__ }}::onSave"
 
                                   data-request-success="$el.hide();$('.confirm-container').removeClass('hide');completed(data);">
-                                {{ form.update(recordId)|raw }}
-                                {{ form.formRender()|raw }}
+                                {{ statsForm.update(statsRecordId)|raw }}
+                                {{ statsForm.formRender()|raw }}
                                 <div class="form-group">
                                     <button class="btn btn-primary" type="submit" value="register" data-load-indicator="Saving Stats..." >Update Component</button>
-                                    <button type="button" onclick="hideModal()" class="btn btn-default" data-disposable="">Close</button>
+                                    <button type="button" onclick="statsHideModal()" class="btn btn-default" data-disposable="">Close</button>
                                 </div>
                             </form>
                         </div>
                         <!-- Instructions -->
-                        <div id="instruct" class="tab-pane fade in" style="padding: 0px 20px;">
-                            {{ instructions|raw }}
+                        <div id="statsInstruct" class="tab-pane fade in" style="padding: 0px 20px;">
+                            {{ statsinstructions|raw }}
                         </div>
                     </div>
                 </div>
@@ -53,6 +74,7 @@
     /*override backend styles*/
     .modal-header {background:none !important;border-bottom:1px solid #e5e5e5 !important;}
     .modal-header .close{color:black !important;background:transparent !important;}
+    .modal-body {padding-bottom: 10px;}
     #configureExperience{display:none;}
 </style>
 <script>
@@ -62,9 +84,9 @@
         document.getElementById("statsSettings").style.display="none";
         document.getElementById("configureExperience").style.display="block";
     }
-    function showModal()
+    function statsShowModal()
     {
-        $("#modalWindow").on("shown.bs.modal", function () {
+        $("#stats-modalWindow").on("shown.bs.modal", function () {
             //disable the course id and the copy name
             document.getElementById('Form-field-Stats-id-group').style.display='none';
             document.getElementById('Form-field-Stats-name-group').style.display='none';
@@ -75,14 +97,14 @@
         }).modal('show');
     }
 
-    function hideModal()
+    function statsHideModal()
     {
-        $('#modalWindow').modal('hide');
+        $('#stats-modalWindow').modal('hide');
     }
 
     function completed(data)
     {
-        hideModal();
+        statsHideModal();
         $.oc.flashMsg({
             'text': 'The record has been successfully saved.',
             'class': 'success',

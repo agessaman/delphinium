@@ -1,0 +1,76 @@
+<!--
+  ~ Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
+  ~
+  ~ This file is subject to the terms and conditions defined in
+  ~ file 'https://github.com/ProjectDelphinium/delphinium/blob/master/EULA',
+  ~ which is part of this source code package.
+  ~
+  ~ NOTICE:  All information contained herein is, and remains the property of Project Delphinium. The intellectual and technical concepts contained
+  ~ herein are proprietary to Project Delphinium and may be covered by U.S. and Foreign Patents, patents in process, and are protected by trade secret or copyright law.
+  ~ Dissemination of this information or reproduction of this material is strictly forbidden unless prior written permission is obtained
+  ~ from Project Delphinium.
+  ~
+  ~ THE RECEIPT OR POSSESSION OF THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS
+  ~ TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.
+  ~
+  ~ Unauthorized copying of this file, via any medium is strictly prohibited
+  ~ Non-commercial use only, you may not charge money for the software
+  ~ You can modify personal copy of source-code but cannot distribute modifications
+  ~ You may not distribute any version of this software, modified or otherwise
+  -->
+
+<form>
+    <div class="panel panel-default form-widget form-elements layout" role="form" id="Form">
+        <div class="form-group text-field span-left" data-field-name="Author">
+            <label for="input-author">Author namespace</label>
+            <input type="text" id="input-author" class="form-control" value="" name="New[author]" placeholder="Author">
+            <p class="help-block">You cannot change the namespaces with Builder after you create the plugin. Example author namespace: JohnSmith</p>
+        </div>
+        <div class="form-group text-field span-right" data-field-name="Plugin">
+            <label for="input-plugin">Plugin namespace</label>
+            <input type="text" id="input-plugin" class="form-control" value="" name="New[plugin]" placeholder="Plugin">
+            <p class="help-block">Namespace can contain only Latin letters and digits and should start with a Latin letter. Example plugin namespace: Blog</p>
+        </div>
+        <div class="form-group text-field span-left">
+            <label for="input-controller">Controller name</label>
+            <input type="text" id="input-controller" class="form-control" value="" name="New[controller]" placeholder="Controller">
+            <p class="help-block">Enter the controller name</p>
+        </div>
+        <div class="form-group text-field span-right">
+            <label for="input-model">Model name</label>
+            <input type="text" id="input-model" class="form-control" value="" name="New[model]" placeholder="Model">
+            <p class="help-block">Enter the model name</p>
+        </div>
+        <div class="form-group text-field span-left">
+            <label for="input-component">Component name</label>
+            <input type="text" id="input-component" class="form-control" value="" name="New[component]" placeholder="Component">
+            <p class="help-block">Enter the component name</p>
+        </div>
+
+    </div>
+
+    <div class="form-buttons layout-item fix">
+        <div class="loading-indicator-container">
+            <button type="button" data-request="<?= $this->getEventHandler('onAddItem') ?>"
+                    data-request-success="completed(data, textStatus, this);" data-request-data="close:true" data-hotkey="ctrl+enter"
+                    data-hotkey-mac="cmd+enter" data-load-indicator="Creating..." class="btn btn-default" data-disposable="">
+                Create
+            </button>
+
+        </div>
+    </div>
+</form>
+
+
+
+<script>
+    function completed(data, textStatus, this_)
+    {
+        console.log(data.results);
+        $("#input-author").val('');
+        $("#input-plugin").val('');
+        $("#input-controller").val('');
+        $("#input-model").val('');
+        $("#input-component").val('');
+    }
+</script>

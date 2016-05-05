@@ -1,4 +1,26 @@
-<?php namespace Delphinium\Blossom\Updates;
+<?php
+/**
+ * Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
+ *
+ * This file is subject to the terms and conditions defined in
+ * file 'https://github.com/ProjectDelphinium/delphinium/blob/master/EULA',
+ * which is part of this source code package.
+ *
+ * NOTICE:  All information contained herein is, and remains the property of Project Delphinium. The intellectual and technical concepts contained
+ * herein are proprietary to Project Delphinium and may be covered by U.S. and Foreign Patents, patents in process, and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material is strictly forbidden unless prior written permission is obtained
+ * from Project Delphinium.
+ *
+ * THE RECEIPT OR POSSESSION OF THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS
+ * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.
+ *
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Non-commercial use only, you may not charge money for the software
+ * You can modify personal copy of source-code but cannot distribute modifications
+ * You may not distribute any version of this software, modified or otherwise
+ */
+
+namespace Delphinium\Blossom\Updates;
 
 use Schema;
 use October\Rain\Database\Updates\Migration;
@@ -8,64 +30,32 @@ class UpdateEasterEggsTable extends Migration
 
     public function up()
     {
-        if ( Schema::hasTable('delphinium_blossom_easter_eggs') )
-        {
-            Schema::dropIfExists('delphinium_blossom_easter_eggs');
-            Schema::create('delphinium_blossom_easter_eggs', function($table)
-            {
-                $table->engine = 'InnoDB';
-                $table->increments('id');
-                $table->string('name');
-                $table->string('menu');
-                $table->string('harlem_shake');
-                $table->string('ripples');
-                $table->string('asteroids');
-                $table->string('katamari');
-                $table->string('bombs');
-                $table->string('ponies');
-                $table->string('my_little_pony');
-                $table->integer('course_id')->nullable();
-                $table->integer('copy_id')->nullable();
-                $table->timestamps();
-            });
-        }
-        else
-        {
-            Schema::create('delphinium_blossom_easter_eggs', function($table)
-            {
-                $table->engine = 'InnoDB';
-                $table->increments('id');
-                $table->string('name');
-                $table->string('menu');
-                $table->string('harlem_shake');
-                $table->string('ripples');
-                $table->string('asteroids');
-                $table->string('katamari');
-                $table->string('bombs');
-                $table->string('ponies');
-                $table->string('my_little_pony');
-                $table->integer('course_id')->nullable();
-                $table->integer('copy_id')->nullable();
-                $table->timestamps();
-            });
-        }
+        Schema::table('delphinium_blossom_easter_eggs', function ($table) {
+            $table->renameColumn('Name', 'name');
+            $table->string('menu');
+            $table->string('harlem_shake');
+            $table->string('ripples');
+            $table->string('asteroids');
+            $table->string('katamari');
+            $table->string('bombs');
+            $table->string('ponies');
+            $table->string('my_little_pony');
+        });
     }
 
     public function down()
     {
-        if ( Schema::hasTable('delphinium_blossom_easter_eggs') )
-        {
-            Schema::dropIfExists('delphinium_blossom_easter_eggs');
-            Schema::create('delphinium_blossom_easter_eggs', function($table)
-            {
-                $table->engine = 'InnoDB';
-                $table->increments('id');
-                $table->string('Name');
-                $table->integer('course_id')->nullable();
-                $table->integer('copy_id')->nullable();
-                $table->timestamps();
-            });
-        }
+        Schema::table('delphinium_blossom_easter_eggs', function ($table) {
+            $table->renameColumn('name', 'Name');
+            $table->dropColumn('menu');
+            $table->dropColumn('harlem_shake');
+            $table->dropColumn('ripples');
+            $table->dropColumn('asteroids');
+            $table->dropColumn('katamari');
+            $table->dropColumn('bombs');
+            $table->dropColumn('ponies');
+            $table->dropColumn('my_little_pony');
+        });
     }
 
 }

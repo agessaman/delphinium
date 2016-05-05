@@ -1,4 +1,6 @@
-<?php namespace Delphinium\Roots\Classes;
+<?php
+
+namespace Delphinium\Roots\Classes;
 
 class OAuthServer {
   protected $timestamp_threshold = 300; // in seconds, five minutes

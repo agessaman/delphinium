@@ -1,0 +1,92 @@
+<!--
+  ~ Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
+  ~
+  ~ This file is subject to the terms and conditions defined in
+  ~ file 'https://github.com/ProjectDelphinium/delphinium/blob/master/EULA',
+  ~ which is part of this source code package.
+  ~
+  ~ NOTICE:  All information contained herein is, and remains the property of Project Delphinium. The intellectual and technical concepts contained
+  ~ herein are proprietary to Project Delphinium and may be covered by U.S. and Foreign Patents, patents in process, and are protected by trade secret or copyright law.
+  ~ Dissemination of this information or reproduction of this material is strictly forbidden unless prior written permission is obtained
+  ~ from Project Delphinium.
+  ~
+  ~ THE RECEIPT OR POSSESSION OF THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS
+  ~ TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.
+  ~
+  ~ Unauthorized copying of this file, via any medium is strictly prohibited
+  ~ Non-commercial use only, you may not charge money for the software
+  ~ You can modify personal copy of source-code but cannot distribute modifications
+  ~ You may not distribute any version of this software, modified or otherwise
+  -->
+
+<!-- Competencies Instructions partial -->
+<style>
+/* instructions images */
+#competenciesNew {
+    width: 680%;
+    height: 250px;
+	float:left;
+    background-image: url('<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/competenciesNew.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+#competenciesComp {
+    width: 750px;
+    height: 250px;
+    background-image: url('<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/competenciesComp.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+#competenciesInstruct { overflow-x: hidden; }
+</style>
+	<div id="competenciesInstruct">
+        <h3>Competencies Component</h3>   
+        <div style="float:left;">
+		<p>Select the New Competencies Instance button.<br/>
+		Type a Name, select the Color for the amount, toggle the Animate switch and select a Size for the component.
+		</p>
+		<div id="competenciesNew" width="680" height="250" title="Style the component"></div>
+		</div>
+          
+		<div style="clear:both; padding:20px 0px 20px 0px;;">&nbsp;</div>
+		
+		<div style="float:left;">
+		
+        <h4>Using the component:</h4>
+		<p>In the CMS tab add a New Page and select the Blossom Competencies component.<br/>
+        <br/>
+        </p>
+		
+		<h4>Setting up Competencies:</h4>
+        <p>Using Stem create tags for assignments and quizzes.<br/>
+            Tags for competencies are designated using the prefix C: followed by a name.<br/>
+            Each name represents a group of assignments that belong to the competency.<br/>
+            When the component runs on a page it gathers all assignments and submissions, 
+			sorts them by the tag names and compares the amount completed to the total possible, 
+			then presents this as percent completed for each group.
+        </p>
+		</div>
+		
+        <div style="clear:both; padding:20px 0px 20px 0px;">&nbsp;</div>
+        
+		<div style="float:left;">
+        <div id="competenciesComp" width="750" height="250" title="What it looks like"></div>
+
+        <ul>
+            <li>The competency bar graph is divided by tenths and displays the percent earned.</li>
+            <li>Hovering on a bar displays points earned and points possible.</li>
+            <li>Clicking a bar displays the itemized assignments in the competency group.</li>
+            <li>The width of the component is 250px if the size is set to Medium.</li>
+            <li>The height is determined by the number of bars to display.</li>
+            <li>Each bar represents Assignments and Quizzes in a competency group.</li>
+            <li>Each graded item in a competency needs to have a tag starting with C:</li>
+            <li>Competencies are grouped by names. (C:Ideas, C:People, C:Align C:American History)</li>
+            <li>The name will be displayed above the bar.</li>
+            <li>Names can include spaces. (C:Computer Science)</li>
+            <li>Assignments can have other tags for other uses.</li>
+            <li>Assignments can belong to multiple competencies.</li>
+        </ul>
+		<br/>
+		</div>
+	</div>
+	

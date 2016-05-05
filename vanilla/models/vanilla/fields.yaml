@@ -1,18 +1,14 @@
+# ===================================
+#  Form Field Definitions
+# ===================================
+
 fields:
+    id:
+        label: ID
+        disabled: true
     name:
-        label: 'Name:'
-        span: auto
-        type: text
-        commentAbove: 'Name this instance'
-
-    course_id:
-        label: 'Course id'
-        span: auto
-        type: text
-        comment: copy id is generated dynamically
-
-    copy_id:
-        label: 'Copy id'
-        span: auto
-        type: text
-        comment: copy id is generated dynamically
+        label: Name
+        comment: Enter a name
+    custom:
+        label: Custom
+        comment: Add text content

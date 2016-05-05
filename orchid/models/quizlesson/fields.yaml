@@ -6,3 +6,14 @@ fields:
     id:
         label: ID
         disabled: true
+        hidden: true
+    quiz_name:
+        label: Quiz Name
+        span: auto
+    quiz_id:
+        label: Quiz
+        comment: Quiz id
+        span: auto
+    course_id:
+        label: Course id
+        hidden: true

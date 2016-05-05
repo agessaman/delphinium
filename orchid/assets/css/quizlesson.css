@@ -1,0 +1,184 @@
+/*
+ * Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
+ *
+ * This file is subject to the terms and conditions defined in
+ * file 'https://github.com/ProjectDelphinium/delphinium/blob/master/EULA',
+ * which is part of this source code package.
+ *
+ * NOTICE:  All information contained herein is, and remains the property of Project Delphinium. The intellectual and technical concepts contained
+ * herein are proprietary to Project Delphinium and may be covered by U.S. and Foreign Patents, patents in process, and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material is strictly forbidden unless prior written permission is obtained
+ * from Project Delphinium.
+ *
+ * THE RECEIPT OR POSSESSION OF THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS
+ * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.
+ *
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Non-commercial use only, you may not charge money for the software
+ * You can modify personal copy of source-code but cannot distribute modifications
+ * You may not distribute any version of this software, modified or otherwise
+ */
+
+.center {
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 10px;
+}
+.left {
+    float: left;
+}
+.right {
+    float: right;
+}
+
+.clear { clear: both; }
+
+
+.tools {
+    
+}
+/*
+#quizlist {
+    border: 1px solid #888888;
+    background-color: #dadada;
+    height: auto;
+    float: right;
+}
+#questiongroup {
+    border: 1px solid #888888;
+    background-color: #dadada;
+    height: auto;
+    float: right;
+}
+*/
+.quizpanel {
+    overflow-y: auto;
+}
+/* floats with page */
+.scrollingBox {
+	width: 48%;
+    position: fixed;
+    top: 10px;
+    right: 10px;
+}
+
+.questitem {
+	padding: 5px;
+	border: 1px solid #888888;
+	font-size: 1.0em;
+}
+.seeit {
+	font-size: 1.2em;/* view question details icon*/
+}
+.btngroup {
+    /*float: right;
+    margin-right: 40px;*/
+	position: relative;
+	
+}
+#qtitle {
+	font-size: 1.2em;
+	font-weight: 600;
+    padding: 5px;
+	position: relative;
+	
+}
+
+.text-content{
+    width: 90%;
+    height: 100px;
+    border: 1px solid #888888;
+}
+.question-content {
+    width: 80%;
+    height: 50px;
+    border: 2px solid #88ff88;
+    background-color: #fafafa;
+}
+/* simulate */
+.form-actions {
+    border: 1px solid #999;
+    margin: 18px 0 -1px;
+    padding: 20px;
+}
+.questype { 
+	/*padding: 3px;*/
+}
+#questcount {
+	float: left;
+	padding: 6px 10px;/*top&botm, l&r*/
+	font-size:  1.2em;
+	font-weight: 600;
+}
+
+/*shorten boostrap alert or use buttons btn-sm*/
+.alert {
+    padding: 5px 5px !important;
+    margin-bottom: 4px !important;
+	cursor: pointer;
+}
+
+
+/* UNUSED */
+.headbox {
+    width: 100%;
+    height: auto;
+	display: block;
+    position: relative;
+    text-align: center;
+}
+.questbox {
+	display: block;
+    position: relative;
+    width: 900px;
+    height: auto;
+    margin: 2px auto;
+    padding: 30px;
+    background: tan;
+	font-weight: 700;
+	font-size: 1.1em;
+}
+.shado {
+	-webkit-box-shadow: 3px 3px 5px 0px rgba(50, 50, 50, 0.8);
+	-moz-box-shadow:    3px 3px 5px 0px rgba(50, 50, 50, 0.8);
+	box-shadow:         3px 3px 5px 0px rgba(50, 50, 50, 0.8);
+}
+.valid {
+	/*holds correct answer*/
+	display: block;
+    position: relative;
+	font-weight: 700;
+	font-size: 1.2em;
+    text-align: center;
+}
+.answerbox {
+    width: 100%;
+    height: auto;
+	padding: 10px;
+    position: relative;
+    text-align: center;
+}
+.answer {
+/*makeDraggable */
+	width: auto;
+	height: auto;
+	font-weight: 400;
+}
+#introMessage {
+	position: absolute;
+	top: 20px;
+	left: 60px;
+	width: 100%;
+	padding: 20px;
+	font-size:  1.6em;
+	font-weight: 600;
+	text-align: center;
+	color: #ffffff;
+	background-color: red;// ?
+}
+#comment {
+	padding: 20px;
+	margin-top: 20px;
+	/*neutral,correct,incorrect comment colors ?*/
+}

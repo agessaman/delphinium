@@ -1,14 +1,45 @@
-.center{
-	text-align: center;
-    margin-left: auto;
-    margin-right: auto;
+/*
+ * Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
+ *
+ * This file is subject to the terms and conditions defined in
+ * file 'https://github.com/ProjectDelphinium/delphinium/blob/master/EULA',
+ * which is part of this source code package.
+ *
+ * NOTICE:  All information contained herein is, and remains the property of Project Delphinium. The intellectual and technical concepts contained
+ * herein are proprietary to Project Delphinium and may be covered by U.S. and Foreign Patents, patents in process, and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material is strictly forbidden unless prior written permission is obtained
+ * from Project Delphinium.
+ *
+ * THE RECEIPT OR POSSESSION OF THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS
+ * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.
+ *
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Non-commercial use only, you may not charge money for the software
+ * You can modify personal copy of source-code but cannot distribute modifications
+ * You may not distribute any version of this software, modified or otherwise
+ */
+
+/* overide storm.css */
+.modal-header {background:none !important;border-bottom:1px solid #e5e5e5 !important;color:#333333 !important}
+.modal-header .close{color:black !important;background:transparent !important;}
+.modal-body {padding-bottom: 15px;}
+/*.modal-md default is 600px */
+/*.modal-md { width: 700px !important; } */
+
+/* october ui loader */
+.loading-indicator-container {
+	position: absolute;
+	width: 100%;
+	height: 190px;/* overlay tabs 190px */
+	z-index: 1000;
 }
-.left{
-    float: left;
-}
-.right{
-    float: right;
-}
+
+/* hide instructions that don't apply to the instructor */
+.hiddenFromTeacher{display: none;}
+
+/* larger text in tabs */
+a[role=tab] { font-size: 1.1em; }
+
 .page {
 	display: block;
 	position: relative;
@@ -20,7 +51,7 @@
     height: 130px;
     float: left;
     position: relative;
-    border: medium solid #ababab;
+    border: thin solid #bababa;
     background-color: #fafafa;
     color: #ababab;
 	display: inline-block;
@@ -31,11 +62,31 @@
 	box-shadow:         3px 3px 5px 0px rgba(50, 50, 50, 0.8);
 }
 .title {
-	background-color: #ababab;/* user defined? */
-	color: #fafafa;
-	padding: 5px;
 	font-size: 0.9em;
 	font-weight: 400;
+	color: #fafafa;
+	
+	background-color: #ababab;/* over ride with state in Learner view */
+	/* simulate Dashboard style */
+	padding: 5px;
+	height: 75px;
+}
+/* icons */
+.modcompleted {
+	position: absolute;
+	top: 40px;
+	right: 5px;
+	z-index: 800;
+    font-size: 1.8em;
+	color: #fafafa;
+}
+.modlocked {
+	position: absolute;
+	top: 35px;/* bottom right */
+	right: 8px;
+	z-index: 800;
+    font-size: 2.2em;
+	color: #333;
 }
 .stars {
 	position: absolute;
@@ -44,17 +95,14 @@
     font-size: 1.5em;
     color: #ddbb31;/* gold */
 }
+/* state colors match iris */
+.locked { background-color: #8f8f8f !important; }
+.unlocked { background-color: #588238 !important; }
+.started { background-color: #5eacd4 !important; }
+.completed { background-color: #143D55 !important; }
 
-.locked {
-	position: absolute;
-	top: -16px;
-	right: -9px;
-	z-index: 800;
-    font-size: 2.2em;
-	color: #666666;
-}
 .items {
-    /* for testing show id & item count */
+    /* for testing, show id & item count */
 	padding: 5px;
 	font-size: 0.9em;
 	font-weight: 400;
@@ -64,8 +112,7 @@
 .tabody {
     width: 0px;/* add for each moditem */
     height: 145px; 
-	overflow: auto;
-	/*background-color: #efefef;*/
+	overflow: hidden;
 }
 .scrollnav { position:relative; z-index:100; }
 .arol, .aror {
@@ -87,7 +134,7 @@
 .aror:hover { background-position: -50px 0px; opacity: 0.6; }
 .arol:active, .aror:active { opacity: 0.8; }
 
-/*styles for module_items.type match iris*/
+/* styles for module_items.type match iris */
 .prereq {
     height:auto;
 	padding: 10px;
@@ -102,14 +149,25 @@
 .assignment {
     height: auto;
 	padding: 10px;/* T,R,B,L */
-	margin-bottom: 5px;
+	margin-bottom: 10px;
     
-    border-radius: 10px 10px 10px 10px;
+    border-radius: 5px;
     -moz-border-radius: 10px 10px 10px 10px;
     -webkit-border-radius: 10px 10px 10px 10px;
-	border: thin solid #ababab;
-	background-color: #fff;
-    color: #888888;
+	border: 1px solid #D0D0D0;
+	
+    color: #000000;
+}
+.available:hover{
+    border: 2px solid #D0D0D0;
+}
+.available {
+	background-color: #fafafa;
+	cursor: pointer; /* whole div is clickable */
+}
+.unavailable {
+	color: #b4b4b4 !important;
+	background-color: #eeeeee;
 }
 .required {
     width: 80%;
@@ -123,6 +181,7 @@
     font-size: 0.9em;
     color: #000;
 }
+
 .ico {
     /*display: block;*/
     width: auto;
@@ -132,17 +191,35 @@
     font-size: 1.3em;
 }
 .link {
-    width: 80%;
+    width: auto;/*80%;*/
     float: left;
+	margin-top: 2px;
+    /*border: thin solid #ababab; test width*/
 }
 .points {
     width: auto;
     float: right;
-    padding: 5px;
+    /*padding: 5px;*/
     font-size: 1.1em;
-    color: #000;
+    /*color: #333;*/
+   /* border: thin solid #ababab; test width*/
 }
 .clearme {
     clear:both;
     height: 1px;
+}
+.subheader {
+	height: auto;
+	padding: 10px;/* T,R,B,L */
+	margin-bottom: 5px;
+	font-size: 1.2em;
+	font-weight: 600;
+}
+/* Instructions modal instructor view */
+.instructext { width: 49%; }
+.instructimage {
+	width: 400px;
+	height: 430px;
+	background: url(../images/stemsmall.png) center center no-repeat;
+	border: 2px solid #c8d8e3;
 }

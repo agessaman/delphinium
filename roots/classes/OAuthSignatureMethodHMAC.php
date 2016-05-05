@@ -1,4 +1,6 @@
-<?php namespace Delphinium\Roots\Classes;
+<?php
+
+namespace Delphinium\Roots\Classes;
 
 class OAuthSignatureMethodHMAC extends OAuthSignatureMethod {
   function get_name() {
