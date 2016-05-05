@@ -80,6 +80,8 @@ class EasterEggs extends ComponentBase
                     $config->ponies = 0;
                     $config->my_little_pony = 0;
                     $config->snow = 0;
+                    $config->raptor = 0;
+                    $config->fireworks = 0;
                     // add your fields
                     //$config->size = '20%';
                     $config->save();// save the new record
@@ -203,6 +205,8 @@ class EasterEggs extends ComponentBase
         $config->ponies = $data['ponies'];
         $config->my_little_pony = $data['my_little_pony'];
         $config->snow = $data['snow'];
+        $config->raptor = $data['raptor'];
+        $config->fireworks = $data['fireworks'];
         $config->save();// update original record 
         return json_encode($config);// back to instructor view
     }

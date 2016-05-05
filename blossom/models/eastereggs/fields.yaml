@@ -49,3 +49,14 @@ fields:
         label: snow
         span: auto
         comment: Enter a point threshold
+
+    raptor:
+        label: raptor
+        span: auto
+        comment: Enter a point threshold
+
+
+    fireworks:
+        label: fireworks
+        span: auto
+        comment: Enter a point threshold

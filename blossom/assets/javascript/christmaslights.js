@@ -24,7 +24,6 @@ function start() {
 start();
 
   var urlBase = path + '/plugins/delphinium/blossom/assets/';
-  soundManager.url = './';
 
 function XLSF(oTarget,urlBase) {
   var writeDebug = soundManager._wD;

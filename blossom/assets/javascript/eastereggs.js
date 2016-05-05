@@ -19,9 +19,9 @@
  * You may not distribute any version of this software, modified or otherwise
  */
 
-var eggs = ['harlem_shake','ripples','asteroids','katamari','bombs','ponies','my_little_pony','snow', 'raptor'];
-var eggsIcons = ['bolt','bullseye','rocket','fa fa-soccer-ball-o','fa fa-bomb','linux','github-alt','gears','gears'];
-var comands = ['Press "h" and "a" at the same time, make sure your sound is on', 'Press "r" and "i" at the same time and move the mouse', 'Press "a" and "s" at the same time, space to shoot, arrow keys to move', 'Press "k" and "a" at the same time, follow instructions', 'Press "b" and "o" at the same time, click mouse in text to drop them', 'Press "p" and "o" at the same time, space to re-spawn, arrow keys to move', 'Press "m" and "y" at the same time, watch and enjoy','Press "s" and "n" at the same time, watch and enjoy, follows mouse, break lights', 'Press "r" and "a" at the same time, make sure your sound is on'];
+var eggs = ['harlem_shake','ripples','asteroids','katamari','bombs','ponies','my_little_pony','snow', 'raptor', 'fireworks'];
+var eggsIcons = ['bolt','bullseye','rocket','fa fa-soccer-ball-o','fa fa-bomb','linux','github-alt','gears','gears', 'gears'];
+var comands = ['Press "h" and "a" at the same time, make sure your sound is on', 'Press "r" and "i" at the same time and move the mouse', 'Press "a" and "s" at the same time, space to shoot, arrow keys to move', 'Press "k" and "a" at the same time, follow instructions', 'Press "b" and "o" at the same time, click mouse in text to drop them', 'Press "p" and "o" at the same time, space to re-spawn, arrow keys to move', 'Press "m" and "y" at the same time, watch and enjoy','Press "s" and "n" at the same time, watch and enjoy, follows mouse, break lights', 'Press "r" and "a" at the same time, make sure your sound is on', 'Press "f" and "i" at the same time, make sure your sound is on'];
 var keys = {};
 var count = 65;
 var str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -31,7 +31,7 @@ for(var i=0; i<str.length; i++){
   count++;
 }
 
-var harlemShake = {}, ripple = {}, asteroid = {}, katamari = {}, bomb = {}, pony = {}, myLittlePony = {}, snow = {}, raptor = {};
+var harlemShake = {}, ripple = {}, asteroid = {}, katamari = {}, bomb = {}, pony = {}, myLittlePony = {}, snow = {}, raptor = {}, fireworks = {};
 harlemShake[keys.H] = false;
 harlemShake[keys.A] = false;
 harlemShake['loaded'] = false;
@@ -59,6 +59,9 @@ snow['loaded'] = false;
 raptor[keys.R] = false;
 raptor[keys.A] = false;
 raptor['loaded'] = false;
+fireworks[keys.F] = false;
+fireworks[keys.I] = false;
+fireworks['loaded'] = false;
 
 $(document).keydown(function(e) {
 	//Harlem Shake
@@ -252,6 +255,21 @@ $(document).keydown(function(e) {
     }
   }
 
+  //Fireworks
+  if(current_grade >= config.fireworks){
+    if (e.keyCode in fireworks) {
+      fireworks[e.keyCode] = true;
+      if (fireworks[keys.F] && fireworks[keys.I]) {
+        if(!fireworks["loaded"]){
+          fireworks["loaded"] = true;
+          //var s = document.createElement('script');
+          //s.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/jquery.raptorize.1.0.js");
+          //document.body.appendChild(s);
+        }
+      }
+    }
+  }
+
 }).keyup(function(e) {
   if (e.keyCode in harlemShake) {
     harlemShake[e.keyCode] = false;
@@ -279,5 +297,8 @@ $(document).keydown(function(e) {
   }
   if (e.keyCode in raptor) {
     raptor[e.keyCode] = false;
+  }
+  if (e.keyCode in fireworks) {
+    fireworks[e.keyCode] = false;
   }
 });
