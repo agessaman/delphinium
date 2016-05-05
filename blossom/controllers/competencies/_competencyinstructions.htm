@@ -23,8 +23,8 @@
 <style>
 /* instructions images */
 #competenciesNew {
-    width: 680%;
-    height: 250px;
+    width: 690px;
+    height: 165px;
 	float:left;
     background-image: url('<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/competenciesNew.png');
     background-repeat: no-repeat;
@@ -37,25 +37,17 @@
     background-repeat: no-repeat;
     background-size: contain;
 }
-#competenciesInstruct { overflow-x: hidden; }
+#competenciesInstruct { width:750; overflow-x: hidden; }
 </style>
 	<div id="competenciesInstruct">
         <h3>Competencies Component</h3>   
-        <div style="float:left;">
-		<p>Select the New Competencies Instance button.<br/>
-		Type a Name, select the Color for the amount, toggle the Animate switch and select a Size for the component.
-		</p>
-		<div id="competenciesNew" width="680" height="250" title="Style the component"></div>
-		</div>
-          
-		<div style="clear:both; padding:20px 0px 20px 0px;;">&nbsp;</div>
-		
 		<div style="float:left;">
 		
         <h4>Using the component:</h4>
-		<p>In the CMS tab add a New Page and select the Blossom Competencies component.<br/>
-        <br/>
-        </p>
+		<p>Style your component using the color you want for the amount and the size you want from a dropdown.</p>
+		<div id="competenciesNew" width="690" height="165" title="Style the component"></div>
+          
+		<div style="clear:both; padding:20px 0px 0px 0px;">&nbsp;</div>
 		
 		<h4>Setting up Competencies:</h4>
         <p>Using Stem create tags for assignments and quizzes.<br/>
