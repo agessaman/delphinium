@@ -30,7 +30,7 @@
 	assignments must contain special tags starting with C:
 */
 
-$(document).ready(function() {
+//$(document).ready(function() {
 	
     var div = d3.select("body").append("div")
         .attr("class", "tooltip")
@@ -64,17 +64,23 @@ $(document).ready(function() {
 			Add hidden input fields so they will transfer to onUpdate
 			if fields are set to hidden: true, they do not appear in the post
 		*/
+		
 		$('#Form-outsideTabs').append('<input type="hidden" name="Competencies[id]" value="'+config.id+'" /> ');
 		$('#Form-outsideTabs').append('<input type="hidden" name="Competencies[course_id]" value="'+config.course_id+'" /> ');
 		
 		// Fix Animate checkbox switch
-		$('<div style="height:90px;" class="clearfix"></div>').insertBefore('.checkbox-field').parent;
-		$('.checkbox-field').attr('style','margin-left:20px').removeClass('span-right').addClass('span-left');
-		$('#Form-field-Competencies-Name-group').hide();// not useful
+		//$('<div style="height:90px;" class="clearfix"></div>').insertBefore('.checkbox-field').parent;
+		//$('.checkbox-field').attr('style','margin-left:20px').removeClass('span-right').addClass('span-left');
+		// Hide the name field so instructor cant change it
+		$('#Form-field-Competencies-Name-group').hide();
 		
-		// custom-color dataLocker
-		$('div #ColorPicker-formColor-Color').attr('data-data-locker',config.Color);
-		//console.log('instance: '+config.id,config.Name,config.Size,config.Color,config.Animate,config.course_id);
+		// Set the color picker to current color
+		$('div #ColorPicker-formColor-input-Color').val(config.Color);
+		console.log('instance: '+config.id,config.Name,config.Size,config.Color,config.Animate,config.course_id);
+		
+		$('#cog').on('click', function(e){
+			$('#competence-configuration').modal('show');
+		});
 		
         filterModuleTags();
         showCompetencies();
@@ -525,7 +531,7 @@ $(document).ready(function() {
         }
 
         $('#detailed-body').html(content);
-        $('#detailed').modal();
+        $('#detailed').modal('show');
 
         $('.available').on('click',function(e) {
             e.preventDefault();
@@ -537,4 +543,4 @@ $(document).ready(function() {
         //console.log(assignment.length, assignment);
         //console.log(submitted.length, submitted);
     }
-});// end document.ready
+//});// end document.ready

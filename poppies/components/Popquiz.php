@@ -50,7 +50,7 @@ class Popquiz extends ComponentBase
         return [
             'instance'	=> [
                 'title'             => 'Configuration:',
-                'description'       => 'Select an instance',
+                'description'       => 'Optional',
                 'type'              => 'dropdown',
                 'default'           => 0
             ]
@@ -253,7 +253,7 @@ class Popquiz extends ComponentBase
     public function getInstanceOptions()
     {
 		$instances = popquizModel::all();// records
-        $array_dropdown = ['0'=>'- select Instance - '];//id, text in dropdown
+        $array_dropdown = ['0'=>'- Optional - '];//id, text in dropdown
 		// populate CMS dropdown
         foreach ($instances as $instance)
         {

@@ -24,7 +24,7 @@
     <a id="popinfo" title="Info" tabindex="0" role="button" data-trigger-condition="" data-trigger-action="" data-trigger="focus" data-container="body" data-toggle="popover" data-placement="left" data-content="Setup below" style="position:absolute; top:0; right:10px;">
         <i class="icon-question"></i>
     </a>
-	<div id="cog" data-toggle="modal" href="#content-configuration" style="position:absolute; top:0; right:20px;">
+	<div id="cog" href="#competence-configuration" style="position:absolute; top:0; right:20px;">
 		<a data-toggle="tooltip" title="Settings" data-placement="bottom"><i class="icon-cog"></i></a>
     </div>
 </div>
@@ -35,9 +35,9 @@
 
 
 <!-- Configuration modal with Front End Form and Instructions in tabs -->
-<div class="control-popup modal fade" id="content-configuration" tabindex="-1" role="dialog">
-    <div class="modal-dialog">
-        <div class="modal-content" style="width:820px; overflow-y: auto;">
+<div class="control-popup modal fade" id="competence-configuration" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title">Competencies Settings</h4>
@@ -57,7 +57,7 @@
 					  {{ competencyform.update(competencyrecordId)|raw }}
                       {{ competencyform.formRender()|raw }}
                       <div class="form-group">
-                         <button class="btn btn-primary btn-block btn-md" type="submit" value="register">Update Component</button>
+                         <button class="btn btn-primary btn-lg" type="submit" value="register">Update Component</button>
                       </div>
                     </form>
                   </div>

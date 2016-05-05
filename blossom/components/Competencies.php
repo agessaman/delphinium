@@ -45,7 +45,7 @@ class Competencies extends ComponentBase
         return [
             'instance'	=> [
                 'title'             => 'Configuration:',
-                'description'       => 'Select an instance',
+                'description'       => 'Optional',
                 'type'              => 'dropdown',
                 'default'           => 0
             ]
@@ -118,8 +118,8 @@ class Competencies extends ComponentBase
 			{
 				//https://medium.com/@matissjanis/octobercms-using-backend-forms-in-frontend-component-fe6c86f9296b#.ge50nlmtc
 				$this->addCss("/modules/system/assets/ui/storm.css", "core");// loader storm changes modal-header override css
-				$this->addJs('/modules/system/assets/ui/storm-min.js', 'core');
-				///$this->addCss('/modules/system/assets/ui/storm.less', 'core');
+				$this->addJs("/modules/system/assets/ui/storm-min.js", "core");
+				///$this->addCss("/modules/system/assets/ui/storm.less", "core");
 				
 				$this->addCss("/plugins/delphinium/blossom/formwidgets/colorpicker/assets/vendor/colpick/css/colpick.css", "delphinium.blossom");
 				$this->addJs("/plugins/delphinium/blossom/formwidgets/colorpicker/assets/vendor/colpick/js/colpick.js", "delphinium.blossom");
@@ -201,7 +201,6 @@ class Competencies extends ComponentBase
 			
 			// ready to finish loading assets
 			$this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
-            $this->addJs("/plugins/delphinium/blossom/assets/javascript/bootstrap.min.js");
 			$this->addCss("/plugins/delphinium/blossom/assets/css/competencies.css");
 			$this->addJs("/plugins/delphinium/blossom/assets/javascript/competencies.js");
        }
@@ -234,7 +233,7 @@ class Competencies extends ComponentBase
         *  Fill the Competencies Configuration [dropdown] in CMS
 		*/
 		$instances = CompetenceModel::all();
-        $array_dropdown = ['0'=>'- select Instance - '];//id, text in dropdown
+        $array_dropdown = ['0'=>'- Optional - '];//id, text in dropdown
 
         foreach ($instances as $instance)
         {
