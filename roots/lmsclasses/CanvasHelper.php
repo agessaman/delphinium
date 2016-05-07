@@ -82,7 +82,7 @@ class CanvasHelper
         $courseId = $_SESSION['courseID'];
         $urlPieces= array();
         $urlArgs = array();
-        $urlPieces[]= "http://{$domain}/api/v1/courses/{$courseId}";
+        $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
         $urlPieces[] = 'modules';
 
         $urlArgs[] = "student_id={$userId}";
@@ -173,7 +173,7 @@ class CanvasHelper
         $token = \Crypt::decrypt($_SESSION['userToken']);
 
         $urlPieces= array();
-        $urlPieces[]= "http://{$domain}/api/v1/quiz_submissions/{$quizSubmission->quiz_submission_id}/questions";
+        $urlPieces[]= "https://{$domain}/api/v1/quiz_submissions/{$quizSubmission->quiz_submission_id}/questions";
         $urlArgs[] ="as_user_id={$studentId}";
         $urlArgs[]="access_token={$token}";
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
@@ -256,7 +256,7 @@ class CanvasHelper
         $domain = $_SESSION['domain'];
         $token = \Crypt::decrypt($_SESSION['userToken']);
         $urlPieces= array();
-        $urlPieces[]= "http://{$domain}/api/v1/quiz_submissions/{$quizSubmissionId}/questions";
+        $urlPieces[]= "https://{$domain}/api/v1/quiz_submissions/{$quizSubmissionId}/questions";
 
         $urlArgs[]="access_token={$token}";
 
@@ -385,7 +385,7 @@ class CanvasHelper
         $domain = $_SESSION['domain'];
         $token = \Crypt::decrypt($_SESSION['userToken']);
         $urlPieces= array();
-        $urlPieces[]= "http://{$domain}/api/v1/quiz_submissions/{$quizSubmission->quiz_id}/questions";
+        $urlPieces[]= "https://{$domain}/api/v1/quiz_submissions/{$quizSubmission->quiz_id}/questions";
 
         $urlArgs[]="access_token={$token}";
 
@@ -472,7 +472,7 @@ class CanvasHelper
 
         $urlPieces= array();
         $urlArgs = array();
-        $urlPieces[]= "http://{$domain}/api/v1/courses/{$courseId}";
+        $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
 
         $urlPieces[] = 'modules';
         $urlArgs[] = 'include[]=items';
@@ -504,7 +504,7 @@ class CanvasHelper
 
         $urlPieces= array();
         $urlArgs = array();
-        $urlPieces[]= "http://{$domain}/api/v1/courses/{$courseId}";
+        $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
 
         $urlPieces[] = "modules/{$request->getModuleId()}";
 
@@ -580,7 +580,7 @@ class CanvasHelper
 
         $urlPieces= array();
         $urlArgs = array();
-        $urlPieces[]= "http://{$domain}/api/v1/courses/{$courseId}";
+        $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
 
         $urlPieces[] = "modules/{$request->getModuleId()}";
 
@@ -653,7 +653,7 @@ class CanvasHelper
 
         $urlPieces= array();
         $urlArgs = array();
-        $urlPieces[]= "http://{$domain}/api/v1/courses/{$courseId}";
+        $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
 
 
         if($request->getModuleId())
@@ -1033,7 +1033,7 @@ class CanvasHelper
 
         $urlPieces= array();
         $urlArgs = array();
-        $urlPieces[]= "http://{$domain}/api/v1/courses/{$courseId}";
+        $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
 
 
         //MULTIPLE ASSIGNMENTS AND POTENTIALLY MULTIPLE USERS
@@ -1181,7 +1181,7 @@ class CanvasHelper
 
         $urlPieces= array();
         $urlArgs = array();
-        $urlPieces[]= "http://{$domain}/api/v1/courses/{$courseId}";
+        $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
 
         $singleRow = false;
 
@@ -1210,7 +1210,7 @@ class CanvasHelper
 
         $urlPieces= array();
         $urlArgs = array();
-        $urlPieces[]= "http://{$domain}/api/v1/courses/{$courseId}";
+        $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
 
         $singleRow = false;
         $urlPieces[] = "assignment_groups";
@@ -1283,7 +1283,7 @@ class CanvasHelper
         $domain = $_SESSION['domain'];
         $user = !is_null($userId)?$userId:$_SESSION['userID'];
 
-        $urlPieces[]= "http://{$domain}/api/v1/users/{$user}";
+        $urlPieces[]= "https://{$domain}/api/v1/users/{$user}";
         $token = \Crypt::decrypt($_SESSION['userToken']);
         $urlArgs = array();
         //Attach token
@@ -1313,7 +1313,7 @@ class CanvasHelper
         $domain = $_SESSION['domain'];
         $userId = $_SESSION['userID'];
 
-        $urlPieces[]= "http://{$domain}/api/v1/users/{$userId}/enrollments";
+        $urlPieces[]= "https://{$domain}/api/v1/users/{$userId}/enrollments";
         $token = \Crypt::decrypt($_SESSION['userToken']);
         $urlArgs = array();
         //Attach token
@@ -1358,7 +1358,7 @@ class CanvasHelper
 
         $urlPieces= array();
         //        GET /api/v1/courses/:course_id/files
-        $urlPieces[]= "http://{$domain}/api/v1/accounts/{$accountId}";
+        $urlPieces[]= "https://{$domain}/api/v1/accounts/{$accountId}";
         $token = \Crypt::decrypt($_SESSION['userToken']);
         $urlArgs = array();
         //Attach token
@@ -1884,7 +1884,7 @@ class CanvasHelper
         $courseId = $_SESSION['courseID'];
 
         $urlPieces= array();
-        $urlPieces[]= "http://{$domain}/api/v1/courses/{$courseId}";
+        $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
         return $urlPieces;
     }
 
