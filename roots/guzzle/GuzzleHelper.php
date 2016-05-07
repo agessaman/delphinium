@@ -126,7 +126,7 @@ class GuzzleHelper
         $client = new Client();
 //         try {
         $response = $client->get($url);
-
+        var_dump($response); die;
         $data = json_decode($response->getBody());
         return $data;
         // } catch (\GuzzleHttp\Exception\ClientException $e) {
