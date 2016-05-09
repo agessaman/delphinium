@@ -101,13 +101,13 @@ class Plugin extends PluginBase
                     ],
                     'assets' => [
                         'label'       => 'Assets',
-                        'icon'        => 'icon-sitemap',
+                        'icon'        => 'icon-picture-o',
                         'url'         => 'javascript:;',
                         'attributes'  => ['data-menu-item'=>'assets']
                     ],
                     'components' => [
                         'label'       => 'Components',
-                        'icon'        => 'icon-file-text-o',
+                        'icon'        => 'icon-puzzle-piece',
                         'url'         => 'javascript:;',
                         'attributes'  => ['data-menu-item'=>'components']
                     ]

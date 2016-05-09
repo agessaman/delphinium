@@ -1,10 +1,9 @@
-THIS IS THE BODY OF THE ASSETS LIST
 <?= $this->makePartial('toolbar') ?>
-
-<div class="layout-row">
+<div class="layout-row" id="asset-list-container" data-alias="<?= $this->alias ?>">
     <div class="layout-cell">
         <div class="layout-relative">
-            <?= $this->makePartial('menus', ['data' => $data]) ?>
+           <?= $this->makePartial('files', ['data'=>$data]) ?>
         </div>
     </div>
 </div>
+<input type="hidden" name="theme" value="<?= e($this->getAssetsPath()) ?>">
