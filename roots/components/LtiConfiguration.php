@@ -6,6 +6,7 @@ use Delphinium\Roots\Models\Developer as LtiConfigurations;
 use Delphinium\Roots\Models\User;
 use Delphinium\Roots\Models\UserCourse;
 use Cms\Classes\ComponentBase;
+use Cms\Classes\Theme;
 use Delphinium\Roots\Classes\Blti;
 use Delphinium\Roots\Roots;
 use Delphinium\Roots\DB\DbHelper;
@@ -309,8 +310,10 @@ class LtiConfiguration extends ComponentBase
         $visibilityOpts = $this->getVisibilityOptions();
         $visibility= $visibilityOpts[$this->property('visibility')];
         $domain = \Config::get('app.url');
-        $favicon = \Backend::skinAsset('assets/images/favicon.png');
 
+        $theme = Theme::getActiveTheme();
+        $path = $theme->getDirName();
+        $favicon = \URL::to('themes/'.$path.'/assets/images/favicon.png');
         $desc = is_null($this->page->description)?'':$this->page->description;
 
         $widthXML='';
