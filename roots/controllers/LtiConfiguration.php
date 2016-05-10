@@ -40,7 +40,7 @@ class LtiConfiguration extends Controller {
         parent::__construct();
         BackendMenu::setContext('Delphinium.Greenhouse', 'greenhouse', 'greenhouse');
     }
-    
+
     /**
      * Deleted checked configuration instances.
      */
