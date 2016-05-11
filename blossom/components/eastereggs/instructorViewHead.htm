@@ -37,10 +37,10 @@
       var eggs_div = document.getElementById('eggs');
       var html = "<p>First click in the center of the page, then...</p>";
       for (var i = 0; i < eggs.length; i++) {
-        if(current_grade >= config[eggs[i]]){
-          html+= '<div id=' + eggs[i] + ' class="egg"><p>';
-            html += '<i class="icon-' + eggsIcons[i] + '" style="margin-right:10px;"></i>';
-            html += '<strong>' + config[eggs[i]] + "</strong> " + comands[i] + '</p>';
+        if(current_grade >= eggs[i].value){
+          html+= '<div id=' + eggs[i].name + ' class="egg"><p>';
+            html += '<i class="icon-' + eggs[i].icon + '" style="margin-right:10px;"></i>';
+            html += '<strong>' + eggs[i].value + "</strong> " + eggs[i].comand + '</p>';
           html += '</div>';
         }
       }
