@@ -6,6 +6,7 @@ use Delphinium\Roots\Models\Developer as LtiConfigurations;
 use Delphinium\Roots\Models\User;
 use Delphinium\Roots\Models\UserCourse;
 use Cms\Classes\ComponentBase;
+use Cms\Classes\Theme;
 use Delphinium\Roots\Classes\Blti;
 use Delphinium\Roots\Roots;
 use Delphinium\Roots\DB\DbHelper;
@@ -61,8 +62,7 @@ class LtiConfiguration extends ComponentBase
                     }
             }
         } else {
-            $vars = $_POST;
-            $this->returnXML($vars);
+            $this->returnXML();
         }
     }
 
@@ -296,17 +296,8 @@ class LtiConfiguration extends ComponentBase
         exit;
     }
 
-    function returnXML($vars)
+    function returnXML()
     {
-        // $canvasDomain = $vars['custom_canvas_api_domain'];
-        // $courseId = $vars['custom_canvas_course_id'];
-        // $userId = $vars['custom_canvas_user_id'];
-        // $loginId = $vars['custom_canvas_user_login_id'];
-        // $email = $vars['custom_lis_person_contact_email_primary'];
-        // $userImage = $vars['custom_user_image'];
-        // $offeringSourcedId = $vars['custom_lis_course_offering_sourcedid'];
-        // $personSourcedId = $vars['custom_lis_person_sourcedid'];
-
         $baseUrlWithoutSlash = rtrim(\Config::get('app.url'), '/');
         $url = $baseUrlWithoutSlash . $this->page->url;
         $typeOpts = $this->getTypeOptions();
@@ -319,8 +310,10 @@ class LtiConfiguration extends ComponentBase
         $visibilityOpts = $this->getVisibilityOptions();
         $visibility= $visibilityOpts[$this->property('visibility')];
         $domain = \Config::get('app.url');
-        $favicon = \Backend::skinAsset('assets/images/favicon.png');
 
+        $theme = Theme::getActiveTheme();
+        $path = $theme->getDirName();
+        $favicon = \URL::to('themes/'.$path.'/assets/images/favicon.png');
         $desc = is_null($this->page->description)?'':$this->page->description;
 
         $widthXML='';
@@ -379,6 +372,7 @@ XML;
 
         $string = <<<XML
 <?xml version='1.0' encoding='UTF-8'?>
+<!--If you would like to run this page outside of Canvas for testing purposes please add an instance of the dev component instead of the LTI Configuration component-->
 <cartridge_basiclti_link xmlns='http://www.imsglobal.org/xsd/imslticc_v1p0'
     xmlns:blti = 'http://www.imsglobal.org/xsd/imsbasiclti_v1p0'
     xmlns:lticm ='http://www.imsglobal.org/xsd/imslticm_v1p0'

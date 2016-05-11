@@ -110,12 +110,12 @@ class TestRoots extends ComponentBase
 //        $this->testGetQuiz();
 //        $this->testGetQuizQuestions();
 //        $this->testGetAllQuizzes();
-        $this->testGetPages();
+//        $this->testGetPages();
 //        $this->testQuizTakingWorkflow();
 //        $this->testIsQuestionAnswered();
 //        $this->testSubmitQuiz();
 //        $this->getQuizSubmissionQuestions();
-        $this->getModuleTree();
+//        $this->getModuleTree();
     }
 
     private function testBasicModulesRequest()
