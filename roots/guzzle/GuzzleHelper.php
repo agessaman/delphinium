@@ -125,6 +125,7 @@ class GuzzleHelper
     {
         $client = new Client();
          try {
+	$client->setDefaultOption('verify', false);
         $response = $client->get($url);
 
         $data = json_decode($response->getBody());

@@ -147,7 +147,7 @@ class LtiConfiguration extends ComponentBase {
                     $domainWithSlash = rtrim($_SESSION['domain'], '/') . '/';
 
                     $redirectUri = "{$baseUrlWithSlash}saveUserInfo?lti={$this->property('ltiInstance')}";
-                    $url = "http://{$domainWithSlash}login/oauth2/auth?client_id={$clientId}&response_type=code&redirect_uri={$redirectUri}";
+                    $url = "https://{$domainWithSlash}login/oauth2/auth?client_id={$clientId}&response_type=code&redirect_uri={$redirectUri}";
                     $this->redirect($url);
                 } else {
                     echo ("A(n) {$approverRole} must authorize this course. Please contact your instructor.");
