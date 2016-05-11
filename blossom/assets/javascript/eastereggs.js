@@ -262,9 +262,16 @@ $(document).keydown(function(e) {
       if (fireworks[keys.F] && fireworks[keys.I]) {
         if(!fireworks["loaded"]){
           fireworks["loaded"] = true;
-          //var s = document.createElement('script');
-          //s.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/jquery.raptorize.1.0.js");
-          //document.body.appendChild(s);
+          var s = document.createElement('script');
+          s.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/fireworks.js");
+          document.body.appendChild(s);
+          var e =document.createElement("link");
+          e.setAttribute("rel", "stylesheet");
+          e.setAttribute("type", "text/css");
+          e.setAttribute("href", path + "/plugins/delphinium/blossom/assets/css/fireworks.css");
+          document.body.appendChild(e);
+          document.write('<div style="background:url(' + path + 'plugins/delphinium/blossom/assets/images/background.jpg) repeat-x;position:absolute;left:0;top:'+($(window).height()-193)+'px;width:100%;height:200px;"></div>');
+          document.write('<canvas id="cv" width="'+$(window).width()+'" height="'+($(window).height()-100)+'" style="position:absolute;left:0;top:0;background-color:black;"></canvas>');
         }
       }
     }
