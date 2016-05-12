@@ -61,7 +61,6 @@ class EasterEggs extends ComponentBase
             $this->addCss('/modules/system/assets/ui/storm.less', 'core');
             $this->addCss("https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css");
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/bootstrap.min.js");
-            $this->addCss("/plugins/delphinium/blossom/assets/css/main.css");
             $this->addCss("/plugins/delphinium/blossom/assets/css/eastereggs.css");
             
 
