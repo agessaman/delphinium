@@ -22,9 +22,9 @@
 <div class="stuff">
   <!-- Instructor View with Settings cog -->
   <div style="position:relative; z-index:950;">
-      <a id="popinfo" title="Info" tabindex="0" role="button" data-trigger="focus" data-container="body" data-toggle="popover" data-placement="left" data-content="And here's some amazing content. It's very engaging. Right?" style="position:absolute; top:0; right:0px;">
-          <i class="icon-question"></i>
-      </a>
+      <a id="popinfo" title="Easter Eggs" tabindex="0" role="button" data-trigger="focus" data-trigger-condition="" data-trigger-action="" data-container="body" data-toggle="popover" data-placement="left" data-content="Earn points to unlock hidden stuff!" style="position:absolute; top:0; right:0px;">
+        <i class="icon-question"></i>
+    </a>
     <div id="cog" data-toggle="modal" href="#content-configuration" style="position:absolute; top:0; right:10px;">
       <a data-toggle="tooltip" title="Settings" data-placement="bottom"><i class="icon-cog"></i></a>
       </div>
@@ -37,10 +37,10 @@
       var eggs_div = document.getElementById('eggs');
       var html = "<p>First click in the center of the page, then...</p>";
       for (var i = 0; i < eggs.length; i++) {
-        if(current_grade >= config[eggs[i]]){
-          html+= '<div id=' + eggs[i] + ' class="egg"><p>';
-            html += '<i class="icon-' + eggsIcons[i] + '" style="margin-right:10px;"></i>';
-            html += '<strong>' + config[eggs[i]] + "</strong> " + comands[i] + '</p>';
+        if(current_grade >= eggs[i].value){
+          html+= '<div id=' + eggs[i].name + ' class="egg"><p>';
+            html += '<i class="icon-' + eggs[i].icon + '" style="margin-right:10px;"></i>';
+            html += '<strong>' + eggs[i].value + "</strong> " + eggs[i].comand + '</p>';
           html += '</div>';
         }
       }
@@ -68,8 +68,8 @@
                       <form role="form" id="updateForm"
                         data-request="{{ __SELF__ }}::onUpdate"
                         data-request-success="$el.hide();completed(data);">
-                          {{ form.update(recordId)|raw }}
-                          {{ form.formRender()|raw }}
+                          {{ Form.update(RecordId)|raw }}
+                          {{ Form.formRender()|raw }}
                         <div class="form-group">
                            <button class="btn btn-primary btn-block btn-md" type="submit" value="register">Update Component</button>
                         </div>
@@ -84,10 +84,8 @@
           </div>
       </div>
   </div>
-</div>
-
-<script>
-    $('#popinfo').popover();// activate info
+  <script>
+  $('#popinfo').popover();// activate info
     /* set id,course,copy in the POST if they are hidden in fields.yaml
         Add hidden input fields so they will transfer to onUpdate
         fields.yaml is set to hidden: true do not appear in the form at all
@@ -106,3 +104,4 @@
   }
   //console.log('instance: id='+config.id,config.name,config.custom,config.course_id,config.copy_id);
 </script>
+</div>

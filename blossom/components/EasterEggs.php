@@ -80,6 +80,8 @@ class EasterEggs extends ComponentBase
                     $config->ponies = 0;
                     $config->my_little_pony = 0;
                     $config->snow = 0;
+                    $config->raptor = 0;
+                    $config->fireworks = 0;
                     // add your fields
                     //$config->size = '20%';
                     $config->save();// save the new record
@@ -129,13 +131,20 @@ class EasterEggs extends ComponentBase
                 $formController->create('frontend');
                 
                 //this is the primary key of the record you want to update
-                $this->page['recordId'] = $config->id;
+                $this->page['RecordId'] = $config->id;
                 // Append the formController to the page
-                $this->page['form'] = $formController;
+                $this->page['Form'] = $formController;
                 
                 // Append Instructions page
                 $instructions = $formController->makePartial('instructions');
                 $this->page['instructions'] = $instructions;
+
+                //$this->addJs("/plugins/delphinium/blossom/assets/javascript/popover.js");
+
+                //$this->addCss('/modules/system/assets/ui/storm.css', 'core');
+                //$this->addJs('/modules/system/assets/ui/storm-min.js', 'core');
+                //$this->addCss('/modules/system/assets/ui/storm.less', 'core');
+
                 
                 //code specific to instructor.htm goes here
             }
@@ -196,6 +205,8 @@ class EasterEggs extends ComponentBase
         $config->ponies = $data['ponies'];
         $config->my_little_pony = $data['my_little_pony'];
         $config->snow = $data['snow'];
+        $config->raptor = $data['raptor'];
+        $config->fireworks = $data['fireworks'];
         $config->save();// update original record 
         return json_encode($config);// back to instructor view
     }

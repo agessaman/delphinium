@@ -27,13 +27,26 @@
 	<h4>Using the component:</h4>
     		
 	<div class="eggs">
-		<p> Press "H" and "A" at the same time to do the Harlem Shake</p>
-		<p> Press "R" and "I" to ripple the page</p>
-		<p> Press "A" and "S" to play asteroids</p>
-		<p> Press "K" and "A" to play katamari</p>
-		<p> Press "B" and "O" to play bombs</p>
-		<p> Press "P" and "O" to play ponies</p>
-		<p> Press "M" and "Y" to play ponies</p>
+    <p>First click in the center of the page, then...</p>
+
+    <p>Press "h" and "a" at the same time, make sure your sound is on</p>
+
+    <p>Press "r" and "i" at the same time and move the mouse</p>
+
+    <p>Press "a" and "s" at the same time, space to shoot, arrow keys to move</p>
+
+    <p>Press "k" and "a" at the same time, follow instructions</p>
+
+    <p>Press "b" and "o" at the same time, click mouse in text to drop them</p>
+
+    <p>Press "p" and "o" at the same time, space to re-spawn, arrow keys to move</p>
+
+    <p>Press "m" and "y" at the same time, watch and enjoy</p>
+
+    <p>Press "s" and "n" at the same time, watch and enjoy, follows mouse, break lights</p>
+
+    <p>Press "r" and "p" at the same time, make sure your sound is on</p>
+
 	</div>
 </div>
 <iframe width="560" height="315" src="https://www.youtube.com/embed/3QJaRLwFDDQ?start=27" frameborder="0" allowfullscreen></iframe>
@@ -43,11 +56,46 @@
 <img id="image3" src="" width="750" title="What it looks like" alt="bombs"/>
 <img id="image4" src="" width="750" title="What it looks like" alt="ponies"/>
 <img id="image5" src="" width="750" title="What it looks like" alt="my little pony"/>
-<script>
-  $('#image0').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/ripples.png');
-  $('#image1').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/asteroids.png');
-  $('#image2').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/katamari.png');
-  $('#image3').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/bomb.png');
-  $('#image4').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/pony.png');
-  $('#image5').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/mylittlepony.png');
-</script>
+
+<style>
+  #image0{
+    background-image: url('<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/ripples.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+  #image1{
+    width: 100%;
+    height: 72px;
+    background-image: url('<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/asteroids.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+  #image2{
+    width: 100%;
+    height: 75px;
+    background-image: url('<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/katamari.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+   }
+  #image3{
+    width: 100%;
+    height: 90px;
+    background-image: url('<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/bomb.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+  #image4{
+    width: 100%;
+    height: 90px;
+    background-image: url('<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/pony.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+  #image5{
+    width: 100%;
+    height: 90px;
+    background-image: url('<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/mylittlepony.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+</style>
