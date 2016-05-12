@@ -214,6 +214,7 @@ class EasterEggs extends ComponentBase
         $config->snow = $data['snow'];
         $config->raptor = $data['raptor'];
         $config->fireworks = $data['fireworks'];
+        $config->fireworks_string = $data['fireworks_string'];
         $config->save();
         return json_encode($config);
     }

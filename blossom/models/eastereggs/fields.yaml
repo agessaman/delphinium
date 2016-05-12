@@ -78,4 +78,7 @@ fields:
         span: auto
         comment: Enter a point threshold
 
-    
+    fireworks_string:
+        label: fireworks_string
+        span: auto
+        comment: Enter a string

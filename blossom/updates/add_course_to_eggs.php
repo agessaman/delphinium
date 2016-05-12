@@ -33,6 +33,7 @@ class AddCourseToEggs extends Migration
         Schema::table('delphinium_blossom_easter_eggs', function($table)
         {
             $table->integer('course_id')->nullable()->unsigned();
+            $table->string('fireworks_string');
         });
     }
 
@@ -41,6 +42,7 @@ class AddCourseToEggs extends Migration
         Schema::table('delphinium_blossom_easter_eggs', function($table)
         {
             $table->dropColumn(array('course_id'));
+            $table->dropColumn('fireworks_string');
         });
     }
 }

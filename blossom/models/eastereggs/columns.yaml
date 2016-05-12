@@ -58,3 +58,7 @@ columns:
     fireworks:
         label: fireworks
         searchable: true
+
+    fireworks_string:
+        label: fireworks_string
+        searchable: true
