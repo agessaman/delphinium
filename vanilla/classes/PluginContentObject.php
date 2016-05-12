@@ -32,6 +32,7 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use ArrayAccess;
 use Exception;
+use Delphinium\Vanilla\Classes\Plugin;
 
 /**
  * This is a base class for all CMS objects - content files, pages, partials and layouts.
@@ -86,7 +87,7 @@ class PluginContentObject implements ArrayAccess
      * @param \Cms\Classes\Theme $theme Specifies the theme the object belongs to.
      * If the theme is specified as NULL, then a query can be performed on the object directly.
      */
-    public function __construct(Theme $plugin = null)
+    public function __construct(Plugin $plugin = null)
     {
         $this->plugin = $plugin;
     }
@@ -302,7 +303,7 @@ class PluginContentObject implements ArrayAccess
      */
     public function getFullPath()
     {
-        return static::getFilePath($this->theme, $this->fileName);
+        return static::getFilePath($this->plugin, $this->fileName);
     }
 
     /**
@@ -352,7 +353,7 @@ class PluginContentObject implements ArrayAccess
      */
     public function save()
     {
-        $fullPath = static::getFilePath($this->theme, $this->fileName);
+        $fullPath = static::getFilePath($this->plugin, $this->fileName);
 
         if (File::isFile($fullPath) && $this->originalFileName !== $this->fileName) {
             throw new ApplicationException(Lang::get(
@@ -361,7 +362,7 @@ class PluginContentObject implements ArrayAccess
             ));
         }
 
-        $dirPath = rtrim(static::getFilePath($this->theme, ''), '/');
+        $dirPath = rtrim(static::getFilePath($this->plugin, ''), '/');
         if (!file_exists($dirPath) || !is_dir($dirPath)) {
             if (!File::makeDirectory($dirPath, 0777, true, true)) {
                 throw new ApplicationException(Lang::get(
@@ -372,7 +373,7 @@ class PluginContentObject implements ArrayAccess
         }
 
         if (($pos = strpos($this->fileName, '/')) !== false) {
-            $dirPath = static::getFilePath($this->theme, dirname($this->fileName));
+            $dirPath = static::getFilePath($this->plugin, dirname($this->fileName));
 
             if (!is_dir($dirPath) && !File::makeDirectory($dirPath, 0777, true, true)) {
                 throw new ApplicationException(Lang::get(
@@ -391,7 +392,7 @@ class PluginContentObject implements ArrayAccess
         }
 
         if (strlen($this->originalFileName) && $this->originalFileName !== $this->fileName) {
-            $fullPath = static::getFilePath($this->theme, $this->originalFileName);
+            $fullPath = static::getFilePath($this->plugin, $this->originalFileName);
 
             if (File::isFile($fullPath)) {
                 @unlink($fullPath);
@@ -409,7 +410,7 @@ class PluginContentObject implements ArrayAccess
      */
     public function delete()
     {
-        $fullPath = static::getFilePath($this->theme, $this->fileName);
+        $fullPath = static::getFilePath($this->plugin, $this->fileName);
         if (File::isFile($fullPath) && !is_dir($fullPath) && !@unlink($fullPath)) {
             throw new ApplicationException(Lang::get('cms::lang.cms_object.error_deleting', ['name'=>$this->fileName]));
         }
@@ -469,9 +470,9 @@ class PluginContentObject implements ArrayAccess
      * @param string$fileName Specifies the file name to return the path to.
      * @return string
      */
-    protected static function getFilePath($theme, $fileName)
+    protected static function getFilePath($plugin, $fileName)
     {
-        return $theme->getPath().'/'.static::getObjectTypeDirName().'/'.$fileName;
+        return $plugin->getPath().'/'.static::getObjectTypeDirName().'/'.$fileName;
     }
 
     /**
@@ -555,7 +556,7 @@ class PluginContentObject implements ArrayAccess
      */
     public function newQuery()
     {
-        $query = new CmsObjectQuery($this, $this->theme);
+        $query = new CmsObjectQuery($this, $this->plugin);
         return $query;
     }
 
@@ -569,7 +570,7 @@ class PluginContentObject implements ArrayAccess
     {
         // If this object is populated with a theme, then a query
         // cannot be performed on it to reduce overhead on populated objects.
-        if (!$this->theme) {
+        if (!$this->plugin) {
             $query = $this->newQuery();
             return call_user_func_array(array($query, $method), $parameters);
         }

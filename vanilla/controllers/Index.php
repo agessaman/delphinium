@@ -20,7 +20,9 @@
  * You may not distribute any version of this software, modified or otherwise
  */
 
+use Flash;
 use File;
+use Event;
 use Lang;
 use Cache;
 use Config;
@@ -32,7 +34,7 @@ use Delphinium\Vanilla\Widgets\Delphiniumize as Widget;
 use Cms\Classes\Theme;
 use ApplicationException;
 //use Delphinium\Vanilla\Widgets\ComponentsList;
-use Delphinium\Vanilla\Widgets\AssetsList;
+use Delphinium\Vanilla\Widgets\AssetList;
 use Delphinium\Vanilla\Classes\Plugin;
 use Backend\FormWidgets\CodeEditor;
 use Backend\Classes\FormField;
@@ -63,7 +65,7 @@ class Index extends Controller
         $this->plugin = Plugin::load($destinationPath);
         try {
             new ComponentList($this, 'componentList');
-            new AssetsList($this, 'assetsList', $destinationPath);
+            new AssetList($this, 'assetList', $destinationPath);
             new Widget($this, 'delphiniumize');
         }
         catch (Exception $ex) {
@@ -153,12 +155,19 @@ class Index extends Controller
 
     protected function bindFormWidgetToController()
     {
-        $alias = Request::input('formWidgetAlias');
-        $type = Request::input('objectType');
-        $object = $this->loadObject($type, Request::input('objectPath'));
 
-        $widget = $this->makeObjectFormWidget($type, $object, $alias);
+        $alias = Request::input('formWidgetAlias');
+        $type = Request::input('templateType');
+        $object = $this->loadTemplate($type, Request::input('templatePath'));
+
+        $widget = $this->makeTemplateFormWidget($type, $object, $alias);
         $widget->bindToController();
+//        $alias = Request::input('formWidgetAlias');
+//        $type = Request::input('objectType');
+//        $object = $this->loadObject($type, Request::input('objectPath'));
+//
+//        $widget = $this->makeObjectFormWidget($type, $object, $alias);
+//        $widget->bindToController();
     }
 
     //from builder
@@ -256,7 +265,6 @@ class Index extends Controller
 
         $template->fill($templateData);
         $template->save();
-
         /*
          * Extensibility
          */
@@ -273,7 +281,7 @@ class Index extends Controller
 
         if ($type == 'page') {
             $result['pageUrl'] = URL::to($template->url);
-            $router = new Router($this->theme);
+            $router = new Router($this->plugin);
             $router->clearCache();
             CmsCompoundObject::clearCache($this->theme);
         }
@@ -292,7 +300,7 @@ class Index extends Controller
         $template = $this->createTemplate($type);
 
         if ($type == 'asset') {
-            $template->setInitialPath($this->widget->assetList->getCurrentRelativePath());
+            $template->setInitialPath($this->widget->assetsList->getCurrentRelativePath());
         }
 
         $widget = $this->makeTemplateFormWidget($type, $template);
@@ -363,7 +371,7 @@ class Index extends Controller
     {
         $this->validateRequestTheme();
 
-        $page = new Page($this->theme);
+        $page = new Page($this->plugin);
         return [
             'layouts' => $page->getLayoutOptions()
         ];
@@ -404,19 +412,19 @@ class Index extends Controller
     protected function validateRequestTheme()
     {
         return;
-//        if ($this->theme->getDirName() != Request::input('theme')) {
-//            throw new ApplicationException(trans('cms::lang.theme.edit.not_match'));
-//        }
+        if ($this->plugin->getDirName() != Request::input('plugin')) {
+            throw new ApplicationException(trans('cms::lang.theme.edit.not_match'));
+        }
     }
 
     protected function resolveTypeClassName($type)
     {
         $types = [
-            'page'    => '\Cms\Classes\Page',
-            'partial' => '\Cms\Classes\Partial',
-            'layout'  => '\Cms\Classes\Layout',
-            'content' => '\Cms\Classes\Content',
-            'asset'   => '\Cms\Classes\Asset'
+            'page'    => '\Delphinium\Vanilla\Classes\Page',
+            'partial' => '\Delphinium\Vanilla\Classes\Partial',
+            'layout'  => '\Delphinium\Vanilla\Classes\Layout',
+            'content' => '\Delphinium\Vanilla\Classes\Content',
+            'asset'   => '\Delphinium\Vanilla\Classes\Asset'
         ];
 
         if (!array_key_exists($type, $types)) {
@@ -432,9 +440,9 @@ class Index extends Controller
 //        echo $type;
 //        echo $path;
 //        echo json_encode($class);
-//        echo json_encode($this->theme);
+//        echo json_encode($this->plugin);
 //        echo "-----";
-        $template = call_user_func(array($class, 'load'), $this->plugin, $path);
+//        $template = call_user_func(array($class, 'load'), $this->plugin, $path);
 //        echo json_encode($template);
 //        echo "end";
 
@@ -452,7 +460,7 @@ class Index extends Controller
     {
         $class = $this->resolveTypeClassName($type);
 
-        if (!($template = new $class($this->theme))) {
+        if (!($template = new $class($this->plugin))) {
             throw new ApplicationException(trans('cms::lang.template.not_found'));
         }
 
@@ -503,6 +511,62 @@ class Index extends Controller
         $widget = $this->makeWidget('Backend\Widgets\Form', $widgetConfig);
 
         return $widget;
+    }
+
+    protected function upgradeSettings($settings)
+    {
+        /*
+         * Handle component usage
+         */
+        $componentProperties = post('component_properties');
+        $componentNames = post('component_names');
+        $componentAliases = post('component_aliases');
+
+        if ($componentProperties !== null) {
+            if ($componentNames === null || $componentAliases === null) {
+                throw new ApplicationException(trans('cms::lang.component.invalid_request'));
+            }
+
+            $count = count($componentProperties);
+            if (count($componentNames) != $count || count($componentAliases) != $count) {
+                throw new ApplicationException(trans('cms::lang.component.invalid_request'));
+            }
+
+            for ($index = 0; $index < $count; $index++) {
+                $componentName = $componentNames[$index];
+                $componentAlias = $componentAliases[$index];
+
+                $section = $componentName;
+                if ($componentAlias != $componentName) {
+                    $section .= ' '.$componentAlias;
+                }
+
+                $properties = json_decode($componentProperties[$index], true);
+                unset($properties['oc.alias']);
+                unset($properties['inspectorProperty']);
+                unset($properties['inspectorClassName']);
+                $settings[$section] = $properties;
+            }
+        }
+
+        /*
+         * Handle view bag
+         */
+        $viewBag = post('viewBag');
+        if ($viewBag !== null) {
+            $settings['viewBag'] = $viewBag;
+        }
+
+        /*
+         * Extensibility
+         */
+        $dataHolder = (object)[
+            'settings' => $settings
+        ];
+
+        Event::fire('cms.template.processSettingsBeforeSave', [$this, $dataHolder]);
+
+        return $dataHolder->settings;
     }
 
     protected function getFilePathmakeTemplateFormWidget($type, $template, $alias = null)

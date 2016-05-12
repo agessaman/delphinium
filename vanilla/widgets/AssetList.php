@@ -43,7 +43,7 @@ use Delphinium\Vanilla\Classes\Plugin;
  * @package rainlab\pages
  * @author Alexey Bobkov, Samuel Georges
  */
-class AssetsList extends WidgetBase
+class AssetList extends WidgetBase
 {
     use \Backend\Traits\SearchableWidget;
     use \Backend\Traits\CollapsableWidget;
