@@ -89,7 +89,7 @@ FireworkDisplay = {
         this.canvaswidth = $(window).width();
         this.canvasheight = $(window).height();
 
-        var text = "You are Awesome!";
+        var text = config.fireworks_string;
 
         var totalHeightOffset = 0;
         var totalWidthOffset = new Array();
