@@ -176,7 +176,7 @@ a[role=tab] { font-size: 1.1em; }
     color: #000;
 }
 .prereqnote {
-    width: 80%;
+    width: 100%;
     float: left;
     font-size: 0.9em;
     color: #000;

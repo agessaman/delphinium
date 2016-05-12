@@ -51,14 +51,14 @@
     */
     if(role == 'Learner') {
 		/* set up the popover content text */
-		$('#popinfo').attr("data-content","Click a bar to display details.");
+		$('#popinfo').attr("data-content","Click a bar to view competency details.");
 		
         filterData();
         showCompetencies();
 		
     } else {
 		/* set up the popover text for instructor */
-		$('#popinfo').attr("data-content","Instructor view does not contain submissions. Click a bar to display details.");
+		$('#popinfo').attr("data-content","Instructor view does not contain submissions. Click a bar to view competency details.");
 	
 		/* set id,course in the POST they are not editable in the form
 			Add hidden input fields so they will transfer to onUpdate
@@ -405,7 +405,7 @@
                     .attr('class','comp')
                     .attr('id', function(d, i) { return i; })
                     .attr('data-name', function(d) { return data[i].name; })
-                    .attr('data-value', function(d) { return data[i].amount+' points.<br/>'+data[i].total+' possible'; })
+                    .attr('data-value', function(d) { return data[i].amount+' pts. earned,<br/>'+data[i].total+' pts. possible'; })
                     .on('mouseover', function (d) {
                         //console.log(d3.event.currentTarget.id);//
                         var text = $(d3.event.currentTarget).attr('data-value');
@@ -506,9 +506,9 @@
                     content += ' Locked, not available yet';
                 } else {
                     if(submitted[0].score == null) {
-                        content += ' Available to earn '+assignment[0].points_possible+' additional points';
+                        content += '- Available to earn '+assignment[0].points_possible+' additional points';
                     } else {
-                        content += ' Scored '+submitted[0].score;
+                        content += '- Scored '+submitted[0].score;
                         content += ' out of '+assignment[0].points_possible+' points possible';
                     }
                 }
@@ -521,7 +521,7 @@
                     content += '<div class="alert alert-success available">';
                     content += '<div class="link" data-url="'+assignment[0].html_url+'">'+assignment[0].name+'</div>';
                     //content += '<div class="link" data-url="'+assignment[0].html_url+'?module_item_id='+assignment[0].module_item_id+'">'+assignment[0].name+'</div>';
-                    content += ' Worth '+assignment[0].points_possible+' points.';
+                    content += '- Worth '+assignment[0].points_possible+' points.';
                     content += ' ( Tags: '+assignment[0].tags+' )';
                     content += '</div>';
                     //TEST see which one works student or instructor view
