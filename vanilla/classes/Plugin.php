@@ -35,12 +35,10 @@ use Cms\Models\ThemeData;
 use DirectoryIterator;
 
 /**
- * This class represents the CMS theme.
- * CMS theme is a directory that contains all CMS objects - pages, layouts, partials and asset files..
- * The theme parameters are specified in the theme.ini file in the theme root directory.
+ * This class represents the Plugin whose assets/content users will be editing in the CodeEditor widget.
  *
- * @package october\cms
- * @author Alexey Bobkov, Samuel Georges
+ * @package Delphinium\Vanilla
+ * @author Damaris Zarco
  */
 class Plugin
 {
@@ -57,15 +55,18 @@ class Plugin
     /**
      * @var mixed Active theme cache in memory
      */
-    protected static $activeThemeCache = false;
+    protected static $activePluginCache = false;
 
     /**
      * @var mixed Edit theme cache in memory
      */
-    protected static $editThemeCache = false;
+    protected static $editPluginCache = false;
 
-    const ACTIVE_KEY = 'cms::theme.active';
-    const EDIT_KEY = 'cms::theme.edit';
+//    const ACTIVE_KEY = 'cms::theme.active';
+//    const EDIT_KEY = 'cms::theme.edit';
+
+    const ACTIVE_KEY = 'vanilla::plugin.active';
+    const EDIT_KEY = 'vanilla::plugin.edit';
 
     /**
      * Loads the theme.
@@ -89,7 +90,7 @@ class Plugin
             $dirName = $this->getDirName();
         }
 
-        return themes_path().'/'.$dirName;
+        return base_path().'/'.$dirName;
     }
 
     /**

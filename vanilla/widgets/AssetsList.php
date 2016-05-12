@@ -36,6 +36,7 @@ use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
 use DirectoryIterator;
 use Exception;
+use Delphinium\Vanilla\Classes\Plugin;
 /**
  * Static page list widget.
  *
@@ -48,7 +49,7 @@ class AssetsList extends WidgetBase
     use \Backend\Traits\CollapsableWidget;
     use \Backend\Traits\SelectableWidget;
 
-    protected $theme;
+    protected $plugin;
 
     protected $pluginDir;
     protected $relativePluginDir;
@@ -57,11 +58,11 @@ class AssetsList extends WidgetBase
     /**
      * @var string Message to display when the Delete button is clicked.
      */
-    public $deleteConfirmation = 'rainlab.pages::lang.page.delete_confirmation';
+    public $deleteConfirmation = 'rainlab.pages::lang.page.delete_confirmation';//TODO: implement languages in delphinium\vanilla
 
     public $noRecordsMessage = 'No assets found';
 
-    public $addSubpageLabel = 'rainlab.pages::lang.page.add_subpage';
+    public $addSubpageLabel = 'rainlab.pages::lang.page.add_subpage';//TODO: implement languages in delphinium\vanilla
 
     protected $selectedFilesCache = false;
 
@@ -94,8 +95,10 @@ class AssetsList extends WidgetBase
         $this->relativePluginDir =$pluginDir;
         $this->pluginDir =base_path().$pluginDir;
         $this->alias = $alias;
-        $this->theme = Theme::getEditTheme();
-        $this->dataIdPrefix = 'page-'.$this->theme->getDirName();
+
+        $this->plugin = Plugin::load($pluginDir);
+//        $this->plugin = Theme::getEditTheme();
+        $this->dataIdPrefix = 'page-'.$this->plugin->getDirName();
         $this->addSubpageLabel = trans($this->addSubpageLabel);
 
         parent::__construct($controller, []);
@@ -449,7 +452,7 @@ class AssetsList extends WidgetBase
             throw new SystemException('Invalid structure data posted.');
         }
 
-        $pageList = new StaticPageList($this->theme);
+        $pageList = new StaticPageList($this->plugin);
         $pageList->updateStructure($structure);
     }
 //
@@ -504,7 +507,7 @@ class AssetsList extends WidgetBase
 
     protected function getThemeFileUrl($path)
     {
-        return URL::to('themes/'.$this->theme->getDirName().'/assets'.$path);
+        return URL::to('themes/'.$this->plugin->getDirName().'/assets'.$path);
     }
 
     protected function getAssetFileUrl($path)
@@ -830,7 +833,7 @@ class AssetsList extends WidgetBase
 
     protected function getThemeSessionKey($prefix)
     {
-        return $prefix.$this->theme->getDirName();
+        return $prefix.$this->plugin->getDirName();
     }
 
     protected function updateList()

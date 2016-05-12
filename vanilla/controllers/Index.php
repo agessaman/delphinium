@@ -33,6 +33,7 @@ use Cms\Classes\Theme;
 use ApplicationException;
 //use Delphinium\Vanilla\Widgets\ComponentsList;
 use Delphinium\Vanilla\Widgets\AssetsList;
+use Delphinium\Vanilla\Classes\Plugin;
 use Backend\FormWidgets\CodeEditor;
 use Backend\Classes\FormField;
 use Cms\Widgets\ComponentList;
@@ -47,7 +48,7 @@ class Index extends Controller
 {
     use \Backend\Traits\InspectableContainer;
 
-    protected $theme;
+    protected $plugin;
 
 
     public function __construct()
@@ -56,14 +57,10 @@ class Index extends Controller
 
         BackendMenu::setContext('Delphinium.Vanilla', 'vanilla', 'vanilla');
 
-        if (!($theme = Theme::getEditTheme())) {
-//            throw new ApplicationException(Lang::get('cms::lang.theme.edit.not_found'));
-        }
-
-        $this->theme = $theme;
         //plugins directory
         $destinationPath = '/plugins/delphinium/blossom';
 
+        $this->plugin = Plugin::load($destinationPath);
         try {
             new ComponentList($this, 'componentList');
             new AssetsList($this, 'assetsList', $destinationPath);
@@ -74,9 +71,9 @@ class Index extends Controller
         }
 
         return;
-        new Widget($this, 'delphiniumize');
-        new ComponentList($this, 'componentsList');
-        new AssetsList($this, 'assetsList', $this->getFilesInPlugin($theme));
+//        new Widget($this, 'delphiniumize');
+//        new ComponentList($this, 'componentsList');
+//        new AssetsList($this, 'assetsList', $this->getFilesInPlugin($theme));
 
 
 
@@ -219,7 +216,7 @@ class Index extends Controller
             'tab'      => $this->makePartial('form_page', [
                 'form'          => $widget,
                 'templateType'  => $type,
-                'templateTheme' => $this->theme->getDirName(),
+                'templateTheme' => $this->plugin->getDirName(),
                 'templateMtime' => $template->mtime
             ])
         ];
@@ -307,7 +304,7 @@ class Index extends Controller
             'tab'   => $this->makePartial('form_page', [
                 'form'          => $widget,
                 'templateType'  => $type,
-                'templateTheme' => $this->theme->getDirName(),
+                'templateTheme' => $this->plugin->getDirName(),
                 'templateMtime' => null
             ])
         ];
@@ -437,12 +434,12 @@ class Index extends Controller
 //        echo json_encode($class);
 //        echo json_encode($this->theme);
 //        echo "-----";
-//        $template = call_user_func(array($class, 'load'), $this->theme, $path);
+        $template = call_user_func(array($class, 'load'), $this->plugin, $path);
 //        echo json_encode($template);
 //        echo "end";
 
 
-        if (!($template = call_user_func(array($class, 'load'), $this->theme, $path))) {
+        if (!($template = call_user_func(array($class, 'load'), $this->plugin, $path))) {
             throw new ApplicationException(trans('cms::lang.template.not_found'));
         }
 

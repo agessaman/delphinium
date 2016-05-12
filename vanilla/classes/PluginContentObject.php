@@ -169,12 +169,12 @@ class PluginContentObject implements ArrayAccess
     /**
      * Loads the object from a file.
      * This method is used in the CMS back-end. It doesn't use any caching.
-     * @param \Cms\Classes\Theme $theme Specifies the theme the object belongs to.
+     * @param \Cms\Classes\Theme $plugin Specifies the theme the object belongs to.
      * @param string $fileName Specifies the file name, with the extension.
      * The file name can contain only alphanumeric symbols, dashes and dots.
      * @return mixed Returns a CMS object instance or null if the object wasn't found.
      */
-    public static function load($theme, $fileName)
+    public static function load($plugin, $fileName)
     {
         if (!FileHelper::validatePath($fileName, static::getMaxAllowedPathNesting())) {
             throw new ApplicationException(Lang::get('cms::lang.cms_object.invalid_file', ['name'=>$fileName]));
@@ -184,7 +184,7 @@ class PluginContentObject implements ArrayAccess
             $fileName .= '.'.static::$defaultExtension;
         }
 
-        $fullPath = static::getFilePath($theme, $fileName);
+        $fullPath = static::getFilePath($plugin, $fileName);
 
         if (!File::isFile($fullPath)) {
             return null;
@@ -194,7 +194,7 @@ class PluginContentObject implements ArrayAccess
             return null;
         }
 
-        $obj = new static($theme);
+        $obj = new static($plugin);
         $obj->fileName = $fileName;
         $obj->originalFileName = $fileName;
         $obj->mtime = File::lastModified($fullPath);
