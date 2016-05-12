@@ -29,7 +29,6 @@ var eggs = [{ name:'harlem_shake', icon:'bolt', comand:'Press "h" and "a" at the
             { name:'snow', icon:'gears', comand:'Press "s" and "n" at the same time, watch and enjoy, follows mouse, break lights', value:config.snow},
             { name:'raptor', icon:'gears', comand:'Press "r" and "a" at the same time, make sure your sound is on', value:config.raptor},
             { name:'fireworks', icon:'gears', comand:'Press "f" and "i" at the same time, make sure your sound is on', value:config.fireworks}];
-
 eggs.sort(function(a,b){
   return a.value - b.value;
 });
