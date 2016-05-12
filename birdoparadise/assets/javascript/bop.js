@@ -128,7 +128,7 @@ $(document).ready(function() {
                 prereq +='<div class="prereqnote">Before you can start this module you need to complete the following modules:</div>';
                 prereq +='<div class="clearme"></div>';
             
-            var showPrereq = false;// if locked
+            var showPrereq = true;// ALWAY NOW //false;// if locked
             
             for(var pid=0; pid<preids.length; pid++) {
 				/* find the prerequisite module.name */
@@ -312,19 +312,19 @@ $(document).ready(function() {
 	function scrollTabVisible() {
 		if(scrolling){
 			var sat = $(tabVisible).scrollLeft();
-			$(tabVisible).animate({scrollLeft:sat+scrollAmount}, 150, scrollTabVisible);
+			$(tabVisible).animate({scrollLeft:sat+scrollAmount}, 100, scrollTabVisible);
 		}
 	}
 	$('.aror').hover(function(){
 		scrolling=true;
-		scrollAmount=50;
+		scrollAmount=60;
 		scrollTabVisible();
 	}, function(){
 		scrolling=false;
 	});
 	$('.arol').hover(function(){
 		scrolling=true;
-		scrollAmount=-50;
+		scrollAmount=-60;
 		scrollTabVisible();
 	}, function(){
 		scrolling=false;
@@ -422,14 +422,13 @@ $(document).ready(function() {
 					var itm = $.grep(modobjs, function(elem,index){
 						return elem.module_id == preids[pid];
 					});
-					//console.log('itm:',itm[0]);// undefined for First
+					//console.log('itm:',itm[0]);// undefined for First & Tabs
 					
 					if(itm.length>0) { prename += itm[0].name; }
 					console.log('prerequisite id:',preids[pid], 'name:',prename);
-					//if(itm[0].state == 'locked'){ console.log('Show locked prereqs'); }
 				}
 				if(preids[pid] == undefined) { console.log('prerequisite id is undefined'); }
-				$(modivs[i]).append('<div class="modlocked" data-toggle="tooltip" data-placement="bottom" title="'+prename+'"><i class="icon-lock"></i></div>');
+				$(modivs[i]).append('<div class="modlocked" data-toggle="tooltip" data-placement="bottom" title="To unlock, complete '+prename+'"><i class="icon-lock"></i></div>');
 			}
 		}
 		// Done loading remove loader layer
@@ -437,7 +436,7 @@ $(document).ready(function() {
 	} else {
 		// Instructor
         $('.loading-indicator-container').hide();
-        // used storm.css to show the spinner, override modal-header the css
+        // used storm.css to show the spinning loader, override modal-header the css
     }
 	
 	function createStars(score,total) {
