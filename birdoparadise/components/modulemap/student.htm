@@ -43,7 +43,7 @@
 
 <!-- Modal: when module is clicked show items in module -->
 <div class="control-popup modal fade" id="itemdetails" tabindex="-1" role="dialog">
-    <div class="modal-dialog" style="width:700px;">
+    <div class="modal-dialog modal-md">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -61,11 +61,12 @@
 		They cannot be loaded in default.htm if Instructor
 	*/
 	if(role == "Learner") {
-		var modulescores = {{modulescores|raw}};
+		var modulescores = {{modulescores|raw}};// includes state
 		//console.log('modulescores:', modulescores);
+		
 		var submissions = {{submissions|raw}};
-		console.log('submissions:', submissions.length, submissions);
+		//console.log('submissions:', submissions.length, submissions);
 		var assignments = {{assignments|raw}};
-		console.log('assignments:', assignments.length, assignments);
+		//console.log('assignments:', assignments.length, assignments);
 	}
 </script>

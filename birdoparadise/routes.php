@@ -21,4 +21,5 @@
  */
 
 // assignments, submissions, modulescores
+Route::get('getModuleStates', 'Delphinium\Birdoparadise\RestApi@getModuleStates');
 Route::get('getModuleItemData', 'Delphinium\Birdoparadise\RestApi@getModuleItemData');

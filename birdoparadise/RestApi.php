@@ -31,6 +31,28 @@ use Delphinium\Roots\Requestobjects\SubmissionsRequest;// student progress
 
 class RestApi extends Controller 
 {
+	public function getModuleStates()
+    {
+        $moduleId = null;
+        $moduleItemId = null;
+        $includeContentDetails = false;
+        $includeContentItems = false;
+        $module = null;
+        $moduleItem = null;
+        $freshData = true;
+                
+        $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems, 
+                $includeContentDetails, $module, $moduleItem , $freshData) ;
+        
+        $roots = new Roots();
+        $res = $roots->getModuleStates($req);
+        return $res;
+    }
+	
+	/*	get assignments & submission in modulemap if student
+		send them here to calculate score,total
+		return module id, score, total
+	*/
 	public function getModuleItemData()
 	{
 		// assignments to match module item title and find assignment_id
@@ -65,8 +87,14 @@ class RestApi extends Controller
 			}
 		}
 		$submissions = $valid;
-		//$this->page['submissions'] = json_encode($valid);
 		
+		//test:
+		//$this->page['test'] = json_encode($valid);// no Err but how to retrieve it?
+		//$this->page['submissions'] = json_encode($valid);
+		// also get? $res = $roots->getModuleStates($req);
+	
+		//$assignments = json_decode($this->page['assignments']);// undefined property $page
+		//$submissions = json_decode($this->page['submissions']);
 		// modules
         $moduleId = null;
         $moduleItemId = null;
@@ -78,7 +106,7 @@ class RestApi extends Controller
 		
         $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems, $includeContentDetails, $module, $moduleItem, $freshData);
         $modules = $roots->modules($req);
-	
+		
 		/*
             for each module id return id, score, total
             
@@ -88,7 +116,7 @@ class RestApi extends Controller
                 find the assignment that matches the module item title
                 use the assignment id to get the matching submission score
                 add to score
-            construct array module.id, score, total
+            construct & return array module.id, score, total
         */
         $total=0;
 		$score=0;
@@ -135,6 +163,7 @@ class RestApi extends Controller
 			$modulescores[] = $arr;
 		}
 		//$this->page['modulescores']=json_encode($modulescores);
-		return ('assignments'=>$assignments, 'submissions'=>$submissions, 'modulescores'=>$modulescores);
+		//return ('assignments'=>$assignments, 'submissions'=>$submissions, 'modulescores'=>$modulescores);
+		return ($modulescores);// already have assignments, submissions
 	}
 }

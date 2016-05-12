@@ -37,3 +37,21 @@ html{
 .stuff{
 	width: 600px;
 }
+
+#signup-overlay {
+	display: none;
+}
+
+#kickass-pointstab {
+	display: none;
+	width: 300px;
+}
+
+#share-stuff{
+	display: none;
+}
+
+.modal-header {background:none !important;border-bottom:1px solid #e5e5e5 !important;color:#333333 !important}
+.modal-header .close{color:black !important;background:transparent !important;}
+.modal-body {padding-bottom: 10px;}
+.hiddenFromTeacher{display:none;}//This style is to hide instructions that don't apply to the professor in Canvas.

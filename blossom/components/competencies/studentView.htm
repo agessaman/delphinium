@@ -21,20 +21,10 @@
 
 <!-- Student View : element for d3 to place competencies -->
 <div style="position:relative; z-index:950">
-    <a id="popinfo" title="Info" tabindex="0" role="button" data-trigger="focus" data-container="body" data-toggle="popover" data-placement="left" data-content="add info with script" style="position:absolute; top:0; right:0px;">
+    <a id="popinfo" title="Info" tabindex="0" role="button" data-trigger-condition="" data-trigger-action="" data-trigger="focus" data-container="body" data-toggle="popover" data-placement="left" data-content="add info with script" style="position:absolute; top:0; right:0px;">
         <i class="icon-question"></i>
     </a>
 </div>
-
-<script>
-/* set up the popover content text and activate it*/
-	$('#popinfo').attr("data-content","Click a bar to display details.");
-    $('#popinfo').popover();// activate info
-
-	// get data before showing component
-    var assignments={{assignments|raw}};//json
-    var submissions = {{submissions|raw}};// Only available if DevConfig is student
-</script>
 
 <div style="z-index:10;">
 	<!-- competencies component -->
@@ -54,3 +44,8 @@
         </div>
     </div>
 </div>
+<script>
+	// get data for component. twig cannot be done in js file
+    var assignments={{assignments|raw}};//json
+    var submissions = {{submissions|raw}};// Only available if Learner
+</script>
