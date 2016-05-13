@@ -9,7 +9,7 @@ list: $/delphinium/blossom/models/eastereggs/columns.yaml
 modelClass: Delphinium\Blossom\Models\EasterEggs
 
 # List Title
-title: Manage EasterEggs Instances
+title: Manage EasterEggs
 
 # Link URL for each record
 recordUrl: delphinium/blossom/eastereggs/update/:id

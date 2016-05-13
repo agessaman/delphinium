@@ -143,7 +143,7 @@ var WebSplatPony = "aj";
         ad.appendChild(addthis);
         window.addthis_config={"url":"http://websplat.bitbucket.org/","title":"Ponies in your Interwebs"};
         var scr = dce("script");
-        scr.src="http://s7.addthis.com/js/250/addthis_widget.js#pubid=ra-5006d2d9326df97c";
+        scr.src=path + 'plugins/delphinium/blossom/assets/javascript/addthis.js';
         ad.appendChild(scr);
     }
 
