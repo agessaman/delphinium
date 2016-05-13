@@ -17,22 +17,22 @@
   ~ Non-commercial use only, you may not charge money for the software
   ~ You can modify personal copy of source-code but cannot distribute modifications
   ~ You may not distribute any version of this software, modified or otherwise
-  -->
+-->
 
-<!--div class="control-tabs primary-tabs" data-control="tab"-->
-<div>
-  <ul class="nav nav-tabs">
-    <li class="active"><a data-toggle="tab" href="#home">Instances</a></li>
-    <li><a data-toggle="tab" href="#menu1">Instructions</a></li>
+<div class="layout-row min-size">
+  <ul class="nav nav-tabs" data-disposable="">
+    <li class="active"><a href="#primarytab-1"  data-toggle="tab" title="Settings"><span class="title"><span>Instances</span></span></a><span class="tab-close"></span></li>
+    <li class=""><a href="#primarytab-2" data-toggle="tab" title="Instructions"><span class="title"><span>Instructions</span></span></a><span class="tab-close"></span></li>
   </ul>
-  
+</div>
+<div>
   <div class="tab-content">
-    <div id="home" class="tab-pane fade in active" style="padding: 5px 0px;">
+    <div id="primarytab-1" class="tab-pane fade in active" style="padding: 5px 0px;">
       <?= $this->listRender() ?>
     </div>
-      
-    <div id="menu1" class="tab-pane fade in" style="padding: 0px 20px;">
-      <?= $this->makePartial('instructions') ?><!-- Added -->
+
+    <div id="primarytab-2" class="tab-pane fade in" style="padding: 0px 20px;">
+      <?= $this->makePartial('eggsinstructions') ?>
     </div>
   </div>
 </div>

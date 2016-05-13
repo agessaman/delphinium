@@ -17,85 +17,101 @@
   ~ Non-commercial use only, you may not charge money for the software
   ~ You can modify personal copy of source-code but cannot distribute modifications
   ~ You may not distribute any version of this software, modified or otherwise
-  -->
+-->
 
 <!-- Easter Eggs Instructions partial -->
 <h3>Easter Eggs Component</h3>
 
-<div style="float:left; width:50%">
-	
-	<h4>Using the component:</h4>
-    		
-	<div class="eggs">
-    <p>First click in the center of the page, then...</p>
-
-    <p>Press "h" and "a" at the same time, make sure your sound is on</p>
-
-    <p>Press "r" and "i" at the same time and move the mouse</p>
-
-    <p>Press "a" and "s" at the same time, space to shoot, arrow keys to move</p>
-
-    <p>Press "k" and "a" at the same time, follow instructions</p>
-
-    <p>Press "b" and "o" at the same time, click mouse in text to drop them</p>
-
-    <p>Press "p" and "o" at the same time, space to re-spawn, arrow keys to move</p>
-
-    <p>Press "m" and "y" at the same time, watch and enjoy</p>
-
-    <p>Press "s" and "n" at the same time, watch and enjoy, follows mouse, break lights</p>
-
-    <p>Press "r" and "p" at the same time, make sure your sound is on</p>
-
-	</div>
+<div id="eggs">
+  <p>Press "h" and "a" at the same time, make sure your sound is on</p>
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/3QJaRLwFDDQ?start=27" frameborder="0" allowfullscreen></iframe>
+  <p>Press "r" and "i" at the same time and move the mouse</p>
+  <div id="image0"></div>
+  <p>Press "a" and "s" at the same time, space to shoot, arrow keys to move</p>
+  <div id="image1"></div>
+  <p>Press "k" and "a" at the same time, follow instructions</p>
+  <div id="image2"></div>
+  <p>Press "b" and "o" at the same time, click mouse in text to drop them</p>
+  <div id="image3"></div>
+  <p>Press "p" and "o" at the same time, space to re-spawn, arrow keys to move</p>
+  <div id="image4"></div>
+  <p>Press "m" and "y" at the same time, watch and enjoy</p>
+  <div id="image5"></div>
+  <p>Press "s" and "n" at the same time, watch and enjoy, follows mouse, break lights</p>
+  <div id="image6"></div>
+  <p>Press "r" and "a" at the same time, make sure your sound is on</p>
+  <div id="image7"></div>
+  <p>Press "f" and "i" at the same time, make sure your sound is on</p>
+  <div id="image8"></div>
 </div>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/3QJaRLwFDDQ?start=27" frameborder="0" allowfullscreen></iframe>
-<img id="image0" src="" width="750" title="What it looks like" alt="ripples"/>
-<img id="image1" src="" width="750" title="What it looks like" alt="asteroids"/>
-<img id="image2" src="" width="750" title="What it looks like" alt="katamari"/>
-<img id="image3" src="" width="750" title="What it looks like" alt="bombs"/>
-<img id="image4" src="" width="750" title="What it looks like" alt="ponies"/>
-<img id="image5" src="" width="750" title="What it looks like" alt="my little pony"/>
 
+
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 <style>
   #image0{
+    width: 100%;
+    height: 300px;
     background-image: url('<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/ripples.png');
     background-repeat: no-repeat;
     background-size: contain;
   }
   #image1{
     width: 100%;
-    height: 72px;
+    height: 300px;
     background-image: url('<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/asteroids.png');
     background-repeat: no-repeat;
     background-size: contain;
   }
   #image2{
     width: 100%;
-    height: 75px;
+    height: 300px;
     background-image: url('<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/katamari.png');
     background-repeat: no-repeat;
     background-size: contain;
    }
   #image3{
     width: 100%;
-    height: 90px;
+    height: 300px;
     background-image: url('<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/bomb.png');
     background-repeat: no-repeat;
     background-size: contain;
   }
   #image4{
     width: 100%;
-    height: 90px;
+    height: 300px;
     background-image: url('<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/pony.png');
     background-repeat: no-repeat;
     background-size: contain;
   }
   #image5{
     width: 100%;
-    height: 90px;
+    height: 300px;
     background-image: url('<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/mylittlepony.png');
     background-repeat: no-repeat;
     background-size: contain;
   }
+  #image6{
+    width: 100%;
+    height: 300px;
+    background-image: url('<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/snow.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+  #image7{
+    width: 100%;
+    height: 300px;
+    background-image: url('<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/raptor_screen.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+  #image8{
+    width: 100%;
+    height: 300px;
+    background-image: url('<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/fireworks.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
 </style>
+

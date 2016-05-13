@@ -29,7 +29,6 @@ var eggs = [{ name:'harlem_shake', icon:'bolt', comand:'Press "h" and "a" at the
             { name:'snow', icon:'gears', comand:'Press "s" and "n" at the same time, watch and enjoy, follows mouse, break lights', value:config.snow},
             { name:'raptor', icon:'gears', comand:'Press "r" and "a" at the same time, make sure your sound is on', value:config.raptor},
             { name:'fireworks', icon:'gears', comand:'Press "f" and "i" at the same time, make sure your sound is on', value:config.fireworks}];
-
 eggs.sort(function(a,b){
   return a.value - b.value;
 });
@@ -77,7 +76,7 @@ fireworks['loaded'] = false;
 
 $(document).keydown(function(e) {
 	//Harlem Shake
-  if(current_grade >= config.harlem_shake){
+  if(role = 'Instructor' || current_grade >= config.harlem_shake){
     if (e.keyCode in harlemShake) {
       harlemShake[e.keyCode] = true;
       if (harlemShake[keys.H] && harlemShake[keys.A]) {
@@ -114,7 +113,7 @@ $(document).keydown(function(e) {
   }
 
   //Page Ripple
-  if(current_grade >= config.ripples){
+  if(role = 'Instructor' || current_grade >= config.ripples){
     if (e.keyCode in ripple) {
       ripple[e.keyCode] = true;
       if (ripple[keys.R] && ripple[keys.I]) {
@@ -140,7 +139,7 @@ $(document).keydown(function(e) {
   }
 
   //Asteroids 
-  if(current_grade >= config.asteroids){
+  if(role = 'Instructor' || current_grade >= config.asteroids){
     if (e.keyCode in asteroid) {
       asteroid[e.keyCode] = true;
       if (asteroid[keys.A] && asteroid[keys.S]) {
@@ -155,7 +154,7 @@ $(document).keydown(function(e) {
   }
 
   //Katamari 
-  if(current_grade >= config.katamari){
+  if(role = 'Instructor' || current_grade >= config.katamari){
     if (e.keyCode in katamari) {
       katamari[e.keyCode] = true;
       if (katamari[keys.K] && katamari[keys.A]) {
@@ -170,7 +169,7 @@ $(document).keydown(function(e) {
   }
 
   //Bombs 
-  if(current_grade >= config.bombs){
+  if(role = 'Instructor' || current_grade >= config.bombs){
     if (e.keyCode in bomb) {
       bomb[e.keyCode] = true;
       if (bomb[keys.B] && bomb[keys.O]) {
@@ -186,7 +185,7 @@ $(document).keydown(function(e) {
   }
 
   //Ponies 
-  if(current_grade >= config.ponies){
+  if(role = 'Instructor' || current_grade >= config.ponies){
     if (e.keyCode in pony) {
       pony[e.keyCode] = true;
       if (pony[keys.P] && pony[keys.O]) {
@@ -201,7 +200,7 @@ $(document).keydown(function(e) {
   }
 
   //MyLittlePony
-  if(current_grade >= config.my_little_pony){
+  if(role = 'Instructor' || current_grade >= config.my_little_pony){
     if (e.keyCode in myLittlePony) {
       myLittlePony[e.keyCode] = true;
       if (myLittlePony[keys.M] && myLittlePony[keys.Y]) {
@@ -216,7 +215,7 @@ $(document).keydown(function(e) {
   }
 
   //Snow
-  if(current_grade >= config.snow){
+  if(role = 'Instructor' || current_grade >= config.snow){
     if (e.keyCode in snow) {
       snow[e.keyCode] = true;
       if (snow[keys.S] && snow[keys.N]) {
@@ -253,7 +252,7 @@ $(document).keydown(function(e) {
   }
 
   //Raptor
-  if(current_grade >= config.raptor){
+  if(role = 'Instructor' || current_grade >= config.raptor){
     if (e.keyCode in raptor) {
       raptor[e.keyCode] = true;
       if (raptor[keys.R] && raptor[keys.A]) {
@@ -268,7 +267,7 @@ $(document).keydown(function(e) {
   }
 
   //Fireworks
-  if(current_grade >= config.fireworks){
+  if(role = 'Instructor' || current_grade >= config.fireworks){
     if (e.keyCode in fireworks) {
       fireworks[e.keyCode] = true;
       if (fireworks[keys.F] && fireworks[keys.I]) {
@@ -282,8 +281,8 @@ $(document).keydown(function(e) {
           e.setAttribute("type", "text/css");
           e.setAttribute("href", path + "/plugins/delphinium/blossom/assets/css/fireworks.css");
           document.body.appendChild(e);
-          document.write('<div style="background:url(' + path + 'plugins/delphinium/blossom/assets/images/background.jpg) repeat-x;position:absolute;left:0;top:'+($(window).height()-193)+'px;width:100%;height:200px;"></div>');
           document.write('<canvas id="cv" width="'+$(window).width()+'" height="'+($(window).height()-100)+'" style="position:absolute;left:0;top:0;background-color:black;"></canvas>');
+          document.write('<div style="background:url(' + path + 'plugins/delphinium/blossom/assets/images/background.jpg) repeat-x;position:absolute;left:0;top:'+($(window).height()-193)+'px;width:100%;height:200px;"></div>');
         }
       }
     }

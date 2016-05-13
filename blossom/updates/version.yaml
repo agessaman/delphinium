@@ -36,3 +36,6 @@
 1.1.1:
     - Add Raptor and Fireworks to Easter Eggs
     - add_raptor_and_fireworks_to_eggs.php
+1.1.2:
+    - Add Course to Easter Eggs
+    - add_course_to_eggs.php
