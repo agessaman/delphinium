@@ -233,15 +233,13 @@ class LtiConfiguration extends ComponentBase
                         } else {
                             setcookie("token_attempts", 1, time() + (300), "/"); //5 minutes
                         }
-
-                        if ($_COOKIE['token_attempts'] > 3) {
+                        if ((isset($_COOKIE['token_attempts']))||($_COOKIE['token_attempts'] > 3)) {
                             echo "Unable to obtain access to your Canvas account. Reached the max number of attempts. Please verify your configuration and try again in 5 minutes.";
                             return;
                         } else {
                             $this->onRun();//the cookie is done to prevent infinite loops
                         }
                     }
-
                 }
                 $account_id = $course->account_id;
                 $account = $roots->getAccount($account_id);
