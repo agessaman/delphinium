@@ -218,7 +218,11 @@ class LtiConfiguration extends ComponentBase
                 $roots = new Roots();
                 try {
                     $course = $roots->getCourse();
-                } catch (\GuzzleHttp\Exception\RequestException $e) {
+                    if(count($course)<1)
+                    {
+                        throw new \Exception("Invalid access token", 401);
+                    }
+                } catch (\Exception $e) {
                     if ($e->getCode() == 401) {//unauthorized, meaning the token we have in the DB has been deleted from Canvas. We must request a new token
                         $dbHelper->deleteInvalidApproverToken($courseId);
 
