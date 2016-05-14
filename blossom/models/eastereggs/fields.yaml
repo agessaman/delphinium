@@ -3,12 +3,29 @@
 # ===================================
 
 fields:
+    id:
+        label: ID
+        disabled: true
+        tab: Settings
+
+    name:
+        label: name
+        span: auto
+        comment: Enter the name of this instance
+        tab: Settings
+
     menu:
         label: menu
         type: checkbox
         span: auto
         default: false
         comment: Checked = Show shortcuts
+
+    course_id:
+        label: course_id
+        span: auto
+        comment: Enter the course id to which this component will be tied
+        tab: Settings
 
     harlem_shake:
         label: harlem_shake
@@ -60,3 +77,8 @@ fields:
         label: fireworks
         span: auto
         comment: Enter a point threshold
+
+    fireworks_string:
+        label: fireworks_string
+        span: auto
+        comment: Enter a string

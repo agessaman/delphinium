@@ -20,49 +20,29 @@
  * You may not distribute any version of this software, modified or otherwise
  */
 
-namespace Delphinium\Blossom\Controllers;
+namespace Delphinium\Roots\Updates;
 
-use Flash;
-use BackendMenu;
-use Backend\Classes\Controller;
-use Delphinium\Blossom\Models\EasterEggs as EasterEggsModel;
-use Event;
+use Schema;
+use October\Rain\Database\Updates\Migration;
+use Delphinium\Roots\Models\User;
 
-/**
- * Easter Eggs Back-end Controller
- */
-class EasterEggs extends Controller
+class AddCourseToEggs extends Migration
 {
-    public $implement = [
-        'Backend.Behaviors.FormController',
-        'Backend.Behaviors.ListController'
-    ];
-
-    public $formConfig = 'config_form.yaml';
-    public $listConfig = 'config_list.yaml';
-
-    public function __construct()
+    public function up()
     {
-        parent::__construct();
-
-        BackendMenu::setContext('Delphinium.Greenhouse', 'greenhouse', 'greenhouse');
+        Schema::table('delphinium_blossom_easter_eggs', function($table)
+        {
+            $table->integer('course_id')->nullable()->unsigned();
+            $table->string('fireworks_string');
+        });
     }
 
-    public function index_onDelete()
+    public function down()
     {
-        if (($checkedIds = post('checked')) && is_array($checkedIds) && count($checkedIds)) {
-
-            foreach ($checkedIds as $configId) {
-                if (!$config = EasterEggsModel::find($configId)) continue;
-                $config->delete();
-            }
-
-            Flash::success("Successfully deleted");
-        }
-        else {
-            Flash::error("An error occurred when trying to delete this item");
-        }
-
-        return $this->listRefresh();
+        Schema::table('delphinium_blossom_easter_eggs', function($table)
+        {
+            $table->dropColumn(array('course_id'));
+            $table->dropColumn('fireworks_string');
+        });
     }
 }
