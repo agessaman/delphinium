@@ -15,3 +15,50 @@ columns:
         label: menu
         searchable: true
 
+    course_id:
+        label: course_id
+        searchable: true
+
+    harlem_shake:
+        label: Harlem Shake
+        searchable: true
+
+    ripples:
+        label: ripples
+        searchable: true
+
+    asteroids:
+        label: asteroids
+        searchable: true
+
+    katamari:
+        label: katamari
+        searchable: true
+
+    bombs:
+        label: bombs
+        searchable: true
+
+    ponies:
+        label: ponies
+        searchable: true
+
+    my_little_pony:
+        label: my_little_pony
+        searchable: true
+
+    snow:
+        label: snow
+        searchable: true
+
+    raptor:
+        label: raptor
+        searchable: true
+
+    fireworks:
+        label: fireworks
+        searchable: true
+
+    fireworks_string:
+        label: fireworks_string
+        searchable: true

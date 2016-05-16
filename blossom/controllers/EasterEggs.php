@@ -25,6 +25,8 @@ namespace Delphinium\Blossom\Controllers;
 use Flash;
 use BackendMenu;
 use Backend\Classes\Controller;
+use Delphinium\Blossom\Models\EasterEggs as EasterEggsModel;
+use Event;
 
 /**
  * Easter Eggs Back-end Controller
@@ -51,7 +53,7 @@ class EasterEggs extends Controller
         if (($checkedIds = post('checked')) && is_array($checkedIds) && count($checkedIds)) {
 
             foreach ($checkedIds as $configId) {
-                if (!$config = ConfigModel::find($configId)) continue;
+                if (!$config = EasterEggsModel::find($configId)) continue;
                 $config->delete();
             }
 

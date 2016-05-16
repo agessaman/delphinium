@@ -25,6 +25,9 @@ namespace Delphinium\Blossom\Components;
 use Cms\Classes\ComponentBase;
 use Delphinium\Blossom\Models\EasterEggs as EasterEggsModel;
 use Delphinium\Blossom\Components\Experience as ExperienceComponent;
+use Delphinium\Roots\Roots;
+use Flash;
+use Redirect;
 
 class EasterEggs extends ComponentBase
 {
@@ -53,41 +56,20 @@ class EasterEggs extends ComponentBase
     {
         try
         {
-            if (!isset($_SESSION)) { session_start(); }
-            $courseID = $_SESSION['courseID'];
-            $name = $this->alias .'_'. $_SESSION['courseID'];
+            $this->addCss('/modules/system/assets/ui/storm.css', 'core');
+            $this->addJs('/modules/system/assets/ui/storm-min.js', 'core');
+            $this->addCss('/modules/system/assets/ui/storm.less', 'core');
+            $this->addCss("https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css");
+            $this->addJs("/plugins/delphinium/blossom/assets/javascript/bootstrap.min.js");
+            $this->addCss("/plugins/delphinium/blossom/assets/css/eastereggs.css");
             
-            // if instance has been set
-            if( $this->property('instance') )
-            {
-                //use the instance set in CMS dropdown
-                $config = EasterEggsModel::find($this->property('instance'));
 
-            } else {
-                // look for instances created for this course
-                $instances = EasterEggsModel::where('name','=', $name)->get();
-                
-                if(count($instances) === 0) { 
-                    // no record found so create a new dynamic instance
-                    $config = new EasterEggsModel;// db record
-                    $config->name = $name;
-                    $config->menu = 0;
-                    $config->harlem_shake = 0;
-                    $config->ripples = 0;
-                    $config->asteroids = 0;
-                    $config->katamari = 0;
-                    $config->bombs = 0;
-                    $config->ponies = 0;
-                    $config->my_little_pony = 0;
-                    $config->snow = 0;
-                    // add your fields
-                    //$config->size = '20%';
-                    $config->save();// save the new record
-                } else {
-                    //use the first record matching course
-                    $config = $instances[0];
-                }
-            }
+            //if no instance exists of this component, create a new one.
+            $config = $this->firstOrNewCourseInstance();
+            $this->eggsInstanceId = $config->id;
+            $this->page['instance_id'] =  $config->id;
+            
+            
             // use the record in the component and frontend form 
             $this->page['config'] = json_encode($config);
             
@@ -116,9 +98,7 @@ class EasterEggs extends ComponentBase
             $this->page['current_grade'] = $points;
             
             // include your css note: bootstrap.min.css is part of minimal layout
-            $this->addCss("/plugins/delphinium/blossom/assets/css/eastereggs.css");
-            $this->addCss("https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css");
-
+            
             
             // include the backend form with instructions for instructor.htm
             if(stristr($roleStr, 'Instructor'))
@@ -129,13 +109,20 @@ class EasterEggs extends ComponentBase
                 $formController->create('frontend');
                 
                 //this is the primary key of the record you want to update
-                $this->page['recordId'] = $config->id;
+                $this->page['eggsRecordId'] = $config->id;
                 // Append the formController to the page
-                $this->page['form'] = $formController;
+                $this->page['eggsForm'] = $formController;
                 
                 // Append Instructions page
-                $instructions = $formController->makePartial('instructions');
-                $this->page['instructions'] = $instructions;
+                $instructions = $formController->makePartial('eggsinstructions');
+                $this->page['eggsinstructions'] = $instructions;
+
+                //$this->addJs("/plugins/delphinium/blossom/assets/javascript/popover.js");
+
+                //$this->addCss('/modules/system/assets/ui/storm.css', 'core');
+                //$this->addJs('/modules/system/assets/ui/storm-min.js', 'core');
+                //$this->addCss('/modules/system/assets/ui/storm.less', 'core');
+
                 
                 //code specific to instructor.htm goes here
             }
@@ -180,14 +167,43 @@ class EasterEggs extends ComponentBase
         return $array_dropdown;
     }
 
-    
-    public function onUpdate()
+    private function firstOrNewCourseInstance($copyName=null)
     {
-        $data = post('EasterEggs');//component name
-        $did = intval($data['id']);// convert string to integer
-        $config = EasterEggsModel::find($did);// retrieve existing record
-        $config->name = $data['name'];// change to new data
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+        $courseId = $_SESSION['courseID'];
+        $this->courseId = $courseId;
+        $courseInstance = null;
+
+        //if they have selected a backend instance, that will take precedence over creating a dynamic instance based on the component alias
+        if(($this->property('eggs'))>0)
+        {
+            $courseInstance =EasterEggsModel::firstOrNew(array('id' => $this->property('eggs')));
+        }
+        else
+        {//didn't select a backend instance. Create the component based on the copy name, or the alias name if the copy name was not provided
+            if(is_null($copyName))
+            {
+                $copyName =$this->alias . "_".$courseId;
+            }
+            $courseInstance =EasterEggsModel::firstOrNew(array('name'=>$copyName));
+            $courseInstance->course_id = $courseId;
+            $courseInstance->name = $copyName;
+        }
+
+        if(is_null($courseInstance->menu)){$courseInstance->menu = 0;}
+        $courseInstance->save();
+        return $courseInstance;
+    }
+
+    public function onSave()
+    {
+        $data = post('EasterEggs');
+        $config = $this->firstOrNewCourseInstance($data['name']);//get the instance
+        $config->name = $data['name'];
         $config->menu = $data['menu'];
+        $config->course_id = $data['course_id'];
         $config->harlem_shake = $data['harlem_shake'];
         $config->ripples = $data['ripples'];
         $config->asteroids = $data['asteroids'];
@@ -196,7 +212,10 @@ class EasterEggs extends ComponentBase
         $config->ponies = $data['ponies'];
         $config->my_little_pony = $data['my_little_pony'];
         $config->snow = $data['snow'];
-        $config->save();// update original record 
-        return json_encode($config);// back to instructor view
+        $config->raptor = $data['raptor'];
+        $config->fireworks = $data['fireworks'];
+        $config->fireworks_string = $data['fireworks_string'];
+        $config->save();
+        return json_encode($config);
     }
 }

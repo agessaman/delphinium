@@ -218,7 +218,11 @@ class LtiConfiguration extends ComponentBase
                 $roots = new Roots();
                 try {
                     $course = $roots->getCourse();
-                } catch (\GuzzleHttp\Exception\RequestException $e) {
+                    if(count($course)<1)
+                    {
+                        throw new \Exception("Invalid access token", 401);
+                    }
+                } catch (\Exception $e) {
                     if ($e->getCode() == 401) {//unauthorized, meaning the token we have in the DB has been deleted from Canvas. We must request a new token
                         $dbHelper->deleteInvalidApproverToken($courseId);
 
@@ -229,15 +233,13 @@ class LtiConfiguration extends ComponentBase
                         } else {
                             setcookie("token_attempts", 1, time() + (300), "/"); //5 minutes
                         }
-
-                        if ($_COOKIE['token_attempts'] > 3) {
+                        if ((isset($_COOKIE['token_attempts']))||($_COOKIE['token_attempts'] > 3)) {
                             echo "Unable to obtain access to your Canvas account. Reached the max number of attempts. Please verify your configuration and try again in 5 minutes.";
                             return;
                         } else {
                             $this->onRun();//the cookie is done to prevent infinite loops
                         }
                     }
-
                 }
                 $account_id = $course->account_id;
                 $account = $roots->getAccount($account_id);

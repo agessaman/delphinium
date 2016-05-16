@@ -1,0 +1,71 @@
+/*
+
+ SnowStorm demo page CSS
+ -----------------------
+
+ None of this is needed for the snow effect to work - it's strictly to make the demo/documentation look pretty.
+
+*/
+
+body {
+ background:#333 url(../images/bg-strip-dark.png);
+ color:#eeeeee;
+}
+
+
+/* seasonal decorations */
+
+#lights {
+ position:absolute;
+ border-top:1px solid #006600;
+ left:0px;
+ top:0px;
+ width:100%;
+ height:275px;
+ overflow:hidden;
+ z-index:1;
+ display:none;
+}
+
+.xlsf-light {
+ position:absolute;
+ margin-top:-1px;
+}
+
+.xlsf-fragment {
+ position:absolute;
+ background:transparent url(lights/image/bulbs-50x50-fragments.png) no-repeat 0px 0px;
+ width:50px;
+ height:50px;
+}
+
+.xlsf-fragment-box {
+ position:absolute;
+ left:0px;
+ top:0px;
+ width:50px;
+ height:50px;
+ *width:100%;
+ *height:100%;
+ display:none;
+}
+
+.xlsf-cover {
+ position:fixed;
+ left:0px;
+ top:0px;
+ width:100%;
+ height:100%;
+ background:#fff;
+ opacity:1;
+ z-index:999;
+ display:none;
+}
+
+.special {
+ display:none;
+ _display: block; /* just you, IE 6. */
+ font-size:x-small;
+ color:#999;
+}
+
