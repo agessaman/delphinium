@@ -300,7 +300,7 @@ class Index extends Controller
         $template = $this->createTemplate($type);
 
         if ($type == 'asset') {
-            $template->setInitialPath($this->widget->assetsList->getCurrentRelativePath());
+            $template->setInitialPath($this->widget->assetList->getCurrentRelativePath());
         }
 
         $widget = $this->makeTemplateFormWidget($type, $template);

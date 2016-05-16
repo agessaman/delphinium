@@ -94,7 +94,7 @@ class Plugin extends PluginBase
 
                 'sideMenu' => [
                     'newContent' => [
-                        'label'       => 'New Content',
+                        'label'       => 'Plugins',
                         'icon'        => 'icon-files-o',
                         'url'         => 'javascript:;',
                         'attributes'  => ['data-menu-item'=>'newcontent']

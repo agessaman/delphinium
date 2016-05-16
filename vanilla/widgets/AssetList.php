@@ -37,6 +37,7 @@ use RecursiveDirectoryIterator;
 use DirectoryIterator;
 use Exception;
 use Delphinium\Vanilla\Classes\Plugin;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 /**
  * Static page list widget.
  *
@@ -829,6 +830,64 @@ class AssetList extends WidgetBase
         unset($currentSelection[$path]);
         $this->putSession($this->getThemeSessionKey('selected'), $currentSelection);
         $this->selectedFilesCache = $currentSelection;
+    }
+
+    /**
+     * Checks the current request to see if it is a postback containing a file upload
+     * for this particular widget.
+     */
+    protected function checkUploadPostback()
+    {
+        $fileName = null;
+
+        try {
+            $uploadedFile = Input::file('file_data');
+
+            if (!is_object($uploadedFile)) {
+                return;
+            }
+
+            $fileName = $uploadedFile->getClientOriginalName();
+
+            // Don't rely on Symfony's mime guessing implementation, it's not accurate enough.
+            // Use the simple extension validation.
+            $allowedAssetTypes = Config::get('cms.allowedAssetTypes');
+            if (!$allowedAssetTypes) {
+                $allowedAssetTypes = $this->allowedAssetTypes;
+            }
+
+            $maxSize = UploadedFile::getMaxFilesize();
+            if ($uploadedFile->getSize() > $maxSize) {
+                throw new ApplicationException(Lang::get(
+                    'cms::lang.asset.too_large',
+                    ['max_size '=> File::sizeToString($maxSize)]
+                ));
+            }
+
+            $ext = strtolower(pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_EXTENSION));
+            if (!in_array($ext, $allowedAssetTypes)) {
+                throw new ApplicationException(Lang::get(
+                    'cms::lang.asset.type_not_allowed',
+                    ['allowed_types' => implode(', ', $allowedAssetTypes)]
+                ));
+            }
+
+            if (!$uploadedFile->isValid()) {
+                throw new ApplicationException(Lang::get('cms::lang.asset.file_not_valid'));
+            }
+
+            $uploadedFile->move($this->getCurrentPath(), $uploadedFile->getClientOriginalName());
+
+//            die('success');
+            die('fail');
+        }
+        catch (Exception $ex) {
+            $message = $fileName !== null
+                ? Lang::get('cms::lang.asset.error_uploading_file', ['name' => $fileName, 'error' => $ex->getMessage()])
+                : $ex->getMessage();
+
+            die($message);
+        }
     }
 
     protected function getThemeSessionKey($prefix)
