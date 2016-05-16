@@ -128,7 +128,7 @@ $(document).ready(function() {
                 prereq +='<div class="prereqnote">Before you can start this module you need to complete the following modules:</div>';
                 prereq +='<div class="clearme"></div>';
             
-            var showPrereq = true;// ALWAY NOW //false;// if locked
+            var showPrereq = false;// if locked
             
             for(var pid=0; pid<preids.length; pid++) {
 				/* find the prerequisite module.name */
@@ -196,8 +196,8 @@ $(document).ready(function() {
 				item='<div class="assignment unavailable">';
 			} else {
 				item='<div class="assignment available"';// whole div is clickable
-				item +='data-url="'+moditems[i].html_url+'">';
-                //item +='data-url="'+moditems[i].html_url+'?module_item_id='+moditems[i].module_item_id+'">';
+				//item +='data-url="'+moditems[i].html_url+'">';// displays JSON
+                item +='data-url="'+moditems[i].html_url+'?module_item_id='+moditems[i].module_item_id+'">';
 			}
 			if(moditems[i].type=='SubHeader') { 
 				item='<div class="subheader">';// not an assignment
