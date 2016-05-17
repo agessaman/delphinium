@@ -25,26 +25,25 @@
     var Base = $.oc.foundation.base,
         BaseProto = Base.prototype
 
-    var PagesPage = function () {
+    var PluginPage = function () {
         Base.call(this)
 
         this.init()
     }
 
-    PagesPage.prototype = Object.create(BaseProto)
-    PagesPage.prototype.constructor = PagesPage
+    PluginPage.prototype = Object.create(BaseProto)
+    PluginPage.prototype.constructor = PluginPage
 
-    PagesPage.prototype.init = function() {
+    PluginPage.prototype.init = function() {
         this.$masterTabs = $('#vanilla-master-tabs')
         this.$sidePanel = $('#vanilla-side-panel')
         this.$pageTree = $('[data-control=treeview]', this.$sidePanel)
         this.masterTabsObj = this.$masterTabs.data('oc.tab')
-        this.snippetManager = new $.oc.pages.snippetManager(this.$masterTabs)
 
         this.registerHandlers()
     }
 
-    PagesPage.prototype.registerHandlers = function() {
+    PluginPage.prototype.registerHandlers = function() {
         // Item is clicked in the sidebar
         $(document).on('open.oc.treeview', 'form.layout[data-content-id=pages]', this.proxy(this.onSidebarItemClick))
 
@@ -60,21 +59,21 @@
         this.$masterTabs.on('closed.oc.tab', this.proxy(this.onTabClosed))
 
         // AJAX errors in the master tabs area
-        $(document).on('ajaxError', '#pages-master-tabs form', this.proxy(this.onAjaxError))
+        $(document).on('ajaxError', '#vanilla-master-tabs form', this.proxy(this.onAjaxError))
 
         // AJAX success in the master tabs area
-        $(document).on('ajaxSuccess', '#pages-master-tabs form', this.proxy(this.onAjaxSuccess))
+        $(document).on('ajaxSuccess', '#vanilla-master-tabs form', this.proxy(this.onAjaxSuccess))
 
         // Before save a content block
-        $(document).on('oc.beforeRequest', '#pages-master-tabs form[data-object-type=content]', this.proxy(this.onBeforeSaveContent))
+        $(document).on('oc.beforeRequest', '#vanilla-master-tabs form[data-object-type=content]', this.proxy(this.onBeforeSaveContent))
 
         // Layout changed
-        $(document).on('change', '#pages-master-tabs form[data-object-type=page] select[name="viewBag[layout]"]', this.proxy(this.onLayoutChanged))
+        $(document).on('change', '#vanilla-master-tabs form[data-object-type=page] select[name="viewBag[layout]"]', this.proxy(this.onLayoutChanged))
 
         // Create object button click
         $(document).on(
             'click',
-            '#pages-side-panel form [data-control=create-object], #pages-side-panel form [data-control=create-template]',
+            '#vanilla-side-panel form [data-control=create-object], #vanilla-side-panel form [data-control=create-template]',
             this.proxy(this.onCreateObject)
         )
 
@@ -82,20 +81,20 @@
         $(document).on('submenu.oc.treeview', 'form.layout[data-content-id=pages]', this.proxy(this.onSidebarSubmenuItemClick))
 
         // The Delete Object button click
-        $(document).on('click', '#pages-side-panel form button[data-control=delete-object], #pages-side-panel form button[data-control=delete-template]',
+        $(document).on('click', '#vanilla-side-panel form button[data-control=delete-object], #vanilla-side-panel form button[data-control=delete-template]',
             this.proxy(this.onDeleteObject))
 
         // A new tab is added to the editor
         this.$masterTabs.on('initTab.oc.tab', this.proxy(this.onInitTab))
 
         // Handle the menu saving
-        $(document).on('oc.beforeRequest', '#pages-master-tabs form[data-object-type=menu]', this.proxy(this.onSaveMenu))
+        $(document).on('oc.beforeRequest', '#vanilla-master-tabs form[data-object-type=menu]', this.proxy(this.onSaveMenu))
     }
 
     /*
      * Displays the concurrency resolution form.
      */
-    PagesPage.prototype.handleMtimeMismatch = function (form) {
+    PluginPage.prototype.handleMtimeMismatch = function (form) {
         var $form = $(form)
 
         $form.popup({ handler: 'onOpenConcurrencyResolveForm' })
@@ -120,7 +119,7 @@
     /*
      * Reloads the Editor form.
      */
-    PagesPage.prototype.reloadForm = function($form) {
+    PluginPage.prototype.reloadForm = function($form) {
         var data = {
                 type: $('[name=objectType]', $form).val(),
                 theme: $('[name=theme]', $form).val(),
@@ -150,7 +149,7 @@
     /*
      * Updates the sidebar counter
      */
-    PagesPage.prototype.updateModifiedCounter = function() {
+    PluginPage.prototype.updateModifiedCounter = function() {
         var counters = {
             page: {menu: 'pages', count: 0},
             menu: {menu: 'menus', count: 0},
@@ -170,10 +169,10 @@
     /*
      * Triggered when a tab is displayed. Updated the current selection in the sidebar and sets focus on an editor.
      */
-    PagesPage.prototype.onTabShown = function(e) {
+    PluginPage.prototype.onTabShown = function(e) {
         var $tabControl = $(e.target).closest('[data-control=tab]')
 
-        if ($tabControl.attr('id') == 'pages-master-tabs') {
+        if ($tabControl.attr('id') == 'vanilla-master-tabs') {
             var dataId = $(e.target).closest('li').attr('data-tab-id'),
                 title = $(e.target).attr('title')
 
@@ -191,7 +190,7 @@
     /*
      * Triggered when all master tabs are closed.
      */
-    PagesPage.prototype.onAllTabsClosed = function() {
+    PluginPage.prototype.onAllTabsClosed = function() {
         this.$pageTree.treeView('markActive', null)
         $('[data-control=filelist]', this.$sidePanel).fileList('markActive', null)
         this.setPageTitle('')
@@ -200,14 +199,14 @@
     /*
      * Triggered when a master tab is closed.
      */
-    PagesPage.prototype.onTabClosed = function() {
+    PluginPage.prototype.onTabClosed = function() {
         this.updateModifiedCounter()
     }
 
     /*
      * Handles AJAX errors in the master tab forms. Processes the mtime mismatch condition (concurrency).
      */
-    PagesPage.prototype.onAjaxError = function(event, context, data, jqXHR) {
+    PluginPage.prototype.onAjaxError = function(event, context, data, jqXHR) {
         if (context.handler != 'onSave')
             return
 
@@ -220,7 +219,7 @@
     /*
      * Handles successful AJAX request in the master tab forms. Updates the UI elements and resets the mtime value.
      */
-    PagesPage.prototype.onAjaxSuccess = function(event, context, data) {
+    PluginPage.prototype.onAjaxSuccess = function(event, context, data) {
         var $form = $(event.currentTarget),
             $tabPane = $form.closest('.tab-pane')
 
@@ -255,7 +254,7 @@
             $form.trigger('unchange.oc.changeMonitor')
     }
 
-    PagesPage.prototype.onBeforeSaveContent = function(e, data) {
+    PluginPage.prototype.onBeforeSaveContent = function(e, data) {
         var form = e.currentTarget,
             $tabPane = $(form).closest('.tab-pane')
 
@@ -277,14 +276,14 @@
     /*
      * Updates the browser title when an object is saved.
      */
-    PagesPage.prototype.setPageTitle = function(title) {
+    PluginPage.prototype.setPageTitle = function(title) {
         $.oc.layout.setPageTitle(title.length ? (title + ' | ') : title)
     }
 
     /*
      * Updates the sidebar object list.
      */
-    PagesPage.prototype.updateObjectList = function(objectType) {
+    PluginPage.prototype.updateObjectList = function(objectType) {
         var $form = $('form[data-object-type='+objectType+']', this.$sidePanel),
             objectList = objectType + 'List',
             self = this
@@ -302,7 +301,7 @@
     /*
      * Closes deleted page tabs in the editor area.
      */
-    PagesPage.prototype.closeTabs = function(data, type) {
+    PluginPage.prototype.closeTabs = function(data, type) {
         var self = this
 
         $.each(data.deletedObjects, function(){
@@ -317,7 +316,7 @@
      * Triggered when an item is clicked in the sidebar. Opens the item in the editor.
      * If the item is already opened, activate its tab in the editor.
      */
-    PagesPage.prototype.onSidebarItemClick = function(e) {
+    PluginPage.prototype.onSidebarItemClick = function(e) {
         var self = this,
             $item = $(e.relatedTarget),
             $form = $item.closest('form'),
@@ -361,7 +360,7 @@
     /*
      * Triggered when the Add button is clicked on the sidebar
      */
-    PagesPage.prototype.onCreateObject = function(e) {
+    PluginPage.prototype.onCreateObject = function(e) {
         var self = this,
             $button = $(e.target),
             $form = $button.closest('form'),
@@ -391,7 +390,7 @@
     /*
      * Triggered when an item is clicked in the sidebar submenu
      */
-    PagesPage.prototype.onSidebarSubmenuItemClick = function(e) {
+    PluginPage.prototype.onSidebarSubmenuItemClick = function(e) {
         if ($(e.clickEvent.target).data('control') == 'create-object')
             this.onCreateObject(e.clickEvent)
 
@@ -401,7 +400,7 @@
     /*
      * Triggered when the Delete button is clicked on the sidebar
      */
-    PagesPage.prototype.onDeleteObject = function(e) {
+    PluginPage.prototype.onDeleteObject = function(e) {
         var $el = $(e.target),
             $form = $el.closest('form'),
             objectType = $form.data('object-type'),
@@ -436,7 +435,7 @@
     /*
      * Triggered when a static page layout changes
      */
-    PagesPage.prototype.onLayoutChanged = function(e) {
+    PluginPage.prototype.onLayoutChanged = function(e) {
         var
             self = this,
             $el = $(e.target),
@@ -470,8 +469,8 @@
     /*
      * Triggered when a new tab is added to the Editor
      */
-    PagesPage.prototype.onInitTab = function(e, data) {
-        if ($(e.target).attr('id') != 'pages-master-tabs')
+    PluginPage.prototype.onInitTab = function(e, data) {
+        if ($(e.target).attr('id') != 'vanilla-master-tabs')
             return
 
         var $collapseIcon = $('<a href="javascript:;" class="tab-collapse-icon tabless"><i class="icon-chevron-up"></i></a>'),
@@ -551,7 +550,7 @@
     /*
      * Triggered before a menu is saved
      */
-    PagesPage.prototype.onSaveMenu = function(e, data) {
+    PluginPage.prototype.onSaveMenu = function(e, data) {
         var form = e.currentTarget,
             items = [],
             $items = $('div[data-control=treeview] > ol > li', form)
@@ -578,7 +577,7 @@
     /*
      * Updates the content editor to correspond the conten file extension
      */
-    PagesPage.prototype.updateContentEditorMode = function(pane, initialization) {
+    PluginPage.prototype.updateContentEditorMode = function(pane, initialization) {
         if ($('[data-toolbar-type]', pane).data('toolbar-type') !== 'content')
             return
 
@@ -633,7 +632,7 @@
     /*
      * Returns the content file extension
      */
-    PagesPage.prototype.getContentExtension = function(form) {
+    PluginPage.prototype.getContentExtension = function(form) {
         var fileName = $('input[name=fileName]', form).val(),
             parts = fileName.split('.')
 
@@ -644,7 +643,7 @@
     }
 
     $(document).ready(function(){
-        $.oc.pagesPage = new PagesPage()
+        $.oc.PluginPage = new PluginPage()
     })
 
 }(window.jQuery);
