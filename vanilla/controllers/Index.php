@@ -96,12 +96,11 @@ class Index extends Controller
         $this->addJs('/plugins/delphinium/vanilla/assets/js/october.tokenexpander.js', 'core');
         $this->addCss('/plugins/delphinium/vanilla/assets/css/october.components.css', 'core');
 
-        $this->addJs('/plugins/delphinium/vanilla/assets/js/plugin.js');
+//        $this->addJs('/plugins/delphinium/vanilla/assets/js/plugin.js');
 
         // Preload the code editor class as it could be needed
         // before it loads dynamically.
-        $this->addJs('/modules/backend/formwidgets/codeeditor/assets/js/build
-        -min.js', 'core');
+        $this->addJs('/modules/backend/formwidgets/codeeditor/assets/js/build-min.js', 'core');
 
         $this->bodyClass = 'compact-container side-panel-not-fixed';
         $this->pageTitle = 'Vanilla';

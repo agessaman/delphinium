@@ -97,19 +97,19 @@ class Plugin extends PluginBase
                         'label'       => 'Plugins',
                         'icon'        => 'icon-files-o',
                         'url'         => 'javascript:;',
-                        'attributes'  => ['data-menu-item'=>'newcontent']
-                    ],
-                    'assets' => [
-                        'label'       => 'Assets',
-                        'icon'        => 'icon-picture-o',
-                        'url'         => 'javascript:;',
-                        'attributes'  => ['data-menu-item'=>'assets']
+                        'attributes'  => ['data-menu-item'=>'delphiniumize']
                     ],
                     'components' => [
                         'label'       => 'Components',
                         'icon'        => 'icon-puzzle-piece',
                         'url'         => 'javascript:;',
                         'attributes'  => ['data-menu-item'=>'components']
+                    ],
+                    'assets' => [
+                        'label'       => 'Assets',
+                        'icon'        => 'icon-picture-o',
+                        'url'         => 'javascript:;',
+                        'attributes'  => ['data-menu-item'=>'assets']
                     ]
                 ]
             ]
