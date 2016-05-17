@@ -144,15 +144,18 @@ $(document).ready(function() {
 					prename = itm[0].name; 
 					console.log('pid:',pid,'prename:',prename);
 					
-					/* find in modulescores.state */
-					var premod = $.grep(modulescores, function(elem,index){
-						return elem.modid == preids[pid];
-					});
-					
-					if(premod[0].state == 'locked') {
-						showPrereq=true;
-						console.log('Show locked prereqs');
-					}
+					/* find modulescores.state only available if Learner */
+					if(role == 'Learner') {
+						var premod = $.grep(modulescores, function(elem,index){
+							return elem.modid == preids[pid];
+						});
+						
+						if(premod[0].state == 'locked') {
+							showPrereq=true;
+							console.log('Show locked prereqs');
+						}
+					/* IF instructor show it always */
+					} else { showPrereq = true; }
 					
 					if(prename != '') {
 						prereq +='<li>'+prename+'</li>';

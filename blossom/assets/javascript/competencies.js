@@ -134,6 +134,7 @@
                         //module_item_id?
                         modAssignments.push(modules[m].items[mi].content[0]);
                         assignments.push(modules[m].items[mi].content[0]);
+						//console.log('item:',modules[m].items[mi].content[0]);
                     }
                 }
             }
@@ -500,9 +501,11 @@
                 }else{
                     content += '<div  class="alert alert-info available">';//Done blue
                 }
-                //content += '<div class="link" data-url="'+assignment[0].html_url+'">'+assignment[0].name+' </div>';// displays JSON
-                content += '<div class="link" data-url="'+assignment[0].html_url+'?module_item_id='+assignment[0].module_item_id+'">'+assignment[0].name+' </div>';
-                if(locked){ 
+                content += '<div class="link" data-url="'+assignment[0].html_url+'">'+assignment[0].name+' </div>';// assignment/ id
+                //content += '<div class="link" data-url="'+assignment[0].html_url+'?module_item_id='+assignment[0].module_item_id+'">'+assignment[0].name+' </div>';
+                //https://uvu.instructure.com/courses/343331/assignments/1660418?module_item_id=undefined
+				//https://uvu.instructure.com/courses/343331/quizzes/464892
+				if(locked){ 
                     content += ' Locked, not available yet';
                 } else {
                     if(submitted[0].score == null) {
@@ -519,13 +522,14 @@
                 var tags=assignment[0].tags.split(",");
                 if(tags.indexOf('C:'+item.name) != -1 ) {
                     content += '<div class="alert alert-success available">';
-                    //content += '<div class="link" data-url="'+assignment[0].html_url+'">'+assignment[0].name+'</div>';// displays JSON
-                    content += '<div class="link" data-url="'+assignment[0].html_url+'?module_item_id='+assignment[0].module_item_id+'">'+assignment[0].name+' </div>';
-                    content += '- Worth '+assignment[0].points_possible+' points.';
+					var uri = assignment[0].html_url.replace('api/v1/', '');// AHA
+                    content += '<div class="link" data-url="'+uri+'">'+assignment[0].name+'</div>';// -api/v1/
+                    //content += '<div class="link" data-url="'+uri+'?module_item_id='+assignment[0].module_item_id+'">'+assignment[0].name+' </div>';
+                    //https://uvu.instructure.com/ -->api/v1/<-- courses/343331/quizzes/464884?module_item_id=2368118
+					
+					content += '- Worth '+assignment[0].points_possible+' points.';
                     content += ' ( Tags: '+assignment[0].tags+' )';
                     content += '</div>';
-                    //TEST see which one works student or instructor view
-                    //I think : assignment[0].html_url+'?module_item_id='+assignment[0].module_item_id)
                 }
             }
         }
