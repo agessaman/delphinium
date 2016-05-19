@@ -82,9 +82,18 @@ class Delphiniumize extends WidgetBase
      */
     public function render()
     {
-//        return $this->makePartial('delphiniumize');
+        //return $this->makePartial('delphiniumize');
+
+//        return [
+//            'pluginVector'=>$activePluginVector,
+//            'items'=>$this->getData($activePluginVector)
+//        ];
+//
+        $activePluginVector = $this->controller->getBuilderActivePluginVector();
+
         return $this->makePartial('body', [
-            'data' => $this->getData()
+            'data' => $this->getData(),
+            'pluginVector'=>$activePluginVector
         ]);
     }
 
@@ -646,6 +655,7 @@ class Delphiniumize extends WidgetBase
 
     protected function getGroupStatuses()
     {
+        echo "here";
         if ($this->groupStatusCache !== false) {
             return $this->groupStatusCache;
         }

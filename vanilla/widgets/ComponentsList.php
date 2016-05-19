@@ -118,6 +118,15 @@ class ComponentsList extends WidgetBase
 
     protected function getData()
     {
+
+        //this came from builder. There it's used to get the active plugin
+//        $activePluginVector = $this->controller->getBuilderActivePluginVector();
+//
+//        return [
+//            'pluginVector'=>$activePluginVector,
+//            'items'=>$this->getData($activePluginVector)
+//        ];
+
         $menus = Menu::listInTheme($this->theme, true);
 
         $searchTerm = Str::lower($this->getSearchTerm());

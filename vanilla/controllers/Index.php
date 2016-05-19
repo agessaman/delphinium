@@ -33,7 +33,7 @@ use Backend\Classes\Controller;
 use Delphinium\Vanilla\Widgets\Delphiniumize as Widget;
 use Cms\Classes\Theme;
 use ApplicationException;
-//use Delphinium\Vanilla\Widgets\ComponentsList;
+use RainLab\Builder\Widgets\PluginList;
 use Delphinium\Vanilla\Widgets\AssetList;
 use Delphinium\Vanilla\Classes\Plugin;
 use Backend\FormWidgets\CodeEditor;
@@ -67,6 +67,10 @@ class Index extends Controller
             new ComponentList($this, 'componentList');
             new AssetList($this, 'assetList', $destinationPath);
             new Widget($this, 'delphiniumize');
+
+
+            //this is the plugin list from builder. Used to select the active plugin
+            new PluginList($this, 'pluginList');
         }
         catch (Exception $ex) {
             $this->handleError($ex);
@@ -95,12 +99,17 @@ class Index extends Controller
         $this->addJs('/plugins/delphinium/vanilla/assets/js/october.dragcomponents.js', 'core');
         $this->addJs('/plugins/delphinium/vanilla/assets/js/october.tokenexpander.js', 'core');
         $this->addCss('/plugins/delphinium/vanilla/assets/css/october.components.css', 'core');
+        $this->addJs('/plugins/delphinium/vanilla/assets/js/plugin.js');
 
-//        $this->addJs('/plugins/delphinium/vanilla/assets/js/plugin.js');
+        $this->addJs('/modules/backend/assets/js/october.treeview.js', 'core');
+
 
         // Preload the code editor class as it could be needed
         // before it loads dynamically.
         $this->addJs('/modules/backend/formwidgets/codeeditor/assets/js/build-min.js', 'core');
+
+        //we require the js file from builder
+//        $this->addJs('/plugins/rainlab/builder/assets/js/build-min.js', 'RainLab.Builder');
 
         $this->bodyClass = 'compact-container side-panel-not-fixed';
         $this->pageTitle = 'Vanilla';
@@ -109,6 +118,37 @@ class Index extends Controller
         if (Request::ajax() && Request::input('formWidgetAlias')) {
             $this->bindFormWidgetToController();
         }
+    }
+
+    public function setBuilderActivePlugin($pluginCode, $refreshPluginList = false)
+    {
+        $this->widget->pluginList->setActivePlugin($pluginCode);
+
+        $result = [];
+        if ($refreshPluginList) {
+            $result = $this->widget->pluginList->updateList();
+        }
+
+        $result = array_merge(
+            $result,
+            $this->widget->databaseTabelList->refreshActivePlugin(),
+            $this->widget->modelList->refreshActivePlugin(),
+            $this->widget->versionList->refreshActivePlugin(),
+            $this->widget->languageList->refreshActivePlugin(),
+            $this->widget->controllerList->refreshActivePlugin()
+        );
+
+        return $result;
+    }
+
+    public function getBuilderActivePluginVector()
+    {
+        return $this->widget->pluginList->getActivePluginVector();
+    }
+
+    public function updatePluginList()
+    {
+        return $this->widget->pluginList->updateList();
     }
 
     /**
