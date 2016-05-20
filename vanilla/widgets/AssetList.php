@@ -497,25 +497,22 @@ class AssetList extends WidgetBase
 
     protected function getData($activePluginVector)
     {
-        $assetsPath = base_path().$this->basePluginDir.$this->relativePluginDir.$activePluginVector->pluginCodeObj->toFilesystemPath();
+        $assetsPath = base_path().$this->basePluginDir.$this->relativePluginDir.$activePluginVector->pluginCodeObj->toFilesystemPath().'/assets';
         $pluginDir = base_path().$this->basePluginDir.$this->relativePluginDir.$activePluginVector->pluginCodeObj->toFilesystemPath();
-
+//echo $pluginDir;
         /*
          * These next lines used to be in the constructor, but because the plugin isn't set until we get the render Data, we will have to
          * set them here instead of in the constructor
          */
         $this->relativePluginDir =$this->basePluginDir.$this->relativePluginDir.$activePluginVector->pluginCodeObj->toFilesystemPath();
         $this->pluginDir =$pluginDir;
-        $this->plugin = Plugin::load($pluginDir);
+        $this->plugin = Plugin::load($this->basePluginDir.$this->relativePluginDir.$activePluginVector->pluginCodeObj->toFilesystemPath());
+//echo json_encode($this->plugin);
+//
+//        echo json_encode($this->plugin);
 //        $this->plugin = Theme::getEditTheme();
         $this->dataIdPrefix = 'page-'.$this->plugin->getDirName();
         $this->addSubpageLabel = trans($this->addSubpageLabel);
-
-
-//        return $activePluginVector;
-//        $this->pluginDir;
-//        $assetsPath = $this->getAssetsPath();
-
         if (!file_exists($assetsPath) || !is_dir($assetsPath)) {
             if (!File::makeDirectory($assetsPath)) {
                 throw new ApplicationException(Lang::get(
@@ -704,7 +701,6 @@ class AssetList extends WidgetBase
     protected function getRelativePath($path)
     {
         $prefix = $this->getAssetsPath();
-echo $prefix;
         if (substr($path, 0, strlen($prefix)) == $prefix) {
             $path = substr($path, strlen($prefix));
         }

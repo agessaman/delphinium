@@ -100,6 +100,7 @@ class Plugin
     public function setDirName($dirName)
     {
         $this->dirName = $dirName;
+
     }
 
     /**
