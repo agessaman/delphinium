@@ -122,12 +122,13 @@ class Modulemap extends ComponentBase
 		$req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
 		$submitted = $roots->submissions($req);
 		
-		// get rid of any that are null or 0 we're looking for the total score
+		// get rid of any that are null 
+		//DONT remove: 0 we're looking for the total score
 		$submissions = array();// score > 0
 		foreach ($submitted as $submission) {
-			if($submission["score"] > 0) {
+			//if($submission["score"] > 0) {
 				array_push($submissions, $submission);
-			}
+			//}
 		}
 
 		$this->page['submissions'] = json_encode($submissions);

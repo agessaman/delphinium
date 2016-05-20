@@ -54,8 +54,8 @@ class Competencies extends ComponentBase
 	
 	public function onRun()
     {
-		try
-        {
+	//	try
+    //    {
         /* Notes:
             is an instance set? yes show it
             else get all instances
@@ -138,46 +138,48 @@ class Competencies extends ComponentBase
                 // Append Instructions page
                 $instructions = $formController->makePartial('competencyinstructions');
                 $this->page['competencyinstructions'] = $instructions;
-                
-                //simplified modules data *** testing if better than assignments includes locked
-				// or add $states = $roots->getModuleStates($req);// [id,state]
-                $moduleId = null;
-                $moduleItemId = null;
-                $includeContentDetails = true;
-                $includeContentItems = true;
-                $module = null;
-                $moduleItem = null;
-				$freshData = false;
-				
-                $req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems,
-                    $includeContentDetails, $module, $moduleItem , $freshData);
-
-                $moduleData = $roots->modules($req);
-				
-				/* simplify the module data */
-                $modArr = $moduleData->toArray();
-                $simpleModules = array();
-                foreach($modArr as $item)
-                {
-                    $mod = new \stdClass();
-
-                    $mod->id = $item['module_id'];
-                    $mod->title=$item['name'];
-					$mod->locked=$item['locked'];// cannot getModuleStates unless Learner
-					$mod->items =$item['module_items'];//REPLACES assignments
-
-                    $simpleModules[] = $mod;
-                }
-                $this->page['modules'] = json_encode($simpleModules);
-                //$this->page['modata'] = json_encode($moduleData);// complete array unused
 			}
+			
+			/* module items for both constructs tags */
+			//simplified modules data *** testing if better than assignments includes locked
+			// or add $states = $roots->getModuleStates($req);// [id,state]
+			$moduleId = null;
+			$moduleItemId = null;
+			$includeContentDetails = true;
+			$includeContentItems = true;
+			$module = null;
+			$moduleItem = null;
+			$freshData = false;
+			
+			$req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems,
+				$includeContentDetails, $module, $moduleItem , $freshData);
+
+			$moduleData = $roots->modules($req);
+			
+			/* simplify the module data */
+			$modArr = $moduleData->toArray();
+			$simpleModules = array();
+			foreach($modArr as $item)
+			{
+				$mod = new \stdClass();
+
+				$mod->id = $item['module_id'];
+				$mod->title=$item['name'];
+				$mod->locked=$item['locked'];// cannot getModuleStates unless Learner
+				$mod->items =$item['module_items'];//REPLACES assignments
+
+				$simpleModules[] = $mod;
+			}
+			$this->page['modules'] = json_encode($simpleModules);
+			//$this->page['modata'] = json_encode($moduleData);// complete array unused
+		
             
             if($roleStr=='Learner')
 			{
 				$req = new AssignmentsRequest(ActionType::GET);
 				$assignments = $roots->assignments($req);
 				
-				$this->page['assignments']=json_encode($assignments);
+				//$this->page['assignments']=json_encode($assignments);
 				
 				/* todo:
 					instructor chooses an enrolled student from a dropdown
@@ -196,6 +198,50 @@ class Competencies extends ComponentBase
                 $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments, $includeTags, $grouped);
 				$submissions = $roots->submissions($req);
 				
+				/* match $simpleModules items to assignment by title
+					add module item assignment id to assignment : moditem_id ?
+					
+					loop through submissions match assignment_id 
+					add points possible to submissions
+					add moditem_id to submissions
+				*/
+				
+				foreach ($simpleModules as $module) {
+					//$modArr = $module->toArray();
+					$moditems = $module->items;//->toArray();//module_items
+				
+					foreach ($moditems as $item) {
+						$assignmentId=null;
+						$title='';
+						$counter=0;
+						// only items with points
+						if(count($item["content"])>0) {
+							
+							$title = $item['title'];
+							
+							/*	find the assignment name that matches module item title 
+								get its id to find matching submission */
+							foreach($assignments as $key ) {
+								if($title == $key["name"]) {
+									$assignmentId = $key["assignment_id"];// id for submission
+									break;// done
+								}
+							}
+							/* get submission assignment_id that matches this assignment_id */
+							foreach($submissions as $sub ) {
+								if($assignmentId == $sub["assignment_id"]) {
+									// add points and id
+									$submissions[$counter]["name"] = $title;
+									$submissions[$counter]["points_possible"] = $item["content"][0]["points_possible"];
+									$submissions[$counter]["module_item_id"] = $item["content"][0]["module_item_id"]; 
+									$submissions[$counter]["assignment_id"] = $item["content"][0]["content_id"];// match js ?
+									break;// done
+								}
+								$counter=$counter+1;
+							}
+						}
+					}
+				}
 				$this->page['submissions']=json_encode($submissions);// score
             }
 			
@@ -203,7 +249,7 @@ class Competencies extends ComponentBase
 			$this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
 			$this->addCss("/plugins/delphinium/blossom/assets/css/competencies.css");
 			$this->addJs("/plugins/delphinium/blossom/assets/javascript/competencies.js");
-       }
+    /*   }
         catch (\GuzzleHttp\Exception\ClientException $e) {
             return;
         }
@@ -222,7 +268,7 @@ class Competencies extends ComponentBase
             }
             return \Response::make($this->controller->run('error'), 500);
         }
-	
+	*/
     }
 
     public function getInstanceOptions()
