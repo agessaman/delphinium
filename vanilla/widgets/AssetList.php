@@ -51,7 +51,7 @@ class AssetList extends WidgetBase
     use \Backend\Traits\SelectableWidget;
 
     protected $plugin;
-
+    protected $basePluginDir;
     protected $pluginDir;
     protected $relativePluginDir;
     protected $dataIdPrefix;
@@ -93,18 +93,20 @@ class AssetList extends WidgetBase
     ];
     public function  __construct($controller, $alias, $pluginDir)
     {
-        $this->relativePluginDir =$pluginDir;
-        $this->pluginDir =base_path().$pluginDir;
+        $this->basePluginDir = $pluginDir;
+//        $this->relativePluginDir =$pluginDir;
+//        $this->pluginDir =base_path().$pluginDir;
         $this->alias = $alias;
-
-        $this->plugin = Plugin::load($pluginDir);
-//        $this->plugin = Theme::getEditTheme();
-        $this->dataIdPrefix = 'page-'.$this->plugin->getDirName();
-        $this->addSubpageLabel = trans($this->addSubpageLabel);
+//
+//        $this->plugin = Plugin::load($pluginDir);
+////        $this->plugin = Theme::getEditTheme();
+//        $this->dataIdPrefix = 'page-'.$this->plugin->getDirName();
+//        $this->addSubpageLabel = trans($this->addSubpageLabel);
 
         parent::__construct($controller, []);
         $this->bindToController();
     }
+
 
     /**
      * {@inheritDoc}
@@ -121,8 +123,10 @@ class AssetList extends WidgetBase
      */
     public function render()
     {
+        $activePluginVector = $this->getActivePlugin();
         return $this->makePartial('body', [
-            'data' => $this->getData()
+            'data' => $this->getData($activePluginVector),
+            'pluginVector'=>$activePluginVector
         ]);
     }
 
@@ -154,14 +158,14 @@ class AssetList extends WidgetBase
 
         $this->putSession('currentPath', $path);
         return [
-            '#'.$this->getId('asset-list') => $this->makePartial('items', ['items'=>$this->getData()])
+            '#'.$this->getId('asset-list') => $this->makePartial('items', ['items'=>$this->getData(),'pluginVector'=>$this->getActivePlugin()])
         ];
     }
 
     public function onRefresh()
     {
         return [
-            '#'.$this->getId('asset-list') => $this->makePartial('items', ['items'=>$this->getData()])
+            '#'.$this->getId('asset-list') => $this->makePartial('items', ['items'=>$this->getData(),'pluginVector'=>$this->getActivePlugin()])
         ];
     }
 
@@ -472,13 +476,45 @@ class AssetList extends WidgetBase
 //        return $this->updateList();
 //    }
 
+    public function updateList()
+    {
+        return ['#'.$this->getId('plugin-model-list') => $this->makePartial('items', ['data'=>$this->getData(),'pluginVector'=>$this->getActivePlugin()])];
+    }
+
+    public function refreshActivePlugin()
+    {
+        $activePlugin =$this->getActivePlugin();
+        return ['#'.$this->getId('body') => $this->makePartial('widget-contents', ['data'=>$this->getData($activePlugin), 'pluginVector'=>$activePlugin])];
+    }
     /*
      * Methods for th internal use
      */
 
-    protected function getData()
+    public function getActivePlugin()
     {
-        $assetsPath = $this->getAssetsPath();
+        return $this->controller->getBuilderActivePluginVector();
+    }
+
+    protected function getData($activePluginVector)
+    {
+        $assetsPath = base_path().$this->basePluginDir.$this->relativePluginDir.$activePluginVector->pluginCodeObj->toFilesystemPath();
+        $pluginDir = base_path().$this->basePluginDir.$this->relativePluginDir.$activePluginVector->pluginCodeObj->toFilesystemPath();
+
+        /*
+         * These next lines used to be in the constructor, but because the plugin isn't set until we get the render Data, we will have to
+         * set them here instead of in the constructor
+         */
+        $this->relativePluginDir =$this->basePluginDir.$this->relativePluginDir.$activePluginVector->pluginCodeObj->toFilesystemPath();
+        $this->pluginDir =$pluginDir;
+        $this->plugin = Plugin::load($pluginDir);
+//        $this->plugin = Theme::getEditTheme();
+        $this->dataIdPrefix = 'page-'.$this->plugin->getDirName();
+        $this->addSubpageLabel = trans($this->addSubpageLabel);
+
+
+//        return $activePluginVector;
+//        $this->pluginDir;
+//        $assetsPath = $this->getAssetsPath();
 
         if (!file_exists($assetsPath) || !is_dir($assetsPath)) {
             if (!File::makeDirectory($assetsPath)) {
@@ -497,7 +533,6 @@ class AssetList extends WidgetBase
                 new DirectoryIterator($currentPath)
             );
         }
-
         return $this->findFiles();
     }
 
@@ -658,7 +693,6 @@ class AssetList extends WidgetBase
     protected function getCurrentPath()
     {
         $assetsPath = $this->getAssetsPath();
-
         $path = $assetsPath.'/'.$this->getCurrentRelativePath();
         if (!is_dir($path)) {
             return $assetsPath;
@@ -670,11 +704,10 @@ class AssetList extends WidgetBase
     protected function getRelativePath($path)
     {
         $prefix = $this->getAssetsPath();
-
+echo $prefix;
         if (substr($path, 0, strlen($prefix)) == $prefix) {
             $path = substr($path, strlen($prefix));
         }
-
         return $path;
     }
 
@@ -712,16 +745,15 @@ class AssetList extends WidgetBase
     protected function getDirectoryContents($dir)
     {
         $editableAssetTypes = Asset::getEditableExtensions();
-
         $result = [];
         $files = [];
-
         foreach ($dir as $node) {
             if (substr($node->getFileName(), 0, 1) == '.') {
                 continue;
             }
 
             if ($node->isDir() && !$node->isDot()) {
+
                 $result[$node->getFilename()] = (object)[
                     'type'     => 'directory',
                     'path'     => File::normalizePath($this->getRelativePath($node->getPathname())),
@@ -738,11 +770,9 @@ class AssetList extends WidgetBase
                 ];
             }
         }
-
         foreach ($files as $file) {
             $result[] = $file;
         }
-
         return $result;
     }
 
@@ -895,11 +925,6 @@ class AssetList extends WidgetBase
         return $prefix.$this->plugin->getDirName();
     }
 
-    protected function updateList()
-    {
-        return ['#'.$this->getId('page-list') => $this->makePartial('items', ['items' => $this->getData()])];
-    }
-
     protected function subtreeToText($page)
     {
         $result = $this->pageToText($page->page);
@@ -933,5 +958,22 @@ class AssetList extends WidgetBase
     protected function putSession($key, $value)
     {
         return parent::putSession($this->getThemeSessionKey($key), $value);
+    }
+
+
+    protected function pathMatchesSearch(&$words, $path)
+    {
+        foreach ($words as $word) {
+            $word = trim($word);
+            if (!strlen($word)) {
+                continue;
+            }
+
+            if (!Str::contains(Str::lower($path), $word)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

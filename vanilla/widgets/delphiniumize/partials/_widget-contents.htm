@@ -7,11 +7,21 @@
         <?php endif ?>
     </div>
 </div>
-<?= $this->makePartial('toolbar') ?>
+
+<?php if ($pluginVector): ?>
 <div class="layout-row">
     <div class="layout-cell">
         <div class="layout-relative">
-            <?= $this->makePartial('components', ['data'=>$data]) ?>
+            <?= $this->makePartial('components', ['data'=>$data, 'pluginVector'=>$pluginVector]) ?>
         </div>
     </div>
 </div>
+<?php else: ?>
+<div class="layout-row">
+    <div class="layout-cell">
+        <div class="panel">
+            <p class="no-data"><?= e(trans('rainlab.builder::lang.common.select_plugin_first')) ?></p>
+        </div>
+    </div>
+</div>
+<?php endif ?>

@@ -36,7 +36,7 @@ use RainLab\Pages\Classes\Menu;
  * @package rainlab\pages
  * @author Alexey Bobkov, Samuel Georges
  */
-class ComponentsList extends WidgetBase
+class ComponentsList_old extends WidgetBase
 {
     use \Backend\Traits\SearchableWidget;
     use \Backend\Traits\CollapsableWidget;

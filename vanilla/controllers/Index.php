@@ -33,12 +33,13 @@ use Backend\Classes\Controller;
 use Delphinium\Vanilla\Widgets\Delphiniumize as Widget;
 use Cms\Classes\Theme;
 use ApplicationException;
-use RainLab\Builder\Widgets\PluginList;
 use Delphinium\Vanilla\Widgets\AssetList;
+use Delphinium\Vanilla\Widgets\ComponentList;
+use Delphinium\Vanilla\Widgets\PluginList;
 use Delphinium\Vanilla\Classes\Plugin;
 use Backend\FormWidgets\CodeEditor;
 use Backend\Classes\FormField;
-use Cms\Widgets\ComponentList;
+//use Cms\Widgets\ComponentList;
 //use Cms\Widgets\AssetList;
 //use Cms\Widgets\TemplateList;
 
@@ -52,6 +53,9 @@ class Index extends Controller
 
     protected $plugin;
 
+    public $implement = [
+        'RainLab.Builder.Behaviors.IndexPluginOperations'
+    ];
 
     public function __construct()
     {
@@ -60,37 +64,22 @@ class Index extends Controller
         BackendMenu::setContext('Delphinium.Vanilla', 'vanilla', 'vanilla');
 
         //plugins directory
-        $destinationPath = '/plugins/delphinium/blossom';
+        $destinationPath = '/plugins/';
 
         $this->plugin = Plugin::load($destinationPath);
         try {
+            //this is the plugin list from builder. Used to select the active plugin
+            new PluginList($this, 'pluginList');
+
             new ComponentList($this, 'componentList');
             new AssetList($this, 'assetList', $destinationPath);
             new Widget($this, 'delphiniumize');
-
-
-            //this is the plugin list from builder. Used to select the active plugin
-            new PluginList($this, 'pluginList');
         }
         catch (Exception $ex) {
             $this->handleError($ex);
         }
 
         return;
-//        new Widget($this, 'delphiniumize');
-//        new ComponentList($this, 'componentsList');
-//        new AssetsList($this, 'assetsList', $this->getFilesInPlugin($theme));
-
-
-
-        //public function __construct($controller, $formField, $configuration = [])
-//        $defaultBuilderField = new FormField('default', 'default');
-//        $codeEditor = new CodeEditor($this,$defaultBuilderField,[]);
-//        $codeEditor->init();
-//        $codeEditor->render();
-
-
-
     }
 
     public function index()
@@ -100,16 +89,14 @@ class Index extends Controller
         $this->addJs('/plugins/delphinium/vanilla/assets/js/october.tokenexpander.js', 'core');
         $this->addCss('/plugins/delphinium/vanilla/assets/css/october.components.css', 'core');
         $this->addJs('/plugins/delphinium/vanilla/assets/js/plugin.js');
-
         $this->addJs('/modules/backend/assets/js/october.treeview.js', 'core');
-
-
         // Preload the code editor class as it could be needed
         // before it loads dynamically.
         $this->addJs('/modules/backend/formwidgets/codeeditor/assets/js/build-min.js', 'core');
 
-        //we require the js file from builder
-//        $this->addJs('/plugins/rainlab/builder/assets/js/build-min.js', 'RainLab.Builder');
+        //we require the js file from builder. Also the table widget
+        $this->addJs('/modules/backend/widgets/table/assets/js/build-min.js', 'core');
+        $this->addJs('/plugins/delphinium/vanilla/assets/js/build-min.js', 'Delphinium.Vanilla');
 
         $this->bodyClass = 'compact-container side-panel-not-fixed';
         $this->pageTitle = 'Vanilla';
@@ -131,11 +118,10 @@ class Index extends Controller
 
         $result = array_merge(
             $result,
-            $this->widget->databaseTabelList->refreshActivePlugin(),
-            $this->widget->modelList->refreshActivePlugin(),
-            $this->widget->versionList->refreshActivePlugin(),
-            $this->widget->languageList->refreshActivePlugin(),
-            $this->widget->controllerList->refreshActivePlugin()
+
+            $this->widget->componentList->refreshActivePlugin(),
+            $this->widget->assetList->refreshActivePlugin(),
+            $this->widget->delphiniumize->refreshActivePlugin()
         );
 
         return $result;
@@ -475,6 +461,7 @@ class Index extends Controller
 
         return $types[$type];
     }
+
     protected function loadTemplate($type, $path)
     {
         $class = $this->resolveTypeClassName($type);

@@ -89,11 +89,9 @@ class Delphiniumize extends WidgetBase
 //            'items'=>$this->getData($activePluginVector)
 //        ];
 //
-        $activePluginVector = $this->controller->getBuilderActivePluginVector();
-
         return $this->makePartial('body', [
             'data' => $this->getData(),
-            'pluginVector'=>$activePluginVector
+            'pluginVector'=>$this->getActivePlugin()
         ]);
     }
 
@@ -103,6 +101,11 @@ class Delphiniumize extends WidgetBase
         $this->setGroupStatus(Input::get('group'), Input::get('status'));
     }
 
+
+    public function getActivePlugin()
+    {
+        return $this->controller->getBuilderActivePluginVector();
+    }
     protected function getData()
     {
         $searchTerm = Str::lower($this->getSearchTerm());
@@ -373,10 +376,10 @@ class Delphiniumize extends WidgetBase
 //    }
 //
 //
-//    public function refreshActivePlugin()
-//    {
-//        return ['#'.$this->getId('body') => $this->makePartial('widget-contents', $this->getRenderData())];
-//    }
+    public function refreshActivePlugin()
+    {
+        return ['#'.$this->getId('body') => $this->makePartial('widget-contents', ['data'=>$this->getData(), 'pluginVector'=>$this->getActivePlugin()])];
+    }
 
     public function onAddItem()
     {
