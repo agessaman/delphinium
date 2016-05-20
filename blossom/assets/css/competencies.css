@@ -66,19 +66,20 @@ container{
     margin-bottom: 5px !important;
 }
 
-.available:hover{
+.compavailable:hover{
     border: 2px solid #D0D0D0;
 }
-.available {
+.compavailable {
 	border: 2px solid #fff;
 	cursor: pointer; /* whole div is clickable */
 }
-.unavailable {
+.compunavailable {
 	border: 2px solid #fff;
 	color: #b4b4b4 !important;
-	background-color: #eeeeee;/* grey / disabled */
+	background-color: #eeeeee;
 }
-.link {
+
+.complink {
     width: auto;
     float: left;
 	padding-right:4px;
