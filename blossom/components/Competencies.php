@@ -54,8 +54,8 @@ class Competencies extends ComponentBase
 	
 	public function onRun()
     {
-	//	try
-    //    {
+		try
+        {
         /* Notes:
             is an instance set? yes show it
             else get all instances
@@ -91,7 +91,7 @@ class Competencies extends ComponentBase
 				}
             }
 
-            $this->page['config'] = json_encode($config);
+            $this->page['competencyconfig'] = json_encode($config);
             // comma delimited string ?
             $roleStr = $_SESSION['roles'];
 
@@ -170,7 +170,7 @@ class Competencies extends ComponentBase
 
 				$simpleModules[] = $mod;
 			}
-			$this->page['modules'] = json_encode($simpleModules);
+			$this->page['competencymodules'] = json_encode($simpleModules);
 			//$this->page['modata'] = json_encode($moduleData);// complete array unused
 		
             
@@ -199,16 +199,15 @@ class Competencies extends ComponentBase
 				$submissions = $roots->submissions($req);
 				
 				/* match $simpleModules items to assignment by title
-					add module item assignment id to assignment : moditem_id ?
-					
-					loop through submissions match assignment_id 
-					add points possible to submissions
-					add moditem_id to submissions
+					use assignment_id to find matching submission
+					 
+					add points_possible to submissions
+					add module_item_id to submissions
+					add name & content_id to submissions
 				*/
 				
 				foreach ($simpleModules as $module) {
-					//$modArr = $module->toArray();
-					$moditems = $module->items;//->toArray();//module_items
+					$moditems = $module->items;//module_items
 				
 					foreach ($moditems as $item) {
 						$assignmentId=null;
@@ -230,7 +229,7 @@ class Competencies extends ComponentBase
 							/* get submission assignment_id that matches this assignment_id */
 							foreach($submissions as $sub ) {
 								if($assignmentId == $sub["assignment_id"]) {
-									// add points and id
+									// add points and id to submissions
 									$submissions[$counter]["name"] = $title;
 									$submissions[$counter]["points_possible"] = $item["content"][0]["points_possible"];
 									$submissions[$counter]["module_item_id"] = $item["content"][0]["module_item_id"]; 
@@ -242,14 +241,14 @@ class Competencies extends ComponentBase
 						}
 					}
 				}
-				$this->page['submissions']=json_encode($submissions);// score
+				$this->page['competencysubmissions']=json_encode($submissions);// score
             }
 			
 			// ready to finish loading assets
 			$this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
 			$this->addCss("/plugins/delphinium/blossom/assets/css/competencies.css");
 			$this->addJs("/plugins/delphinium/blossom/assets/javascript/competencies.js");
-    /*   }
+       }
         catch (\GuzzleHttp\Exception\ClientException $e) {
             return;
         }
@@ -268,7 +267,7 @@ class Competencies extends ComponentBase
             }
             return \Response::make($this->controller->run('error'), 500);
         }
-	*/
+	
     }
 
     public function getInstanceOptions()

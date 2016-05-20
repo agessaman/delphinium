@@ -41,7 +41,7 @@
     // related by assignment_id
 
 	/* Delphinium options */
-	$('#popinfo').popover();// activate info
+	$('#comp_popinfo').popover();// activate info
 	
     /* if Learner, studentData then showCompetencies
         else 
@@ -51,16 +51,15 @@
     */
     if(role == 'Learner') {
 		/* set up the popover content text */
-		$('#popinfo').attr("data-content","Click a bar to view competency details.");
+		$('#comp_popinfo').attr("data-content","Click a bar to view competency details.");
 		
-        
 		filterModuleTags();
 		studentData();
         showCompetencies();
 		
     } else {
 		/* set up the popover text for instructor */
-		$('#popinfo').attr("data-content","Instructor view does not contain submissions. Click a bar to view competency details.");
+		$('#comp_popinfo').attr("data-content","Instructor view does not contain submissions. Click a bar to view competency details.");
 	
 		/* set id,course in the POST they are not editable in the form
 			Add hidden input fields so they will transfer to onUpdate
@@ -80,7 +79,7 @@
 		$('div #ColorPicker-formColor-input-Color').val(config.Color);
 		console.log('instance: '+config.id,config.Name,config.Size,config.Color,config.Animate,config.course_id);
 		
-		$('#cog').on('click', function(e){
+		$('#comp_cog').on('click', function(e){
 			$('#competence-configuration').modal('show');
 		});
 		
@@ -91,7 +90,7 @@
 
     function filterModuleTags() {
 
-        //var modules={{modules|raw}};// twig inside default.htm use module items to build data
+        //var modules={{competencymodules|raw}};// twig inside default.htm use module items to build data
         console.log(modules.length, modules);
         // replace assignments with modAssignments that have tags
         assignments=[];
@@ -131,7 +130,7 @@
                         modules[m].items[mi].content[0]["name"]=modules[m].items[mi].title;
                         modules[m].items[mi].content[0]["html_url"]=modules[m].items[mi].url;// NOT html_url;
                         modules[m].items[mi].content[0]["assignment_id"]=modules[m].items[mi].content_id;
-                        //modules[m].items[mi].content[0]["id"]=modules[m].items[mi].content_id;
+                        modules[m].items[mi].content[0]["id"]=modules[m].items[mi].content_id;
 
                         //module_item_id?
                         modAssignments.push(modules[m].items[mi].content[0]);
@@ -419,7 +418,7 @@
                         var detailItem = $.grep(details, function(elem, indx){
                             return elem['name'] == $(d3.event.currentTarget).attr('data-name');
                         });
-                        //console.log(detailItem[0]);
+                        console.log(detailItem[0]);
                         displayDetails(detailItem[0]);
                     });
             }/* End for( */
@@ -455,7 +454,7 @@
     */
     function displayDetails(item) {
         //console.log('item:',item);
-        $('#detailed-title').html(item.name+' Competency Details');
+        $('#comp_detailed-title').html(item.name+' Competency Details');
         var content='';
         var locked=false;
         for(var i=0; i<item.assignments.length; i++) {
@@ -527,8 +526,8 @@
             }
         }
 
-        $('#detailed-body').html(content);
-        $('#detailed').modal('show');
+        $('#comp_detailed-body').html(content);
+        $('#comp_detailed').modal('show');
 
         $('.compavailable').on('click',function(e) {
             e.preventDefault();

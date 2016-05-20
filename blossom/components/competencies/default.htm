@@ -32,7 +32,7 @@
     //console.log('Role: ',role);//string
 	
 	//component configuration [id,Name,Color,Size,Animate,course_id]
-    var config = {{config|raw}};
+    var config = {{competencyconfig|raw}};
     //console.log('config',config);
 	var competenciesColor=config.Color;//string
 	var competenciesSize=config.Size.toLowerCase();//string
@@ -41,7 +41,7 @@
     var data =[];// json for d3
     var details=[];// for modal '#detailed' body content
 	
-    var modules={{modules|raw}};//both use module_items to build tags
+    var modules={{competencymodules|raw}};//both use module_items to build tags
     //console.log('modules:',modules.length, modules);
 	var tagList=[];
 	var modAssignments = [];// instructor only

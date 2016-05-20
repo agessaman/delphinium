@@ -106,7 +106,7 @@ class Modulemap extends ComponentBase
 		$req = new AssignmentsRequest(ActionType::GET);
 		$assignments = $roots->assignments($req);
 		
-		$this->page['assignments'] = json_encode($assignments);
+		$this->page['bop_assignments'] = json_encode($assignments);
 		
 		// submissions to calculate score
 		if(!isset($_SESSION)) { session_start(); }
@@ -122,16 +122,13 @@ class Modulemap extends ComponentBase
 		$req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
 		$submitted = $roots->submissions($req);
 		
-		// get rid of any that are null 
-		//DONT remove: 0 we're looking for the total score
+		//add up the total score
 		$submissions = array();// score > 0
 		foreach ($submitted as $submission) {
-			//if($submission["score"] > 0) {
 				array_push($submissions, $submission);
-			//}
 		}
 
-		$this->page['submissions'] = json_encode($submissions);
+		$this->page['bop_submissions'] = json_encode($submissions);
 		
 		// module states
 		$moduleId = null;
