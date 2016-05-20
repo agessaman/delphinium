@@ -20,11 +20,11 @@
  */
 
 /* competencies.js
-    data & details are setup by View partials
+    data & details are setup by functions below
     
     Uses:
     submissions for tags & scores
-    assignments for points_possible
+    assignments for points_possible & html_url
 	
 	Stem:
 	assignments must contain special tags starting with C:
@@ -41,9 +41,9 @@
     // related by assignment_id
 
 	/* Delphinium options */
-	$('#popinfo').popover();// activate info
+	$('#comp_popinfo').popover();// activate info
 	
-    /* if Learner, filterData then showCompetencies
+    /* if Learner, studentData then showCompetencies
         else 
         create assignments using Module Items
         showCompetencies data, details
@@ -51,14 +51,15 @@
     */
     if(role == 'Learner') {
 		/* set up the popover content text */
-		$('#popinfo').attr("data-content","Click a bar to view competency details.");
+		$('#comp_popinfo').attr("data-content","Click a bar to view competency details.");
 		
-        filterData();
+		filterModuleTags();
+		studentData();
         showCompetencies();
 		
     } else {
 		/* set up the popover text for instructor */
-		$('#popinfo').attr("data-content","Instructor view does not contain submissions. Click a bar to view competency details.");
+		$('#comp_popinfo').attr("data-content","Instructor view does not contain submissions. Click a bar to view competency details.");
 	
 		/* set id,course in the POST they are not editable in the form
 			Add hidden input fields so they will transfer to onUpdate
@@ -78,22 +79,22 @@
 		$('div #ColorPicker-formColor-input-Color').val(config.Color);
 		console.log('instance: '+config.id,config.Name,config.Size,config.Color,config.Animate,config.course_id);
 		
-		$('#cog').on('click', function(e){
+		$('#comp_cog').on('click', function(e){
 			$('#competence-configuration').modal('show');
 		});
 		
         filterModuleTags();
+		instructorData();
         showCompetencies();
     }
 
     function filterModuleTags() {
 
-        //var modules={{modules|raw}};// twig inside instructorView use module items to build data
-        //console.log(modules.length, modules);
+        //var modules={{competencymodules|raw}};// twig inside default.htm use module items to build data
+        console.log(modules.length, modules);
         // replace assignments with modAssignments that have tags
         assignments=[];
-        var modAssignments = [];
-        var tagList=[];
+        
         for(var m=0; m<modules.length; m++) {
 
             for(var mi=0; mi<modules[m].items.length; mi++) {
@@ -127,13 +128,14 @@
                         //for click bar modal assignments detail
 
                         modules[m].items[mi].content[0]["name"]=modules[m].items[mi].title;
-                        modules[m].items[mi].content[0]["html_url"]=modules[m].items[mi].url;
+                        modules[m].items[mi].content[0]["html_url"]=modules[m].items[mi].url;// NOT html_url;
                         modules[m].items[mi].content[0]["assignment_id"]=modules[m].items[mi].content_id;
                         modules[m].items[mi].content[0]["id"]=modules[m].items[mi].content_id;
 
                         //module_item_id?
                         modAssignments.push(modules[m].items[mi].content[0]);
                         assignments.push(modules[m].items[mi].content[0]);
+						//console.log('item:',modules[m].items[mi].content[0]);
                     }
                 }
             }
@@ -141,15 +143,19 @@
         console.log('tagList:', tagList.length, tagList);
         //console.log('modAssignments:', modAssignments.length, modAssignments);
         //console.log('assignments:',assignments.length, assignments);
-
+	}/* END filterModuleTags */
+		
+	function instructorData() {
+		console.log('assignments:', assignments.length, assignments);// built by filterModuleTags
         var gTotal=0;// total points
         var gAmount=0;//remains 0, no submissions
 
         for(var l=0; l<tagList.length; l++) {
             var name = tagList[l].substring(2,tagList[l].length);
             details.push({"name":name,"assignments":[]});
-            // group submissions by tag
-            var group = $.grep(modAssignments, function(elem, indx){
+            // group assignments by tag
+			//var group = $.grep(modAssignments, function(elem, indx){
+            var group = $.grep(assignments, function(elem, indx){
                 if(hasTag(elem, tagList[l])) { return elem; }
             });
 
@@ -174,38 +180,19 @@
         }
         //console.log('data:',data.length,data);
         //console.log('details:',details.length,details);
-    }/* END filterModuleTags */
+    }/* END instructorData */
 
-    function filterData() {
-        console.log('submissions:',submissions);
-        console.log('assignments:',assignments);
+    function studentData() {
+        console.log('submissions:',submissions);// w/ moditem_id & points_possible added
+        console.log('assignments:', assignments.length, assignments);// built by filterModuleTags
         //find all submissions that have tags
         var tagged =$.grep(submissions, function(elem, indx){
             return elem['tags'] != "";
         });
-        //console.log(tagged.length, tagged);
-
-        var tagList=[];
-        for(i=0; i<tagged.length; i++) {
-            //remove tags that do not start with 'C:'
-            var tagarray = tagged[i]['tags'].split(', ');
-            for(var t=0; t<tagarray.length; t++) {
-                var atag = tagarray[t].substring(0,2)
-                if(atag != 'C:' && atag != 'c:') {
-                    tagarray.splice(t,1);
-                }
-                //console.log(tagarray[t]); // some undefined slip through
-                //Construct a list of unique tags for sorting
-                if(tagList.indexOf(tagarray[t]) == -1 && tagarray[t] != undefined){
-                    tagList.push(tagarray[t]);
-                }
-            }
-            // remove any non C:ompetency tags
-            tagged[i]['tags']=tagarray.join();
-            var tdetails = 'subm['+i+']';
-                tdetails+= ' tags:'+tagged[i].tags+' [score:'+tagged[i].score+']<br/>';
-        }
-        console.log(tagList.length, 'tagList:'+tagList);
+		//tagged only shortens submissions array
+        console.log('tagged:', tagged.length, tagged);
+		// filterModuleTags builds tags
+		//console.log('tagList:', tagList.length, tagList);
 
         /*
         loop thru tagList to sort tagged submissions into groups, 
@@ -216,41 +203,46 @@
         */
         //var details=[];// for modal '#detailed' body content
         //var data =[];// json for d3
-        var gTotal=0, gAmount=0;
+        var gTotal=0;
+		var gAmount=0;
         for(var l=0; l<tagList.length; l++) {
             // {"name":
             var name = tagList[l].substring(2,tagList[l].length);
-            details.push({"name":name,"assignments":[]});
-            // group by tag
+            details.push({"name":name,"assignments":[],"submissions":[]});
+            // group by tag : tagged = submission w/ any tag
             var group = $.grep(tagged, function(elem, indx){
                 if(hasTag(elem, tagList[l])) { return elem; }
             });
-            //console.log(group.length, group);
-            // for each group
+            console.log(name+' group:', group.length, group);// submissions
+			
+            // for each group with this tag
             for(var g=0; g<group.length; g++) {
+				//add up scores and store submissions
                 gAmount += group[g].score;
-                //add up scores and points possible
-                for(var a=0; a<assignments.length; a++) {
-                    if(assignments[a].assignment_id == group[g].assignment_id) {
-                        if(assignments[a].points_possible){
-                            gTotal += assignments[a].points_possible;
-                            // add matching assignments ids for modal view
-                            details[l]['assignments'].push({'id':assignments[a].assignment_id});
-                        }
-                    }
-                }    
-            }
+				details[l]['submissions'].push({'id':group[g].submission_id});
+			}
+			
+			var agroup = $.grep(assignments, function(elem, indx){
+                if(hasTag(elem, tagList[l])) { return elem; }
+            });
+			for(var a=0; a<agroup.length; a++) {
+				//add up total points possible
+				gTotal += agroup[a].points_possible;
+				// store assignment ids for modal view
+				details[l]['assignments'].push({'id':agroup[a].assignment_id});
+			}
+			
             // construct data for D3 // xcale((data[i].percent/100)*maxTotal)
             var percent = Math.round(gAmount/gTotal*100);
             data.push({"name":name,"total":gTotal,"amount":gAmount,"percent":percent});
         }
-        //console.log(data.length,data);
-        //console.log(details.length,details);
-    }/* END filterData */
+        console.log('data:', data.length, data);
+        console.log('details:', details.length, details);
+    }/* END studentData */
 
     /* *******************************************
         check if object has tag needed
-        used from filterData & filterModuleTags
+        called from instructorData & studentData
     */
     function hasTag(obj,tag) {
         var tagarray = obj['tags'].split(',');
@@ -426,7 +418,7 @@
                         var detailItem = $.grep(details, function(elem, indx){
                             return elem['name'] == $(d3.event.currentTarget).attr('data-name');
                         });
-                        //console.log(detailItem[0]);
+                        console.log(detailItem[0]);
                         displayDetails(detailItem[0]);
                     });
             }/* End for( */
@@ -462,7 +454,7 @@
     */
     function displayDetails(item) {
         //console.log('item:',item);
-        $('#detailed-title').html(item.name+' Competency Details');
+        $('#comp_detailed-title').html(item.name+' Competency Details');
         var content='';
         var locked=false;
         for(var i=0; i<item.assignments.length; i++) {
@@ -487,22 +479,25 @@
                     //compare today date with lock_at (2015-09-01 06:00:00) 
                     if(assignment[0].locked_for_user == 0) {
                     //if(assignment[0].lock_at == null) {
-                        content += '<div class="alert alert-success available">';//Available green
+                        content += '<div class="alert alert-success compavailable">';//Available green
                     } else {
-                        content += '<div class="alert unavailable">';//Locked grey [figure out locked]
+                        content += '<div class="alert compunavailable">';//Locked grey [figure out locked]
                         locked=true;
                     }
                     //content += '<div class="alert fade in">';
                     //submitted[0].score='0';// instead of null
 
                 }else if(submitted[0].score == 0){
-                    content += '<div class="alert alert-info available">';// red alert-danger
+                    content += '<div class="alert alert-info compavailable">';// red alert-danger
                 }else{
-                    content += '<div  class="alert alert-info available">';//Done blue
+                    content += '<div  class="alert alert-info compavailable">';//Done blue
                 }
-                //content += '<div class="link" data-url="'+assignment[0].html_url+'">'+assignment[0].name+' </div>';// displays JSON
-                content += '<div class="link" data-url="'+assignment[0].html_url+'?module_item_id='+assignment[0].module_item_id+'">'+assignment[0].name+' </div>';
-                if(locked){ 
+				var uri = assignment[0].html_url.replace('api/v1/', '');// AHA
+                content += '<div class="complink" data-url="'+uri+'">'+assignment[0].name+' </div>';// assignment/ id
+                //content += '<div class="complink" data-url="'+uri+'?module_item_id='+assignment[0].module_item_id+'">'+assignment[0].name+' </div>';
+                //https://uvu.instructure.com/courses/343331/assignments/1660418?module_item_id=undefined
+				//https://uvu.instructure.com/courses/343331/quizzes/464892
+				if(locked){ 
                     content += ' Locked, not available yet';
                 } else {
                     if(submitted[0].score == null) {
@@ -518,25 +513,26 @@
             if(role == 'Instructor') {
                 var tags=assignment[0].tags.split(",");
                 if(tags.indexOf('C:'+item.name) != -1 ) {
-                    content += '<div class="alert alert-success available">';
-                    //content += '<div class="link" data-url="'+assignment[0].html_url+'">'+assignment[0].name+'</div>';// displays JSON
-                    content += '<div class="link" data-url="'+assignment[0].html_url+'?module_item_id='+assignment[0].module_item_id+'">'+assignment[0].name+' </div>';
-                    content += '- Worth '+assignment[0].points_possible+' points.';
+                    content += '<div class="alert alert-success compavailable">';
+					var uri = assignment[0].html_url.replace('api/v1/', '');// AHA
+                    content += '<div class="complink" data-url="'+uri+'">'+assignment[0].name+'</div>';// -api/v1/
+                    //content += '<div class="complink" data-url="'+uri+'?module_item_id='+assignment[0].module_item_id+'">'+assignment[0].name+' </div>';
+                    //https://uvu.instructure.com/ -->api/v1/<-- courses/343331/quizzes/464884?module_item_id=2368118
+					
+					content += '- Worth '+assignment[0].points_possible+' points.';
                     content += ' ( Tags: '+assignment[0].tags+' )';
                     content += '</div>';
-                    //TEST see which one works student or instructor view
-                    //I think : assignment[0].html_url+'?module_item_id='+assignment[0].module_item_id)
                 }
             }
         }
 
-        $('#detailed-body').html(content);
-        $('#detailed').modal('show');
+        $('#comp_detailed-body').html(content);
+        $('#comp_detailed').modal('show');
 
-        $('.available').on('click',function(e) {
+        $('.compavailable').on('click',function(e) {
             e.preventDefault();
             e.stopPropagation();
-            var url = $(e.currentTarget).find('.link').attr('data-url');
+            var url = $(e.currentTarget).find('.complink').attr('data-url');
             console.log('url:',url);
             window.open(url, '_blank');	
         });
