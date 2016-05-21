@@ -41,14 +41,12 @@
     var data =[];// json for d3
     var details=[];// for modal '#detailed' body content
 	
-    var modules={{competencymodules|raw}};//both use module_items to build tags
+    var modules={{competencymodules|raw}};//module_items to build tags
     //console.log('modules:',modules.length, modules);
 	var tagList=[];
-	var modAssignments = [];// instructor only
     var assignments=[];// click bar to display items
-    var submissions=[];// N/A unless Learner
-	//loads in studentView.htm
-    //var submissions={{submissions|raw}};
+    var submissions=[];// N/A unless Learner, load in studentView.htm
+    //var submissions={{competencysubmissions|raw}};
 	
 </script>
 {% if ('Learner' in role) %}

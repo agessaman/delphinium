@@ -23,8 +23,8 @@
 .modal-header {background:none !important;border-bottom:1px solid #e5e5e5 !important;color:#333333 !important}
 .modal-header .close{color:black !important;background:transparent !important;}
 .modal-body {padding-bottom: 15px;}
-/*.modal-md default is 600px */
-/*.modal-md { width: 700px !important; } */
+/*.modal-lg default is 900px */
+/*.modal-lg { width: 880px !important; }*/
 
 /* october ui loader */
 .loading-indicator-container {
