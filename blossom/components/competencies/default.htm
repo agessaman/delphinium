@@ -32,11 +32,11 @@
     //console.log('Role: ',role);//string
 	
 	//component configuration [id,Name,Color,Size,Animate,course_id]
-    var config = {{competencyconfig|raw}};
-    //console.log('config',config);
-	var competenciesColor=config.Color;//string
-	var competenciesSize=config.Size.toLowerCase();//string
-	var competenciesAnimate=config.Animate;//boolean
+    var compConfig = {{competencyconfig|raw}};
+    //console.log('compConfig',compConfig);
+	var competenciesColor=compConfig.Color;//string
+	var competenciesSize=compConfig.Size.toLowerCase();//string
+	var competenciesAnimate=compConfig.Animate;//boolean
     
     var data =[];// json for d3
     var details=[];// for modal '#detailed' body content

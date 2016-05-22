@@ -67,22 +67,29 @@
 			if fields are set to hidden: true, they do not appear in the post
 		*/
 		
-		$('#Form-outsideTabs').append('<input type="hidden" name="Competencies[id]" value="'+config.id+'" /> ');
-		$('#Form-outsideTabs').append('<input type="hidden" name="Competencies[course_id]" value="'+config.course_id+'" /> ');
+		$('#Form-outsideTabs').append('<input type="hidden" name="Competencies[id]" value="'+compConfig.id+'" /> ');
+		$('#Form-outsideTabs').append('<input type="hidden" name="Competencies[course_id]" value="'+compConfig.course_id+'" /> ');
 		
-		// Fix Animate checkbox switch
-		//$('<div style="height:90px;" class="clearfix"></div>').insertBefore('.checkbox-field').parent;
-		//$('.checkbox-field').attr('style','margin-left:20px').removeClass('span-right').addClass('span-left');
 		// Hide the name field so instructor cant change it
 		$('#Form-field-Competencies-Name-group').hide();
 		
 		// Set the color picker to current color
-		$('div #ColorPicker-formColor-input-Color').val(config.Color);
-		console.log('instance: '+config.id,config.Name,config.Size,config.Color,config.Animate,config.course_id);
+		$('div #ColorPicker-formColor-input-Color').val(compConfig.Color);
+		console.log('instance: '+compConfig.id,compConfig.Name,compConfig.Size,compConfig.Color,compConfig.Animate,compConfig.course_id);
 		
 		$('#comp_cog').on('click', function(e){
 			$('#comp_configuration').modal('show');
 		});
+		
+		function compSaved(data) {
+			$('#comp_configuration').modal('hide');
+			$.oc.flashMsg({
+				'text': 'The record has been successfully saved.',
+				'class': 'success',
+				'interval': 3
+			});
+			location.reload();
+		}
 		
         filterModuleTags();
 		instructorData();
@@ -260,7 +267,7 @@
         var competenciesWidth = 250;// could be a property?
         var competenciesHeight = data.length*rowHeight;
 
-        //var competenciesSize=config.Size.toLowerCase();// twig in default.htm
+        //var competenciesSize=compConfig.Size.toLowerCase();// twig in default.htm
         //console.log('competenciesSize',competenciesSize);
         if(competenciesSize == "small") {
             competenciesSVG.attr('width', competenciesWidth / 1.5)
@@ -308,8 +315,8 @@
             */
         } else {
             // Show the component
-            ////var competenciesAnimate=config.Animate;
-            ////var competenciesColor=config.Color; 
+            //var competenciesAnimate=compConfig.Animate;
+            //var competenciesColor=compConfig.Color; 
             var percentColor = '#CCCCCC';// med gray or inverse amount color
             var competencies = d3.selectAll(".competenciesView");// a <g>roup
             var xcale = d3.scale.linear()

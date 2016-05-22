@@ -19,20 +19,34 @@
   ~ You may not distribute any version of this software, modified or otherwise
   -->
 
-<!-- Vanilla Instructions partial -->
-<h3>Quiz Lesson Component</h3>
-
-<div style="float:left; width:50%">
-	
-	<p>Write your instructions here. <br />
-		Include an image by placing it in the assets folder and writing the src with jquery
-	</p>
-	<p>&nbsp;<br/></p>
-	<p>Instructions for anyone interested</p>
-	<p>&nbsp;</p>
+<!-- quizlesson Instructions partial -->
+<style>
+#orchidinstructimage {
+    width: 260px;
+    height: 165px;
+	float:right;
+    background-image: url('<?= Config::get("app.url", "backend") ?>plugins/delphinium/orchid/assets/images/generic260.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+#orchidinstructext {
+	float:left;
+	width:48%;
+}
+#orchidInstruct {
+	height:220px;
+}
+</style>
+<div id="orchidInstruct">
+	<h3>Quiz Lesson Component</h3>
+	<div id="orchidinstructimage" title="What it looks like" width="260" height="165"></div>
+	<div id="orchidinstructext">
+		
+		<p>Write your instructions here. <br />
+			Include an image by placing it in the assets folder and setting the url in the css above
+		</p>
+		<p>&nbsp;<br/></p>
+		<p>Instructions for component</p>
+		<p>&nbsp;</p>
+	</div>
 </div>
-<img id="image0" style="float:right;" src="" width="280" height="120" title="Style the component" alt="style it"/>
-<script>
-    // add images by injecting the source path
-	//$('#image0').attr('src','<?= Config::get("app.url", "backend") ?>plugins/delphinium/orchid/assets/images/yourimage.png');
-</script>
