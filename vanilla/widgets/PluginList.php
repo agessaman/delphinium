@@ -5,9 +5,9 @@ use Input;
 use File;
 use Backend\Classes\WidgetBase;
 use System\Classes\PluginManager;
-use RainLab\Builder\Classes\PluginCode;
+use Delphinium\Vanilla\Classes\PluginCode;
 use RainLab\Builder\Models\Settings as PluginSettings;
-use RainLab\Builder\Classes\PluginVector;
+use Delphinium\Vanilla\Classes\PluginVector;
 use Exception;
 
 /**

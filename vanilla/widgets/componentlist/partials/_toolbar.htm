@@ -1,6 +1,15 @@
 <div class="layout-row min-size">
     <div class="control-toolbar toolbar-padded">
 
+        <!-- Add component-->
+        <div class="toolbar-item" data-calculate-width>
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary oc-icon-plus" data-builder-command="plugin:cmdCreatePlugin"
+                >New Component</button>
+
+            </div>
+        </div>
+
         <!-- Component Search -->
         <div class="relative toolbar-item loading-indicator-container size-input-text">
             <input placeholder="<?= e(trans('cms::lang.sidebar.search')) ?>" type="text" name="search" value="<?= e($this->getSearchTerm()) ?>" 

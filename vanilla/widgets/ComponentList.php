@@ -93,15 +93,12 @@ class ComponentList extends WidgetBase
 
         $pluginManager = PluginManager::instance();
         $plugins = $pluginManager->getPlugins();
-
-        //select only the plugin the user selected
-//        echo json_encode($plugins);
-
-//        $thePlugin = array_filter($plugins,"test_odd")
-        $this->prepareComponentList();
-
+        $this->prepareComponentList($activePluginVector);
         $items = [];
-        foreach ($plugins as $plugin) {
+        foreach ($plugins as $key=>$plugin) {
+            if($key!==$activePluginVector->pluginCodeObj->toCode()) {
+               continue;
+            }
             $components = $this->getPluginComponents($plugin);
             if (!is_array($components)) {
                 continue;
@@ -190,13 +187,12 @@ class ComponentList extends WidgetBase
         $this->activePluginVector;
         return($var & 1);
     }
-    protected function prepareComponentList()
+    protected function prepareComponentList($activePlugin)
     {
         $pluginManager = PluginManager::instance();
         $plugins = $pluginManager->getPlugins();
-
         $componentList = [];
-        foreach ($plugins as $plugin) {
+        foreach ($plugins as $key=>$plugin) {
             $components = $plugin->registerComponents();
             if (!is_array($components)) {
                 continue;
@@ -217,8 +213,8 @@ class ComponentList extends WidgetBase
                     'duplicateAlias' => $duplicateAlias,
                     'pluginClass'    => get_class($plugin)
                 ];
-            }
-        }
+            }//foreach
+        }//foreach
 
         $this->pluginComponentList = $componentList;
     }
