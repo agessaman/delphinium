@@ -1,6 +1,7 @@
 <?php namespace Delphinium\Vanilla\Widgets;
 
 use Str;
+use File;
 use Lang;
 use Input;
 use Request;
@@ -8,7 +9,11 @@ use Response;
 use Cms\Classes\Theme;
 use System\Classes\PluginManager;
 use Cms\Classes\ComponentHelpers;
+use Cms\Helpers\File as FileHelper;
 use Backend\Classes\WidgetBase;
+use RecursiveIteratorIterator;
+use RecursiveDirectoryIterator;
+use DirectoryIterator;
 
 /**
  * Component list widget.
@@ -25,6 +30,15 @@ class ComponentList extends WidgetBase
     protected $pluginComponentList;
 
     protected $activePluginVector;
+
+    protected static $fillable = [
+        'content',
+        'fileName'
+    ];
+
+    protected static $allowedExtensions = ['htm'];
+
+    protected static $defaultExtension = 'htm';
 
     public function __construct($controller, $alias)
     {
@@ -83,8 +97,10 @@ class ComponentList extends WidgetBase
 
     protected function getData($activePluginVector)
     {
-//        echo json_encode($activePluginVector);
-//        echo $activePluginVector->pluginCodeObj->toCode();//->pluginCodeObj->authorCode);
+        if(!$activePluginVector)
+        {
+            return;
+        }
         $searchTerm = Str::lower($this->getSearchTerm());
         $searchWords = [];
         if (strlen($searchTerm)) {
@@ -95,6 +111,7 @@ class ComponentList extends WidgetBase
         $plugins = $pluginManager->getPlugins();
         $this->prepareComponentList($activePluginVector);
         $items = [];
+
         foreach ($plugins as $key=>$plugin) {
             if($key!==$activePluginVector->pluginCodeObj->toCode()) {
                continue;
@@ -132,6 +149,11 @@ class ComponentList extends WidgetBase
 
                 $componentDetails = $component->componentDetails();
                 $component->alias = '--alias--';
+
+                //get this component's files
+                $this->getComponentFiles($plugin,$componentInfo);
+
+
 
                 $item = (object)[
                     'title'          => ComponentHelpers::getComponentName($component),
@@ -180,6 +202,96 @@ class ComponentList extends WidgetBase
         });
 
         return $items;
+    }
+
+    public function getComponentFiles($activePlugin,$activeComponent)
+    {
+        $dirPath = base_path()."/plugins/".$activeComponent->className;
+
+        $result = [];
+
+        if (!File::isDirectory($dirPath)) {
+            return $result;
+        }
+
+        $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dirPath));
+        $it->setMaxDepth(1); // Support only a single level of subdirectories
+        $it->rewind();
+
+        while ($it->valid()) {
+//            if ($it->isFile() && in_array($it->getExtension(), static::$allowedExtensions)) {
+            if ($it->isFile()) {
+                $filePath = $it->getBasename();
+                if ($it->getDepth() > 0) {
+                    $filePath = basename($it->getPath()).'/'.$filePath;
+                }
+echo $filePath;
+                $page = static::load($filePath);// loading it from cache : static::loadCached($theme, $filePath);
+                $result[] = $page;
+            }
+
+            $it->next();
+        }
+//echo json_encode($result);
+        return $result;
+    }
+
+    /**
+     * Loads the object from a file.
+     * This method is used in the CMS back-end. It doesn't use any caching.
+     * @param \Cms\Classes\Theme $theme Specifies the theme the object belongs to.
+     * @param string $fileName Specifies the file name, with the extension.
+     * The file name can contain only alphanumeric symbols, dashes and dots.
+     * @return mixed Returns a CMS object instance or null if the object wasn't found.
+     */
+    public static function load($fileName)
+    {
+        if (!FileHelper::validatePath($fileName, static::getMaxAllowedPathNesting())) {
+            throw new ApplicationException(Lang::get('cms::lang.cms_object.invalid_file', ['name'=>$fileName]));
+        }
+
+        if (!strlen(File::extension($fileName))) {
+            $fileName .= '.'.static::$defaultExtension;
+        }
+
+        $fullPath = $fileName;//static::getFilePath($theme, $fileName);
+
+        if (!File::isFile($fullPath)) {
+            return null;
+        }
+
+        if (($content = @File::get($fullPath)) === false) {
+            return null;
+        }
+
+        $obj = new \stdClass();//new static($theme);
+        $obj->fileName = $fileName;
+        $obj->originalFileName = $fileName;
+        $obj->mtime = File::lastModified($fullPath);
+        $obj->content = $content;
+        return $obj;
+    }
+
+    /**
+     * Returns the maximum allowed path nesting level.
+     * The default value is 2, meaning that files
+     * can only exist in the root directory, or in a subdirectory.
+     * @return mixed Returns the maximum nesting level or null if any level is allowed.
+     */
+    protected static function getMaxAllowedPathNesting()
+    {
+        return 2;
+    }
+
+    /**
+     * Returns the absolute file path.
+     * @param \Cms\Classes\Theme $theme Specifies a theme the file belongs to.
+     * @param string$fileName Specifies the file name to return the path to.
+     * @return string
+     */
+    protected static function getFilePath($plugin, $fileName)
+    {
+        return $theme->getPath().'/'.static::getObjectTypeDirName().'/'.$fileName;
     }
 
     protected function filterThePlugin($var)
