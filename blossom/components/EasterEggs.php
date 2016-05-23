@@ -31,6 +31,9 @@ use Redirect;
 
 class EasterEggs extends ComponentBase
 {
+    public $courseId;
+    public $config;
+    public $eggsInstanceId;
 
     public function componentDetails()
     {
@@ -69,7 +72,6 @@ class EasterEggs extends ComponentBase
             $this->eggsInstanceId = $config->id;
             $this->page['instance_id'] =  $config->id;
             
-            
             // use the record in the component and frontend form 
             $this->page['config'] = json_encode($config);
             
@@ -78,6 +80,7 @@ class EasterEggs extends ComponentBase
              * if not then set to Instructor. disregard any other roles?
              * role is used to determine functions and display options
              */
+
             $roleStr = $_SESSION['roles'];
             
             if(stristr($roleStr, 'Learner')) {
