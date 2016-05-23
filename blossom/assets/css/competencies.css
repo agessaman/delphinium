@@ -24,7 +24,7 @@
 .modal-header .close{color:black !important;background:transparent !important;}
 .modal-body {padding-bottom: 15px;}
 /*.modal-lg default is 900px */
-.modal-lg { width: 830px !important; } */
+/*.modal-lg { width: 830px !important; } */
 
 /* control the loader */
 .loading-indicator-container {

@@ -39,24 +39,31 @@ $(document).ready(function() {
 /* Delphinium functions:
 	set up the popover content text and activate it
 */
-	$('#popinfo').attr("data-content","Choose a Quiz to place in a page. Then select questions and add them to the page. Be sure to use all questions! Submit Button will grade the quiz.");
-    $('#popinfo').popover();// activate info
-    /* set id & course for the POST if they are hidden in fields.yaml
-        Add hidden input fields so they will transfer to onUpdate
-        if a field is set to hidden: true it does not appear in the form at all
-    */
-    $('#Form-outsideTabs').append('<input type="hidden" name="Quizlesson[id]" value="'+config.id+'" /> ');
-    
-	function completed(data)
-	{
-        /* updated record is returned */
-        /* Flash a message then reload page
-        $.oc.flashMsg({
-            'text': 'The record has been successfully saved.',
-            'class': 'success',
-            'interval': 3
-        }); */
-        location.reload();// wait for 3 sec?
+	$('#orchid-popinfo').attr("data-content","Choose a Quiz to place in a page. Then select questions and add them to the page. Be sure to use all questions! Submit Button will grade the quiz.");
+    $('#orchid-popinfo').popover();// activate info
+
+	if(role=='Instructor') {
+		/* set id & course for the POST if they are hidden in fields.yaml
+			Add hidden input fields so they will transfer to onUpdate
+			if a field is set to hidden: true it does not appear in the form at all
+		*/
+		$('#Form-outsideTabs').append('<input type="hidden" name="Quizlesson[id]" value="'+orchidConfig.id+'" /> ');
+		
+		$('#orchid-cog').on('click', function(e){
+			$('#orchid-configuration').modal('show');
+		});
+		
+		function orchidCompleted(data)
+		{
+			/* updated record is returned */
+			/* Flash a message then reload page */
+			$.oc.flashMsg({
+				'text': 'The record has been successfully saved.',
+				'class': 'success',
+				'interval': 3
+			}); 
+			location.reload();
+		}
 	}
 /* End Delphinium functions*/
 
@@ -77,9 +84,9 @@ $('#addsubmit').attr("disabled","disabled");
 // start with a text field
 $('.show-content').append('<div class="text-content"></div>');
     
-console.log('quiz_id:', config.quiz_id); 
-if(config.quiz_id != undefined && config.quiz_id != '') {
-	selectedQuiz = config.quiz_id;
+console.log('quiz_id:', orchidConfig.quiz_id); 
+if(orchidConfig.quiz_id != undefined && orchidConfig.quiz_id != '') {
+	selectedQuiz = orchidConfig.quiz_id;
 	showQuizQuestions(selectedQuiz);// from quiz_id
 } else { showQuizzes(); }
 
@@ -118,7 +125,7 @@ function showQuizzes()
 	//click quiz to view questions
 	$('.alert').on('click', function(e){
 		selectedQuiz=e.target.id;// quiz_id
-		config.quiz_id = selectedQuiz;
+		orchidConfig.quiz_id = selectedQuiz;
 		$('#Form-field-Quizlesson-quiz_id').val(selectedQuiz);
 		
 		showQuizQuestions(selectedQuiz);
@@ -136,8 +143,8 @@ function showQuizQuestions(id)
         return elem.quiz_id == id; }
 	);
 	console.log('quiz:', quiz);
-	config.quiz_name = quiz[0].title;
-	$('#Form-field-Quizlesson-quiz_name').val(config.quiz_name);
+	orchidConfig.quiz_name = quiz[0].title;
+	$('#Form-field-Quizlesson-quiz_name').val(orchidConfig.quiz_name);
 	quests=quiz[0].questions;
 	console.log('quests:',quests);
 	//properties: quiz_id, title, q_count, points, description
@@ -172,7 +179,7 @@ function showQuizQuestions(id)
 		e.preventDefault();
 		nextcount=e.currentTarget.id;
 		constructQuestion(nextcount);
-		$('#detailed').modal('show');
+		$('#quest-details').modal('show');
 	});
 }
     
@@ -247,27 +254,27 @@ function showQuizQuestions(id)
 // see question details 
     $('#nextbtn').on('click', function(e) {
         e.preventDefault();
-        //detailed-body replace content with next question
+        //next question
 		nextcount++;
 		if(nextcount==quests.length){ nextcount=0; }
 		constructQuestion(nextcount);
     });
     $('#backbtn').on('click', function(e) {
         e.preventDefault();
-        //detailed-body replace content with next question
+        //previous question
 		nextcount--;
 		if(nextcount<0){ nextcount=quests.length-1; }
 		constructQuestion(nextcount);
     });
 
 	/*
-	   index is first selected question to see in #detailed modal
+	   index is first selected question to see in #quest-details modal
        construct: type, points, question, answers and comments
 	*/
 	function constructQuestion(index)
 	{	
 		var quest = quests[index];
-		$('#detailed-title').html('Question '+(index+1));
+		$('#quest-details-title').html('Question '+(index+1));
 		$('#qtype').html('Type: '+quests[index].type);
 		$('#qpoints').html('Points: '+quests[index].points_possible);
 		var txt = quests[index].text;//.toString();
