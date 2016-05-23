@@ -84,6 +84,7 @@ class Competencies extends ComponentBase
 					$config->Size = 'Medium';//$config->size = '20%';
 					$config->Color = '#4d7123';//uvu green
 					$config->Animate = '1';//true
+                    $config->course_id = $courseID;
 					$config->save();// save the new record
 				} else {
 					//use the first record matching course

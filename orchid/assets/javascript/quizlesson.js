@@ -48,7 +48,8 @@ $(document).ready(function() {
 			if a field is set to hidden: true it does not appear in the form at all
 		*/
 		$('#Form-outsideTabs').append('<input type="hidden" name="Quizlesson[id]" value="'+orchidConfig.id+'" /> ');
-		
+		$('#Form-outsideTabs').append('<input type="hidden" name="Quizlesson[course_id]" value="'+orchidConfig.course_id+'" /> ');
+        
 		$('#orchid-cog').on('click', function(e){
 			$('#orchid-configuration').modal('show');
 		});

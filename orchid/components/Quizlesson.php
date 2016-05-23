@@ -103,6 +103,7 @@ class Quizlesson extends ComponentBase
 					//$config->size = '20%';
                     //$config->quiz_name = '';
                     //$config->quiz_id = '';
+                    $config->course_id = $courseID;
 					$config->save();// save the new record
 				} else {
 					//use the first record matching course
@@ -218,6 +219,7 @@ class Quizlesson extends ComponentBase
 		//$config->size = '20%';// always 100% canvas page !
         $config->quiz_name = '';
         $config->quiz_id = '';
+        $config->course_id = $data['course_id'];//hidden field
 		$config->save();// update original record 
 		return json_encode($config);// back to instructor view
     }
