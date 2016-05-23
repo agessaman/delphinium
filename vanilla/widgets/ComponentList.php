@@ -24,6 +24,8 @@ class ComponentList extends WidgetBase
 
     protected $pluginComponentList;
 
+    protected $activePluginVector;
+
     public function __construct($controller, $alias)
     {
         $this->alias = $alias;
@@ -38,9 +40,11 @@ class ComponentList extends WidgetBase
      */
     public function render()
     {
+        $activePluginVector = $this->getActivePlugin();
+        $this->activePluginVector = $activePluginVector;
         return $this->makePartial('body', [
-            'data' => $this->getData(),
-            'pluginVector'=>$this->getActivePlugin()
+            'data' => $this->getData($activePluginVector),
+            'pluginVector'=>$activePluginVector
         ]);
     }
 
@@ -77,8 +81,10 @@ class ComponentList extends WidgetBase
         return $this->controller->getBuilderActivePluginVector();
     }
 
-    protected function getData()
+    protected function getData($activePluginVector)
     {
+//        echo json_encode($activePluginVector);
+//        echo $activePluginVector->pluginCodeObj->toCode();//->pluginCodeObj->authorCode);
         $searchTerm = Str::lower($this->getSearchTerm());
         $searchWords = [];
         if (strlen($searchTerm)) {
@@ -88,6 +94,10 @@ class ComponentList extends WidgetBase
         $pluginManager = PluginManager::instance();
         $plugins = $pluginManager->getPlugins();
 
+        //select only the plugin the user selected
+//        echo json_encode($plugins);
+
+//        $thePlugin = array_filter($plugins,"test_odd")
         $this->prepareComponentList();
 
         $items = [];
@@ -175,6 +185,11 @@ class ComponentList extends WidgetBase
         return $items;
     }
 
+    protected function filterThePlugin($var)
+    {
+        $this->activePluginVector;
+        return($var & 1);
+    }
     protected function prepareComponentList()
     {
         $pluginManager = PluginManager::instance();
@@ -234,12 +249,14 @@ class ComponentList extends WidgetBase
 
     protected function updateList()
     {
-        return ['#'.$this->getId('component-list') => $this->makePartial('items', ['items'=>$this->getData()])];
+        $activePluginVector = $this->getActivePlugin();
+        return ['#'.$this->getId('component-list') => $this->makePartial('items', ['items'=>$this->getData($activePluginVector)])];
     }
 
     public function refreshActivePlugin()
     {
-        return ['#'.$this->getId('body') => $this->makePartial('widget-contents', ['data'=>$this->getData(), 'pluginVector'=>$this->getActivePlugin()])];
+        $activePluginVector = $this->getActivePlugin();
+        return ['#'.$this->getId('body') => $this->makePartial('widget-contents', ['data'=>$this->getData($activePluginVector), 'pluginVector'=>$activePluginVector])];
     }
 
     protected function itemMatchesSearch(&$words, $item)

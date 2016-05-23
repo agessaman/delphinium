@@ -94,7 +94,7 @@ class Index extends Controller
         // before it loads dynamically.
         $this->addJs('/modules/backend/formwidgets/codeeditor/assets/js/build-min.js', 'core');
 
-        //we require the js file from builder. Also the table widget
+        //we require the table widget
         $this->addJs('/modules/backend/widgets/table/assets/js/build-min.js', 'core');
         $this->addJs('/plugins/delphinium/vanilla/assets/js/build-min.js', 'Delphinium.Vanilla');
 

@@ -94,17 +94,10 @@ class AssetList extends WidgetBase
     public function  __construct($controller, $alias, $pluginDir)
     {
         $this->basePluginDir = $pluginDir;
-//        $this->relativePluginDir =$pluginDir;
-//        $this->pluginDir =base_path().$pluginDir;
         $this->alias = $alias;
-//
-//        $this->plugin = Plugin::load($pluginDir);
-////        $this->plugin = Theme::getEditTheme();
-//        $this->dataIdPrefix = 'page-'.$this->plugin->getDirName();
-//        $this->addSubpageLabel = trans($this->addSubpageLabel);
-
         parent::__construct($controller, []);
         $this->bindToController();
+        $this->checkUploadPostback();
     }
 
 
@@ -497,20 +490,16 @@ class AssetList extends WidgetBase
 
     protected function getData($activePluginVector)
     {
+        if(!$activePluginVector)
+        {
+            return;
+        }
+
         $assetsPath = base_path().$this->basePluginDir.$this->relativePluginDir.$activePluginVector->pluginCodeObj->toFilesystemPath().'/assets';
         $pluginDir = base_path().$this->basePluginDir.$this->relativePluginDir.$activePluginVector->pluginCodeObj->toFilesystemPath();
-//echo $pluginDir;
-        /*
-         * These next lines used to be in the constructor, but because the plugin isn't set until we get the render Data, we will have to
-         * set them here instead of in the constructor
-         */
         $this->relativePluginDir =$this->basePluginDir.$this->relativePluginDir.$activePluginVector->pluginCodeObj->toFilesystemPath();
         $this->pluginDir =$pluginDir;
-        $this->plugin = Plugin::load($this->basePluginDir.$this->relativePluginDir.$activePluginVector->pluginCodeObj->toFilesystemPath());
-//echo json_encode($this->plugin);
-//
-//        echo json_encode($this->plugin);
-//        $this->plugin = Theme::getEditTheme();
+        $this->plugin = Plugin::load($this->relativePluginDir);
         $this->dataIdPrefix = 'page-'.$this->plugin->getDirName();
         $this->addSubpageLabel = trans($this->addSubpageLabel);
         if (!file_exists($assetsPath) || !is_dir($assetsPath)) {
@@ -749,7 +738,6 @@ class AssetList extends WidgetBase
             }
 
             if ($node->isDir() && !$node->isDot()) {
-
                 $result[$node->getFilename()] = (object)[
                     'type'     => 'directory',
                     'path'     => File::normalizePath($this->getRelativePath($node->getPathname())),
