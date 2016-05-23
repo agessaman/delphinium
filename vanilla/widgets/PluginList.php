@@ -55,8 +55,10 @@ class PluginList extends WidgetBase
     public function getActivePluginVector()
     {
         $pluginCode = $this->getActivePluginCode();
+
         try {
             if (strlen($pluginCode)) {
+
                 $pluginCodeObj = new PluginCode($pluginCode);
                 $path = $pluginCodeObj->toPluginInformationFilePath();
                 if (!File::isFile(File::symbolizePath($path))) {
@@ -66,7 +68,6 @@ class PluginList extends WidgetBase
                 $plugins = PluginManager::instance()->getPlugins();
                 foreach ($plugins as $code=>$plugin) {
                     if ($code == $pluginCode) {
-                        $plugin = new PluginVector($plugin, $pluginCodeObj);
                         return new PluginVector($plugin, $pluginCodeObj);
                     }
                 }

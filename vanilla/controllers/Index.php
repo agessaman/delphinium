@@ -465,17 +465,6 @@ class Index extends Controller
     protected function loadTemplate($type, $path)
     {
         $class = $this->resolveTypeClassName($type);
-
-//        echo $type;
-//        echo $path;
-//        echo json_encode($class);
-//        echo json_encode($this->plugin);
-//        echo "-----";
-//        $template = call_user_func(array($class, 'load'), $this->plugin, $path);
-//        echo json_encode($template);
-//        echo "end";
-
-
         if (!($template = call_user_func(array($class, 'load'), $this->plugin, $path))) {
             throw new ApplicationException(trans('cms::lang.template.not_found'));
         }
