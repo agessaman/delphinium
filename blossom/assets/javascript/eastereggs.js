@@ -252,16 +252,34 @@ $(document).keydown(function(e) {
   }
 
   //Raptor
-  if(role = 'Instructor' || current_grade >= config.raptor){
+  function checkPlugin(pluginName, callback) {
+    if($[pluginName]) {
+        if(callback) {
+            callback();
+        }
+    } else {
+        setTimeout(function() {
+            checkPlugin(pluginName, callback);
+        }, 100);
+    }
+  }
+  if(role = 'Instructor' || current_grade >= config.raptor) {
     if (e.keyCode in raptor) {
       raptor[e.keyCode] = true;
       if (raptor[keys.R] && raptor[keys.A]) {
-        if(!raptor["loaded"]){
+        if(!raptor["loaded"]) {
+      //load the script
           raptor["loaded"] = true;
           var s = document.createElement('script');
           s.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/jquery.raptorize.1.0.js");
           document.body.appendChild(s);
+                  
         }
+              
+        //execute raptorize after the script loads
+        checkPlugin('raptorize', function() {
+          $('body').raptorize({'enterOn': 'timer', 'delayTime': 0});            
+              });
       }
     }
   }
