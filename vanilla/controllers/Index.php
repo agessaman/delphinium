@@ -84,6 +84,7 @@ class Index extends Controller
 
     public function index()
     {
+        $this->addJs('/modules/backend/assets/js/october.filelist.js', 'core');
         $this->addJs('/plugins/delphinium/vanilla/assets/js/october.cmspage.js', 'core');
         $this->addJs('/plugins/delphinium/vanilla/assets/js/october.dragcomponents.js', 'core');
         $this->addJs('/plugins/delphinium/vanilla/assets/js/october.tokenexpander.js', 'core');

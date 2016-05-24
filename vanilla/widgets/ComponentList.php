@@ -13,6 +13,7 @@ use Cms\Helpers\File as FileHelper;
 use Backend\Classes\WidgetBase;
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
+use ApplicationException;
 use DirectoryIterator;
 
 /**
@@ -151,7 +152,7 @@ class ComponentList extends WidgetBase
                 $component->alias = '--alias--';
 
                 //get this component's files
-                $this->getComponentFiles($plugin,$componentInfo);
+                $files = $this->getComponentFiles($plugin,$componentInfo);
 
 
 
@@ -166,7 +167,8 @@ class ComponentList extends WidgetBase
                     'alias'          => $alias,
                     'name'           => $componentInfo->duplicateAlias
                         ? $componentInfo->className
-                        : $componentInfo->alias
+                        : $componentInfo->alias,
+                    'files'         => $files
                 ];
 
                 if ($searchWords && !$this->itemMatchesSearch($searchWords, $item)) {
@@ -219,20 +221,19 @@ class ComponentList extends WidgetBase
         $it->rewind();
 
         while ($it->valid()) {
-//            if ($it->isFile() && in_array($it->getExtension(), static::$allowedExtensions)) {
-            if ($it->isFile()) {
+
+            if ($it->isFile() && in_array($it->getExtension(), static::$allowedExtensions)) {
                 $filePath = $it->getBasename();
                 if ($it->getDepth() > 0) {
                     $filePath = basename($it->getPath()).'/'.$filePath;
                 }
-echo $filePath;
-                $page = static::load($filePath);// loading it from cache : static::loadCached($theme, $filePath);
+
+                $page = static::load($dirPath,$filePath);// loading it from cache : static::loadCached($theme, $filePath);
                 $result[] = $page;
             }
 
             $it->next();
         }
-//echo json_encode($result);
         return $result;
     }
 
@@ -244,7 +245,7 @@ echo $filePath;
      * The file name can contain only alphanumeric symbols, dashes and dots.
      * @return mixed Returns a CMS object instance or null if the object wasn't found.
      */
-    public static function load($fileName)
+    public static function load($dirPath,$fileName)
     {
         if (!FileHelper::validatePath($fileName, static::getMaxAllowedPathNesting())) {
             throw new ApplicationException(Lang::get('cms::lang.cms_object.invalid_file', ['name'=>$fileName]));
@@ -254,7 +255,7 @@ echo $filePath;
             $fileName .= '.'.static::$defaultExtension;
         }
 
-        $fullPath = $fileName;//static::getFilePath($theme, $fileName);
+        $fullPath =$dirPath."\\".$fileName;//static::getFilePath($theme, $fileName);
 
         if (!File::isFile($fullPath)) {
             return null;
@@ -266,6 +267,7 @@ echo $filePath;
 
         $obj = new \stdClass();//new static($theme);
         $obj->fileName = $fileName;
+        $obj->path = $dirPath."\\".$fileName;
         $obj->originalFileName = $fileName;
         $obj->mtime = File::lastModified($fullPath);
         $obj->content = $content;

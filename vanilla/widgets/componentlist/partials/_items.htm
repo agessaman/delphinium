@@ -2,12 +2,14 @@
     <ul>
     <?php foreach ($items as $item): ?>
         <?php foreach ($item->items as $index => $component): ?>
-            <li class="group" data-status="<?= $this->getGroupStatus($item->pluginClass) ? 'expanded' : 'collapsed' ?>" data-group-id="<?= e($item->pluginClass) ?>">
+            <li class="group" data-status="collapsed" data-group-id="<?= e($item->pluginClass) ?>">
                 <div class="group">
                     <h4><a href="#"><?= e($component->title) ?></a></h4>
-                    <i class="<?= $component->pluginIcon ?>"></i>
-                    <span class="description"><?= e($component->description) ?></span>
                 </div>
+                <div class="controls">
+                    <a href="javascript:;" class="control icon btn-primary oc-icon-plus" data-builder-command="modelForm:cmdCreateForm" data-model-class="Category" title="Add form">Add file</a>
+                </div>
+                <?= $this->makePartial('component_list', ['files'=>$component->files]) ?>
             </li>
         <?php endforeach ?>
     <?php endforeach ?>
