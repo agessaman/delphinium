@@ -19,22 +19,19 @@
   ~ You may not distribute any version of this software, modified or otherwise
   -->
 
-<!--div class="control-tabs primary-tabs" data-control="tab"-->
 <div>
     <ul class="nav nav-tabs">
-      <li class="active"><a data-toggle="tab" href="#home">Instances</a></li>
-      <li><a data-toggle="tab" href="#menu1">Instructions</a></li>
+      <li class="active"><a data-toggle="tab" href="#comphome">Instances</a></li>
+      <li><a data-toggle="tab" href="#comptab1">Instructions</a></li>
     </ul>
     
     <div class="tab-content">
-      <div id="home" class="tab-pane fade in active" style="padding: 5px 0px;">
+      <div id="comphome" class="tab-pane fade in active" style="padding: 5px 0px;">
         <?= $this->listRender() ?>
       </div>
         
-      <div id="menu1" class="tab-pane fade in" style="padding: 0px 20px;">
-
-<?= $this->makePartial('competencyinstructions') ?>
-
+      <div id="comptab1" class="tab-pane fade in" style="padding: 0px 20px;">
+		<?= $this->makePartial('competencyinstructions') ?>
       </div>
     </div>
 </div>
