@@ -31,6 +31,7 @@ class AddCompetenciesTable extends Migration
 		Schema::table('delphinium_blossom_competencies', function($table)
 		{
 			$table->string('Color');//hex #FF00FF
+            $table->string('course_id');
 		});
     }
     public function down()
@@ -38,6 +39,7 @@ class AddCompetenciesTable extends Migration
         Schema::table('delphinium_blossom_competencies', function($table)
         {
             $table->dropColumn('Color');
+            $table->dropColumn('course_id');
         });
     }
 }

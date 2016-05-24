@@ -24,7 +24,7 @@
     <a id="comp_popinfo" title="Info" tabindex="0" role="button" data-trigger-condition="" data-trigger-action="" data-trigger="focus" data-container="body" data-toggle="popover" data-placement="left" data-content="Setup below" style="position:absolute; top:0; right:10px;">
         <i class="icon-question"></i>
     </a>
-	<div id="comp_cog" href="#competence-configuration" style="position:absolute; top:0; right:20px;">
+	<div id="comp_cog" href="#comp_configuration" style="position:absolute; top:0; right:20px;">
 		<a data-toggle="tooltip" title="Settings" data-placement="bottom"><i class="icon-cog"></i></a>
     </div>
 </div>
@@ -35,7 +35,7 @@
 
 
 <!-- Configuration modal with Front End Form and Instructions in tabs -->
-<div class="control-popup modal fade" id="competence-configuration" tabindex="-1" role="dialog">
+<div class="control-popup modal fade" id="comp_configuration" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -45,15 +45,15 @@
             <div class="modal-body">
                 <!-- Tabs -->
                 <ul class="nav nav-tabs">
-                  <li class="active"><a data-toggle="tab" href="#configure">Configure</a></li>
-                  <li><a data-toggle="tab" href="#instruct">Instructions</a></li>
+                  <li class="active"><a data-toggle="tab" href="#compConfigure">Configure</a></li>
+                  <li><a data-toggle="tab" href="#compInstruct">Instructions</a></li>
                 </ul>
                 <div class="tab-content">
                 <!-- Configure instance -->
-                  <div id="configure" class="tab-pane fade in active" style="padding: 5px 0px;">
+                  <div id="compConfigure" class="tab-pane fade in active" style="padding: 5px 0px;">
                     <form role="form" id="updateForm"
                       data-request="{{ __SELF__ }}::onUpdate"
-                      data-request-success="$el.hide();completed(data);">
+                      data-request-success="$el.hide();compSaved(data);">
 					  {{ competencyform.update(competencyrecordId)|raw }}
                       {{ competencyform.formRender()|raw }}
                       <div class="form-group">
@@ -62,7 +62,7 @@
                     </form>
                   </div>
                 <!-- Instructions -->
-                  <div id="instruct" class="tab-pane fade in" style="padding: 0px 20px;">
+                  <div id="compInstruct" class="tab-pane fade in" style="padding: 0px 20px;">
                       {{ competencyinstructions|raw }}
                   </div>
                 </div>
@@ -71,7 +71,7 @@
     </div>
 </div>
 
-<!-- Modal: when a bar is clicked show details for the competency -->
+<!-- Details modal: when a bar is clicked show details for the competency -->
 <div class="control-popup modal fade" id="comp_detailed" tabindex="-1" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -80,14 +80,8 @@
                 <h4 id="comp_detailed-title" class="modal-title">Competency Details</h4>
             </div>
             <div id="comp_detailed-body" class="modal-body">
-                <p>This displays details of competency</p>
+                <p>display details of competency</p>
             </div>
         </div>
     </div>
 </div>
-
-<script>
-	function completed(data) {
-        location.reload();
-	}
-</script>

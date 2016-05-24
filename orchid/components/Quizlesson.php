@@ -81,8 +81,6 @@ class Quizlesson extends ComponentBase
             Requires the Dev component set up from Here:
             https://github.com/ProjectDelphinium/delphinium/wiki/3.-Setting-up-a-Project-Delphinium-Dev-environment-on-localhost
             */
-			$this->addCss("/plugins/delphinium/orchid/assets/css/quizlesson.css");
-			$this->addJs("/plugins/delphinium/orchid/assets/javascript/quizlesson.js");
 			
             if (!isset($_SESSION)) { session_start(); }
             $courseID = $_SESSION['courseID'];
@@ -105,6 +103,7 @@ class Quizlesson extends ComponentBase
 					//$config->size = '20%';
                     //$config->quiz_name = '';
                     //$config->quiz_id = '';
+                    $config->course_id = $courseID;
 					$config->save();// save the new record
 				} else {
 					//use the first record matching course
@@ -112,7 +111,7 @@ class Quizlesson extends ComponentBase
 				}
             }
 			// use the record in the component and frontend form 
-            $this->page['config'] = json_encode($config);
+            $this->page['orchidConfig'] = json_encode($config);
             
 			/** get roles, a comma delimited string
 			 * check if Student
@@ -128,13 +127,8 @@ class Quizlesson extends ComponentBase
             }
             $this->page['role'] = $roleStr;// only one or the other
             
-            // include your css. Note: bootstrap.min.css is part of minimal layout
-            //$this->addCss("/plugins/delphinium/orchid/assets/css/Quizlesson.css");
-			// javascript had to be added to default.htm to work correctly
-            //$this->addJs("/plugins/delphinium/orchid/assets/javascript/Quizlesson.js");
-            
             // include the backend form with instructions for instructor.htm
-            if(stristr($roleStr, 'Instructor'))
+            if($roleStr == 'Instructor')
 			{
 				//https://medium.com/@matissjanis/octobercms-using-backend-forms-in-frontend-component-fe6c86f9296b#.ge50nlmtc
 				// Build a back-end form with the context of 'frontend'
@@ -142,29 +136,34 @@ class Quizlesson extends ComponentBase
 				$formController->create('frontend');
 				
                 // Use the primary key of the record you want to update
-                $this->page['recordId'] = $config->id;
+                $this->page['orchidrecordId'] = $config->id;
 				// Append the formController to the page
-				$this->page['form'] = $formController;
+				$this->page['orchidform'] = $formController;
                 
                 // Append the Instructions to the page
-                $instructions = $formController->makePartial('instructions');
-                $this->page['instructions'] = $instructions;
+                $instructions = $formController->makePartial('orchidinstructions');
+                $this->page['orchidinstructions'] = $instructions;
                 
                 //code specific to instructor.htm goes here
             }
-            
-            if(stristr($roleStr, 'Learner'))
-			{
-				//code specific to the student.htm goes here
-            }
-			// code used by both
-			
+			//quizList only instructor? WIP
 			$quizList = $this->getAllQuizzes();// choose quiz questions to use
 			$this->page['quizList'] = $quizList;
 			
 			
+            if($roleStr = 'Learner')
+			{
+				//code specific to the student.htm goes here
+				// todo: get only the questions selected by instructor
+            }
+			// code used by both
 			
-        // Error handling requires nonlti.htm
+			// ready to finish loading assets. storm changes modal-header override css
+			$this->addCss("/modules/system/assets/ui/storm.css", "core");
+			$this->addJs("/modules/system/assets/ui/storm-min.js", "core");
+			$this->addCss("/plugins/delphinium/orchid/assets/css/quizlesson.css");
+			$this->addJs("/plugins/delphinium/orchid/assets/javascript/quizlesson.js");
+			
 /*        }
         catch (\GuzzleHttp\Exception\ClientException $e) {
             return;
@@ -192,7 +191,7 @@ class Quizlesson extends ComponentBase
 	*/
 	public function getAllQuizzes()
     {
-        $fresh_data = false;//true;
+        $fresh_data = false;//true; // instructor may have just built one!
 		$roots = new Roots();
 		$req = new QuizRequest(ActionType::GET, null, $fresh_data, true);
 		
@@ -220,6 +219,7 @@ class Quizlesson extends ComponentBase
 		//$config->size = '20%';// always 100% canvas page !
         $config->quiz_name = '';
         $config->quiz_id = '';
+        $config->course_id = $data['course_id'];//hidden field
 		$config->save();// update original record 
 		return json_encode($config);// back to instructor view
     }
