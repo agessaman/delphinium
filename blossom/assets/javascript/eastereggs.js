@@ -42,7 +42,7 @@ for(var i=0; i<str.length; i++){
   count++;
 }
 
-var harlemShake = {}, ripple = {}, asteroid = {}, katamari = {}, bomb = {}, pony = {}, myLittlePony = {}, snow = {}, raptor = {}, fireworks = {};
+var harlemShake = {}, ripple = {}, asteroid = {}, katamari = {}, bomb = {}, pony = {}, myLittlePony = {}, snowPage = {}, raptor = {}, fireworks = {};
 harlemShake[keys.H] = false;
 harlemShake[keys.A] = false;
 harlemShake['loaded'] = false;
@@ -64,9 +64,9 @@ pony['loaded'] = false;
 myLittlePony[keys.M] = false;
 myLittlePony[keys.Y] = false;
 myLittlePony['loaded'] = false;
-snow[keys.S] = false;
-snow[keys.N] = false;
-snow['loaded'] = false;
+snowPage[keys.S] = false;
+snowPage[keys.N] = false;
+snowPage['loaded'] = false;
 raptor[keys.R] = false;
 raptor[keys.A] = false;
 raptor['loaded'] = false;
@@ -215,12 +215,14 @@ $(document).keydown(function(e) {
   }
 
   //Snow
-  if(role = 'Instructor' || current_grade >= config.snow){
-    if (e.keyCode in snow) {
-      snow[e.keyCode] = true;
-      if (snow[keys.S] && snow[keys.N]) {
-        if(!snow["loaded"]){
-          snow["loaded"] = true;
+  if(role = 'Instructor' || current_grade >= config.snowPage){
+    if (e.keyCode in snowPage) {
+      snowPage[e.keyCode] = true;
+      if (snowPage[keys.S] && snowPage[keys.N]) {
+        if(snowPage["loaded"]){
+          smashInit()
+        }else{
+          snowPage["loaded"] = true;
           var s = document.createElement('script');
           s.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/snowstorm.js");
           document.body.appendChild(s);
@@ -316,8 +318,8 @@ $(document).keydown(function(e) {
   if (e.keyCode in myLittlePony) {
     myLittlePony[e.keyCode] = false;
   }
-  if (e.keyCode in snow) {
-    snow[e.keyCode] = false;
+  if (e.keyCode in snowPage) {
+    snowPage[e.keyCode] = false;
   }
   if (e.keyCode in raptor) {
     raptor[e.keyCode] = false;
