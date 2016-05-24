@@ -25,6 +25,9 @@ $(document).ready(function() {
 	/* Add the content message dynamically, could be different for each role */
 	$('#bop_popinfo').attr('data-content','Click a module to see assignments. Refresh the page to update progress.');
     $('#bop_popinfo').popover();// activate info
+	$('#bop_cog').on('click', function(e){
+		$('#bop_configuration').modal('show');
+	});
     /*
         Bird of Paradise displays modules in tabbed sections 
         configure the Tab/modules structure with Stem

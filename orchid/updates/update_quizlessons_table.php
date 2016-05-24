@@ -35,6 +35,7 @@ class UpdateQuizlessonsTable extends Migration
             $table->string('name',255);
             $table->string('quiz_name',255);
             $table->string('quiz_id',255);
+            $table->string('course_id',255);
         });
     }
 
@@ -45,6 +46,7 @@ class UpdateQuizlessonsTable extends Migration
             $table->dropColumn('name');
             $table->dropColumn('quiz_name');
             $table->dropColumn('quiz_id');
+            $table->dropColumn('course_id');
         });
     }
 

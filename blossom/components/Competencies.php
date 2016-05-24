@@ -76,14 +76,15 @@ class Competencies extends ComponentBase
             } else {
                 // look for instances created for this course
 				$instances = CompetenceModel::where('name','=', $name)->get();
-				
+
 				if(count($instances) === 0) { 
 					// no record found so create a new dynamic instance
 					$config = new CompetenceModel;// db record
 					$config->Name = $name;// component_courseid
 					$config->Size = 'Medium';//$config->size = '20%';
-                    $config->Color = '#4d7123';//uvu green
-                    $config->Animate = '1';//true
+					$config->Color = '#4d7123';//uvu green
+					$config->Animate = '1';//true
+                    $config->course_id = $courseID;
 					$config->save();// save the new record
 				} else {
 					//use the first record matching course
@@ -105,44 +106,39 @@ class Competencies extends ComponentBase
 			/* get Assignments & Submissions ***** & enrolled students?
 				submissions data is only available if viewed by a Learner
 				Module Items data is used if Instructor
-                
-                if instructor, you can configure the component
-                and view the tags set in Stem that define competencies
+
+				if instructor, you can configure the component
+				and view the tags set in Stem that define competencies
 				todo: Instructor can choose a student to view their progress?
-                todo: Instructor can configure Stem from here?
-			**************************************************/
+				todo: Instructor can configure Stem from here?
+			*/
 			
 			$roots = new Roots();
             
             if($roleStr=='Instructor')
 			{
 				//https://medium.com/@matissjanis/octobercms-using-backend-forms-in-frontend-component-fe6c86f9296b#.ge50nlmtc
-				$this->addCss("/modules/system/assets/ui/storm.css", "core");// loader storm changes modal-header override css
-				$this->addJs("/modules/system/assets/ui/storm-min.js", "core");
-				///$this->addCss("/modules/system/assets/ui/storm.less", "core");
-				
 				$this->addCss("/plugins/delphinium/blossom/formwidgets/colorpicker/assets/vendor/colpick/css/colpick.css", "delphinium.blossom");
 				$this->addJs("/plugins/delphinium/blossom/formwidgets/colorpicker/assets/vendor/colpick/js/colpick.js", "delphinium.blossom");
 				$this->addCss("/plugins/delphinium/blossom/formwidgets/colorpicker/assets/css/colorpicker.css", "delphinium.blossom");
 				$this->addJs("/plugins/delphinium/blossom/formwidgets/colorpicker/assets/js/colorpicker.js", "delphinium.blossom");
-				
-				
+
+
 				// Build a back-end form with the context of 'frontend'
 				$formController = new \Delphinium\Blossom\Controllers\Competencies();
 				$formController->create('frontend');
-				
+
 				// Append the formController to the page
 				$this->page['competencyform'] = $formController;
-                // Use the primary key of the record you want to update
-                $this->page['competencyrecordId'] = $config->id;
-                // Append Instructions page
-                $instructions = $formController->makePartial('competencyinstructions');
-                $this->page['competencyinstructions'] = $instructions;
+				// Use the primary key of the record you want to update
+				$this->page['competencyrecordId'] = $config->id;
+				// Append Instructions page
+				$instructions = $formController->makePartial('competencyinstructions');
+				$this->page['competencyinstructions'] = $instructions;
 			}
-			
-			/* module items for both constructs tags */
-			//simplified modules data *** testing if better than assignments includes locked
-			// or add $states = $roots->getModuleStates($req);// [id,state]
+
+			/* modules data used by both roles
+				module items construct tags */
 			$moduleId = null;
 			$moduleItemId = null;
 			$includeContentDetails = true;
@@ -150,41 +146,66 @@ class Competencies extends ComponentBase
 			$module = null;
 			$moduleItem = null;
 			$freshData = false;
-			
+
 			$req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems,
 				$includeContentDetails, $module, $moduleItem , $freshData);
 
 			$moduleData = $roots->modules($req);
-			
+
 			/* simplify the module data */
 			$modArr = $moduleData->toArray();
 			$simpleModules = array();
 			foreach($modArr as $item)
 			{
 				$mod = new \stdClass();
-
 				$mod->id = $item['module_id'];
 				$mod->title=$item['name'];
-				$mod->locked=$item['locked'];// cannot getModuleStates unless Learner
-				$mod->items =$item['module_items'];//REPLACES assignments
-
+				$mod->locked=$item['locked'];// OBSOLETE
+				$mod->items =$item['module_items'];
 				$simpleModules[] = $mod;
 			}
+			
+			if($roleStr=='Learner')
+			{
+				/* add module states [id,state] 
+					only available if Learner */
+				$moduleId = null;
+				$moduleItemId = null;
+				$includeContentDetails = false;
+				$includeContentItems = false;
+				$module = null;
+				$moduleItem = null;
+				$freshData = true;
+						
+				$req = new ModulesRequest(ActionType::GET, $moduleId, $moduleItemId, $includeContentItems, $includeContentDetails, $module, $moduleItem, $freshData);
+				$states = $roots->getModuleStates($req);
+				
+				foreach($states as $item)
+				{
+					$item_id = $item->module_id;
+					$item_state = $item->state;
+					$counter=0;
+					foreach($simpleModules as $mod)
+					{
+						if($mod->id == $item_id)
+						{
+							$simpleModules[$counter]->module_id = $item_id;//verify
+							$simpleModules[$counter]->state = $item_state;
+							break;
+						}
+						$counter = $counter +1;
+					}
+					
+				}
+			}
+			/* used by both to construct tags */
 			$this->page['competencymodules'] = json_encode($simpleModules);
-			//$this->page['modata'] = json_encode($moduleData);// complete array unused
-		
             
             if($roleStr=='Learner')
 			{
 				$req = new AssignmentsRequest(ActionType::GET);
 				$assignments = $roots->assignments($req);
-				
 				//$this->page['assignments']=json_encode($assignments);
-				
-				/* todo:
-					instructor chooses an enrolled student from a dropdown
-					to see how that students competencies?
-				*/
 
                 $studentIds = array($_SESSION['userID']);
                 $allStudents = false;
@@ -197,7 +218,7 @@ class Competencies extends ComponentBase
 
                 $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents, $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments, $includeTags, $grouped);
 				$submissions = $roots->submissions($req);
-				
+
 				/* match $simpleModules items to assignment by title
 					use assignment_id to find matching submission
 					 
@@ -205,10 +226,10 @@ class Competencies extends ComponentBase
 					add module_item_id to submissions
 					add name & content_id to submissions
 				*/
-				
+
 				foreach ($simpleModules as $module) {
 					$moditems = $module->items;//module_items
-				
+
 					foreach ($moditems as $item) {
 						$assignmentId=null;
 						$title='';
@@ -229,11 +250,15 @@ class Competencies extends ComponentBase
 							/* get submission assignment_id that matches this assignment_id */
 							foreach($submissions as $sub ) {
 								if($assignmentId == $sub["assignment_id"]) {
-									// add points and id to submissions
+									/* add content id to submissions to find matching assignment 
+										in js function displayDetails 
+									*/
+									$submissions[$counter]["assignment_id"] = $item["content"][0]["content_id"];
+									// unused
 									$submissions[$counter]["name"] = $title;
 									$submissions[$counter]["points_possible"] = $item["content"][0]["points_possible"];
-									$submissions[$counter]["module_item_id"] = $item["content"][0]["module_item_id"]; 
-									$submissions[$counter]["assignment_id"] = $item["content"][0]["content_id"];// match js ?
+									$submissions[$counter]["module_item_id"] = $item["content"][0]["module_item_id"];
+									
 									break;// done
 								}
 								$counter=$counter+1;
@@ -243,8 +268,10 @@ class Competencies extends ComponentBase
 				}
 				$this->page['competencysubmissions']=json_encode($submissions);// score
             }
-			
+
 			// ready to finish loading assets
+			$this->addCss("/modules/system/assets/ui/storm.css", "core");// loader storm changes modal-header override css
+			$this->addJs("/modules/system/assets/ui/storm-min.js", "core");
 			$this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
 			$this->addCss("/plugins/delphinium/blossom/assets/css/competencies.css");
 			$this->addJs("/plugins/delphinium/blossom/assets/javascript/competencies.js");
@@ -272,10 +299,10 @@ class Competencies extends ComponentBase
 
     public function getInstanceOptions()
     {
-        /* https://octobercms.com/docs/plugin/components#dropdown-properties
+		/* https://octobercms.com/docs/plugin/components#dropdown-properties
 		*  The method should have a name in the following format: get*Property*Options()
 		*  where Property is the property name
-        *  Fill the Competencies Configuration [dropdown] in CMS
+		*  Fill the Competencies Configuration [dropdown] in CMS
 		*/
 		$instances = CompetenceModel::all();
         $array_dropdown = ['0'=>'- Optional - '];//id, text in dropdown
@@ -287,20 +314,19 @@ class Competencies extends ComponentBase
         return $array_dropdown;
     }
 	
-    /**
+	/**
 	* update, add course_id :  Need to remove this one???
 	* save to database and return updated
-    
-    * id is disabled in fields.yaml
-    * id & course are also hidden
-    * $data gets .id from config setting hidden field
-    * called from instructorView configure settings
+	* id is disabled in fields.yaml
+	* id & course are also hidden
+	* $data gets .id from config setting hidden field
+	* called from instructorView configure settings
 	*/
 	public function onUpdate()
     {
-        $data = post('Competencies');
-        $did = intval($data['id']);
-        $config = CompetenceModel::find($did);
+		$data = post('Competencies');
+		$did = intval($data['id']);
+		$config = CompetenceModel::find($did);
 		$config->Name = $data['Name'];
 		$config->Size = $data['Size'];
 		$config->Color = $data['Color'];
