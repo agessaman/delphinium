@@ -21,7 +21,7 @@ var WebSplatPony = "aj";
     window.WebSplat = {};
 
     var ponyIDs = ["ts", "rd", "aj", "pp", "r", "fs"];
-    var imageBase = "http://websplat.bitbucket.org/imgs/";
+    var imageBase = path + 'plugins/delphinium/blossom/assets/images/';
     var head;
 
     function dce(type) {
@@ -68,7 +68,7 @@ var WebSplatPony = "aj";
         if (src.match(/\/\//)) {
             script.src = src;
         } else {
-            script.src = "http://websplat.bitbucket.org/websplat/" + src;
+            script.src = "https://websplat.bitbucket.org/websplat/" + src;
         }
         head.appendChild(script);
 
@@ -99,7 +99,7 @@ var WebSplatPony = "aj";
                        "Loading..." +
                        "<img src=\"" + imageBase + pony + ".raniml.gif\" />");
         scriptChain([
-            "http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js",
+            "" + path + "plugins/delphinium/blossom/assets/javascript/jquery.min.js",
             "websplat.js",
             "websplat-stats.js",
             "websplat-points.js",
@@ -130,7 +130,7 @@ var WebSplatPony = "aj";
     ad.style.top = "0.5em";
     ad.style.right = "0.5em";
     var link = dce("a");
-    link.href = "http://websplat.bitbucket.org/";
+    link.href = "https://websplat.bitbucket.org/";
     link.innerHTML = "Brought to you by WebSplat";
     ad.appendChild(link);
 
@@ -139,9 +139,9 @@ var WebSplatPony = "aj";
         ad.appendChild(dce("br"));
         var addthis = dce("span");
         addthis.style.float = "right";
-        addthis.innerHTML = '<a class="addthis_button" href="http://www.addthis.com/bookmark.php?v=250&amp;pubid=ra-5006d2d9326df97c"><img src="http://s7.addthis.com/static/btn/v2/lg-share-en.gif" width="125" height="16" alt="Bookmark and Share" style="border:0"/></a>';
+        addthis.innerHTML = '<a class="addthis_button" href="https://www.addthis.com/bookmark.php?v=250&amp;pubid=ra-5006d2d9326df97c"><img src="https://s7.addthis.com/static/btn/v2/lg-share-en.gif" width="125" height="16" alt="Bookmark and Share" style="border:0"/></a>';
         ad.appendChild(addthis);
-        window.addthis_config={"url":"http://websplat.bitbucket.org/","title":"Ponies in your Interwebs"};
+        window.addthis_config={"url":"https://websplat.bitbucket.org/","title":"Ponies in your Interwebs"};
         var scr = dce("script");
         scr.src=path + 'plugins/delphinium/blossom/assets/javascript/addthis.js';
         ad.appendChild(scr);
