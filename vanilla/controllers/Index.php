@@ -237,9 +237,10 @@ class Index extends Controller
     public function index_onOpenTemplate()
     {
         $this->validateRequestTheme();
-
+        $fullPath = Request::input('fullpath');
         $type = Request::input('type');
-        $template = $this->loadTemplate($type, Request::input('path'));
+        $template = $this->loadTemplate($type, Request::input('path'), $fullPath);
+
         $widget = $this->makeTemplateFormWidget($type, $template);
 
         $this->vars['templatePath'] = Request::input('path');
@@ -463,10 +464,12 @@ class Index extends Controller
         return $types[$type];
     }
 
-    protected function loadTemplate($type, $path)
+    protected function loadTemplate($type, $path, $fullPath)
     {
         $class = $this->resolveTypeClassName($type);
-        if (!($template = call_user_func(array($class, 'load'), $this->plugin, $path))) {
+
+        $this->plugin = $this->getBuilderActivePluginVector();
+        if (!($template = call_user_func(array($class, 'load'), $this->plugin, $path, $fullPath))) {
             throw new ApplicationException(trans('cms::lang.template.not_found'));
         }
 

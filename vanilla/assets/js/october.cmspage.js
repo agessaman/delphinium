@@ -73,7 +73,8 @@
             data = {
                 type: $form.data('template-type'),
                 theme: $item.data('item-theme'),
-                path: $item.data('item-path')
+                path: $item.data('item-path'),
+                fullpath: $item.data('item-fullpath')
             },
             tabId = data.type + '-' + data.theme + '-' + data.path
 

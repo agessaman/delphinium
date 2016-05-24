@@ -208,7 +208,7 @@ class ComponentList extends WidgetBase
 
     public function getComponentFiles($activePlugin,$activeComponent)
     {
-        $dirPath = base_path()."/plugins/".$activeComponent->className;
+        $dirPath = base_path()."/plugins".$activeComponent->className;
 
         $result = [];
 
@@ -267,7 +267,8 @@ class ComponentList extends WidgetBase
 
         $obj = new \stdClass();//new static($theme);
         $obj->fileName = $fileName;
-        $obj->path = $dirPath."\\".$fileName;
+        $obj->path = $fileName;
+        $obj->fullPath = $dirPath."\\".$fileName;
         $obj->originalFileName = $fileName;
         $obj->mtime = File::lastModified($fullPath);
         $obj->content = $content;

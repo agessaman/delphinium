@@ -6,9 +6,8 @@
                 <div class="layout-row">
                     <div class="layout-cell">
                         <div class="layout-relative">
-
-                            <li class="item">
-                            <a class="name"><?= e($file->fileName) ?></a>
+                            <li class="item" data-item-fullpath ="<?= e(ltrim($file->fullPath, '/')) ?>" data-item-path="<?= e(ltrim($file->path, '/')) ?>"  data-item-type="htm" >
+                                <a class="name"><?= e($file->fileName) ?></a>
                             </li>
                         </div>
                     </div>

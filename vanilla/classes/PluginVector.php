@@ -21,10 +21,13 @@ class PluginVector
      */
     public $pluginCodeObj;
 
+    public $path;
+
     public function __construct(PluginBase $plugin, PluginCode $pluginCodeObj)
     {
         $this->plugin = $plugin;
         $this->pluginCodeObj = $pluginCodeObj;
+        $this->path = $pluginCodeObj->toFilesystemPath();
     }
 
     public static function createFromPluginCode($pluginCode)
@@ -41,6 +44,15 @@ class PluginVector
         return null;
     }
 
+    public function getPath()
+    {
+        return "/plugins/".$this->path."/components";
+    }
+
+    public function getDirName()
+    {
+        return "components";
+    }
     public function getPluginName()
     {
         if (!$this->plugin) {
