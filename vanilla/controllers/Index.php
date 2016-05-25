@@ -97,7 +97,7 @@ class Index extends Controller
 
         //we require the table widget
         $this->addJs('/modules/backend/widgets/table/assets/js/build-min.js', 'core');
-        $this->addJs('/plugins/delphinium/vanilla/assets/js/build-min.js', 'Delphinium.Vanilla');
+//        $this->addJs('/plugins/delphinium/vanilla/assets/js/build-min.js', 'Delphinium.Vanilla');
 
         $this->bodyClass = 'compact-container side-panel-not-fixed';
         $this->pageTitle = 'Vanilla';
@@ -256,17 +256,20 @@ class Index extends Controller
                 'form'          => $widget,
                 'templateType'  => $type,
                 'templateTheme' => $this->plugin->getDirName(),
-                'templateMtime' => $template->mtime
+                'templateMtime' => $template->mtime,
+                'fullPath'      => $fullPath,
+                'objectType'    => 'component'
             ])
         ];
     }
 
     public function onSave()
     {
+        $fullPath = Request::input('templateFullPath');
         $this->validateRequestTheme();
         $type = Request::input('templateType');
         $templatePath = trim(Request::input('templatePath'));
-        $template = $templatePath ? $this->loadTemplate($type, $templatePath) : $this->createTemplate($type);
+        $template = $templatePath ? $this->loadTemplate($type, $templatePath, $fullPath) : $this->createTemplate($type);
 
         $settings = Request::input('settings') ?: [];
         $settings = $this->upgradeSettings($settings);
@@ -464,10 +467,9 @@ class Index extends Controller
         return $types[$type];
     }
 
-    protected function loadTemplate($type, $path, $fullPath)
+    protected function  loadTemplate($type, $path, $fullPath)
     {
         $class = $this->resolveTypeClassName($type);
-
         $this->plugin = $this->getBuilderActivePluginVector();
         if (!($template = call_user_func(array($class, 'load'), $this->plugin, $path, $fullPath))) {
             throw new ApplicationException(trans('cms::lang.template.not_found'));

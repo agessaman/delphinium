@@ -32,6 +32,10 @@ class ComponentList extends WidgetBase
 
     protected $activePluginVector;
 
+    protected $selectedFilesCache = false;
+
+    protected $plugin;
+
     protected static $fillable = [
         'content',
         'fileName'
@@ -56,6 +60,7 @@ class ComponentList extends WidgetBase
     public function render()
     {
         $activePluginVector = $this->getActivePlugin();
+        $this->plugin = $activePluginVector;
         $this->activePluginVector = $activePluginVector;
         return $this->makePartial('body', [
             'data' => $this->getData($activePluginVector),
@@ -434,5 +439,63 @@ class ComponentList extends WidgetBase
         }
 
         return false;
+    }
+
+
+    public function onUpdate()
+    {
+        $this->extendSelection();
+
+        return $this->onRefresh();
+    }
+
+
+    protected function extendSelection()
+    {
+        $items = Input::get('file', []);
+        $currentSelection = $this->getSelectedFiles();
+
+        $this->putSession($this->getThemeSessionKey('selected'), array_merge($currentSelection, $items));
+    }
+    protected function removeSelection($path)
+    {
+        $currentSelection = $this->getSelectedFiles();
+
+        unset($currentSelection[$path]);
+        $this->putSession($this->getThemeSessionKey('selected'), $currentSelection);
+        $this->selectedFilesCache = $currentSelection;
+    }
+
+    protected function getSelectedFiles()
+    {
+        if ($this->selectedFilesCache !== false) {
+            return $this->selectedFilesCache;
+        }
+
+        $files = $this->getSession($this->getThemeSessionKey('selected'), []);
+        if (!is_array($files)) {
+            return $this->selectedFilesCache = [];
+        }
+
+        return $this->selectedFilesCache = $files;
+    }
+
+    protected function getThemeSessionKey($prefix)
+    {
+        return $prefix.$this->plugin->getDirName();
+    }
+
+    public function onRefresh()
+    {
+        return [
+            '#'.$this->getId('asset-list') => $this->makePartial('items', ['items'=>$this->getData()])
+        ];
+
+        $activePluginVector = $this->getActivePlugin();
+        $this->activePluginVector = $activePluginVector;
+        return $this->makePartial('body', [
+            'data' => $this->getData($activePluginVector),
+            'pluginVector'=>$activePluginVector
+        ]);
     }
 }

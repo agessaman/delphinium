@@ -101,7 +101,6 @@ class CmsCompoundObject extends CmsObject
 
         $obj->parseComponentSettings();
         $obj->parseSettings();
-
         return $obj;
     }
 

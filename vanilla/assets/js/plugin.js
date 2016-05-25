@@ -151,9 +151,9 @@
      */
     PluginPage.prototype.updateModifiedCounter = function() {
         var counters = {
-            page: {menu: 'pages', count: 0},
-            menu: {menu: 'menus', count: 0},
-            content: {menu: 'content', count: 0},
+            plugins: {menu: 'plugins', count: 0},
+            components: {menu: 'components', count: 0},
+            assets: {menu: 'assets', count: 0},
         }
 
         $('> div.tab-content > div.tab-pane[data-modified]', this.$masterTabs).each(function(){
