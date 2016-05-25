@@ -82,9 +82,9 @@ $(document).keydown(function(e) {
       if (harlemShake[keys.H] && harlemShake[keys.A]) {
         if(!harlemShake["loaded"]){
           harlemShake["loaded"] = true;
-          var s = document.createElement('script');
-          s.setAttribute('src', path + 'plugins/delphinium/blossom/assets/javascript/harlem-shake.js');
-          document.body.appendChild(s);
+          var harlemShakeScript = document.createElement('script');
+          harlemShakeScript.setAttribute('src', path + 'plugins/delphinium/blossom/assets/javascript/harlem-shake.js');
+          document.body.appendChild(harlemShakeScript);
         }else{
           for (var L = 0; L < C.length; L++) {
             var A = C[L];
@@ -119,9 +119,9 @@ $(document).keydown(function(e) {
       if (ripple[keys.R] && ripple[keys.I]) {
         if(!ripple["loaded"]){
           ripple["loaded"] = true;
-          var s = document.createElement('script');
-          s.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/jquery.ripples.js");
-          document.body.appendChild(s);
+          var rippleScript = document.createElement('script');
+          rippleScript.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/jquery.ripples.js");
+          document.body.appendChild(rippleScript);
           $('body').css('backgroundImage', 'url(' + path + 'plugins/delphinium/blossom/assets/images/pebbles.png)');
         } else {
           setInterval(function() {
@@ -145,9 +145,9 @@ $(document).keydown(function(e) {
       if (asteroid[keys.A] && asteroid[keys.S]) {
         if(!asteroid["loaded"]){
           asteroid["loaded"] = true;
-          var s = document.createElement('script');
-          s.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/kickass.js");
-          document.body.appendChild(s);
+          var asteroidScript = document.createElement('script');
+          asteroidScript.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/kickass.js");
+          document.body.appendChild(asteroidScript);
         }
       }
     }
@@ -160,9 +160,9 @@ $(document).keydown(function(e) {
       if (katamari[keys.K] && katamari[keys.A]) {
         if(!katamari["loaded"]){
           katamari["loaded"] = true;
-        	var s = document.createElement('script');
-    			s.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/kh.js");
-    			document.body.appendChild(s);
+        	var katamariScript = document.createElement('script');
+    			katamariScript.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/kh.js");
+    			document.body.appendChild(katamariScript);
         }
       }
     }
@@ -176,9 +176,9 @@ $(document).keydown(function(e) {
         if(!bomb["loaded"]){
           bomb["loaded"] = true;
         	window.FONTBOMB_HIDE_CONFIRMATION = true;
-        	var s = document.createElement('script');
-    			s.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/bomb.js");
-    			document.body.appendChild(s);
+        	var bombScript = document.createElement('script');
+    			bombScript.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/bomb.js");
+    			document.body.appendChild(bombScript);
         }
       }
     }
@@ -191,9 +191,9 @@ $(document).keydown(function(e) {
       if (pony[keys.P] && pony[keys.O]) {
         if(!pony["loaded"]){
           pony["loaded"] = true;
-        	var s = document.createElement('script');
-    			s.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/loader.js");
-    			document.body.appendChild(s);
+        	var ponyScript = document.createElement('script');
+    			ponyScript.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/loader.js");
+    			document.body.appendChild(ponyScript);
         }
       }
     }
@@ -206,9 +206,9 @@ $(document).keydown(function(e) {
       if (myLittlePony[keys.M] && myLittlePony[keys.Y]) {
         if(!myLittlePony["loaded"]){
           myLittlePony["loaded"] = true;
-        	var b = document.createElement('script');
-        	b.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/browserponies.js");
-        	document.body.appendChild(b);
+        	var myLittlePonyScript = document.createElement('script');
+        	myLittlePonyScript.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/browserponies.js");
+        	document.body.appendChild(myLittlePonyScript);
         }
       }
     }
@@ -223,31 +223,32 @@ $(document).keydown(function(e) {
           smashInit()
         }else{
           snowPage["loaded"] = true;
-          var s = document.createElement('script');
-          s.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/snowstorm.js");
-          document.body.appendChild(s);
-          var b = document.createElement('script');
-          b.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/soundmanager2-nodebug-jsmin.js");
-          document.body.appendChild(b);
-          var a = document.createElement('script');
-          a.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/animation-min.js");
-          document.body.appendChild(a);
-          var c = document.createElement('script');
-          c.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/christmaslights.js");
-          document.body.appendChild(c);
-          var f = document.createElement('script');
-          f.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/soundmanager2-nodebug-jsmin.js");
-          document.body.appendChild(f);
-          var d =document.createElement("link");
-          d.setAttribute("rel", "stylesheet");
-          d.setAttribute("type", "text/css");
-          d.setAttribute("href", path + "/plugins/delphinium/blossom/assets/css/snow.css");
-          document.body.appendChild(d);
-          var e =document.createElement("link");
-          e.setAttribute("rel", "stylesheet");
-          e.setAttribute("type", "text/css");
-          e.setAttribute("href", path + "/plugins/delphinium/blossom/assets/css/christmaslights.css");
-          document.body.appendChild(e);
+          var soundManagerScript = document.createElement('script');
+          soundManagerScript.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/soundmanager2-nodebug-jsmin.js");
+          document.body.appendChild(soundManagerScript);
+          var animationScript = document.createElement('script');
+          animationScript.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/animation-min.js");
+          document.body.appendChild(animationScript);
+          var snowCss =document.createElement("link");
+          snowCss.setAttribute("rel", "stylesheet");
+          snowCss.setAttribute("type", "text/css");
+          snowCss.setAttribute("href", path + "/plugins/delphinium/blossom/assets/css/snow.css");
+          document.body.appendChild(snowCss);
+          var christmaslightsCss =document.createElement("link");
+          christmaslightsCss.setAttribute("rel", "stylesheet");
+          christmaslightsCss.setAttribute("type", "text/css");
+          christmaslightsCss.setAttribute("href", path + "/plugins/delphinium/blossom/assets/css/christmaslights.css");
+          document.body.appendChild(christmaslightsCss);
+          setTimeout(function() {
+            var snowScript = document.createElement('script');
+            snowScript.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/snowstorm.js");
+            document.body.appendChild(snowScript);
+          },100);
+          setTimeout(function() {
+            var christmaslightsScript = document.createElement('script');
+            christmaslightsScript.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/christmaslights.js");
+            document.body.appendChild(christmaslightsScript);
+          },200);
         }
       }
     }
@@ -261,9 +262,9 @@ $(document).keydown(function(e) {
         if(!raptor["loaded"]) {
           //load the script
           raptor["loaded"] = true;
-          var s = document.createElement('script');
-          s.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/jquery.raptorize.1.0.js");
-          document.body.appendChild(s);
+          var raptorScript = document.createElement('script');
+          raptorScript.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/jquery.raptorize.1.0.js");
+          document.body.appendChild(raptorScript);
           setTimeout(function() {
             $('body').raptorize({'enterOn': 'timer', 'delayTime': 0});
           },100);  
@@ -281,14 +282,14 @@ $(document).keydown(function(e) {
       if (fireworks[keys.F] && fireworks[keys.I]) {
         if(!fireworks["loaded"]){
           fireworks["loaded"] = true;
-          var s = document.createElement('script');
-          s.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/fireworks.js");
-          document.body.appendChild(s);
-          var e =document.createElement("link");
-          e.setAttribute("rel", "stylesheet");
-          e.setAttribute("type", "text/css");
-          e.setAttribute("href", path + "/plugins/delphinium/blossom/assets/css/fireworks.css");
-          document.body.appendChild(e);
+          var fireworksScript = document.createElement('script');
+          fireworksScript.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/fireworks.js");
+          document.body.appendChild(fireworksScript);
+          var fireworksCss =document.createElement("link");
+          fireworksCss.setAttribute("rel", "stylesheet");
+          fireworksCss.setAttribute("type", "text/css");
+          fireworksCss.setAttribute("href", path + "/plugins/delphinium/blossom/assets/css/fireworks.css");
+          document.body.appendChild(fireworksCss);
           document.write('<canvas id="cv" width="'+$(window).width()+'" height="'+($(window).height()-100)+'" style="position:absolute;left:0;top:0;background-color:black;"></canvas>');
           document.write('<div style="background:url(' + path + 'plugins/delphinium/blossom/assets/images/background.jpg) repeat-x;position:absolute;left:0;top:'+($(window).height()-193)+'px;width:100%;height:200px;"></div>');
         }
