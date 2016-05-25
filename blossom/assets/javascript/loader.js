@@ -68,7 +68,7 @@ var WebSplatPony = "aj";
         if (src.match(/\/\//)) {
             script.src = src;
         } else {
-            script.src = "https://websplat.bitbucket.org/websplat/" + src;
+            script.src = path + 'plugins/delphinium/blossom/assets/javascript/' + src;
         }
         head.appendChild(script);
 
@@ -100,15 +100,15 @@ var WebSplatPony = "aj";
                        "<img src=\"" + imageBase + pony + ".raniml.gif\" />");
         scriptChain([
             "" + path + "plugins/delphinium/blossom/assets/javascript/jquery.min.js",
-            "websplat.js",
-            "websplat-stats.js",
-            "websplat-points.js",
-            "websplat-apples.js",
-            "websplat-health.js",
-            "websplat-cmc.js",
-            "websplat-" + pony + ".js",
-            "websplat-baddy.js",
-            "websplat-diamonddog.js",
+            "websplat/websplat.js",
+            "websplat/websplat-stats.js",
+            "websplat/websplat-points.js",
+            "websplat/websplat-apples.js",
+            "websplat/websplat-health.js",
+            "websplat/websplat-cmc.js",
+            "websplat/websplat-" + pony + ".js",
+            "websplat/websplat-baddy.js",
+            "websplat/websplat-diamonddog.js",
             "go.js"
         ]);
     }; }
@@ -121,33 +121,6 @@ var WebSplatPony = "aj";
     selector.style.borderBottom = "1px solid black";
     selector.style.paddingBottom = "1em";
     displayMessage(selector);
-
-    // adverts and such
-    var ad = dce("span");
-    ad.style.fontSize = "0.85em";
-    ad.style.color = "#02a";
-    ad.style.position = "fixed";
-    ad.style.top = "0.5em";
-    ad.style.right = "0.5em";
-    var link = dce("a");
-    link.href = "https://websplat.bitbucket.org/";
-    link.innerHTML = "Brought to you by WebSplat";
-    ad.appendChild(link);
-
-    // addthis if we're not interfering
-    if (!((window._atc||{}).ver)) {
-        ad.appendChild(dce("br"));
-        var addthis = dce("span");
-        addthis.style.float = "right";
-        addthis.innerHTML = '<a class="addthis_button" href="https://www.addthis.com/bookmark.php?v=250&amp;pubid=ra-5006d2d9326df97c"><img src="https://s7.addthis.com/static/btn/v2/lg-share-en.gif" width="125" height="16" alt="Bookmark and Share" style="border:0"/></a>';
-        ad.appendChild(addthis);
-        window.addthis_config={"url":"https://websplat.bitbucket.org/","title":"Ponies in your Interwebs"};
-        var scr = dce("script");
-        scr.src=path + 'plugins/delphinium/blossom/assets/javascript/addthis.js';
-        ad.appendChild(scr);
-    }
-
-    selector.appendChild(ad);
 
     // a header to say what's going on
     var hdr = dce("div");
