@@ -215,7 +215,7 @@ $(document).keydown(function(e) {
   }
 
   //Snow
-  if(role = 'Instructor' || current_grade >= config.snowPage){
+  if(role = 'Instructor' || current_grade >= config.snow){
     if (e.keyCode in snowPage) {
       snowPage[e.keyCode] = true;
       if (snowPage[keys.S] && snowPage[keys.N]) {
