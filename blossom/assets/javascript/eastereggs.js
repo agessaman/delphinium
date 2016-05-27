@@ -21,14 +21,14 @@
 
 var eggs = [{ name:'harlem_shake', icon:'bolt', comand:'Press "h" and "a" at the same time, make sure your sound is on', value:config.harlem_shake},
             { name:'ripples', icon:'bullseye', comand: 'Press "r" and "i" at the same time and move the mouse', value:config.ripples},
-            { name:'asteroids', icon:'rocket', comand: 'Press "a" and "s" at the same time, space to shoot, arrow keys to move', value:config.asteroids},
+            { name:'asteroids', icon:'fa fa-space-shuttle', comand: 'Press "a" and "s" at the same time, space to shoot, arrow keys to move', value:config.asteroids},
             { name:'katamari', icon:'fa fa-soccer-ball-o', comand:'Press "k" and "a" at the same time, follow instructions', value:config.katamari}, 
             { name:'bombs', icon:'fa fa-bomb', comand:'Press "b" and "o" at the same time, click mouse in text to drop them', value:config.bombs},
-            { name:'ponies', icon:'linux', comand:'Press "p" and "o" at the same time, space to re-spawn, arrow keys to move', value:config.ponies},
-            { name:'my_little_pony', icon:'github-alt', comand:'Press "m" and "y" at the same time, watch and enjoy', value:config.my_little_pony},
-            { name:'snow', icon:'gears', comand:'Press "s" and "n" at the same time, watch and enjoy, follows mouse, break lights', value:config.snow},
-            { name:'raptor', icon:'gears', comand:'Press "r" and "a" at the same time, make sure your sound is on', value:config.raptor},
-            { name:'fireworks', icon:'gears', comand:'Press "f" and "i" at the same time, make sure your sound is on', value:config.fireworks}];
+            { name:'ponies', icon:'fa fa-heart-o', comand:'Press "p" and "o" at the same time, space to re-spawn, arrow keys to move', value:config.ponies},
+            { name:'my_little_pony', icon:'fa fa-heartbeat', comand:'Press "m" and "y" at the same time, watch and enjoy', value:config.my_little_pony},
+            { name:'snow', icon:'cloud', comand:'Press "s" and "n" at the same time, watch and enjoy, follows mouse, break lights', value:config.snow},
+            { name:'raptor', icon:'fa fa-binoculars', comand:'Press "r" and "a" at the same time, make sure your sound is on', value:config.raptor},
+            { name:'fireworks', icon:'fa fa-rocket', comand:'Press "f" and "i" at the same time, make sure your sound is on', value:config.fireworks}];
 eggs.sort(function(a,b){
   return a.value - b.value;
 });
@@ -215,7 +215,7 @@ $(document).keydown(function(e) {
   }
 
   //Snow
-  if(role = 'Instructor' || current_grade >= config.snowPage){
+  if(role = 'Instructor' || current_grade >= config.snow){
     if (e.keyCode in snowPage) {
       snowPage[e.keyCode] = true;
       if (snowPage[keys.S] && snowPage[keys.N]) {
