@@ -333,6 +333,8 @@ class CmsObject implements ArrayAccess
     public function save()
     {
         $fullPath = static::getFilePath($this->plugin, $this->fileName);
+var_dump($this->plugin);
+var_dump($this->fileName);
 
         if (File::isFile($fullPath) && $this->originalFileName !== $this->fileName) {
             throw new ApplicationException(Lang::get(
@@ -363,6 +365,7 @@ class CmsObject implements ArrayAccess
         }
 
         $newFullPath = $fullPath;
+
         if (@File::put($fullPath, $this->content) === false) {
             throw new ApplicationException(Lang::get(
                 'cms::lang.cms_object.error_saving',

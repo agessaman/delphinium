@@ -21,6 +21,11 @@
  */
 namespace Delphinium\Vanilla\Widgets;
 
+use File;
+use Yaml;
+use Flash;
+use Input;
+use Lang;
 use Backend\Classes\WidgetBase;
 use System\Classes\UpdateManager;
 use October\Rain\Support\Str;
@@ -41,10 +46,11 @@ use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Dumper;
 use System\Classes\PluginManager;
 use Cms\Classes\ComponentHelpers;
-use Yaml;
-use Flash;
-use Input;
 use Delphinium\Vanilla\Classes\Plugin as PluginClass;
+use RecursiveIteratorIterator;
+use RecursiveDirectoryIterator;
+use ApplicationException;
+use Cms\Helpers\File as FileHelper;
 
 
 class Delphiniumize extends WidgetBase
@@ -58,6 +64,7 @@ class Delphiniumize extends WidgetBase
     protected $controller;
     public $noRecordsMessage = 'rainlab.builder::lang.database.no_records';
 
+    protected static $allowedExtensions = ['php'];
     protected $newPluginData;
     protected $readyVars;
     protected $fileVersions;
@@ -89,9 +96,10 @@ class Delphiniumize extends WidgetBase
 //            'items'=>$this->getData($activePluginVector)
 //        ];
 //
+        $activePluginVector = $this->getActivePlugin();
         return $this->makePartial('body', [
-            'data' => $this->getData(),
-            'pluginVector'=>$this->getActivePlugin()
+            'data' => $this->getData($activePluginVector),
+            'pluginVector'=>$activePluginVector
         ]);
     }
 
@@ -106,8 +114,12 @@ class Delphiniumize extends WidgetBase
     {
         return $this->controller->getBuilderActivePluginVector();
     }
-    protected function getData()
+    protected function getData($activePluginVector)
     {
+        if(!$activePluginVector)
+        {
+            return;
+        }
         $searchTerm = Str::lower($this->getSearchTerm());
         $searchWords = [];
         if (strlen($searchTerm)) {
@@ -117,14 +129,17 @@ class Delphiniumize extends WidgetBase
         $pluginManager = PluginManager::instance();
         $plugins = $pluginManager->getPlugins();
 
-        $this->prepareComponentList();
+//        $this->prepareComponentList();
 
         $items = [];
-        foreach ($plugins as $plugin) {
-            $components = $this->getPluginComponents($plugin);
-            if (!is_array($components)) {
+        foreach ($plugins as $key=>$plugin) {
+            if($key!==$activePluginVector->pluginCodeObj->toCode()) {
                 continue;
             }
+//            $components = $this->getPluginComponents($plugin);
+//            if (!is_array($components)) {
+//                continue;
+//            }
 
             $pluginDetails = $plugin->pluginDetails();
 
@@ -143,64 +158,67 @@ class Delphiniumize extends WidgetBase
             $pluginClass = get_class($plugin);
 
             $pluginItems = [];
-            foreach ($components as $componentInfo) {
-                $className = $componentInfo->className;
-                $alias = $componentInfo->alias;
-                $component = new $className();
-
-                if ($component->isHidden) {
-                    continue;
-                }
-
-                $componentDetails = $component->componentDetails();
-                $component->alias = '--alias--';
-
-                $item = (object)[
-                    'title'          => ComponentHelpers::getComponentName($component),
-                    'description'    => ComponentHelpers::getComponentDescription($component),
-                    'plugin'         => $pluginName,
-                    'propertyConfig' => ComponentHelpers::getComponentsPropertyConfig($component),
-                    'propertyValues' => ComponentHelpers::getComponentPropertyValues($component, $alias),
-                    'className'      => get_class($component),
-                    'pluginIcon'     => $pluginIcon,
-                    'alias'          => $alias,
-                    'name'           => $componentInfo->duplicateAlias
-                        ? $componentInfo->className
-                        : $componentInfo->alias
-                ];
-
-                if ($searchWords && !$this->itemMatchesSearch($searchWords, $item)) {
-                    continue;
-                }
-
+//            foreach ($components as $componentInfo) {
+//                $className = $componentInfo->className;
+//                $alias = $componentInfo->alias;
+//                $component = new $className();
+//
+//                if ($component->isHidden) {
+//                    continue;
+//                }
+//
+//                $componentDetails = $component->componentDetails();
+//                $component->alias = '--alias--';
+//
+//                $item = (object)[
+//                    'title'          => ComponentHelpers::getComponentName($component),
+//                    'description'    => ComponentHelpers::getComponentDescription($component),
+//                    'plugin'         => $pluginName,
+//                    'propertyConfig' => ComponentHelpers::getComponentsPropertyConfig($component),
+//                    'propertyValues' => ComponentHelpers::getComponentPropertyValues($component, $alias),
+//                    'className'      => get_class($component),
+//                    'pluginIcon'     => $pluginIcon,
+//                    'alias'          => $alias,
+//                    'name'           => $componentInfo->duplicateAlias
+//                        ? $componentInfo->className
+//                        : $componentInfo->alias
+//                ];
+//
+//                if ($searchWords && !$this->itemMatchesSearch($searchWords, $item)) {
+//                    continue;
+//                }
+//
                 if (!array_key_exists($pluginClass, $items)) {
+
+                    $files = $this->getPluginFiles($activePluginVector);
+
                     $group = (object)[
                         'title'       => $pluginName,
                         'description' => $pluginDescription,
                         'pluginClass' => $pluginClass,
                         'icon'        => $pluginIcon,
-                        'items'       => []
+                        'items'       => $files
                     ];
 
                     $items[$pluginClass] = $group;
                 }
+//
+//                $pluginItems[] = $item;
+//            }
 
-                $pluginItems[] = $item;
-            }
-
-            usort($pluginItems, function ($a, $b) {
-                return strcmp($a->title, $b->title);
-            });
-
-            if (isset($items[$pluginClass])) {
-                $items[$pluginClass]->items = $pluginItems;
-            }
+//            usort($pluginItems, function ($a, $b) {
+//                return strcmp($a->title, $b->title);
+//            });
+//
+//            if (isset($items[$pluginClass])) {
+//                $items[$pluginClass]->items = $pluginItems;
+//            }
         }
 
-        uasort($items, function ($a, $b) {
-            return strcmp($a->title, $b->title);
-        });
-
+//        uasort($items, function ($a, $b) {
+//            return strcmp($a->title, $b->title);
+//        });
+//
         return $items;
     }
 
@@ -237,17 +255,96 @@ class Delphiniumize extends WidgetBase
         $this->pluginComponentList = $componentList;
     }
 
-    protected function getPluginComponents($plugin)
+//    protected function getPluginComponents($plugin)
+//    {
+//        $result = array();
+//        $pluginClass = get_class($plugin);
+//        foreach ($this->pluginComponentList as $componentInfo) {
+//            if ($componentInfo->pluginClass == $pluginClass) {
+//                $result[] = $componentInfo;
+//            }
+//        }
+//
+//        return $result;
+//    }
+
+    public function getPluginFiles($activePluginVector)
     {
-        $result = array();
-        $pluginClass = get_class($plugin);
-        foreach ($this->pluginComponentList as $componentInfo) {
-            if ($componentInfo->pluginClass == $pluginClass) {
-                $result[] = $componentInfo;
-            }
+        $dirPath = base_path()."/plugins/".$activePluginVector->path;//$activePluginVector->pluginCodeObj->toCode();
+
+        $result = [];
+
+        if (!File::isDirectory($dirPath)) {
+            return $result;
         }
 
+        $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dirPath));
+        $it->setMaxDepth(0); // Support only a single level of subdirectories
+        $it->rewind();
+
+        while ($it->valid()) {
+
+            if ($it->isFile() && in_array($it->getExtension(), static::$allowedExtensions)) {
+                $filePath = $it->getBasename();
+                if ($it->getDepth() > 0) {
+                    $filePath = basename($it->getPath()).'/'.$filePath;
+                }
+                $page = static::load($dirPath,$filePath);// loading it from cache : static::loadCached($theme, $filePath);
+                $result[] = $page;
+            }
+
+            $it->next();
+        }
         return $result;
+    }
+
+    /**
+     * Loads the object from a file.
+     * This method is used in the CMS back-end. It doesn't use any caching.
+     * @param \Cms\Classes\Theme $theme Specifies the theme the object belongs to.
+     * @param string $fileName Specifies the file name, with the extension.
+     * The file name can contain only alphanumeric symbols, dashes and dots.
+     * @return mixed Returns a CMS object instance or null if the object wasn't found.
+     */
+    public static function load($dirPath,$fileName)
+    {
+        if (!FileHelper::validatePath($fileName, static::getMaxAllowedPathNesting())) {
+            throw new ApplicationException(Lang::get('cms::lang.cms_object.invalid_file', ['name'=>$fileName]));
+        }
+
+        if (!strlen(File::extension($fileName))) {
+            $fileName .= '.'.static::$defaultExtension;
+        }
+
+        $fullPath =$dirPath."\\".$fileName;//static::getFilePath($theme, $fileName);
+
+        if (!File::isFile($fullPath)) {
+            return null;
+        }
+
+        if (($content = @File::get($fullPath)) === false) {
+            return null;
+        }
+
+        $obj = new \stdClass();//new static($theme);
+        $obj->fileName = $fileName;
+        $obj->path = $fileName;
+        $obj->fullPath = $dirPath."\\".$fileName;
+        $obj->originalFileName = $fileName;
+        $obj->mtime = File::lastModified($fullPath);
+        $obj->content = $content;
+        return $obj;
+    }
+
+    /**
+     * Returns the maximum allowed path nesting level.
+     * The default value is 1, meaning that files
+     * can only exist in the root directory.
+     * @return mixed Returns the maximum nesting level or null if any level is allowed.
+     */
+    protected static function getMaxAllowedPathNesting()
+    {
+        return 1;
     }
 
     protected function getSearchTerm()
@@ -265,9 +362,15 @@ class Delphiniumize extends WidgetBase
 
     public function onRefresh()
     {
-        return [
-            '#'.$this->getId('asset-list') => $this->makePartial('items', ['items'=>$this->getData()])
-        ];
+
+        $activePluginVector = $this->getActivePlugin();
+        return $this->makePartial('items', [
+            'items' => $this->getData($activePluginVector),
+            'pluginVector'=>$activePluginVector
+        ]);
+//        return [
+//            '#'.$this->getId('asset-list') => $this->makePartial('items', ['items'=>$this->getData()])
+//        ];
     }
     protected function setSearchTerm($term)
     {
@@ -378,7 +481,12 @@ class Delphiniumize extends WidgetBase
 //
     public function refreshActivePlugin()
     {
-        return ['#'.$this->getId('body') => $this->makePartial('widget-contents', ['data'=>$this->getData(), 'pluginVector'=>$this->getActivePlugin()])];
+        $activePluginVector = $this->getActivePlugin();
+//        return $this->makePartial('body', [
+//            'data' => $this->getData($activePluginVector),
+//            'pluginVector'=>$activePluginVector
+//        ]);
+        return ['#'.$this->getId('body') => $this->makePartial('widget-contents', ['data'=>$this->getData($activePluginVector), 'pluginVector'=>$activePluginVector])];
     }
 
     public function onAddItem()

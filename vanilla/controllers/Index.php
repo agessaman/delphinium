@@ -97,7 +97,7 @@ class Index extends Controller
 
         //we require the table widget
         $this->addJs('/modules/backend/widgets/table/assets/js/build-min.js', 'core');
-//        $this->addJs('/plugins/delphinium/vanilla/assets/js/build-min.js', 'Delphinium.Vanilla');
+        $this->addJs('/plugins/delphinium/vanilla/assets/js/build-min.js', 'Delphinium.Vanilla');
 
         $this->bodyClass = 'compact-container side-panel-not-fixed';
         $this->pageTitle = 'Vanilla';
@@ -185,18 +185,18 @@ class Index extends Controller
     protected function bindFormWidgetToController()
     {
 
-        $alias = Request::input('formWidgetAlias');
-        $type = Request::input('templateType');
-        $object = $this->loadTemplate($type, Request::input('templatePath'));
-
-        $widget = $this->makeTemplateFormWidget($type, $object, $alias);
-        $widget->bindToController();
 //        $alias = Request::input('formWidgetAlias');
-//        $type = Request::input('objectType');
-//        $object = $this->loadObject($type, Request::input('objectPath'));
+//        $type = Request::input('templateType');
+//        $object = $this->loadTemplate($type, Request::input('templatePath'));
 //
-//        $widget = $this->makeObjectFormWidget($type, $object, $alias);
+//        $widget = $this->makeTemplateFormWidget($type, $object, $alias);
 //        $widget->bindToController();
+        $alias = Request::input('formWidgetAlias');
+        $type = Request::input('objectType');
+        $object = $this->loadObject($type, Request::input('objectPath'));
+
+        $widget = $this->makeObjectFormWidget($type, $object, $alias);
+        $widget->bindToController();
     }
 
     //from builder
@@ -263,7 +263,7 @@ class Index extends Controller
         ];
     }
 
-    public function onSave()
+    public function index_onSave()
     {
         $fullPath = Request::input('templateFullPath');
         $this->validateRequestTheme();
