@@ -73,7 +73,7 @@ class TestRoots extends ComponentBase
         $this->dbHelper = new DbHelper();
 //        $this->refreshCache();
 //        $this->test();
-//        $this->testBasicModulesRequest();
+        $this->testBasicModulesRequest();
 //        $this->testGettingModuleStates();
 //        $this->testBuildTree();
 //        $this->testDeleteTag();
@@ -110,12 +110,12 @@ class TestRoots extends ComponentBase
 //        $this->testGetQuiz();
 //        $this->testGetQuizQuestions();
 //        $this->testGetAllQuizzes();
-        $this->testGetPages();
+//        $this->testGetPages();
 //        $this->testQuizTakingWorkflow();
 //        $this->testIsQuestionAnswered();
 //        $this->testSubmitQuiz();
 //        $this->getQuizSubmissionQuestions();
-        $this->getModuleTree();
+//        $this->getModuleTree();
     }
 
     private function testBasicModulesRequest()

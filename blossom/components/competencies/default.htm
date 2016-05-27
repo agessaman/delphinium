@@ -28,27 +28,26 @@
 
 <script>
     
-    //component configuration [id,Name,Color,Size,Animate,course_id]
-    var config = {{config|raw}};
-    //console.log('config',config);
-    
     var role = '{{role}}';
     //console.log('Role: ',role);//string
 	
-	var competenciesColor=config.Color;//string
-	var competenciesSize=config.Size.toLowerCase();//string
-	var competenciesAnimate=config.Animate;//boolean
+	//component configuration [id,Name,Color,Size,Animate,course_id]
+    var compConfig = {{competencyconfig|raw}};
+    //console.log('compConfig',compConfig);
+	var competenciesColor=compConfig.Color;//string
+	var competenciesSize=compConfig.Size.toLowerCase();//string
+	var competenciesAnimate=compConfig.Animate;//boolean
     
     var data =[];// json for d3
     var details=[];// for modal '#detailed' body content
-    
-	//student view uses
-    //var assignments={{assignments|raw}};//json
-    //var submissions={{submissions|raw}};
-    
-    //instructor view uses
-    //var modules={{modules|raw}};// use items to build data
-    
+	
+    var modules={{competencymodules|raw}};//module_items to build tags
+    //console.log('modules:',modules.length, modules);
+	var tagList=[];
+    var assignments=[];// click bar to display items
+    var submissions=[];// N/A unless Learner, load in studentView.htm
+    //var submissions={{competencysubmissions|raw}};
+	
 </script>
 {% if ('Learner' in role) %}
 {% partial __SELF__~'::studentView' %}

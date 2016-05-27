@@ -19,40 +19,61 @@
   ~ You may not distribute any version of this software, modified or otherwise
   -->
 
-<div class="control-breadcrumb">
-    <ul>
-        <li><a href="<?= Backend::url('delphinium/blossom/eastereggs') ?>">EasterEggs Instances</a></li>
-        <li><?= e($this->pageTitle) ?></li>
-    </ul>
-</div>
+<?php Block::put('breadcrumb') ?>
 
-<?= Form::open(['class'=>'layout-item stretch layout-column']) ?>
 
-    <?= $this->formRender() ?>
-    <br/><hr/>
-    <div class="form-buttons layout-item fix">
-        <div class="loading-indicator-container">
-            <button 
-                type="button" 
-                data-request="onSave" 
-                data-request-data="close:true" 
-                data-hotkey="ctrl+enter"
-                data-hotkey-mac="cmd+enter"
-                data-load-indicator="Saving EasterEggs Instance..." 
-                class="btn btn-default">
-                Save and Close
-            </button>
-            <button 
-                type="button" 
-                class="oc-icon-trash-o btn-icon danger pull-right" 
-                data-request="onDelete" 
-                data-load-indicator="Deleting EasterEggs Instance..." 
-                data-request-confirm="Are you sure you don't want this one?">
-                Remove
-            </button>
+<ul>
+  <li><a href="<?= Backend::url('delphinium/blossom/eastereggs') ?>">EasterEggs</a></li>
+  <li><?= e($this->pageTitle) ?></li>
+</ul>
+<?php Block::endPut() ?>
 
-            <span class="btn-text"> or 
-            <a href="<?= Backend::url('delphinium/blossom/eastereggs') ?>">Cancel</a></span>
+<?php if (!$this->fatalError): ?>
+
+    <?= Form::open(['class' => 'layout']) ?>
+
+        <div class="layout-row">
+            <?= $this->formRender() ?>
         </div>
-    </div>
-<?= Form::close() ?>
+
+        <div class="form-buttons">
+            <div class="loading-indicator-container">
+                <button
+                    type="submit"
+                    data-request="onSave"
+                    data-request-data="redirect:0"
+                    data-hotkey="ctrl+s, cmd+s"
+                    data-load-indicator="Saving EasterEggs..."
+                    class="btn btn-primary">
+                    <u>S</u>ave
+                </button>
+                <button
+                    type="button"
+                    data-request="onSave"
+                    data-request-data="close:1"
+                    data-hotkey="ctrl+enter, cmd+enter"
+                    data-load-indicator="Saving EasterEggs..."
+                    class="btn btn-default">
+                    Save and Close
+                </button>
+                <button
+                    type="button"
+                    class="oc-icon-trash-o btn-icon danger pull-right"
+                    data-request="onDelete"
+                    data-load-indicator="Deleting EasterEggs..."
+                    data-request-confirm="Do you really want to delete this eastereggs instance?">
+                </button>
+                <span class="btn-text">
+                    or <a href="<?= Backend::url('delphinium/blossom/eastereggs') ?>">Cancel</a>
+                </span>
+            </div>
+        </div>
+
+    <?= Form::close() ?>
+
+<?php else: ?>
+
+    <p class="flash-message static error"><?= e($this->fatalError) ?></p>
+    <p><a href="<?= Backend::url('delphinium/blossom/eastereggs') ?>" class="btn btn-default">Return to eastereggs list</a></p>
+
+<?php endif ?>

@@ -6,6 +6,7 @@ use Delphinium\Roots\Models\Developer as LtiConfigurations;
 use Delphinium\Roots\Models\User;
 use Delphinium\Roots\Models\UserCourse;
 use Cms\Classes\ComponentBase;
+use Cms\Classes\Theme;
 use Delphinium\Roots\Classes\Blti;
 use Delphinium\Roots\Roots;
 use Delphinium\Roots\DB\DbHelper;
@@ -92,8 +93,7 @@ class LtiConfiguration extends ComponentBase
                     }
             }
         } else {
-            $vars = $_POST;
-            $this->returnXML($vars);
+            $this->returnXML();
         }
     }
 
@@ -113,7 +113,7 @@ class LtiConfiguration extends ComponentBase
             ],
             'type' =>[
                 'title'=>'Type',
-                'description' => 'Whether this content should appear inside a Canva\'s text editor',
+                'description' => 'Whether this LTI should appear in a left hand menu item or in the editor toolbar.',
                 'type' => 'dropdown',
                 'default' => 'Navigation',
             ],
@@ -122,7 +122,7 @@ class LtiConfiguration extends ComponentBase
                 'description' => 'Enter the name of the link as you would like it to show in the LMS',
                 'type' => 'string',
                 'required'=>true,
-                'validationPattern' => '^[a-zA-Z0-9]+$',
+                'validationPattern' => '^[a-zA-Z0-9\s]+$',
                 'validationMessage' => 'Link Title is required'
             ],
             'visibility' =>[
@@ -132,18 +132,20 @@ class LtiConfiguration extends ComponentBase
                 'default' => 'Public',
             ],
             'width' =>[
-                'title'=>'(optional) Width',
-                'description' => 'Enter the width of the iFrame that will show this content',
+                'title'=>'Width (Editor type only)',
+                'description' => 'This setting applies to the \'Editor\' type only. Enter the width of the iframe that will display this content in the text editor',
                 'type' => 'string',
                 'validationPattern' => '^[0-9]+$',
-                'validationMessage' => 'Width must be an integer'
+                'validationMessage' => 'Width must be an integer',
+                'default' => '600',
             ],
             'height' =>[
-                'title'=>'(optional) Height',
-                'description' => 'Enter the height of the iFrame that will show this content',
+                'title'=>'Height (Editor type only)',
+                'description' => 'This setting applies to the \'Editor\' type only.  Enter the height of the iframe that will display this content in the text editor',
                 'type' => 'string',
                 'validationPattern' => '^[0-9]+$',
-                'validationMessage' => 'Height must be an integer'
+                'validationMessage' => 'Height must be an integer',
+                'default' => '800',
             ]
         ];
     }
@@ -247,7 +249,11 @@ class LtiConfiguration extends ComponentBase
                 $roots = new Roots();
                 try {
                     $course = $roots->getCourse();
-                } catch (\GuzzleHttp\Exception\RequestException $e) {
+                    if(count($course)<1)
+                    {
+                        throw new \Exception("Invalid access token", 401);
+                    }
+                } catch (\Exception $e) {
                     if ($e->getCode() == 401) {//unauthorized, meaning the token we have in the DB has been deleted from Canvas. We must request a new token
                         $dbHelper->deleteInvalidApproverToken($courseId);
 
@@ -258,15 +264,13 @@ class LtiConfiguration extends ComponentBase
                         } else {
                             setcookie("token_attempts", 1, time() + (300), "/"); //5 minutes
                         }
-
-                        if ($_COOKIE['token_attempts'] > 3) {
+                        if ((isset($_COOKIE['token_attempts']))||($_COOKIE['token_attempts'] > 3)) {
                             echo "Unable to obtain access to your Canvas account. Reached the max number of attempts. Please verify your configuration and try again in 5 minutes.";
                             return;
                         } else {
                             $this->onRun();//the cookie is done to prevent infinite loops
                         }
                     }
-
                 }
                 $account_id = $course->account_id;
                 $account = $roots->getAccount($account_id);
@@ -339,13 +343,16 @@ class LtiConfiguration extends ComponentBase
         $visibilityOpts = $this->getVisibilityOptions();
         $visibility= $visibilityOpts[$this->property('visibility')];
         $domain = \Config::get('app.url');
-        $favicon = \Backend::skinAsset('assets/images/favicon.png');
 
+        $theme = Theme::getActiveTheme();
+        $path = $theme->getDirName();
+        $favicon = \URL::to('themes/'.$path.'/assets/images/favicon.png');
         $desc = is_null($this->page->description)?'':$this->page->description;
 
         $widthXML='';
         $heightXML = '';
         $typeXML='';
+        $varsXml='';
         $string='';
         if(!is_null($width))
         {
@@ -377,13 +384,28 @@ XML;
 				<lticm:property name='url'>$url</lticm:property>
                 <lticm:property name='text'>$linkTitle</lticm:property>
                 <lticm:property name='enabled'>true</lticm:property>
+                <lticm:property name="message_type">ContentItemSelectionRequest</lticm:property>
           </lticm:options>
+XML;
+
+            $varsXml = <<<XML
+            <blti:custom>
+                    <lticm:property name="custom_canvas_api_domain">\$Canvas.api.domain</lticm:property>
+					<lticm:property name="custom_canvas_course_id">\$Canvas.course.id</lticm:property>
+					<lticm:property name="custom_canvas_user_id">\$Canvas.user.id</lticm:property>
+					<lticm:property name="custom_canvas_user_login_id">\$Canvas.user.loginId</lticm:property>
+					<lticm:property name="lis_person_contact_email_primary">\$Person.email.primary</lticm:property>
+					<lticm:property name="user_image">\$User.image</lticm:property>
+					<lticm:property name="lis_course_offering_sourcedid">\$CourseSection.sourcedId</lticm:property>
+					<lticm:property name="lis_person_sourcedid">\$Person.sourcedId</lticm:property>
+            </blti:custom>
 XML;
         }
 
 
         $string = <<<XML
 <?xml version='1.0' encoding='UTF-8'?>
+<!--If you would like to run this page outside of Canvas for testing purposes please add an instance of the dev component instead of the LTI Configuration component-->
 <cartridge_basiclti_link xmlns='http://www.imsglobal.org/xsd/imslticc_v1p0'
     xmlns:blti = 'http://www.imsglobal.org/xsd/imsbasiclti_v1p0'
     xmlns:lticm ='http://www.imsglobal.org/xsd/imslticm_v1p0'
@@ -403,15 +425,14 @@ XML;
           <lticm:property name='domain'>$domain</lticm:property>
                 $typeXML
     </blti:extensions>
+    $varsXml
     <cartridge_bundle identifierref='BLTI001_Bundle'/>
     <cartridge_icon identifierref='BLTI001_Icon'/>
 </cartridge_basiclti_link>
-
-
 XML;
 
         $xml = new \SimpleXMLElement($string);
-
+        header("Content-type: text/xml; charset=utf-8");
         echo $xml->asXML();
         die();
     }

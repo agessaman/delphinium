@@ -17,62 +17,22 @@
   ~ Non-commercial use only, you may not charge money for the software
   ~ You can modify personal copy of source-code but cannot distribute modifications
   ~ You may not distribute any version of this software, modified or otherwise
-  -->
-
-<div id="content"></div>
-
-<script type="text/javascript" src="plugins/delphinium/blossom/assets/javascript/jquery.min.js"></script>
-<script type="text/javascript" src="plugins/delphinium/blossom/assets/javascript/bootstrap.min.js"></script>
-<script type="text/javascript" src="plugins/delphinium/blossom/assets/javascript/eastereggs.js"></script>
+-->
+  
 <script>
-    /* jquery and boostrap.js must be added here
-       include additional css or javascript libraries
-        
-        component instance DB record
-        [id,name, <Your Fields>, course_id,copy_id]
-    */
-    
-    var config = {{config|raw}};
-    //console.log('config',config);
-    
-    //ORIGINAL CODE: document.getElementById('content').innerHTML = config[0].custom;
-    /* Usage Example
-       write custom field to div content
-       custom field can be edited
-       in Backend or Frontend
-    */
-    $('#content').html(config.custom);
-    /*
-        initialize main variables
-        get variables from the php with twig
-        use twig to determine if the component is seen 
-        by an instructor or a student and load needed partial
-    */
-    var role = '{{role}}';//string
-    //console.log('Role: ',role);
-
-    var path = '{{path}}';
-    //console.log('Path: ', path);
-
-    var menu = {{menu}};
-    //console.log('Menu: ',menu);
-
-    var current_grade; 
-    if('Learner' == role){
-        current_grade = {{current_grade}};
-    }else{
-        current_grade = 1000000;
-    }
-    //console.log(current_grade);
+  var config = {{config|raw}};
+  var role = '{{role}}';
+  var path = '{{path}}';
+  var menu = {{menu}};
+  var current_grade; 
+  if('Learner' == role){
+      current_grade = {{current_grade}};
+  }
 </script>
+<script src="plugins/delphinium/blossom/assets/javascript/jquery.min.js"></script>
+<script src="plugins/delphinium/blossom/assets/javascript/eastereggs.js"></script>
 {% if ('Learner' in role) %}
-    {% if (menu == 1) %}
-        {% partial 'eastereggs::studentView' %}
-    {% endif %}
+  {% partial __SELF__~"::studentView" %}
 {% elseif ('Instructor' in role or 'TeachingAssistant' in role) %}
-    {% if (menu == 1) %}
-        {% partial 'eastereggs::instructorViewHead' %}
-    {% else %}
-        {% partial 'eastereggs::instructorViewHeadless' %}
-    {% endif %} 
-{% endif %}  
+  {% partial __SELF__~"::instructorView" %}
+{% endif %} 

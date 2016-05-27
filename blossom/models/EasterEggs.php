@@ -37,10 +37,11 @@ class EasterEggs extends Model
 
     public $rules = [
         'name'=>'required',
-        'menu'=>'required'
+        'menu'=>'required',
+        'course_id'=> 'required'
     ];
     
     protected $guarded = ['*'];
-    protected $fillable = ['name','menu'];
+    protected $fillable = ['name','menu', 'course_id'];
 
 }

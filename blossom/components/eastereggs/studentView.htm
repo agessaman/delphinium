@@ -19,18 +19,8 @@
   ~ You may not distribute any version of this software, modified or otherwise
   -->
 
-<div id="eggs"></div>
-
-<script>
-  var eggs_div = document.getElementById('eggs');
-  var html = "<p>First click in the center of the page, then...</p>";
-  for (var i = 0; i < eggs.length; i++) {
-    if(current_grade >= config[eggs[i]]){
-      html+= '<div id=' + eggs[i] + ' class="egg"><p>';
-        html += '<i class="icon-' + eggsIcons[i] + '" style="margin-right:10px;"></i>';
-        html += comands[i] + '</p>';
-      html += '</div>';
-    }
-  }
-  eggs_div.innerHTML = html;
-</script>
+<div id="studentWrap">
+  {% if (menu == 1) %}
+    {% partial __SELF__~"::studentDisplay" %}
+  {% endif %} 
+</div>

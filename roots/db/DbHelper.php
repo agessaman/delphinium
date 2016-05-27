@@ -369,11 +369,14 @@ class DbHelper
 
         if(!is_null($content))//
         {
-            $content->tags =$newTagsStr;
+            $content->tags = $newTagsStr;
             $content->save();
 
-            $newTags = explode(', ', $newTagsStr);
-            $this->updateAvailableTags($courseId, $newTags);
+            if(strlen($newTagsStr))
+            {
+                $newTags = explode(', ', $newTagsStr);
+                $this->updateAvailableTags($courseId, $newTags);
+            }
             return $content->tags;
         }
     }
