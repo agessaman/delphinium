@@ -11,10 +11,10 @@
     <?php if ($items): ?>
         <ul class="list">
             <?php foreach ($items as $item):
-                $dataId = 'asset-'.$this->plugin->getDirName().'-'.ltrim($item->path, '/');
+                $dataId = 'asset-'.$this->theme->getDirName().'-'.ltrim($item->path, '/');
             ?>
-                <li class="<?= $item->type ?>" <?php if ($item->editable): ?>data-editable<?php endif ?> data-item-path="<?= e(ltrim($item->path, '/')) ?>" data-item-plugin="<?= e($this->plugin->getDirName()) ?>" data-item-type="asset" data-id="<?= e($dataId) ?>">
-                    <a class="link" target="_blank" data-path="<?= $item->path ?>" href="<?= $this->getAssetFileUrl($item->path) ?>">
+                <li class="<?= $item->type ?>" <?php if ($item->editable): ?>data-editable<?php endif ?> data-item-path="<?= e(ltrim($item->path, '/')) ?>" data-item-theme="<?= e($this->theme->getDirName()) ?>" data-item-type="asset" data-id="<?= e($dataId) ?>">
+                    <a class="link" target="_blank" data-path="<?= $item->path ?>" href="<?= $this->getThemeFileUrl($item->path) ?>">
                         <?= e($item->name) ?>
 
                         <?php if ($searchMode): ?>
@@ -57,5 +57,5 @@
 </div>
 
 <?php if (!isset($nested)): ?>
-    <input type="hidden" name="plugin" value="<?= e($this->plugin->getDirName()) ?>">
+    <input type="hidden" name="theme" value="<?= e($this->theme->getDirName()) ?>">
 <?php endif ?>

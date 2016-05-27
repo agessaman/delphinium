@@ -1,71 +1,52 @@
-<?php
-/* Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
- *
- * This file is subject to the terms and conditions defined in
- * file 'https://github.com/ProjectDelphinium/delphinium/blob/master/EULA',
- * which is part of this source code package.
- *
- * NOTICE:  All information contained herein is, and remains the property of Project Delphinium. The intellectual and technical concepts contained
- * herein are proprietary to Project Delphinium and may be covered by U.S. and Foreign Patents, patents in process, and are protected by trade secret or copyright law.
- * Dissemination of this information or reproduction of this material is strictly forbidden unless prior written permission is obtained
- * from Project Delphinium.
- * 
- * THE RECEIPT OR POSSESSION OF THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS  
- * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.                
- *
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Non-commercial use only, you may not charge money for the software
- * You can modify personal copy of source-code but cannot distribute modifications
- * You may not distribute any version of this software, modified or otherwise
- */
-namespace Delphinium\Vanilla\Widgets;
+<?php namespace Delphinium\Vanilla\Widgets;
 
-use URL;
 use Str;
+use URL;
 use File;
 use Lang;
 use Input;
+use Config;
 use Request;
 use Response;
+use Validator;
+use Cms\Classes\Theme;
 use Cms\Classes\Asset;
 use Backend\Classes\WidgetBase;
-use RainLab\Pages\Classes\PageList as StaticPageList;
-use Cms\Classes\Theme;
-use RainLab\Pages\Classes\Menu;
+use System\Classes\PluginManager;
+use ApplicationException;
+use ValidationException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesser;
 use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
 use DirectoryIterator;
 use Exception;
-use Delphinium\Vanilla\Classes\Plugin;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+
 /**
- * Static page list widget.
+ * CMS asset list widget.
  *
- * @package rainlab\pages
+ * @package Delphinium\Vanilla
  * @author Alexey Bobkov, Samuel Georges
  */
 class AssetList extends WidgetBase
 {
-    use \Backend\Traits\SearchableWidget;
-    use \Backend\Traits\CollapsableWidget;
-    use \Backend\Traits\SelectableWidget;
+    protected $searchTerm = false;
 
-    protected $plugin;
-    protected $basePluginDir;
-    protected $pluginDir;
-    protected $relativePluginDir;
-    protected $dataIdPrefix;
+    protected $theme;
+
+    protected $groupStatusCache = false;
+
+    protected $selectedFilesCache = false;
+
+    /**
+     * @var string Message to display when there are no records in the list.
+     */
+    public $noRecordsMessage = 'No files found';
 
     /**
      * @var string Message to display when the Delete button is clicked.
      */
-    public $deleteConfirmation = 'rainlab.pages::lang.page.delete_confirmation';//TODO: implement languages in delphinium\vanilla
-
-    public $noRecordsMessage = 'No assets found';
-
-    public $addSubpageLabel = 'rainlab.pages::lang.page.add_subpage';//TODO: implement languages in delphinium\vanilla
-
-    protected $selectedFilesCache = false;
+    public $deleteConfirmation = 'Do you really want to delete selected files or directories?';
 
     /**
      * @var array A list of default allowed file types.
@@ -91,15 +72,17 @@ class AssetList extends WidgetBase
         'sass',
         'scss'
     ];
-    public function  __construct($controller, $alias, $pluginDir)
+
+    public function __construct($controller, $alias)
     {
-        $this->basePluginDir = $pluginDir;
         $this->alias = $alias;
+        $this->theme = Theme::getEditTheme();
+
         parent::__construct($controller, []);
         $this->bindToController();
+
         $this->checkUploadPostback();
     }
-
 
     /**
      * {@inheritDoc}
@@ -116,16 +99,14 @@ class AssetList extends WidgetBase
      */
     public function render()
     {
-        $activePluginVector = $this->getActivePlugin();
         return $this->makePartial('body', [
-            'data' => $this->getData($activePluginVector),
-            'pluginVector'=>$activePluginVector
+           'data'=>$this->getData()
         ]);
     }
 
     /*
-    * Event handlers
-    */
+     * Event handlers
+     */
 
     public function onGroupStatusUpdate()
     {
@@ -151,14 +132,14 @@ class AssetList extends WidgetBase
 
         $this->putSession('currentPath', $path);
         return [
-            '#'.$this->getId('asset-list') => $this->makePartial('items', ['items'=>$this->getData(),'pluginVector'=>$this->getActivePlugin()])
+            '#'.$this->getId('asset-list') => $this->makePartial('items', ['items'=>$this->getData()])
         ];
     }
 
     public function onRefresh()
     {
         return [
-            '#'.$this->getId('asset-list') => $this->makePartial('items', ['items'=>$this->getData(),'pluginVector'=>$this->getActivePlugin()])
+            '#'.$this->getId('asset-list') => $this->makePartial('items', ['items'=>$this->getData()])
         ];
     }
 
@@ -434,74 +415,14 @@ class AssetList extends WidgetBase
         return $this->onRefresh();
     }
 
-    /**
-     * Returns information about this widget, including name and description.
-     */
-    public function widgetDetails() {}
-
     /*
-     * Event handlers
+     * Methods for the internal use
      */
 
-    public function onReorder()
+    protected function getData()
     {
-        $structure = json_decode(Input::get('structure'), true);
-        if (!$structure) {
-            throw new SystemException('Invalid structure data posted.');
-        }
+        $assetsPath = $this->getAssetsPath();
 
-        $pageList = new StaticPageList($this->plugin);
-        $pageList->updateStructure($structure);
-    }
-//
-//    public function onUpdate()
-//    {
-//        $this->extendSelection();
-//
-//        return $this->updateList();
-//    }
-//
-//    public function onSearch()
-//    {
-//        $this->setSearchTerm(Input::get('search'));
-//        $this->extendSelection();
-//
-//        return $this->updateList();
-//    }
-
-    public function updateList()
-    {
-        return ['#'.$this->getId('plugin-model-list') => $this->makePartial('items', ['data'=>$this->getData(),'pluginVector'=>$this->getActivePlugin()])];
-    }
-
-    public function refreshActivePlugin()
-    {
-        $activePlugin =$this->getActivePlugin();
-        return ['#'.$this->getId('body') => $this->makePartial('widget-contents', ['data'=>$this->getData($activePlugin), 'pluginVector'=>$activePlugin])];
-    }
-    /*
-     * Methods for th internal use
-     */
-
-    public function getActivePlugin()
-    {
-        return $this->controller->getBuilderActivePluginVector();
-    }
-
-    protected function getData($activePluginVector)
-    {
-        if(!$activePluginVector)
-        {
-            return;
-        }
-
-        $assetsPath = base_path().$this->basePluginDir.$this->relativePluginDir.$activePluginVector->pluginCodeObj->toFilesystemPath().'/assets';
-        $pluginDir = base_path().$this->basePluginDir.$this->relativePluginDir.$activePluginVector->pluginCodeObj->toFilesystemPath();
-        $this->relativePluginDir =$this->basePluginDir.$this->relativePluginDir.$activePluginVector->pluginCodeObj->toFilesystemPath();
-        $this->pluginDir =$pluginDir;
-        $this->plugin = Plugin::load($this->relativePluginDir);
-        $this->dataIdPrefix = 'page-'.$this->plugin->getDirName();
-        $this->addSubpageLabel = trans($this->addSubpageLabel);
         if (!file_exists($assetsPath) || !is_dir($assetsPath)) {
             if (!File::makeDirectory($assetsPath)) {
                 throw new ApplicationException(Lang::get(
@@ -519,146 +440,18 @@ class AssetList extends WidgetBase
                 new DirectoryIterator($currentPath)
             );
         }
+
         return $this->findFiles();
     }
 
     protected function getAssetsPath()
     {
-        return $this->pluginDir.'/assets';
+        return $this->theme->getPath().'/assets';
     }
 
     protected function getThemeFileUrl($path)
     {
-        return URL::to('themes/'.$this->plugin->getDirName().'/assets'.$path);
-    }
-
-    protected function getAssetFileUrl($path)
-    {
-        return URL::to($this->relativePluginDir.'/assets'.$path);
-    }
-
-    protected function getData_alt()
-    {
-        /*
-         * Load the data
-         */
-        $items = call_user_func($this->dataSource);
-
-        $normalizedItems = [];
-        foreach ($items as $item) {
-            if ($this->suppressDirectories) {
-                $fileName = $item->getBaseFileName();
-                $dir = dirname($fileName);
-
-                if (in_array($dir, $this->suppressDirectories)) {
-                    continue;
-                }
-            }
-
-            $normalizedItems[] = $this->normalizeItem($item);
-        }
-
-        usort($normalizedItems, function ($a, $b) {
-            return strcmp($a->fileName, $b->fileName);
-        });
-
-        /*
-         * Apply the search
-         */
-        $filteredItems = [];
-        $searchTerm = Str::lower($this->getSearchTerm());
-
-        if (strlen($searchTerm)) {
-            /*
-             * Exact
-             */
-            foreach ($normalizedItems as $index => $item) {
-                if ($this->itemContainsWord($searchTerm, $item, true)) {
-                    $filteredItems[] = $item;
-                    unset($normalizedItems[$index]);
-                }
-            }
-
-            /*
-             * Fuzzy
-             */
-            $words = explode(' ', $searchTerm);
-            foreach ($normalizedItems as $item) {
-                if ($this->itemMatchesSearch($words, $item)) {
-                    $filteredItems[] = $item;
-                }
-            }
-        }
-        else {
-            $filteredItems = $normalizedItems;
-        }
-
-        /*
-         * Group the items
-         */
-        $result = [];
-        $foundGroups = [];
-        foreach ($filteredItems as $itemData) {
-            $pos = strpos($itemData->fileName, '/');
-
-            if ($pos !== false) {
-                $group = substr($itemData->fileName, 0, $pos);
-                if (!array_key_exists($group, $foundGroups)) {
-                    $newGroup = (object)[
-                        'title' => $group,
-                        'items' => []
-                    ];
-
-                    $foundGroups[$group] = $newGroup;
-                }
-
-                $foundGroups[$group]->items[] = $itemData;
-            }
-            else {
-                $result[] = $itemData;
-            }
-        }
-
-        foreach ($foundGroups as $group) {
-            $result[] = $group;
-        }
-
-        return $result;
-    }
-
-    protected function findFiles()
-    {
-        $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($this->getAssetsPath(), RecursiveDirectoryIterator::SKIP_DOTS),
-            RecursiveIteratorIterator::SELF_FIRST,
-            RecursiveIteratorIterator::CATCH_GET_CHILD
-        );
-
-        $editableAssetTypes = Asset::getEditableExtensions();
-        $searchTerm = Str::lower($this->getSearchTerm());
-        $words = explode(' ', $searchTerm);
-
-        $result = [];
-        foreach ($iterator as $item) {
-            if (!$item->isDir()) {
-                if (substr($item->getFileName(), 0, 1) == '.') {
-                    continue;
-                }
-
-                $path = $this->getRelativePath($item->getPathname());
-
-                if ($this->pathMatchesSearch($words, $path)) {
-                    $result[] = (object)[
-                        'type'=>'file',
-                        'path'=>File::normalizePath($path),
-                        'name'=>$item->getFilename(),
-                        'editable'=>in_array(strtolower($item->getExtension()), $editableAssetTypes)
-                    ];
-                }
-            }
-        }
-
-        return $result;
+        return URL::to('themes/'.$this->theme->getDirName().'/assets'.$path);
     }
 
     public function getCurrentRelativePath()
@@ -679,6 +472,7 @@ class AssetList extends WidgetBase
     protected function getCurrentPath()
     {
         $assetsPath = $this->getAssetsPath();
+
         $path = $assetsPath.'/'.$this->getCurrentRelativePath();
         if (!is_dir($path)) {
             return $assetsPath;
@@ -730,8 +524,10 @@ class AssetList extends WidgetBase
     protected function getDirectoryContents($dir)
     {
         $editableAssetTypes = Asset::getEditableExtensions();
+
         $result = [];
         $files = [];
+
         foreach ($dir as $node) {
             if (substr($node->getFileName(), 0, 1) == '.') {
                 continue;
@@ -789,10 +585,19 @@ class AssetList extends WidgetBase
         }
     }
 
+    protected function getSearchTerm()
+    {
+        return $this->searchTerm !== false ? $this->searchTerm : $this->getSession('search');
+    }
 
     protected function isSearchMode()
     {
         return strlen($this->getSearchTerm());
+    }
+
+    protected function getThemeSessionKey($prefix)
+    {
+        return $prefix.$this->theme->getDirName();
     }
 
     protected function getSelectedFiles()
@@ -846,6 +651,13 @@ class AssetList extends WidgetBase
         $this->selectedFilesCache = $currentSelection;
     }
 
+    protected function validateRequestTheme()
+    {
+        if ($this->theme->getDirName() != Request::input('theme')) {
+            throw new ApplicationException(trans('cms::lang.theme.edit.not_match'));
+        }
+    }
+
     /**
      * Checks the current request to see if it is a postback containing a file upload
      * for this particular widget.
@@ -892,8 +704,7 @@ class AssetList extends WidgetBase
 
             $uploadedFile->move($this->getCurrentPath(), $uploadedFile->getClientOriginalName());
 
-//            die('success');
-            die('fail');
+            die('success');
         }
         catch (Exception $ex) {
             $message = $fileName !== null
@@ -904,46 +715,46 @@ class AssetList extends WidgetBase
         }
     }
 
-    protected function getThemeSessionKey($prefix)
+    protected function setSearchTerm($term)
     {
-        return $prefix.$this->plugin->getDirName();
+        $this->searchTerm = trim($term);
+        $this->putSession('search', $this->searchTerm);
     }
 
-    protected function subtreeToText($page)
+    protected function findFiles()
     {
-        $result = $this->pageToText($page->page);
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($this->getAssetsPath(), RecursiveDirectoryIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::SELF_FIRST,
+            RecursiveIteratorIterator::CATCH_GET_CHILD
+        );
 
-        $iterator = function($pages) use (&$iterator, &$result) {
-            foreach ($pages as $page) {
-                $result .= ' '.$this->pageToText($page->page);
-                $iterator($page->subpages);
+        $editableAssetTypes = Asset::getEditableExtensions();
+        $searchTerm = Str::lower($this->getSearchTerm());
+        $words = explode(' ', $searchTerm);
+
+        $result = [];
+        foreach ($iterator as $item) {
+            if (!$item->isDir()) {
+                if (substr($item->getFileName(), 0, 1) == '.') {
+                    continue;
+                }
+
+                $path = $this->getRelativePath($item->getPathname());
+
+                if ($this->pathMatchesSearch($words, $path)) {
+                    $result[] = (object)[
+                        'type'=>'file',
+                        'path'=>File::normalizePath($path),
+                        'name'=>$item->getFilename(),
+                        'editable'=>in_array(strtolower($item->getExtension()), $editableAssetTypes)
+                    ];
+                }
             }
-        };
-
-        $iterator($page->subpages);
+        }
 
         return $result;
     }
-
-    protected function pageToText($page)
-    {
-        $viewBag = $page->getViewBag();
-
-        return $page->getViewBag()->property('title').' '.$page->getViewBag()->property('url');
-    }
-
-    protected function getSession($key = null, $default = null)
-    {
-        $key = strlen($key) ? $this->getThemeSessionKey($key) : $key;
-
-        return parent::getSession($key, $default);
-    }
-
-    protected function putSession($key, $value)
-    {
-        return parent::putSession($this->getThemeSessionKey($key), $value);
-    }
-
 
     protected function pathMatchesSearch(&$words, $path)
     {

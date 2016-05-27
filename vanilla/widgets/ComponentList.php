@@ -1,7 +1,6 @@
 <?php namespace Delphinium\Vanilla\Widgets;
 
 use Str;
-use File;
 use Lang;
 use Input;
 use Request;
@@ -9,17 +8,12 @@ use Response;
 use Cms\Classes\Theme;
 use System\Classes\PluginManager;
 use Cms\Classes\ComponentHelpers;
-use Cms\Helpers\File as FileHelper;
 use Backend\Classes\WidgetBase;
-use RecursiveIteratorIterator;
-use RecursiveDirectoryIterator;
-use ApplicationException;
-use DirectoryIterator;
 
 /**
  * Component list widget.
  *
- * @package october\cms
+ * @package Delphinium\Vanilla
  * @author Alexey Bobkov, Samuel Georges
  */
 class ComponentList extends WidgetBase
@@ -29,21 +23,6 @@ class ComponentList extends WidgetBase
     protected $groupStatusCache = false;
 
     protected $pluginComponentList;
-
-    protected $activePluginVector;
-
-    protected $selectedFilesCache = false;
-
-    protected $plugin;
-
-    protected static $fillable = [
-        'content',
-        'fileName'
-    ];
-
-    protected static $allowedExtensions = ['htm'];
-
-    protected static $defaultExtension = 'htm';
 
     public function __construct($controller, $alias)
     {
@@ -59,11 +38,8 @@ class ComponentList extends WidgetBase
      */
     public function render()
     {
-        $activePluginVector = $this->getActivePlugin();
-        $this->activePluginVector = $activePluginVector;
         return $this->makePartial('body', [
-            'data' => $this->getData($activePluginVector),
-            'pluginVector'=>$activePluginVector
+            'data' => $this->getData()
         ]);
     }
 
@@ -94,18 +70,8 @@ class ComponentList extends WidgetBase
      * Methods for th internal use
      */
 
-
-    public function getActivePlugin()
+    protected function getData()
     {
-        return $this->controller->getBuilderActivePluginVector();
-    }
-
-    protected function getData($activePluginVector)
-    {
-        if(!$activePluginVector)
-        {
-            return;
-        }
         $searchTerm = Str::lower($this->getSearchTerm());
         $searchWords = [];
         if (strlen($searchTerm)) {
@@ -114,13 +80,11 @@ class ComponentList extends WidgetBase
 
         $pluginManager = PluginManager::instance();
         $plugins = $pluginManager->getPlugins();
-        $this->prepareComponentList($activePluginVector);
-        $items = [];
 
-        foreach ($plugins as $key=>$plugin) {
-            if($key!==$activePluginVector->pluginCodeObj->toCode()) {
-               continue;
-            }
+        $this->prepareComponentList();
+
+        $items = [];
+        foreach ($plugins as $plugin) {
             $components = $this->getPluginComponents($plugin);
             if (!is_array($components)) {
                 continue;
@@ -155,10 +119,6 @@ class ComponentList extends WidgetBase
                 $componentDetails = $component->componentDetails();
                 $component->alias = '--alias--';
 
-                //get this component's files
-                $files = $this->getComponentFiles($plugin,$componentInfo);
-                $this->plugin = $plugin;
-
                 $item = (object)[
                     'title'          => ComponentHelpers::getComponentName($component),
                     'description'    => ComponentHelpers::getComponentDescription($component),
@@ -170,8 +130,7 @@ class ComponentList extends WidgetBase
                     'alias'          => $alias,
                     'name'           => $componentInfo->duplicateAlias
                         ? $componentInfo->className
-                        : $componentInfo->alias,
-                    'files'         => $files
+                        : $componentInfo->alias
                 ];
 
                 if ($searchWords && !$this->itemMatchesSearch($searchWords, $item)) {
@@ -209,108 +168,13 @@ class ComponentList extends WidgetBase
         return $items;
     }
 
-    public function getComponentFiles($activePlugin,$activeComponent)
-    {
-        $dirPath = base_path()."/plugins".$activeComponent->className;
-
-        $result = [];
-
-        if (!File::isDirectory($dirPath)) {
-            return $result;
-        }
-
-        $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dirPath));
-        $it->setMaxDepth(1); // Support only a single level of subdirectories
-        $it->rewind();
-
-        while ($it->valid()) {
-
-            if ($it->isFile() && in_array($it->getExtension(), static::$allowedExtensions)) {
-                $filePath = $it->getBasename();
-                if ($it->getDepth() > 0) {
-                    $filePath = basename($it->getPath()).'/'.$filePath;
-                }
-
-                $page = static::load($dirPath,$filePath);// loading it from cache : static::loadCached($theme, $filePath);
-                $result[] = $page;
-            }
-
-            $it->next();
-        }
-        return $result;
-    }
-
-    /**
-     * Loads the object from a file.
-     * This method is used in the CMS back-end. It doesn't use any caching.
-     * @param \Cms\Classes\Theme $theme Specifies the theme the object belongs to.
-     * @param string $fileName Specifies the file name, with the extension.
-     * The file name can contain only alphanumeric symbols, dashes and dots.
-     * @return mixed Returns a CMS object instance or null if the object wasn't found.
-     */
-    public static function load($dirPath,$fileName)
-    {
-        if (!FileHelper::validatePath($fileName, static::getMaxAllowedPathNesting())) {
-            throw new ApplicationException(Lang::get('cms::lang.cms_object.invalid_file', ['name'=>$fileName]));
-        }
-
-        if (!strlen(File::extension($fileName))) {
-            $fileName .= '.'.static::$defaultExtension;
-        }
-
-        $fullPath =$dirPath."\\".$fileName;//static::getFilePath($theme, $fileName);
-
-        if (!File::isFile($fullPath)) {
-            return null;
-        }
-
-        if (($content = @File::get($fullPath)) === false) {
-            return null;
-        }
-
-        $obj = new \stdClass();//new static($theme);
-        $obj->fileName = $fileName;
-        $obj->path = $fileName;
-        $obj->fullPath = $dirPath."\\".$fileName;
-        $obj->originalFileName = $fileName;
-        $obj->mtime = File::lastModified($fullPath);
-        $obj->content = $content;
-        return $obj;
-    }
-
-    /**
-     * Returns the maximum allowed path nesting level.
-     * The default value is 2, meaning that files
-     * can only exist in the root directory, or in a subdirectory.
-     * @return mixed Returns the maximum nesting level or null if any level is allowed.
-     */
-    protected static function getMaxAllowedPathNesting()
-    {
-        return 2;
-    }
-
-    /**
-     * Returns the absolute file path.
-     * @param \Cms\Classes\Theme $theme Specifies a theme the file belongs to.
-     * @param string$fileName Specifies the file name to return the path to.
-     * @return string
-     */
-    protected static function getFilePath($plugin, $fileName)
-    {
-        return $plugin->getPath().'/'.static::getObjectTypeDirName().'/'.$fileName;
-    }
-
-    protected function filterThePlugin($var)
-    {
-        $this->activePluginVector;
-        return($var & 1);
-    }
-    protected function prepareComponentList($activePlugin)
+    protected function prepareComponentList()
     {
         $pluginManager = PluginManager::instance();
         $plugins = $pluginManager->getPlugins();
+
         $componentList = [];
-        foreach ($plugins as $key=>$plugin) {
+        foreach ($plugins as $plugin) {
             $components = $plugin->registerComponents();
             if (!is_array($components)) {
                 continue;
@@ -331,8 +195,8 @@ class ComponentList extends WidgetBase
                     'duplicateAlias' => $duplicateAlias,
                     'pluginClass'    => get_class($plugin)
                 ];
-            }//foreach
-        }//foreach
+            }
+        }
 
         $this->pluginComponentList = $componentList;
     }
@@ -363,14 +227,7 @@ class ComponentList extends WidgetBase
 
     protected function updateList()
     {
-        $activePluginVector = $this->getActivePlugin();
-        return ['#'.$this->getId('component-list') => $this->makePartial('items', ['items'=>$this->getData($activePluginVector)])];
-    }
-
-    public function refreshActivePlugin()
-    {
-        $activePluginVector = $this->getActivePlugin();
-        return ['#'.$this->getId('body') => $this->makePartial('widget-contents', ['data'=>$this->getData($activePluginVector), 'pluginVector'=>$activePluginVector])];
+        return ['#'.$this->getId('component-list') => $this->makePartial('items', ['items'=>$this->getData()])];
     }
 
     protected function itemMatchesSearch(&$words, $item)
@@ -437,67 +294,5 @@ class ComponentList extends WidgetBase
         }
 
         return false;
-    }
-
-
-    public function onUpdate()
-    {
-
-//        $this->plugin = PluginManager::findByNamespace($namespace);
-//        $this->extendSelection();
-
-        return $this->onRefresh();
-    }
-
-
-    protected function extendSelection()
-    {
-        $items = Input::get('file', []);
-        $currentSelection = $this->getSelectedFiles();
-
-        $this->putSession($this->getThemeSessionKey('selected'), array_merge($currentSelection, $items));
-    }
-    protected function removeSelection($path)
-    {
-        $currentSelection = $this->getSelectedFiles();
-
-        unset($currentSelection[$path]);
-        $this->putSession($this->getThemeSessionKey('selected'), $currentSelection);
-        $this->selectedFilesCache = $currentSelection;
-    }
-
-    protected function getSelectedFiles()
-    {
-        if ($this->selectedFilesCache !== false) {
-            return $this->selectedFilesCache;
-        }
-
-        $files = $this->getSession($this->getThemeSessionKey('selected'), []);
-        if (!is_array($files)) {
-            return $this->selectedFilesCache = [];
-        }
-
-        return $this->selectedFilesCache = $files;
-    }
-
-    protected function getThemeSessionKey($prefix)
-    {
-
-        var_dump($this->plugin);
-        return $prefix.$this->plugin->getDirName();
-    }
-
-    public function onRefresh()
-    {
-//        return [
-//            '#'.$this->getId('asset-list') => $this->makePartial('items', ['items'=>$this->getData()])
-//        ];
-
-        $activePluginVector = $this->getActivePlugin();
-        $this->activePluginVector = $activePluginVector;
-        return $this->makePartial('body', [
-            'data' => $this->getData($activePluginVector),
-            'pluginVector'=>$activePluginVector
-        ]);
     }
 }

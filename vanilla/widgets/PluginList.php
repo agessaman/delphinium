@@ -5,15 +5,15 @@ use Input;
 use File;
 use Backend\Classes\WidgetBase;
 use System\Classes\PluginManager;
-use Delphinium\Vanilla\Classes\PluginCode;
+use RainLab\Builder\Classes\PluginCode;
 use RainLab\Builder\Models\Settings as PluginSettings;
-use Delphinium\Vanilla\Classes\PluginVector;
+use RainLab\Builder\Classes\PluginVector;
 use Exception;
 
 /**
  * Plugin list widget.
  *
- * @package rainlab\builder
+ * @package delphinium/vanilla
  * @author Alexey Bobkov, Samuel Georges
  */
 class PluginList extends WidgetBase
@@ -58,7 +58,6 @@ class PluginList extends WidgetBase
 
         try {
             if (strlen($pluginCode)) {
-
                 $pluginCodeObj = new PluginCode($pluginCode);
                 $path = $pluginCodeObj->toPluginInformationFilePath();
                 if (!File::isFile(File::symbolizePath($path))) {
