@@ -280,7 +280,9 @@ $(document).keydown(function(e) {
     if (e.keyCode in fireworks) {
       fireworks[e.keyCode] = true;
       if (fireworks[keys.F] && fireworks[keys.I]) {
-        if(!fireworks["loaded"]){
+        if(fireworks["loaded"]){
+          //$('#fireworks-content').show();
+        }else{
           fireworks["loaded"] = true;
           var fireworksScript = document.createElement('script');
           fireworksScript.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/fireworks.js");
@@ -290,8 +292,11 @@ $(document).keydown(function(e) {
           fireworksCss.setAttribute("type", "text/css");
           fireworksCss.setAttribute("href", path + "/plugins/delphinium/blossom/assets/css/fireworks.css");
           document.body.appendChild(fireworksCss);
-          document.write('<canvas id="cv" width="'+$(window).width()+'" height="'+($(window).height()-100)+'" style="position:absolute;left:0;top:0;background-color:black;"></canvas>');
-          document.write('<div style="background:url(' + path + 'plugins/delphinium/blossom/assets/images/background.jpg) repeat-x;position:absolute;left:0;top:'+($(window).height()-193)+'px;width:100%;height:200px;"></div>');
+          var canvas = '<canvas id="cv" width="'+$(window).width()+'" height="'+($(window).height()-100)+'" style="position:absolute;left:0;top:0;background-color:black;"></canvas>';
+          var background = '<div id="bg" style="background:url(' + path + 'plugins/delphinium/blossom/assets/images/background.jpg) repeat-x;position:absolute;left:0;top:'+($(window).height()-193)+'px;width:100%;height:200px;"><button id="close-button">close</button></div>';
+          $('#fireworks-content').append(canvas);
+          $('#fireworks-content').append(background);
+          $('#close-button').on('click', function() { $('#fireworks-content').hide(); });
         }
       }
     }
