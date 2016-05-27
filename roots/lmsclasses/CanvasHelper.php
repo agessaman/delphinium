@@ -481,9 +481,8 @@ class CanvasHelper
         $urlArgs[]="access_token={$token}&per_page=5000";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+        
         $response = GuzzleHelper::makeRequest($request, $url, false, $token);
-
-//        if(intval($moduleRow->id)==380213)
 //        {
 //            echo json_encode($moduleRow)."_";
 //        }

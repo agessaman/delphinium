@@ -83,6 +83,7 @@ class GuzzleHelper
         $header = substr($result, 0, $header_size);
         $body = substr($result, $header_size);
         $data = json_decode($body);
+
         $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         if($status != 200 and $status != 201)
         {

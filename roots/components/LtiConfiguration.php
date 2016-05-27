@@ -73,25 +73,25 @@ class LtiConfiguration extends ComponentBase
                     break;
                 case 'basic-lti-launch-request':
                 default:
-                    try {
+                   // try {
                         $this->doBltiHandshake();
-                    } catch (\Delphinium\Roots\Exceptions\InvalidRequestException $e) {
-                        return \Response::make($this->controller->run('error'), 500);
-                    } catch (NonLtiException $e) {
-                        if ($e->getCode() == 584) {
-                            return \Response::make($this->controller->run('nonlti'), 500);
-                        } else {
-                            echo json_encode($e->getMessage());
-                            return;
-                        }
-                    } catch (\GuzzleHttp\Exception\ClientException $e) {
-                        return;
-                    } catch (\Exception $e) {
-                        if ($e->getMessage() == 'Invalid LMS') {
-                            return \Response::make($this->controller->run('nonlti'), 500);
-                        }
-                        return \Response::make($this->controller->run('error'), 500);
-                    }
+                   // } catch (\Delphinium\Roots\Exceptions\InvalidRequestException $e) {
+                   //     return \Response::make($this->controller->run('error'), 500);
+                   // } catch (NonLtiException $e) {
+                   //     if ($e->getCode() == 584) {
+                   //         return \Response::make($this->controller->run('nonlti'), 500);
+                   //     } else {
+                   //         echo json_encode($e->getMessage());
+                   //         return;
+                   //     }
+                   // } catch (\GuzzleHttp\Exception\ClientException $e) {
+                   //     return;
+                   // } catch (\Exception $e) {
+                   //     if ($e->getMessage() == 'Invalid LMS') {
+                   //         return \Response::make($this->controller->run('nonlti'), 500);
+                   //     }
+                   //     return \Response::make($this->controller->run('error'), 500);
+                   // }
             }
         } else {
             $this->returnXML();
@@ -199,7 +199,7 @@ class LtiConfiguration extends ComponentBase
         $_SESSION['courseID'] = \Input::get('custom_canvas_course_id');
         $_SESSION['userID'] = \Input::get('custom_canvas_user_id');
         $_SESSION['domain'] = \Input::get('custom_canvas_api_domain');
-        //echo json_encode($_POST); die;
+      // echo json_encode($_POST);return ;
 
         //get the roles
         $roleStr = \Input::get('roles');
@@ -250,20 +250,20 @@ class LtiConfiguration extends ComponentBase
 
                 //get the timezone
                 $roots = new Roots();
-<<<<<<< HEAD
 
-                try
-                {
-=======
                 try {
->>>>>>> 0aff3603a83956a4a6da4f873a7a22c4d4ac02d7
                     $course = $roots->getCourse();
-                } catch (\GuzzleHttp\Exception\RequestException $e) {
+                if(count($course)<1)
+                    {
+                        throw new \Exception("Invalid access token", 401);
+                    } 
+                } catch(\Exception $e) {
                     if ($e->getCode() == 401) {//unauthorized, meaning the token we have in the DB has been deleted from Canvas. We must request a new token
                         $dbHelper->deleteInvalidApproverToken($courseId);
 
                         //launch the approval process again, try three times at most
-                        if (isset($_COOKIE['token_attempts'])) {
+                        if (isset($_COOKIE['token_attempts'])) 
+                        {
                             $attempts = $_COOKIE['token_attempts'] + 1;
                             setcookie("token_attempts", $attempts, time() + (300), "/"); //5 minutes
                         } else {
@@ -340,9 +340,6 @@ class LtiConfiguration extends ComponentBase
         exit;
     }
 
-<<<<<<< HEAD
-}
-=======
     function returnXML()
     {
         $baseUrlWithoutSlash = rtrim(\Config::get('app.url'), '/');
@@ -452,4 +449,3 @@ XML;
     }
 
 }
->>>>>>> 0aff3603a83956a4a6da4f873a7a22c4d4ac02d7
