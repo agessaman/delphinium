@@ -168,7 +168,7 @@ FireworkDisplay = {
             explode.play(); 
         }
         explodeCount++;
-        if(cheerCount % 50 == 0){
+        if(cheerCount % 75 == 0){
             var cheer = new Audio(path + "plugins/delphinium/blossom/assets/sound/cheer.wav");
             //cheer.volume = 0.75;
             cheer.play(); 
