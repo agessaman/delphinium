@@ -78,7 +78,7 @@ class Gradebook extends ComponentBase {
 
     public function onRender() {
 
-        try{
+        //try{
 
             $this->roots = new Roots();
             $standards = $this->roots->getGradingStandards();
@@ -140,36 +140,36 @@ class Gradebook extends ComponentBase {
             $this->page['grading_scheme'] = json_encode($grading_scheme);
 
 
-        }
-        catch(\Delphinium\Roots\Exceptions\InvalidRequestException $e)
-        {
-            if($e->getCode()==401)//meaning there are two professors and one is trying to access the other professor's grades
-            {
-                return;
-            }
-            else
-            {
-                return \Response::make($this->controller->run('error'), 500);
-            }
-        }
-        catch (\GuzzleHttp\Exception\ClientException $e) {
-            return;
-        }
-        catch(Delphinium\Roots\Exceptions\NonLtiException $e)
-        {
-            if($e->getCode()==584)
-            {
-                return \Response::make($this->controller->run('nonlti'), 500);
-            }
-        }
-        catch(\Exception $e)
-        {
-            if($e->getMessage()=='Invalid LMS')
-            {
-                return \Response::make($this->controller->run('nonlti'), 500);
-            }
-            return \Response::make($this->controller->run('error'), 500);
-        }
+        // }
+        // catch(\Delphinium\Roots\Exceptions\InvalidRequestException $e)
+        // {
+        //     if($e->getCode()==401)//meaning there are two professors and one is trying to access the other professor's grades
+        //     {
+        //         return;
+        //     }
+        //     else
+        //     {
+        //         return \Response::make($this->controller->run('error'), 500);
+        //     }
+        // }
+        // catch (\GuzzleHttp\Exception\ClientException $e) {
+        //     return;
+        // }
+        // catch(Delphinium\Roots\Exceptions\NonLtiException $e)
+        // {
+        //     if($e->getCode()==584)
+        //     {
+        //         return \Response::make($this->controller->run('nonlti'), 500);
+        //     }
+        // }
+        // catch(\Exception $e)
+        // {
+        //     if($e->getMessage()=='Invalid LMS')
+        //     {
+        //         return \Response::make($this->controller->run('nonlti'), 500);
+        //     }
+        //     return \Response::make($this->controller->run('error'), 500);
+        // }
     }
 
     function onGetContent() {
