@@ -90,7 +90,8 @@ class Plugin
             $dirName = $this->getDirName();
         }
 
-        return base_path().'/'.$dirName;
+        $pluginsPath = Config::get('cms.pluginsPath');
+        return base_path().$pluginsPath.'/'.$dirName;
     }
 
     /**
@@ -100,7 +101,6 @@ class Plugin
     public function setDirName($dirName)
     {
         $this->dirName = $dirName;
-
     }
 
     /**

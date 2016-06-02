@@ -22,7 +22,19 @@
 <div class="layout control-scrollpanel" id="vanilla-side-panel">
     <div class="layout-cell">
         <div class="layout-relative fix-button-container">
-            
+
+            <form class="layout hide" data-content-id="delphiniumize" data-template-type="partial" data-object-type="partial" data-type-icon="oc-icon-file-text-o" onsubmit="return false">
+                <?= $this->widget->delphiniumizeList->render() ?>
+            </form>
+
+            <form class="layout" data-content-id="components" data-template-type="partial" data-object-type="partial" data-type-icon="oc-icon-file-text-o" onsubmit="return false">
+                <?= $this->widget->componentList->render() ?>
+            </form>
+
+            <form class="layout hide" data-content-id="assets" data-template-type="asset" data-object-type="asset" data-type-icon="oc-icon-picture-o" onsubmit="return false">
+                <?= $this->widget->assetList->render() ?>
+            </form>
+
         </div>
     </div>
 </div>

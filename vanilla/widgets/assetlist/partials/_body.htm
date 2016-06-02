@@ -1,9 +1,32 @@
-<?= $this->makePartial('toolbar') ?>
-<div class="layout-row" id="asset-list-container" data-alias="<?= $this->alias ?>">
-    <div class="layout-cell">
-        <div class="layout-relative">
-           <?= $this->makePartial('files', ['data'=>$data]) ?>
+<div id="<?= $this->getId('body') ?>" class="layout">
+    <div class="layout-row min-size panel-contents">
+        <div class="sidepanel-content-header">
+            <?php if ($pluginVector): ?>
+            <span data-localization-key="<?= e($pluginVector->getPluginName()) ?>" data-plugin="<?= e($pluginVector->pluginCodeObj->toCode()) ?>"><?= e(trans($pluginVector->getPluginName())) ?></span>
+            <?php else: ?>
+            <?= e(trans('rainlab.builder::lang.common.plugin_not_selected')) ?>
+            <?php endif ?>
         </div>
     </div>
+
+
+    <?php if ($pluginVector): ?>
+        <?= $this->makePartial('toolbar') ?>
+        <div class="layout-row" id="asset-list-container" data-alias="<?= $this->alias ?>">
+            <div class="layout-cell">
+                <div class="layout-relative">
+                   <?= $this->makePartial('files', ['data'=>$data]) ?>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" name="plugin" value="<?= e($this->plugin->getDirName()) ?>">
+        <?php else: ?>
+        <div class="layout-row">
+            <div class="layout-cell">
+                <div class="panel">
+                    <p class="no-data"><?= e(trans('rainlab.builder::lang.common.select_plugin_first')) ?></p>
+                </div>
+            </div>
+        </div>
+    <?php endif ?>
 </div>
-<input type="hidden" name="theme" value="<?= e($this->theme->getDirName()) ?>">

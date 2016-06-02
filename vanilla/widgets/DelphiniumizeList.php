@@ -1,49 +1,48 @@
-<?php namespace Delphinium\Vanilla\Widgets;
+<?php
+/* Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
+ *
+ * This file is subject to the terms and conditions defined in
+ * file 'https://github.com/ProjectDelphinium/delphinium/blob/master/EULA',
+ * which is part of this source code package.
+ *
+ * NOTICE:  All information contained herein is, and remains the property of Project Delphinium. The intellectual and technical concepts contained
+ * herein are proprietary to Project Delphinium and may be covered by U.S. and Foreign Patents, patents in process, and are protected by trade secret or copyright law.
+ * Dissemination of this information or reproduction of this material is strictly forbidden unless prior written permission is obtained
+ * from Project Delphinium.
+ * 
+ * THE RECEIPT OR POSSESSION OF THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS  
+ * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.                
+ *
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Non-commercial use only, you may not charge money for the software
+ * You can modify personal copy of source-code but cannot distribute modifications
+ * You may not distribute any version of this software, modified or otherwise
+ */
+namespace Delphinium\Vanilla\Widgets;
 
-use URL;
 use Str;
 use Lang;
-use File;
-use Config;
 use Input;
 use Request;
 use Response;
 use Cms\Classes\Theme;
 use System\Classes\PluginManager;
 use Cms\Classes\ComponentHelpers;
-use Cms\Helpers\File as FileHelper;
 use Backend\Classes\WidgetBase;
-use RecursiveIteratorIterator;
-use RecursiveDirectoryIterator;
-use DirectoryIterator;
 
 /**
  * Component list widget.
  *
  * @package Delphinium\Vanilla
- * @author Alexey Bobkov, Samuel Georges
+ * @author Damaris Zarco, based on the ComponentList widget by Alexey Bobkov, Samuel Georges
  */
-class ComponentList extends WidgetBase
+class DelphiniumizeList extends WidgetBase
 {
     protected $searchTerm = false;
 
     protected $groupStatusCache = false;
 
     protected $pluginComponentList;
-
-    protected $plugin;
-
-    protected static $allowedExtensions = ['htm','php'];
-
-    /**
-     * @var string Message to display when there are no records in the list.
-     */
-    public $noRecordsMessage = 'No files found';
-
-    /**
-     * @var string Message to display when the Delete button is clicked.
-     */
-    public $deleteConfirmation = 'Do you really want to delete selected files or directories?';
 
     public function __construct($controller, $alias)
     {
@@ -99,11 +98,6 @@ class ComponentList extends WidgetBase
         {
             return;
         }
-        else
-        {
-            $this->plugin =$this->controller->pluginVectorToPluginClass();
-        }
-
         $searchTerm = Str::lower($this->getSearchTerm());
         $searchWords = [];
         if (strlen($searchTerm)) {
@@ -113,7 +107,7 @@ class ComponentList extends WidgetBase
         $pluginManager = PluginManager::instance();
         $plugins = $pluginManager->getPlugins();
 
-        $this->prepareComponentList($activePluginVector);
+        $this->prepareComponentList();
 
         $items = [];
         foreach ($plugins as $plugin) {
@@ -151,8 +145,6 @@ class ComponentList extends WidgetBase
                 $componentDetails = $component->componentDetails();
                 $component->alias = '--alias--';
 
-                //get this component's files
-                $files = $this->getComponentFiles($componentInfo);
                 $item = (object)[
                     'title'          => ComponentHelpers::getComponentName($component),
                     'description'    => ComponentHelpers::getComponentDescription($component),
@@ -164,8 +156,7 @@ class ComponentList extends WidgetBase
                     'alias'          => $alias,
                     'name'           => $componentInfo->duplicateAlias
                         ? $componentInfo->className
-                        : $componentInfo->alias,
-                    'files'         => $files
+                        : $componentInfo->alias
                 ];
 
                 if ($searchWords && !$this->itemMatchesSearch($searchWords, $item)) {
@@ -199,19 +190,17 @@ class ComponentList extends WidgetBase
         uasort($items, function ($a, $b) {
             return strcmp($a->title, $b->title);
         });
+
         return $items;
     }
 
-    protected function prepareComponentList($activePluginVector)
+    protected function prepareComponentList()
     {
         $pluginManager = PluginManager::instance();
         $plugins = $pluginManager->getPlugins();
 
         $componentList = [];
-        foreach ($plugins as $key=>$plugin) {
-            if($key!==$activePluginVector->pluginCodeObj->toCode()) {
-                continue;
-            }
+        foreach ($plugins as $plugin) {
             $components = $plugin->registerComponents();
             if (!is_array($components)) {
                 continue;
@@ -247,90 +236,9 @@ class ComponentList extends WidgetBase
                 $result[] = $componentInfo;
             }
         }
+
         return $result;
     }
-
-    public function getComponentFiles($activeComponent)
-    {
-        $pluginsPath = \Config::get('cms.pluginsPath');
-        $dirPath = base_path().$pluginsPath.$activeComponent->className;
-
-        $result = [];
-
-        if (!File::isDirectory($dirPath)) {
-            return $result;
-        }
-
-        $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dirPath));
-        $it->setMaxDepth(1); // Support only a single level of subdirectories
-        $it->rewind();
-
-        while ($it->valid()) {
-
-            if ($it->isFile() && in_array($it->getExtension(), static::$allowedExtensions)) {
-                $filePath = $it->getBasename();
-                if ($it->getDepth() > 0) {
-                    $filePath = basename($it->getPath()).'/'.$filePath;
-                }
-
-                $page = static::load($dirPath,$filePath, $activeComponent);// loading it from cache : static::loadCached($theme, $filePath);
-                $result[] = $page;
-            }
-
-            $it->next();
-        }
-        return $result;
-    }
-
-    /**
-     * Loads the object from a file.
-     * This method is used in the CMS back-end. It doesn't use any caching.
-     * @param \Cms\Classes\Theme $theme Specifies the theme the object belongs to.
-     * @param string $fileName Specifies the file name, with the extension.
-     * The file name can contain only alphanumeric symbols, dashes and dots.
-     * @return mixed Returns a CMS object instance or null if the object wasn't found.
-     */
-    public static function load($dirPath,$fileName, $activeComponent)
-    {
-        if (!FileHelper::validatePath($fileName, static::getMaxAllowedPathNesting())) {
-            throw new ApplicationException(Lang::get('cms::lang.cms_object.invalid_file', ['name'=>$fileName]));
-        }
-
-        if (!strlen(File::extension($fileName))) {
-            $fileName .= '.'.static::$defaultExtension;
-        }
-
-        $fullPath =$dirPath."\\".$fileName;//static::getFilePath($theme, $fileName);
-
-        if (!File::isFile($fullPath)) {
-            return null;
-        }
-
-        if (($content = @File::get($fullPath)) === false) {
-            return null;
-        }
-
-        $obj = new \stdClass();//new static($theme);
-        $obj->fileName = $fileName;
-        $obj->path = "/components/".$activeComponent->alias."/".$fileName;
-        $obj->fullPath = $dirPath."\\".$fileName;
-        $obj->originalFileName = $fileName;
-        $obj->mtime = File::lastModified($fullPath);
-        $obj->content = $content;
-        return $obj;
-    }
-
-    /**
-     * Returns the maximum allowed path nesting level.
-     * The default value is 2, meaning that files
-     * can only exist in the root directory, or in a subdirectory.
-     * @return mixed Returns the maximum nesting level or null if any level is allowed.
-     */
-    protected static function getMaxAllowedPathNesting()
-    {
-        return 2;
-    }
-
 
     protected function getSearchTerm()
     {
@@ -418,11 +326,5 @@ class ComponentList extends WidgetBase
         }
 
         return false;
-    }
-
-    protected function getPluginFileUrl($path)
-    {
-        $pluginsPath = Config::get('cms.pluginsPath');
-        return URL::to($pluginsPath.'/'.$this->plugin->getDirName().'/assets/'.$path);
     }
 }

@@ -1,5 +1,6 @@
 <?php namespace Delphinium\Vanilla\Widgets;
 
+use Delphinium\Vanilla\Classes\Plugin;
 use Str;
 use URL;
 use File;
@@ -33,7 +34,7 @@ class AssetList extends WidgetBase
     protected $searchTerm = false;
 
     protected $theme;
-
+    protected $plugin;
     protected $groupStatusCache = false;
 
     protected $selectedFilesCache = false;
@@ -76,7 +77,7 @@ class AssetList extends WidgetBase
     public function __construct($controller, $alias)
     {
         $this->alias = $alias;
-        $this->theme = Theme::getEditTheme();
+//        $this->theme = Theme::getEditTheme();
 
         parent::__construct($controller, []);
         $this->bindToController();
@@ -99,8 +100,10 @@ class AssetList extends WidgetBase
      */
     public function render()
     {
+        $activePluginVector = $this->controller->getBuilderActivePluginVector();
         return $this->makePartial('body', [
-           'data'=>$this->getData()
+            'data' => $this->getData($activePluginVector),
+            'pluginVector'=>$activePluginVector
         ]);
     }
 
@@ -132,15 +135,22 @@ class AssetList extends WidgetBase
 
         $this->putSession('currentPath', $path);
         return [
-            '#'.$this->getId('asset-list') => $this->makePartial('items', ['items'=>$this->getData()])
+            '#'.$this->getId('asset-list') => $this->makePartial('items', ['items'=>$this->getData($this->controller->getBuilderActivePluginVector())])
         ];
     }
 
     public function onRefresh()
     {
         return [
-            '#'.$this->getId('asset-list') => $this->makePartial('items', ['items'=>$this->getData()])
+            '#'.$this->getId('asset-list') => $this->makePartial('items', ['items'=>$this->getData($this->controller->getBuilderActivePluginVector())])
         ];
+    }
+
+
+    public function refreshActivePlugin()
+    {
+        $activePlugin =$this->controller->getBuilderActivePluginVector();
+        return ['#'.$this->getId('body') => $this->makePartial('body', ['data'=>$this->getData($activePlugin), 'pluginVector'=>$activePlugin])];
     }
 
     public function onUpdate()
@@ -262,7 +272,7 @@ class AssetList extends WidgetBase
         }
 
         return [
-            '#'.$this->getId('asset-list') => $this->makePartial('items', ['items'=>$this->getData()])
+            '#'.$this->getId('asset-list') => $this->makePartial('items', ['items'=>$this->getData($this->controller->getBuilderActivePluginVector())])
         ];
     }
 
@@ -303,7 +313,7 @@ class AssetList extends WidgetBase
         }
 
         return [
-            '#'.$this->getId('asset-list') => $this->makePartial('items', ['items'=>$this->getData()])
+            '#'.$this->getId('asset-list') => $this->makePartial('items', ['items'=>$this->getData($this->controller->getBuilderActivePluginVector())])
         ];
     }
 
@@ -403,7 +413,7 @@ class AssetList extends WidgetBase
         }
 
         return [
-            '#'.$this->getId('asset-list') => $this->makePartial('items', ['items'=>$this->getData()])
+            '#'.$this->getId('asset-list') => $this->makePartial('items', ['items'=>$this->getData($this->controller->getBuilderActivePluginVector())])
         ];
     }
 
@@ -419,10 +429,18 @@ class AssetList extends WidgetBase
      * Methods for the internal use
      */
 
-    protected function getData()
+    protected function getData($activePlugin)
     {
-        $assetsPath = $this->getAssetsPath();
+        if(!$activePlugin)
+        {
+            return;
+        }
+        else
+        {
+            $this->plugin =$this->controller->pluginVectorToPluginClass();
+        }
 
+        $assetsPath = $this->getAssetsPath();
         if (!file_exists($assetsPath) || !is_dir($assetsPath)) {
             if (!File::makeDirectory($assetsPath)) {
                 throw new ApplicationException(Lang::get(
@@ -446,12 +464,15 @@ class AssetList extends WidgetBase
 
     protected function getAssetsPath()
     {
-        return $this->theme->getPath().'/assets';
+        return $this->plugin->getPath().'/assets';
     }
 
-    protected function getThemeFileUrl($path)
+    protected function getPluginFileUrl($path)
     {
-        return URL::to('themes/'.$this->theme->getDirName().'/assets'.$path);
+
+        $pluginsPath = Config::get('cms.pluginsPath');
+        return URL::to($pluginsPath.'/'.$this->plugin->getDirName().'/assets'.$path);
+//        return URL::to('themes/'.$this->theme->getDirName().'/assets'.$path);
     }
 
     public function getCurrentRelativePath()
@@ -597,7 +618,7 @@ class AssetList extends WidgetBase
 
     protected function getThemeSessionKey($prefix)
     {
-        return $prefix.$this->theme->getDirName();
+        return $prefix.$this->plugin->getDirName();
     }
 
     protected function getSelectedFiles()
@@ -653,7 +674,7 @@ class AssetList extends WidgetBase
 
     protected function validateRequestTheme()
     {
-        if ($this->theme->getDirName() != Request::input('theme')) {
+        if ($this->plugin->getDirName() != Request::input('theme')) {
             throw new ApplicationException(trans('cms::lang.theme.edit.not_match'));
         }
     }
@@ -771,4 +792,5 @@ class AssetList extends WidgetBase
 
         return true;
     }
+
 }
