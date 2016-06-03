@@ -18,7 +18,7 @@ class Index extends Controller
     public $relativePluginDir;
     public $plugin;
     public $implement = [
-        'RainLab.Builder.Behaviors.IndexPluginOperations'
+        'Delphinium.Vanilla.Behaviors.IndexPluginOperations'
     ];
 
     public function __construct()
@@ -29,8 +29,6 @@ class Index extends Controller
 
         //plugins directory
         $destinationPath = '/plugins/';
-
-//        $this->plugin = Plugin::load($destinationPath);
         try {
             //this is the plugin list from builder. Used to select the active plugin
             new PluginList($this, 'pluginList');
@@ -41,7 +39,6 @@ class Index extends Controller
         catch (Exception $ex) {
             $this->handleError($ex);
         }
-
         return;
     }
 
@@ -155,7 +152,6 @@ class Index extends Controller
         $plugin = $this->pluginVectorToPluginClass();
         $this->plugin = $plugin;
         if (!($object = call_user_func(array($class, 'load'), $plugin, $path, $type))) {
-//        if (!($object = call_user_func_array(array($class, 'load', $type), $plugin, $path))) {
             if (!$ignoreNotFound) {
                 throw new ApplicationException(trans('rainlab.pages::lang.object.not_found'));
             }

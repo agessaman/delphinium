@@ -27,10 +27,6 @@
 <?php endif ?>
 <?= Block::endPut() ?>
 
-<?= Block::put('sidepanel-flyout') ?>
-<?= $this->makePartial('plugin-selector') ?>
-<?= Block::endPut() ?>
-
 <?= Block::put('body') ?>
 <?php if (!$this->fatalError): ?>
 <div
