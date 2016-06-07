@@ -26,6 +26,9 @@
  *
  */
 
+var launchCount = 0;
+var explodeCount = 0;
+var cheerCount = 0;
 
 FireworkDisplay = {
     GRAVITY : 5,
@@ -89,7 +92,7 @@ FireworkDisplay = {
         this.canvaswidth = $(window).width();
         this.canvasheight = $(window).height();
 
-        var text = "You are Awesome!";
+        var text = config.fireworks_string;
 
         var totalHeightOffset = 0;
         var totalWidthOffset = new Array();
@@ -141,6 +144,13 @@ FireworkDisplay = {
         fw.dx = dispersion;
         fw.dy = speed;
         fw.status = this.FIREWORK_LAUNCHED;
+        if(launchCount % 5 == 0){
+            var launch = new Audio(path + "plugins/delphinium/blossom/assets/sound/launch.wav");
+            launch.volume = 0.2;
+            launch.play(); 
+        }
+        launchCount++;
+        
     },
     disperseFirework : function(fw, speed) {
         fw.dx = speed * (0.5-Math.random());
@@ -153,6 +163,17 @@ FireworkDisplay = {
         fw.b = (Math.random() /2) + 0.5;
         fw.brightness = 200;
         this.ctx.strokeStyle = "rgb(200, 200, 200)";
+        if(explodeCount % 5 == 0){
+            var explode = new Audio(path + "plugins/delphinium/blossom/assets/sound/explode.wav");
+            explode.play(); 
+        }
+        explodeCount++;
+        if(cheerCount % 75 == 0){
+            var cheer = new Audio(path + "plugins/delphinium/blossom/assets/sound/cheer.wav");
+            //cheer.volume = 0.75;
+            cheer.play(); 
+        }
+        cheerCount++;
         // add the fragments
         var frags = Math.random() * this.FIREWORK_PAYLOAD;
         for (var i=0;i<frags;i++) {

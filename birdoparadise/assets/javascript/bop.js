@@ -23,8 +23,11 @@ $(document).ready(function() {
 
 /* Delphinium functions */
 	/* Add the content message dynamically, could be different for each role */
-	$('#popinfo').attr('data-content','Click a module to see assignments. Refresh the page to update progress.');
-    $('#popinfo').popover();// activate info
+	$('#bop_popinfo').attr('data-content','Click a module to see assignments. Refresh the page to update progress.');
+    $('#bop_popinfo').popover();// activate info
+	$('#bop_cog').on('click', function(e){
+		$('#bop_configuration').modal('show');
+	});
     /*
         Bird of Paradise displays modules in tabbed sections 
         configure the Tab/modules structure with Stem
@@ -115,7 +118,7 @@ $(document).ready(function() {
         console.log('moditems:',moditems);
         // display module_items in modal detailed-body
         
-		$('#detailed-body').empty();
+		$('#bop_detailed-body').empty();
         
          /* if prerequisite state is not completed show. don't if fulfilled */
 		if(mod[0].prerequisite_module_ids != '') {
@@ -128,7 +131,7 @@ $(document).ready(function() {
                 prereq +='<div class="prereqnote">Before you can start this module you need to complete the following modules:</div>';
                 prereq +='<div class="clearme"></div>';
             
-            var showPrereq = true;// ALWAY NOW //false;// if locked
+            var showPrereq = false;// if locked
             
             for(var pid=0; pid<preids.length; pid++) {
 				/* find the prerequisite module.name */
@@ -144,15 +147,18 @@ $(document).ready(function() {
 					prename = itm[0].name; 
 					console.log('pid:',pid,'prename:',prename);
 					
-					/* find in modulescores.state */
-					var premod = $.grep(modulescores, function(elem,index){
-						return elem.modid == preids[pid];
-					});
-					
-					if(premod[0].state == 'locked') {
-						showPrereq=true;
-						console.log('Show locked prereqs');
-					}
+					/* find modulescores.state only available if Learner */
+					if(role == 'Learner') {
+						var premod = $.grep(modulescores, function(elem,index){
+							return elem.modid == preids[pid];
+						});
+						
+						if(premod[0].state == 'locked') {
+							showPrereq=true;
+							console.log('Show locked prereqs');
+						}
+					/* IF instructor show it always */
+					} else { showPrereq = true; }
 					
 					if(prename != '') {
 						prereq +='<li>'+prename+'</li>';
@@ -165,7 +171,7 @@ $(document).ready(function() {
             prereq +='</div>';// close prereq
             
             if(showPrereq) {
-                $('#detailed-body').append(prereq);
+                $('#bop_detailed-body').append(prereq);
             }
 		}
 		
@@ -196,8 +202,8 @@ $(document).ready(function() {
 				item='<div class="assignment unavailable">';
 			} else {
 				item='<div class="assignment available"';// whole div is clickable
-				item +='data-url="'+moditems[i].html_url+'">';
-                //item +='data-url="'+moditems[i].html_url+'?module_item_id='+moditems[i].module_item_id+'">';
+				//item +='data-url="'+moditems[i].html_url+'">';// displays JSON
+                item +='data-url="'+moditems[i].html_url+'?module_item_id='+moditems[i].module_item_id+'">';
 			}
 			if(moditems[i].type=='SubHeader') { 
 				item='<div class="subheader">';// not an assignment
@@ -236,10 +242,10 @@ $(document).ready(function() {
 				}
 			}
 			displayItem += item+inner+closer+'</div>';
-			$('#detailed-body').append(displayItem);
+			$('#bop_detailed-body').append(displayItem);
         }
 		// sort and place 'description' tag first
-		var people = $('#detailed-body'),
+		var people = $('#bop_detailed-body'),
 			peopleli = people.children('.normal');
 
 		peopleli.sort(function(a,b){
@@ -266,8 +272,8 @@ $(document).ready(function() {
 		});
 		
         // open the item details modal
-        $('#detailed-title').html(mod[0].name);
-        $('#itemdetails').modal('show');
+        $('#bop_detailed-title').html(mod[0].name);
+        $('#bop_details').modal('show');
     });
 
 	// activate tabs
@@ -471,10 +477,10 @@ $(document).ready(function() {
     function getScore(title) {
 		// find a submission for moditem
 		var score='--';// no score
-		var asgn1 = $.grep(assignments, function(elem,index){ return elem.name == title; });
+		var asgn1 = $.grep(bop_assignments, function(elem,index){ return elem.name == title; });
 		if(asgn1.length>0) {
 			var asgnid = asgn1[0].assignment_id;
-			var subm1 = $.grep(submissions, function(elem,index) {
+			var subm1 = $.grep(bop_submissions, function(elem,index) {
 				return elem.assignment_id == asgnid;
 			});
 			//console.log('subm1:',subm1);

@@ -22,9 +22,9 @@
 
 namespace Delphinium\Roots\Guzzle;
 
-use Delphinium\Roots\Enums\ActionType;
 use Delphinium\Roots\Exceptions\InvalidRequestException;
 use GuzzleHttp\Client;
+use Delphinium\Roots\Enums\ActionType;
 
 class GuzzleHelper
 {
@@ -159,7 +159,6 @@ class GuzzleHelper
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
             'Content-Type: application/json',
             'Content-Length: ' . strlen($data_string),

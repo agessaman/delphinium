@@ -1243,7 +1243,7 @@ var BrowserPonies = (function () {
 			var loaded = resource_loaded_count - resource_count_for_progress;
 			var count = resource_count - resource_count_for_progress;
 			var progress = count === 0 ? 1.0 : loaded / count;
-			progressbar.bar.style.width = Math.round(progress * 450)+'px';
+			progressbar.bar.style.width = Math.round(progress * 430)+'px';
 			progressbar.label.innerHTML = format('Loading Ponies&hellip; %d%%',Math.floor(progress * 100));
 
 			if (!progressbar.container.parentNode) {

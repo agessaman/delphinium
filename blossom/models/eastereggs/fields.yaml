@@ -3,60 +3,66 @@
 # ===================================
 
 fields:
-    menu:
-        label: menu
-        type: checkbox
-        span: auto
-        default: false
-        comment: Checked = Show shortcuts
-
     harlem_shake:
-        label: harlem_shake
+        label: Harlem Shake
         span: auto
         comment: Enter a point threshold
 
     ripples:
-        label: ripples
+        label: Ripples
         span: auto
         comment: Enter a point threshold
 
     asteroids:
-        label: asteroids
+        label: Asteroids
         span: auto
         comment: Enter a point threshold
 
     katamari:
-        label: katamari
+        label: Katamari
         span: auto
         comment: Enter a point threshold
 
     bombs:
-        label: bombs
+        label: Bombs
         span: auto
         comment: Enter a point threshold
 
     ponies:
-        label: ponies
+        label: Ponies
         span: auto
         comment: Enter a point threshold
 
     my_little_pony:
-        label: my_little_pony
+        label: My Little Pony
         span: auto
         comment: Enter a point threshold
 
     snow:
-        label: snow
+        label: Snow
         span: auto
         comment: Enter a point threshold
 
     raptor:
-        label: raptor
+        label: Raptor
         span: auto
         comment: Enter a point threshold
 
 
     fireworks:
-        label: fireworks
+        label: Fireworks
         span: auto
         comment: Enter a point threshold
+
+
+    fireworks_string:
+        label: Fireworks Message
+        span: auto
+        comment: Enter a string
+
+
+    menu:
+        label: Show shortcuts
+        type: checkbox
+        span: auto
+        default: false

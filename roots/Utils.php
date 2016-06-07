@@ -32,7 +32,7 @@ class Utils
         if(!isset($_SESSION)) 
         { 
             session_start(); 
-    	}
+        }
         $localTimeZone = $_SESSION['timezone'];
         
         if(is_string($value))

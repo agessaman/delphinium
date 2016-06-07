@@ -22,7 +22,6 @@
 
 namespace Delphinium\Dev\Components;
 
-
 use Delphinium\Dev\Models\Configuration;
 use Cms\Classes\ComponentBase;
 use Delphinium\Roots\Roots;

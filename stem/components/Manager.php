@@ -42,8 +42,8 @@ class Manager extends ComponentBase
 
     public function onRun()
     {
-        //try
-        //{
+        // try
+        // {
             $this->addJs("/plugins/delphinium/stem/assets/javascript/angular.min.js");
             $this->addJs("/plugins/delphinium/stem/assets/javascript/angular-ui-tree.js");
             //        $this->addJs("/plugins/delphinium/stem/assets/javascript/bodyCtrl.js");

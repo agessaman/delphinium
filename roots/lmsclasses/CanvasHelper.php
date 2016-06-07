@@ -510,8 +510,7 @@ class CanvasHelper
         if($request->getModuleItem())
         {
             $tags = $request->getModuleItem()->getTags();
-
-            if($tags)
+            if(!is_null($tags))
             {
                 $dbHelper = new DbHelper();
                 return $dbHelper->updateContentTags($request->getModuleItem()->content_id, $tags, $courseId);

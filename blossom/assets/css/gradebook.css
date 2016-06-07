@@ -237,3 +237,9 @@ a:hover
     padding: 0 5px !important;
     text-align:left !important;
 }
+#gridContainer input{
+    width:100%;
+}
+.one_point:after{
+    content:'.';
+}
