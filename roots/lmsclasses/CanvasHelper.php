@@ -1067,12 +1067,12 @@ class CanvasHelper
                         $urlArgs[]="access_token={$token}&per_page=100";
 
                         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+
                         $req =  new \GuzzleHttp\Psr7\Request('GET', $url);
                         $requests[] = $req;
                         $urlArgs = array();
                     }
                 }//for
-
                 //at the end we'll have requests left that need to be sent
                 if($request->getGrouped())
                 {
@@ -1080,12 +1080,26 @@ class CanvasHelper
                 }
                 $urlArgs[]="access_token={$token}&per_page=100";
                 $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+		
+/*$curl = curl_init();
+curl_setopt_array($curl,array(
+	CURLOPT_RETURNTRANSFER => 1,
+	CURLOPT_URL=>$url,
+CURLOPT_SSL_VERIFYHOST=> 0,
+CURLOPT_SSL_VERIFYPEER => 0
+));
+$req = curl_exec($curl);*/
+//var_dump($result);
+//echo $url;
+//print_r($req);die(':end');
 
                 $req =  new \GuzzleHttp\Psr7\Request('GET', $url);
-                $requests[] = $req;
+
+		$requests[] = $req;
 
                 $client = new Client();
                 $returnData = array();
+
                 $pool = new Pool($client, $requests, [
                     'concurrency' => count($requests),
                     'fulfilled' => function ($response, $index) use (&$returnData, $request) {
@@ -1343,6 +1357,7 @@ class CanvasHelper
         $urlArgs[]="access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+
         $response = GuzzleHelper::getAsset($url);
         return $response;
     }
@@ -1795,7 +1810,9 @@ class CanvasHelper
             }
             else
             {
+
                 $submissions[] = $this->processSingleSubmission($data, $includeTags);
+
             }
         }
         return $submissions;

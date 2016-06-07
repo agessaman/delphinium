@@ -77,7 +77,6 @@ class Gradebook extends ComponentBase {
     }
 
     public function onRender() {
-
         //try{
 
             $this->roots = new Roots();
@@ -130,7 +129,6 @@ class Gradebook extends ComponentBase {
                 $this->addJs("/plugins/delphinium/blossom/assets/javascript/gradebook_professor.js");
                 $this->addJs("/plugins/delphinium/blossom/assets/javascript/boxplot_d3.js");
             }
-
 
             //modify grading scheme for display to users
             foreach($grading_scheme as $grade)
@@ -224,7 +222,6 @@ class Gradebook extends ComponentBase {
     private function getProfessorData() {
 
         // $aggregateSubmissionScores = $this->aggregateSubmissionScores();
-
         $users = $this->roots->getStudentsInCourse();
         $userMasterArr= array();
         foreach($users as $userCourse)
@@ -238,6 +235,7 @@ class Gradebook extends ComponentBase {
         // $submissionData = $this->matchSubmissionsAndUsers($users, $aggregateSubmissionScores);
         // $this->studentData = $submissionData;
         // chart data
+
         $this->page['chartData'] = json_encode($this->getRedLineData());
         $experience = new ExperienceComponent();
         $this->page['today'] = $experience->getRedLinePoints($this->property('experienceInstance'));
@@ -247,7 +245,6 @@ class Gradebook extends ComponentBase {
     private function getRedLineData() {
         if (!is_null($this->property('experienceInstance'))) {
             $instance = ExperienceModel::find($this->property('experienceInstance'));
-
             $milestones = $instance->milestones;
             $this->page['numMilestones'] = count($milestones);
 
@@ -259,7 +256,6 @@ class Gradebook extends ComponentBase {
             $expComponent = new ExperienceComponent();
 
             $ptsPerSecond = $expComponent->getPtsPerSecond($stDate, $endDate, $instance->total_points);
-
             $milestoneData = array();
             foreach ($milestones as $milestone) {
                 $secsTranspired = ceil($milestone->points / $ptsPerSecond);
@@ -277,7 +273,7 @@ class Gradebook extends ComponentBase {
             $newArr = $this->fillInMissingDays($stDate, $milestoneData);
             //merge arrays and order by date
             $final = array_merge($newArr, $milestoneData);
-
+		
             usort($final, function($a, $b) {
                 if ($a->date == $b->date) {
                     return 0;

@@ -30,7 +30,6 @@ class GuzzleHelper
 {
     public static function makeRequest($request, $url, $getRawResponse = false, $token=null)
     {
-
         //if the raw response is requested, we cannot do the recursive url (for which the token is needed), so we will need to set it to false
         if($getRawResponse==true)
         {
@@ -76,8 +75,9 @@ class GuzzleHelper
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_VERBOSE, 1); //Requires to load headers
         curl_setopt($ch, CURLOPT_HEADER, 1);  //Requires to load headers
+	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         $result = curl_exec($ch);
-
         #Parse header information from body response
         $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         $header = substr($result, 0, $header_size);
@@ -124,9 +124,9 @@ class GuzzleHelper
 
     public static function getAsset($url)
     {
-        $client = new Client();
+        $client = new Client(['verify' => false]);
          try {
-	$client->setDefaultOption('verify', false);
+
         $response = $client->get($url);
 
         $data = json_decode($response->getBody());
@@ -157,6 +157,9 @@ class GuzzleHelper
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $action);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
             'Content-Type: application/json',
             'Content-Length: ' . strlen($data_string),
