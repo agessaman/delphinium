@@ -2,6 +2,7 @@
 *.log
 app/storage/
 bootstrap/
+roots/guzzle/GuzzleHelper.php
 install_files/
 themes/demo/
 uploads/

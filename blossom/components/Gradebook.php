@@ -77,7 +77,6 @@ class Gradebook extends ComponentBase {
     }
 
     public function onRender() {
-
         try{
 
             $this->roots = new Roots();
@@ -126,9 +125,12 @@ class Gradebook extends ComponentBase {
                 $this->addJs("/plugins/delphinium/blossom/assets/javascript/boxplot_d3.js");
             } else if ((stristr($userRoles, 'Instructor')) || (stristr($userRoles, 'TeachingAssistant'))) {
                 $this->getProfessorData();
-                $this->addCss("/plugins/delphinium/blossom/assets/css/light-js-table-sorter.css");
+                //$this->addCss("/plugins/delphinium/blossom/assets/css/light-js-table-sorter.css");
+                $this->addCss("/plugins/delphinium/blossom/assets/css/jsgrid-theme.css");
                 $this->addJs("/plugins/delphinium/blossom/assets/javascript/gradebook_professor.js");
                 $this->addJs("/plugins/delphinium/blossom/assets/javascript/boxplot_d3.js");
+                $this->addJs("/plugins/delphinium/blossom/assets/javascript/jsgrid.min.js");
+
             }
 
 
@@ -138,7 +140,6 @@ class Gradebook extends ComponentBase {
                 $grade->value = $grade->value * $maxExperiencePts;
             }
             $this->page['grading_scheme'] = json_encode($grading_scheme);
-
 
         }
         catch(\Delphinium\Roots\Exceptions\InvalidRequestException $e)

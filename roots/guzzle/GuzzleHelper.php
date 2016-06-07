@@ -22,9 +22,9 @@
 
 namespace Delphinium\Roots\Guzzle;
 
-use Delphinium\Roots\Enums\ActionType;
 use Delphinium\Roots\Exceptions\InvalidRequestException;
 use GuzzleHttp\Client;
+use Delphinium\Roots\Enums\ActionType;
 
 class GuzzleHelper
 {
@@ -76,6 +76,8 @@ class GuzzleHelper
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_VERBOSE, 1); //Requires to load headers
         curl_setopt($ch, CURLOPT_HEADER, 1);  //Requires to load headers
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         $result = curl_exec($ch);
 
         #Parse header information from body response
@@ -123,15 +125,16 @@ class GuzzleHelper
 
     public static function getAsset($url)
     {
-        $client = new Client();
-//         try {
-        $response = $client->get($url);
+        $client = new Client(['verify' => false]);
+        try {
+        //$client->setDefaultOption('verify', false);
+            $response = $client->get($url);
 
-        $data = json_decode($response->getBody());
-        return $data;
-        // } catch (\GuzzleHttp\Exception\ClientException $e) {
-//             return [];
-//         }
+            $data = json_decode($response->getBody());
+            return $data;
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            return [];
+        }
     }
     public static function postData($url)
     {
@@ -155,6 +158,8 @@ class GuzzleHelper
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $action);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
             'Content-Type: application/json',
             'Content-Length: ' . strlen($data_string),

@@ -21,6 +21,7 @@
 
 var submissions = [];
 var bottomExperienceScores=[];
+document.tabdata = '';
 
 //GET DATA FOR THE TOP CHART
 var promise = $.get("gradebook/getAllStudentSubmissions");
@@ -303,8 +304,6 @@ d3.selectAll(".single").on("change", function () {
             addRedLineDots();
         }
     }
-
-
 });
 
 d3.select(".multiselect").on("keydown", function() {
@@ -506,7 +505,95 @@ function checkboxFunctionality()
 
 function buildTable(data)
 {
-    d3.select("#summaryTable").style("display","block");
+    //d3.select("#summaryTable").style("display","block");
+
+        var field_keys = {
+            no: "No<span class='one_point'></span>",
+            name: "Name",
+            score: "Exp<span class='one_point'></span> Pts<span class='one_point'></span>",
+            bonuses: "Bonus",
+            penalties: "Penalties",
+            totalBP: "Total B/P",
+            total: "Current Score",
+            grade: "Grade",
+            details: "Details"
+        };
+
+        var i = 1;
+        $.each(data, function(key, row){
+            var data_row = {};
+            var value = null;
+            $.each(field_keys, function(k, v){
+                switch(k){
+                    case 'no':
+                      value = i++;  
+                    break;
+                    case 'name':
+                    case 'grade':
+                        value = row[k];
+                    break;     
+                    default:
+                        value = d3.round(row[k], 2);
+                }
+                data_row[v] = value;
+            })
+            console.log(data_row);
+        })
+        var data_controller = {
+            
+           loadData: function(filter) {
+                var grep = $.grep(this.clients, function(client) {
+                    return (!filter.Name || client.Name.indexOf(filter.Name) > -1)
+                        && (!filter.Age || client.Age === filter.Age)
+                        && (!filter.Address || client.Address.indexOf(filter.Address) > -1)
+                        && (!filter.Country || client.Country === filter.Country)
+                        && (filter.Married === undefined || client.Married === filter.Married);
+                });
+                console.log(grep);
+            },
+
+            insertItem: function(insertingClient) {
+                /*this.clients.push(insertingClient);*/
+            },
+
+            updateItem: function(updatingClient) { },
+
+            deleteItem: function(deletingClient) {
+                /*var clientIndex = $.inArray(deletingClient, this.clients);
+                this.clients.splice(clientIndex, 1);*/
+            }
+        }
+        data_controller.clients = data;
+
+        $("#gridContainer").jsGrid({
+            height: "70%",
+            width: "100%",
+            filtering: true,
+            inserting: true,
+            sorting: true,
+            autoload: true,
+            pageSize: 5,
+            pageButtonCount: 3,
+            controller: data_controller,
+            fields: [
+                { name: field_keys.no, type: "text", width: 70 },
+                { name: field_keys.name, type: "text", width: 180 },
+                { name: field_keys.score, type: "number", width: 70 },
+                { name: field_keys.bonuses, type: "number", width: 70 },
+                { name: field_keys.penalties, type: "number",width:70 },
+                { name: field_keys.totalBP, type: "number", width:70 },
+                { name: field_keys.total, type: "number", width:70 },
+                { name: field_keys.grade, type: "text", width:180 },
+                { name: field_keys.details, type: "hidden", width:100, sorting: false },
+                { type: 'control'}//, editButton: false, deleteButton: false, clearFilterButton: false, modeSwitchButton: false}
+            ]
+        });
+        
+        //console.log(data);
+        
+
+        
+    /*d3.select("#summaryTable").style("display","block");
     var tr = d3.select("#tableBody")
         .selectAll('tr').remove();//Because of the complexity of updating a table, we'll remove the nodes and add them again
     tr = d3.select("#tableBody")
@@ -558,7 +645,7 @@ function buildTable(data)
         .attr("data-target","#modalStudentGradebook")
         .on('click', function(d){
             showStudentDetails(d);
-        });
+        });*/
 }
 
 function callStudentsMilestoneInfo(studentsArr)
@@ -576,9 +663,9 @@ function callStudentsMilestoneInfo(studentsArr)
             $.get("gradebook/getSetOfUsersMilestoneInfo",{experienceInstanceId:experienceInstanceId, userIds:(idsArr)},function(data,status,xhr)
             {
                 d3.select(".bottomSpinnerDiv").style("display","none");
-                console.log(data);
+                //console.log(data);
                 bottomExperienceScores = bottomExperienceScores.concat(data);//append the new data to the old
-                buildTable(bottomExperienceScores);
+                buildTable(data);
             });
 
             var idsArr =[];//initialize the array again.
@@ -592,9 +679,10 @@ function callStudentsMilestoneInfo(studentsArr)
         $.get("gradebook/getSetOfUsersMilestoneInfo",{experienceInstanceId:experienceInstanceId, userIds:(idsArr)},function(data,status,xhr)
         {
             d3.select(".bottomSpinnerDiv").style("display","none");
-            console.log(data);
-            bottomExperienceScores = bottomExperienceScores.concat(data);//append the new data to the old
-            buildTable(bottomExperienceScores);
+            //console.log(data);
+            //bottomExperienceScores = bottomExperienceScores.concat(data);//append the new data to the old
+            buildTable(data);
+
         });
     }
 }

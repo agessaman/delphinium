@@ -42,8 +42,8 @@ class Manager extends ComponentBase
 
     public function onRun()
     {
-        try
-        {
+        // try
+        // {
             $this->addJs("/plugins/delphinium/stem/assets/javascript/angular.min.js");
             $this->addJs("/plugins/delphinium/stem/assets/javascript/angular-ui-tree.js");
             //        $this->addJs("/plugins/delphinium/stem/assets/javascript/bodyCtrl.js");
@@ -68,26 +68,26 @@ class Manager extends ComponentBase
             }
             $this->page['courseId'] = $_SESSION['courseID'];
             $this->page['lmsUrl'] =  json_encode($this->getLmsUrl());
-            $this->prepareData(false);
+            $this->prepareData(true);//$this->prepareData(false);
 
-        }catch (\GuzzleHttp\Exception\ClientException $e) {
-            return;
-        }
-        catch(Delphinium\Roots\Exceptions\NonLtiException $e)
-        {
-            if($e->getCode()==584)
-            {
-                return \Response::make($this->controller->run('nonlti'), 500);
-            }
-        }
-        catch(\Exception $e)
-        {
-            if($e->getMessage()=='Invalid LMS')
-            {
-                return \Response::make($this->controller->run('nonlti'), 500);
-            }
-            return \Response::make($this->controller->run('error'), 500);
-        }
+        // }catch (\GuzzleHttp\Exception\ClientException $e) {
+        //     return;
+        // }
+        // catch(Delphinium\Roots\Exceptions\NonLtiException $e)
+        // {
+        //     if($e->getCode()==584)
+        //     {
+        //         return \Response::make($this->controller->run('nonlti'), 500);
+        //     }
+        // }
+        // catch(\Exception $e)
+        // {
+        //     if($e->getMessage()=='Invalid LMS')
+        //     {
+        //         return \Response::make($this->controller->run('nonlti'), 500);
+        //     }
+        //     return \Response::make($this->controller->run('error'), 500);
+        // }
     }
 
 

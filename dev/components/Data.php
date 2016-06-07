@@ -156,7 +156,6 @@ class Data extends ComponentBase
                 $account_id = $course->account_id;
                 $account = $roots->getAccount($account_id);
                 $courseId = $_SESSION['courseID'];
-
                 $_SESSION['timezone'] = new \DateTimeZone($account->default_time_zone);
                 echo nl2br("User Id: {$_SESSION['userID']} \n");
                 echo nl2br("Token: {$decrypted} \n");
