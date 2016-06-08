@@ -22,7 +22,7 @@
 
 namespace Delphinium\Vanilla\Templates;
 
-use Delphinium\Vanilla\Classes\TemplateBase;
+use Delphinium\Vanilla\Templates\TemplateBase;
 
 class Component extends TemplateBase
 {
@@ -35,6 +35,6 @@ class Component extends TemplateBase
         'component/display.stub' => 'components/{{lower_name}}/display.htm',
         'component/instructor.stub' => 'components/{{lower_name}}/instructor.htm',
         'component/student.stub' => 'components/{{lower_name}}/student.htm',
-        'component/instruct.stub' => 'assets/{{lower_model}}_instructor.js'
+        'component/instruct.stub' => 'assets/js/{{lower_model}}_instructor.js'
     ];
 }

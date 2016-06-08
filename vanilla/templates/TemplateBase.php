@@ -1,6 +1,6 @@
 <?php
 
-namespace Delphinium\Vanilla\Classes;
+namespace Delphinium\Vanilla\Templates;
 
 use Exception;
 use October\Rain\Support\Str;
@@ -101,7 +101,8 @@ abstract class TemplateBase
         if (!isset($this->fileMap[$stubName]))
             return;
 
-        $sourceFile = __DIR__ . '/templates/' . $stubName;
+        $sourceFile = __DIR__ . '/' . $stubName;
+
         $destinationFile = $this->targetPath . '/' . $this->fileMap[$stubName];
         $destinationContent = $this->files->get($sourceFile);
         /*

@@ -41,8 +41,11 @@ class PluginNodeVisitor extends NodeVisitorAbstract
     protected $author;
     protected $hasComponent;
     protected $hasController;
+    protected $icon;
 
-    public function  __construct($componentPath,$componentAlias,$controllerUrl, $controllerAlias, $lowerPlugin, $lowerAuthor)
+    private $hasBoot = false;
+
+    public function  __construct($componentPath=null,$componentAlias=null,$controllerUrl=null, $controllerAlias=null, $lowerPlugin, $lowerAuthor, $icon=null)
     {
         $this->componentPath = $componentPath;
         $this->componentAlias = $componentAlias;
@@ -50,15 +53,43 @@ class PluginNodeVisitor extends NodeVisitorAbstract
         $this->controllerAlias = $controllerAlias;
         $this->plugin = $lowerPlugin;
         $this->author = $lowerAuthor;
+        $this->icon = $icon?$icon:'icon-lemon-o';//default to this icon if it was null
         $this->hasComponent = false;
         $this->hasController = false;
     }
 
     public function enterNode(\PhpParser\Node $node)
     {
+        if($node instanceof Node\Stmt\Class_)
+        {
+            $methods = $node->stmts;
+            foreach($methods as $method)
+            {
+                if($method->name =="boot")
+                {
+                    $this->hasBoot = true;
+                }
+            }
+            if(!$this->hasBoot)
+            {
+                $method=  $this->addBootFunction();
+                array_push($node->stmts,$method);
+                $this->hasBoot = true;
+            }
+        }
+        else
+        {
+            NodeTraverser::DONT_TRAVERSE_CHILDREN;
+        }
+
+
+
         if($node instanceof Node\Stmt\ClassMethod && $node->name == 'registerComponents')
         {
-            $this->traverseComponents($node);
+            if($this->componentPath && $this->componentAlias)//when the plugin is first created no components will be added. so we need to double check
+            {
+                $this->traverseComponents($node);
+            }
         }
         else if($node instanceof Node\Stmt\ClassMethod && $node->name == 'boot')
         {
@@ -74,24 +105,32 @@ class PluginNodeVisitor extends NodeVisitorAbstract
     {
         //traverse the children of the registerComponents method. Find the return statement
         $children = $node->getStmts();
-        foreach($children as $nodeChild)
+        if(!$children||!isset($children)||count($children)<0)//no components have been registered
         {
-            if($nodeChild instanceof Node\Expr\Assign && $nodeChild->var instanceof Node\Expr\Variable && $nodeChild->var->name=='componentArray')
+            $retStmt = $this->addComponentsArr();
+            $node->stmts = $retStmt;
+        }
+        else
+        {
+            foreach($children as $nodeChild)
             {
-                $currentComponents = $nodeChild->expr->items;
-                foreach($currentComponents as $arrayItem)
+                if($nodeChild instanceof Node\Expr\Assign && $nodeChild->var instanceof Node\Expr\Variable && $nodeChild->var->name=='componentArray')
                 {
-                    $existingParts = explode('\\',$arrayItem->key->value);
-                    $componentParts = explode('\\',$this->componentPath);
-                    //check if this use statement matches the use stmt for the model
-                    $diffModel = array_diff($existingParts, $componentParts);
-                    $this->hasComponent = count($diffModel) == 0 ? true : false;
-                }
+                    $currentComponents = $nodeChild->expr->items;
+                    foreach($currentComponents as $arrayItem)
+                    {
+                        $existingParts = explode('\\',$arrayItem->key->value);
+                        $componentParts = explode('\\',$this->componentPath);
+                        //check if this use statement matches the use stmt for the model
+                        $diffModel = array_diff($existingParts, $componentParts);
+                        $this->hasComponent = count($diffModel) == 0 ? true : false;
+                    }
 
-                if(!$this->hasComponent)
-                {//add the component
-                    $newComponent = $this->newArrayItem($this->componentPath,$this->componentAlias);
-                    $nodeChild->expr->items[]=$newComponent;
+                    if(!$this->hasComponent)
+                    {//add the component
+                        $newComponent = $this->newArrayItem($this->componentPath,$this->componentAlias);
+                        $nodeChild->expr->items[]=$newComponent;
+                    }
                 }
             }
         }
@@ -128,7 +167,7 @@ class PluginNodeVisitor extends NodeVisitorAbstract
                                             {
                                                 if($i->value instanceof Node\Expr\StaticCall)
                                                 {
-                                                    var_dump($i);
+//                                                    var_dump($i);
                                                 }
                                             }
                                             if($item->key->value == $this->controllerAlias)
@@ -138,22 +177,15 @@ class PluginNodeVisitor extends NodeVisitorAbstract
                                         }
                                         if(!$this->hasController)
                                         {
-                                            $url = $this->author."/".$this->plugin."/".strtolower($this->controllerAlias);
-                                            $value = $this->newStaticCall('Backend', 'url', $url);
-                                            $name = new Node\Name('url');
-                                            $key = new Node\Scalar\String_($name->toString());
-                                            $urlItem = new ArrayItem($value, $key);
-
-                                            $label = $this->newArrayItem('label', $this->controllerAlias);
-                                            $icon = $this->newArrayItem('icon', 'icon-leaf');
-                                            $owner = $this->newArrayItem('owner', 'Delphinium.Greenhouse');
-                                            $group = $this->newArrayItem('group', $this->controllerAlias);
-                                            $arr = array($label, $icon, $owner, $urlItem, $group);
-
-                                            $newSideItem = $this->newArrayItem($this->componentAlias,$arr, false);
-                                            $methodArg->value->items[] = $newSideItem;
+                                            $methodArg->value->items[] =$this->addSideNavigationItem();
+                                            $this->hasController=true;
                                         }
                                     }
+                                }
+
+                                if(!$this->hasController)//there were no side navigation items
+                                {
+                                    $methodArg->value->items[] =$this->addSideNavigationItem();
                                 }
                             }
                         }
@@ -162,6 +194,26 @@ class PluginNodeVisitor extends NodeVisitorAbstract
             }
             return;
         }
+    }
+
+    private function addSideNavigationItem()
+    {
+
+        $url = $this->author."/".$this->plugin."/".strtolower($this->controllerAlias);
+        $value = $this->newStaticCall('Backend', 'url', $url);
+        $name = new Node\Name('url');
+        $key = new Node\Scalar\String_($name->toString());
+        $urlItem = new ArrayItem($value, $key);
+
+        $label = $this->newArrayItem('label', $this->controllerAlias);
+        $icon = $this->newArrayItem('icon', $this->icon);
+        $owner = $this->newArrayItem('owner', 'Delphinium.Greenhouse');
+        $group = $this->newArrayItem('group', $this->controllerAlias);
+        $arr = array($label, $icon, $owner, $urlItem, $group);
+
+        $newSideItem = $this->newArrayItem($this->controllerAlias,$arr, false);
+        return $newSideItem;
+
     }
 
     private function newArrayItem($key,$value, $valueAsString=true)
@@ -176,12 +228,64 @@ class PluginNodeVisitor extends NodeVisitorAbstract
 
     private function newStaticCall($className, $methodName, $args)
     {
-        $className = new Node\Name($className);
+        $className = new Node\Name\FullyQualified($className);
         $expr = new Node\Scalar\String_($args);
         $argObj = new Node\Arg($expr);
         $call = new Node\Expr\StaticCall($className, $methodName, array($argObj));
         return $call;
     }
+
+    private function addBootFunction()
+    {   //closure Argument
+        $var = new Node\Expr\Variable("manager");
+
+        //make three arguments
+        $fullyQualifiedGreenhouse = new Node\Arg(new Node\Scalar\String_('Delphinium.Greenhouse'));
+        $greenhouse = new Node\Arg(new Node\Scalar\String_('greenhouse'));
+
+        //array items for navigation menu parameters (third argument)
+//        $newSideItem = $this->addSideNavigationItem();
+//        $thirdParamArr = new Node\Expr\Array_([$newSideItem]);
+
+        //method call
+//        $methodCall = new Node\Expr\MethodCall($var, "addSideMenuItems", [$fullyQualifiedGreenhouse,$greenhouse,$thirdParamArr]);
+        $methodCall = new Node\Expr\MethodCall($var, "addSideMenuItems", [$fullyQualifiedGreenhouse,$greenhouse, new Node\Arg(new Node\Expr\Array_([]))]);//,$thirdParamArr]);
+        $managerParam = new Node\Param("manager");
+        $closure = new Node\Expr\Closure();
+        $closure->params = [$managerParam];
+        $closure->stmts = [$methodCall];
+
+        $args = [new Node\Arg(new Node\Scalar\String_("backend.menu.extendItems")),new Node\Arg($closure)];
+        $class = new Node\Name\FullyQualified("Event");
+
+        $staticCall = new Node\Expr\StaticCall($class, "listen", $args);
+
+        $method = new Node\Stmt\ClassMethod("boot");
+        $method->stmts = [$staticCall];
+        return $method;
+    }
+
+    private function makeArray($arrName, $arrItems)
+    {
+        $arr = new Node\Expr\Array_($arrItems);
+        $var = new Node\Expr\Variable($arrName);
+        $assign = new Node\Expr\Assign($var, $arr);
+        return $assign;
+    }
+
+    private function addComponentsArr()
+    {
+        $newComponent = $this->newArrayItem($this->componentPath,$this->componentAlias);
+        $arr = new Node\Expr\Array_([$newComponent]);
+        $var = new Node\Expr\Variable("componentArray");
+        $assign = new Node\Expr\Assign($var, $arr);
+        //add return statement
+        $return = new Node\Stmt\Return_($var);
+
+        $arrRet = [$assign, $return];
+        return $arrRet;
+    }
+
     public function afterTraverse(array $nodes)
     {
     }
@@ -193,5 +297,6 @@ class PluginNodeVisitor extends NodeVisitorAbstract
     public function beforeTraverse(array $nodes)
     {
     }
+
 
 }

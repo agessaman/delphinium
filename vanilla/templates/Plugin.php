@@ -22,7 +22,7 @@
 
 namespace Delphinium\Vanilla\Templates;
 
-use Delphinium\Vanilla\Classes\TemplateBase;
+use Delphinium\Vanilla\Templates\TemplateBase;
 
 class Plugin extends TemplateBase
 {

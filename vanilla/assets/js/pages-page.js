@@ -65,6 +65,7 @@
         $(document).on('click', '#vanilla-side-panel form button[data-control=delete-object], #vanilla-side-panel form button[data-control=delete-template]',
             this.proxy(this.onDeleteObject))
 
+        $(document).on('click', '#newComponentVanilla',this.proxy(this.cmdApplyComponentSettings))
         // A new tab is added to the editor
         this.$masterTabs.on('initTab.oc.tab', this.proxy(this.onInitTab))
 
@@ -338,34 +339,50 @@
         return false
     }
 
-    /*
-     * Triggered when the Add button is clicked on the sidebar
-     */
-    PagesPage.prototype.onCreateObject = function(e) {
-        var self = this,
-            $button = $(e.target),
-            $form = $button.closest('form'),
-            parent = $button.data('parent') !== undefined ? $button.data('parent') : null,
-            type = $form.data('object-type') ? $form.data('object-type') : $form.data('template-type'),
-            tabId = type + Math.random()
+    PagesPage.prototype.onCreateObject = function(ev) {
+        var $target = $(ev.currentTarget)
+
+        $target.one('shown.oc.popup', this.proxy(this.onComponentPopupShown))
+
+        $target.popup({
+            handler: 'onComponentLoadPopup',
+            zIndex: this.popupZIndex
+        })
+    }
+
+
+    PagesPage.prototype.cmdApplyComponentSettings = function(ev) {
+        var $form = $(ev.currentTarget),
+            self = this
 
         $.oc.stripeLoadIndicator.show()
-        $form.request('onCreateObject', {
-            data: {
-               type: type,
-               parent: parent
-            }
-        }).done(function(data){
-            self.$masterTabs.ocTab('addTab', data.tabTitle, data.tab, tabId, $form.data('type-icon') + ' new-template')
-            $('#layout-side-panel').trigger('close.oc.sidePanel')
-            self.setPageTitle(data.tabTitle)
-        }).always(function(){
-            $.oc.stripeLoadIndicator.hide()
+        $form.request('onComponentSave').always(
+            $.oc.builder.indexController.hideStripeIndicatorProxy
+        ).done(function(data){
+            console.log(data);
+            $form.trigger('close.oc.popup')
+
+            self.applyPluginSettingsDone(data)
         })
+        .error(function(data)
+        {
+            console.log(data);
+        })
+    }
+    // EVENT HANDLERS
+    // ============================
 
-        e.stopPropagation()
+    PagesPage.prototype.onComponentPopupShown = function(ev, button, popup) {
+        $(popup).find('input[name=name]').focus()
+    }
 
-        return false
+    // INTERNAL METHODS
+    // ============================
+
+    Plugin.prototype.applyPluginSettingsDone = function(data) {
+        if (data.responseData !== undefined && data.responseData.isNewPlugin !== undefined) {
+            this.makePluginActive(data.responseData.pluginCode, true)
+        }
     }
 
     /*

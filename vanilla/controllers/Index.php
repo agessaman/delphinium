@@ -10,6 +10,13 @@ use Delphinium\Vanilla\Widgets\ComponentList;
 use Delphinium\Vanilla\Widgets\DelphiniumizeList;
 use Delphinium\Vanilla\Widgets\AssetList;
 
+use Delphinium\Vanilla\Templates\Component;
+use Delphinium\Vanilla\Templates\Controller as ControllerTemplate;
+use Delphinium\Vanilla\Templates\Model;
+use Delphinium\Vanilla\Classes\PluginNodeVisitor;
+use Delphinium\Vanilla\Classes\ControllerNodeVisitor;
+use Delphinium\Vanilla\Classes\ComponentNodeVisitor;
+
 /**
  * Index Back-end Controller
  */
@@ -18,7 +25,8 @@ class Index extends Controller
     public $relativePluginDir;
     public $plugin;
     public $implement = [
-        'Delphinium.Vanilla.Behaviors.IndexPluginOperations'
+        'Delphinium.Vanilla.Behaviors.IndexPluginOperations',
+        'Delphinium.Vanilla.Behaviors.IndexComponentOperations'
     ];
 
     public function __construct()
@@ -272,5 +280,29 @@ class Index extends Controller
         $plugin = Plugin::load($this->relativePluginDir);
         $this->plugin = $plugin;
         return $plugin;
+    }
+
+    public function onCreateObject()
+    {
+        $type = Request::input('type');
+        $template = $this->createTemplate($type);
+
+        if ($type == 'asset') {
+            $template->setInitialPath($this->widget->assetList->getCurrentRelativePath());
+        }
+
+        $widget = $this->makeTemplateFormWidget($type, $template);
+
+        $this->vars['templatePath'] = '';
+
+        return [
+            'tabTitle' => $this->getTabTitle($type, $template),
+            'tab'   => $this->makePartial('form_page', [
+                'form'          => $widget,
+                'templateType'  => $type,
+                'templateTheme' => $this->theme->getDirName(),
+                'templateMtime' => null
+            ])
+        ];
     }
 }

@@ -40,18 +40,6 @@ tabs:
                 field: author
                 type: namespace
 
-        controller:
-            span: left
-            label: Controller
-            required: true
-            tab: rainlab.builder::lang.plugin.tab_general
-
-        model:
-            span: right
-            label: Model
-            required: true
-            tab: rainlab.builder::lang.plugin.tab_general
-
         icon:
             type: dropdown
             label: rainlab.builder::lang.plugin.field_icon
