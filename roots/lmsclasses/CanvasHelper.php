@@ -1270,7 +1270,7 @@ $req = curl_exec($curl);*/
 
     public function getUsersInCourse()
     {
-        return $this->simpleGet('users');
+        return $this->newsimpleGet('users');
     }
 
     public function getStudentsInCourse()
@@ -1280,9 +1280,33 @@ $req = curl_exec($curl);*/
             session_start();
         }
         $courseId = $_SESSION['courseID'];
-        $data = ($this->simpleGet('students'));
+        $data = ($this->newSimpleGet('users'));
 
         return $this->processStudentsInCourse($data, $courseId);
+    }
+
+    public function getStudentsInCourseGradebook()
+    {
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
+
+        $urlPieces= $this->initUrl();
+        $courseId = $_SESSION['courseID'];
+        $urlPieces[] = "sections";
+        $userToken = \Crypt::decrypt($_SESSION['userToken']);
+        $urlArgs = array();
+        $urlArgs[] = "include[]=students";
+        $urlArgs[] = "access_token={$userToken}";
+        $data = ($this->newSimpleGet('users'));
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+        $section_info = GuzzleHelper::getAsset($url);
+        $studentsWithSection = $this->processStudentsWithSection($data, $section_info);
+        $studentsInCourse = $this->processStudentsInCourse($data, $courseId);
+        //$data = $this->processStudentsWithSection($data, $section_info);
+        //print_r($this->processStudentsInCourse($data, $courseId));die;
+        return array("studentsWithSection" => $studentsWithSection, "studentsInCourse"=>$studentsInCourse);
     }
 
     public function getUser($userId = null)
@@ -1903,6 +1927,22 @@ $req = curl_exec($curl);*/
         return $urlPieces;
     }
 
+    private function newSimpleGet($canvasItem)
+    {
+        $urlPieces= $this->initUrl();
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $urlArgs = array();
+        $urlPieces[] = $canvasItem;
+
+        //Attach token
+        $urlArgs[]="enrollment_type=student&access_token={$token}&per_page=5000";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+
+        $response = GuzzleHelper::getAsset($url);
+        return $response;
+    }
+
     private function simpleGet($canvasItem)
     {
         $urlPieces= $this->initUrl();
@@ -1957,4 +1997,23 @@ $req = curl_exec($curl);*/
 
         return $user;
     }
+
+     private function processStudentsWithSection($students, $sections)
+     {
+        $sections_array = $this->getSectionNamesByStudentId($sections);
+        return $sections_array;
+     }
+
+     private function getSectionNamesByStudentId($sections){
+        $return = array();
+        foreach($sections as $section){
+            if(!empty($section->students)){
+                foreach($section->students as $student){
+                    $return[$student->id][] = $section->name;
+                }
+            }
+        }
+        return $return;
+     }
+
 }

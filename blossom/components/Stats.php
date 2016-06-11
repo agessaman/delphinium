@@ -108,8 +108,6 @@ class Stats extends ComponentBase
         $this->page['instance_id'] =  $statsInstance->id;
         $experienceInstance = $this->findExperienceInstance();
 
-
-
         $statsInstance = StatsModel::find($this->statsInstanceId);
         $this->page['statsSize'] = $statsInstance->size;
         $this->page['statsAnimate'] = $statsInstance->animate;
@@ -245,7 +243,8 @@ class Stats extends ComponentBase
     }
 
     private function instructor()
-    {//add backend styles
+    {
+        //add backend styles
         $this->page['nonstudent']=1;
         $formController = new \Delphinium\Blossom\Controllers\Stats();
         $formController->create('frontend');

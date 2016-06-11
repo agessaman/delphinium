@@ -38,6 +38,7 @@ var staminaX = 0;
 scaleStats();
 //getData
 $.get("stats/getStatsData", {experienceInstanceId: experienceInstanceId}, function (data, status, xhr) {
+    console.log(data);
     //enable stamina clicks
     d3.select(".spinnerStats").style("display","none");
     d3.selectAll(".switch-li").classed("disabled",false);
