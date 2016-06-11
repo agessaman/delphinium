@@ -750,6 +750,33 @@ class Roots
         }
     }
     
+    public function getStudentsInCourseGradebook()
+    {
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+        }
+        $lms = strtoupper($_SESSION['lms']);
+        $courseId = $_SESSION['courseID'];
+        
+        if(Lms::isValidValue($lms))
+        {
+            switch ($lms)
+            {
+                case (Lms::CANVAS):
+                    $canvasHelper = new CanvasHelper();
+                    return ($canvasHelper->getStudentsInCourseGradebook());
+                default:
+                    $canvasHelper = new CanvasHelper();
+                    return ($canvasHelper->getStudentsInCourseGradebook());
+            }
+        }
+        else
+        {
+           throw new \Exception("Invalid LMS");  
+        }
+    }
+
     public function getStudentsInCourse()
     {
     	if(!isset($_SESSION)) 
@@ -758,11 +785,11 @@ class Roots
     	}
         $lms = strtoupper($_SESSION['lms']);
         $courseId = $_SESSION['courseID'];
-        $users = $this->dbHelper->getUsersInCourseWithRole($courseId, 'Learner');
+        /*$users = $this->dbHelper->getUsersInCourseWithRole($courseId, 'Learner');
         if(count($users)>1)
         {
-//            return $users;
-        }
+            return $users;
+        }*/
 
         //if no users were found in DB try to get them from Canvas
         if(Lms::isValidValue($lms))
@@ -781,6 +808,7 @@ class Roots
         {
            throw new \Exception("Invalid LMS");  
         }
+
     }
     
     public function getUser($userId)

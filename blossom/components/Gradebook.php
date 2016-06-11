@@ -37,6 +37,7 @@ use \DateTimeZone;
 use \DateInterval;
 use Carbon\Carbon;
 use Delphinium\Roots\Guzzle\GuzzleHelper;
+use Delphinium\Blossom\Components\Stats as StatsComponent;
 
 class Gradebook extends ComponentBase {
 
@@ -83,8 +84,10 @@ class Gradebook extends ComponentBase {
             $standards = $this->roots->getGradingStandards();
             $grading_scheme = $standards[0]->grading_scheme;
 
+            $this->addCss("/plugins/delphinium/blossom/assets/css/jsgrid.css");
             $this->addCss("/plugins/delphinium/blossom/assets/css/bootstrap.min.css");
             $this->addCss("/plugins/delphinium/blossom/assets/css/gradebook.css");
+
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/gradebook_student.js");
             $this->page['experienceInstanceId'] = $this->property('experienceInstance');
@@ -225,7 +228,6 @@ class Gradebook extends ComponentBase {
     private function getProfessorData() {
 
         // $aggregateSubmissionScores = $this->aggregateSubmissionScores();
-
         $users = $this->roots->getStudentsInCourse();
         $userMasterArr= array();
         foreach($users as $userCourse)
@@ -251,7 +253,6 @@ class Gradebook extends ComponentBase {
 
             $milestones = $instance->milestones;
             $this->page['numMilestones'] = count($milestones);
-
 
             $utcTimeZone = new DateTimeZone('UTC');
             $stDate = $instance->start_date->setTimezone($utcTimeZone);
@@ -542,6 +543,32 @@ class Gradebook extends ComponentBase {
 
     }
 
+    private function getPotential($experienceInstanceId, $userId)
+    {
+        $potential = new \stdClass();
+        $potentialBonus = 0.0;
+        $potentialPenalties = 0.0;
+        $experienceComp = new ExperienceComponent();
+        $milestoneClearanceInfo = $experienceComp->getMilestoneClearanceInfo($experienceInstanceId, $userId);
+        foreach($milestoneClearanceInfo as $mileInfo)
+        {
+            if(!$mileInfo->cleared)
+            {
+                if($mileInfo->bonusPenalty>=0)
+                {
+                    $potentialBonus+=$mileInfo->bonusPenalty;
+                }
+                else{
+                    $potentialPenalties+=$mileInfo->bonusPenalty;
+                }
+            }
+        }
+        $potential->bonus = $potentialBonus;
+        $potential->penalties = $potentialPenalties;
+        return $potential;
+
+    }
+
     public function getSetOfUsersMilestoneInfo($experienceInstanceId, $userIds)
     {//init experience variables
         $experienceInstance = ExperienceModel::find($experienceInstanceId);
@@ -571,10 +598,12 @@ class Gradebook extends ComponentBase {
         //get all students in course
 
         $roots = new Roots();
-        $users = $roots->getStudentsInCourse();
+       //print_r($stats_data);die('aaa');
+        $returned_data = $roots->getStudentsInCourseGradebook();
+        $users = $returned_data['studentsInCourse'];
+        $sections = $returned_data['studentsWithSection'];
 
         $filteredUsers = array();
-
         foreach($userIds as $userId)
         {
             $res = array_values(array_filter($users, function($elem) use($userId) {
@@ -583,17 +612,21 @@ class Gradebook extends ComponentBase {
             $filteredUsers = array_merge($filteredUsers,$res);
         }
         $masterArr=array();
+        $potentisal_array = array();
         foreach($filteredUsers as $user)
         {
+////            print_r($user->user_id);
+            $potentialOfUser = $this->getPotential($experienceInstanceId, $user->user_id);
             $item = $this->getUserMilestoneInfo($user, $milestonesOrderedByPointsDesc, $ptsPerSecond, $stDate, $endDate, $bonusPerSecond, $bonusSeconds,
-                $penaltyPerSecond, $penaltySeconds, $maxExperiencePts, $grading_scheme);
+                $penaltyPerSecond, $penaltySeconds, $maxExperiencePts, $grading_scheme, $sections, $potentialOfUser);
             $masterArr[] = $item;
         }
         return $masterArr;
+
     }
 
     private function getUserMilestoneInfo($user,$milestonesOrderedByPointsDesc, $ptsPerSecond, $stDate, $endDate, $bonusPerSecond, $bonusSeconds,
-                                          $penaltyPerSecond, $penaltySeconds, $maxExperiencePts, $grading_scheme)
+                                          $penaltyPerSecond, $penaltySeconds, $maxExperiencePts, $grading_scheme, $sections, $potentialOfUser)
     {
 
         //get User submissions
@@ -603,7 +636,6 @@ class Gradebook extends ComponentBase {
         $multipleAssignments = true;
         $allStudents = false;
         $allAssignments = true;
-// echo "getting submissions at ".json_encode(new \DateTime('now'))."--";
         //can have the student Id param null if multipleUsers is set to false (we'll only get the current user's submissions)
         $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents,
             $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
@@ -682,7 +714,9 @@ class Gradebook extends ComponentBase {
         //get letter grade
         $grade = new GradeComponent();
         $userObj->grade = $grade->getLetterGrade($totalPoints, $maxExperiencePts, $grading_scheme);
-
+        $userObj->probable_penalty = $potentialOfUser->penalties;
+        $userObj->possible_bonus = $potentialOfUser->bonus;
+        $userObj->sections = implode("<br>",$sections[$userObj->id]);
         return $userObj;
     }
 

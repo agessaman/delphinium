@@ -39,7 +39,6 @@ promise.then(function (data1, textStatus, jqXHR) {
     .fail(function (data2) {
         console.log("Unable to retrieve student submissions");
     });
-
 callStudentsMilestoneInfo(students);
 
 div = d3.select("body").append("div")
@@ -505,92 +504,134 @@ function checkboxFunctionality()
 
 function buildTable(data)
 {
-    //d3.select("#summaryTable").style("display","block");
+    var field_keys = {
+        no: "No<span class='one_point'></span>",
+        first_name: "First Name",
+        last_name: "Last Name",
+        sections: "Sections",
+        score: "Exp<span class='one_point'></span> Pts<span class='one_point'></span>",
+        bonuses: "Bonus",
+        penalties: "Penalties",
+        probable_penalty: "Prob<span class='one_point'></span> Penalty",
+        possible_bonus: "Poss<span class='one_point'></span> Bonus",
+        totalBP: "Total B/P",
+        total: "Current Score",
+        grade: "Grade",
+        details: "Details"
+    };
 
-        var field_keys = {
-            no: "No<span class='one_point'></span>",
-            name: "Name",
-            score: "Exp<span class='one_point'></span> Pts<span class='one_point'></span>",
-            bonuses: "Bonus",
-            penalties: "Penalties",
-            totalBP: "Total B/P",
-            total: "Current Score",
-            grade: "Grade",
-            details: "Details"
-        };
-
-        var i = 1;
-        $.each(data, function(key, row){
-            var data_row = {};
-            var value = null;
-            $.each(field_keys, function(k, v){
-                switch(k){
-                    case 'no':
-                      value = i++;  
+    var i = 0;
+    var loadData = [];
+    $.each(data, function(key, row){
+        var data_row = {};
+        var value = null;
+        $.each(field_keys, function(k, v){
+            switch(k){
+                case 'no':
+                  value = ++i;  
+                break;
+                case 'first_name':
+                    var name = row['name'].split(' ');
+                    value = '<a href="' + row.profile_url + '">' + name[0].replace(',','') + '</a>';
                     break;
-                    case 'name':
-                    case 'grade':
-                        value = row[k];
-                    break;     
-                    default:
-                        value = d3.round(row[k], 2);
-                }
-                data_row[v] = value;
-            })
-            console.log(data_row);
-        })
-        var data_controller = {
-            
-           loadData: function(filter) {
-                var grep = $.grep(this.clients, function(client) {
-                    return (!filter.Name || client.Name.indexOf(filter.Name) > -1)
-                        && (!filter.Age || client.Age === filter.Age)
-                        && (!filter.Address || client.Address.indexOf(filter.Address) > -1)
-                        && (!filter.Country || client.Country === filter.Country)
-                        && (filter.Married === undefined || client.Married === filter.Married);
-                });
-                console.log(grep);
-            },
+                case 'last_name':
+                    var name = row['name'].split(' ');
+                    nm =  name.length > 1 ? name[1] : '';
+                    value = '<a href="' + row.profile_url + '">' + nm + '</a>';
 
-            insertItem: function(insertingClient) {
-                /*this.clients.push(insertingClient);*/
-            },
-
-            updateItem: function(updatingClient) { },
-
-            deleteItem: function(deletingClient) {
-                /*var clientIndex = $.inArray(deletingClient, this.clients);
-                this.clients.splice(clientIndex, 1);*/
+                    break
+                case 'grade':
+                    value = '<div>' + row[k] + '<span style="display:none">' + key + '</span></div>';
+                    break;
+                case 'sections':
+                    value = row[k];
+                    break;
+                case 'details':
+                    value = $("<input/>")
+                                .attr("type","button")
+                                .attr("value",k)
+                                .attr("class","btn btn-info btn-lg btn-sm")
+                                .attr("data-toggle","modal")
+                                .attr("data-target","#modalStudentGradebook")
+                                .on('click', function(){
+                                    showStudentDetails(row);
+                                });
+                    break;
+                default:
+                    value = d3.round(row[k], 2);
             }
-        }
-        data_controller.clients = data;
-
-        $("#gridContainer").jsGrid({
-            height: "70%",
-            width: "100%",
-            filtering: true,
-            inserting: true,
-            sorting: true,
-            autoload: true,
-            pageSize: 5,
-            pageButtonCount: 3,
-            controller: data_controller,
-            fields: [
-                { name: field_keys.no, type: "text", width: 70 },
-                { name: field_keys.name, type: "text", width: 180 },
-                { name: field_keys.score, type: "number", width: 70 },
-                { name: field_keys.bonuses, type: "number", width: 70 },
-                { name: field_keys.penalties, type: "number",width:70 },
-                { name: field_keys.totalBP, type: "number", width:70 },
-                { name: field_keys.total, type: "number", width:70 },
-                { name: field_keys.grade, type: "text", width:180 },
-                { name: field_keys.details, type: "hidden", width:100, sorting: false },
-                { type: 'control'}//, editButton: false, deleteButton: false, clearFilterButton: false, modeSwitchButton: false}
-            ]
+            data_row[v] = value;
         });
-        
-        //console.log(data);
-        
+        loadData.push(data_row);
+    });
+
+    var data_controller = {
+       loadData: function(filter) {
+            return $.grep(this.clients, function(client) {
+                return (!filter[field_keys.no] || client[field_keys.no] === filter[field_keys.no])
+                    && (!filter[field_keys.first_name] || client[field_keys.first_name].indexOf(filter[field_keys.first_name]) > -1)
+                    && (!filter[field_keys.last_name] || client[field_keys.last_name].indexOf(filter[field_keys.last_name]) > -1)
+                    && (!filter[field_keys.sections] || client[field_keys.sections].indexOf(filter[field_keys.sections]) > -1)
+                    && (!filter[field_keys.score] || client[field_keys.score] === filter[field_keys.score])
+                    && (!filter[field_keys.bonuses] || client[field_keys.bonuses] === filter[field_keys.bonuses])
+                    && (!filter[field_keys.penalties] || client[field_keys.penalties] === filter[field_keys.penalties])
+                    && (!filter[field_keys.probable_penalty] || client[field_keys.probable_penalty] === filter[field_keys.probable_penalty])
+                    && (!filter[field_keys.possible_bonus] || client[field_keys.possible_bonus] === filter[field_keys.possible_bonus])
+                    && (!filter[field_keys.totalBP] || client[field_keys.totalBP] === filter[field_keys.totalBP])
+                    && (!filter[field_keys.total] || client[field_keys.total] === filter[field_keys.total])
+                    && (!filter[field_keys.grade] || client[field_keys.grade].indexOf(filter[field_keys.grade]) > -1)
+
+            });
+        }
+
+    }
+    window.data_controller = data_controller;
+
+    data_controller.clients = loadData;
+
+    jsGrid.sortStrategies.client = function(index1, index2){
+        index1 = $(index1).find('span').text();
+        index2 = $(index2).find('span').text();
+        var client1 = data_controller.clients[index1];
+        var client2 = data_controller.clients[index2];
+        if(client1[field_keys.total] < client2[field_keys.total]) return -1;
+        if(client1[field_keys.total] === client2[field_keys.total]) return 0;
+        if(client1[field_keys.total] > client2[field_keys.total]) return 1;
+    };
+
+    jsGrid.sortStrategies.total = function(index1, index2){
+        if(index1 < index2) return -1;
+        if(index1 === index2) return 0;
+        if(index1 > index2) return 1;
+
+    };
+
+    $("#gridContainer").jsGrid({
+        height: "70%",
+        width: "100%",
+        filtering: true,
+        sorting: true,
+        autoload: true,
+        pageSize: 5,
+        pageButtonCount: 3,
+        controller: data_controller,
+        fields: [
+            { name: field_keys.no, type: "number", width: 70 },
+            { name: field_keys.first_name, type: "text", width: 140 },
+            { name: field_keys.last_name, type: "text", width: 140 },
+            { name: field_keys.sections, type: "text", width: 150 },
+            { name: field_keys.score, type: "number", width: 60 },
+            { name: field_keys.bonuses, type: "number", width: 60 },
+            { name: field_keys.penalties, type: "number",width:70 },
+            { name: field_keys.possible_bonus, type: "number",width:50 },
+            { name: field_keys.probable_penalty, type: "number",width:60 },
+            { name: field_keys.totalBP, type: "number", width:50 },
+            { name: field_keys.total, type: "number", width:60},
+            { name: field_keys.grade, type: "text", width:180, sorter: 'client' },
+            { name: field_keys.details, type: "hidden", width:70, sorting: false },
+            { type: 'control', editButton: false, deleteButton: false, clearFilterButton: false, modeSwitchButton: false, width:20}
+        ]
+    });        
 
         
     /*d3.select("#summaryTable").style("display","block");
@@ -663,7 +704,6 @@ function callStudentsMilestoneInfo(studentsArr)
             $.get("gradebook/getSetOfUsersMilestoneInfo",{experienceInstanceId:experienceInstanceId, userIds:(idsArr)},function(data,status,xhr)
             {
                 d3.select(".bottomSpinnerDiv").style("display","none");
-                //console.log(data);
                 bottomExperienceScores = bottomExperienceScores.concat(data);//append the new data to the old
                 buildTable(data);
             });
@@ -679,7 +719,6 @@ function callStudentsMilestoneInfo(studentsArr)
         $.get("gradebook/getSetOfUsersMilestoneInfo",{experienceInstanceId:experienceInstanceId, userIds:(idsArr)},function(data,status,xhr)
         {
             d3.select(".bottomSpinnerDiv").style("display","none");
-            //console.log(data);
             //bottomExperienceScores = bottomExperienceScores.concat(data);//append the new data to the old
             buildTable(data);
 
