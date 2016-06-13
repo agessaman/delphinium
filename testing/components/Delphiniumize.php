@@ -66,15 +66,16 @@ class Delphiniumize extends ComponentBase
 
     public function onRun()
     {
-        $vars =  array("author"=>"Author","plugin"=>"vanillaando", "component"=>"MyComp", "controller"=>"MyConr", "model"=>"MyMod");
+        $vars =  array("author"=>"Author","plugin"=>"Vanillaando", "component"=>"MyComp", "controller"=>"MyConr", "model"=>"MyMod");
 //        $vars =  array("author"=>"author","plugin"=>"newPlugin", "component"=>"newComponent", "controller"=>"newController", "model"=>"newModel");
 
         $this->readyVars = $this->processVars($vars);
 
         $this->newPluginData = $vars;
 //        $this->makeFiles();
-        $this->modifyFiles();
-//        $this->octoberUp();
+//        $this->modifyFiles();
+//        $this->octoberUp($this->newPluginData['author'].".".$this->newPluginData['plugin']);
+        $this->octoberUp("Author.Vanillaando");
     }
 
     public function onAddItem()
@@ -85,7 +86,7 @@ class Delphiniumize extends ComponentBase
         $this->newPluginData = $vars;
         $this->makeFiles();
         $this->modifyFiles();
-        $this->octoberUp();
+        $this->octoberUp($this->newPluginData['author'].".".$this->newPluginData['plugin']);
     }
 
     private function makeFiles()
@@ -179,10 +180,10 @@ class Delphiniumize extends ComponentBase
 
     private function modifyFiles()
     {//the model doesn't need to be modified
-//        $this->modifyController();
-//        $this->modifyComponent();
+        $this->modifyController();
+        $this->modifyComponent();
         $this->modifyPlugin();
-//        $this->modifyVersion();
+        $this->modifyVersion();
 
     }
 
@@ -244,13 +245,74 @@ class Delphiniumize extends ComponentBase
         file_put_contents($yamlDestinationPath, $yaml);
     }
 
-    private function octoberUp()
+    /**
+     * Runs update on a single plugin
+     * @param string $name Plugin name.
+     * @return self
+     */
+    public function octoberUp($pluginCode)
     {
         $pluginManager = PluginManager::instance();
         $pluginManager->loadPlugins();//loads the newly created plugin
-        $manager = UpdateManager::instance()->resetNotes()->update();//updates october's plugins
+        $versionManager = VersionManager::instance();
+
+        /*
+         * Update the plugin database and version
+         */
+        if (!($plugin = $pluginManager->findByIdentifier($pluginCode))) {
+            return "Unable to update plugin's database";
+        }
+        $versionManager->resetNotes();
+        if ($versionManager->updatePlugin($plugin) == false) {
+            return "Unable to update plugin's database";
+        }
         return;
     }
+//    private function octoberUp()
+//    {
+//
+//        $plugin = "Author.Vanillaando";
+//        $name = $plugin;
+//        $versionManager = VersionManager::instance();
+//        $zdsf = $versionManager->updatePlugin($plugin);
+//        if($zdsf===false)
+//        {
+//            echo "something weird happened";
+//        }
+//        echo json_encode($zdsf);
+////        if ($versionManager->updatePlugin($plugin) !== false) {
+////            echo "not false";
+////            $this->note($name);
+////            foreach ($this->versionManager->getNotes() as $note) {
+////                $this->note(' - '.$note);
+////            }
+////        }
+//
+//
+////        $pluginName = $this->newPluginData['author'].".".$this->newPluginData['plugin'];// $this->argument('name');
+////        $pluginName = "Rainlab.Builder";// $this->argument('name');
+////        $manager = UpdateManager::instance()->resetNotes();
+////
+////        $pluginDetails = $manager->requestPluginDetails($pluginName);
+////
+////        echo json_encode($pluginDetails);
+////        return $pluginDetails;
+//
+////        $code = array_get($pluginDetails, 'code');
+////        $hash = array_get($pluginDetails, 'hash');
+////
+////        /*
+////         * Migrate plugin
+////         */
+////        PluginManager::instance()->loadPlugins();
+////        $manager->updatePlugin($code);
+//
+//
+////        $pluginManager = PluginManager::instance();
+////        $pluginManager->loadPlugins();//loads the newly created plugin
+////        $manager = UpdateManager::instance()->resetNotes()->update();//updates october's plugins
+////        return;
+//    }
 
     private function openModifySave($fileDestination, $nodeVisitor)
     {

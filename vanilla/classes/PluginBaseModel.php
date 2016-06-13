@@ -5,6 +5,11 @@ use System\Classes\UpdateManager;
 use System\Classes\PluginManager;
 use Exception;
 use File;
+use RainLab\Builder\Classes\PluginYamlModel;
+use RainLab\Builder\Classes\IconList;
+use RainLab\Builder\Classes\PluginCode;
+use RainLab\Builder\Classes\LocalizationModel;
+use RainLab\Builder\Classes\FilesystemGenerator;
 
 /**
  * Manages plugin basic information.
@@ -154,7 +159,7 @@ class PluginBaseModel extends PluginYamlModel
             'pluginDescriptionSanitized' => $this->sanitizePHPString($this->localizedDescription),
         ];
 
-        $generator = new FilesystemGenerator('$', $structure, '$/rainlab/builder/classes/pluginbasemodel/templates');
+        $generator = new FilesystemGenerator('$', $structure, '$/delphinium/vanilla/classes/pluginbasemodel/templates');
         $generator->setVariables($variables);
         $generator->generate();
     }

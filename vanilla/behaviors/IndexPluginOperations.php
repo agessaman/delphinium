@@ -1,7 +1,7 @@
 <?php namespace Delphinium\Vanilla\Behaviors;
 
 use RainLab\Builder\Classes\IndexOperationsBehaviorBase;
-use RainLab\Builder\Classes\PluginBaseModel;
+use Delphinium\Vanilla\Classes\PluginBaseModel;
 use PhpParser\ParserFactory;
 use PhpParser\Error;
 use PhpParser\PrettyPrinter;

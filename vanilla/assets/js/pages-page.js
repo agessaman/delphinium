@@ -359,10 +359,8 @@
         $form.request('onComponentSave').always(
             $.oc.builder.indexController.hideStripeIndicatorProxy
         ).done(function(data){
-            console.log(data);
-            $form.trigger('close.oc.popup')
-
-            self.applyPluginSettingsDone(data)
+            $form.trigger('close.oc.popup');
+            self.updateComponentList(data);
         })
         .error(function(data)
         {
@@ -379,10 +377,19 @@
     // INTERNAL METHODS
     // ============================
 
-    Plugin.prototype.applyPluginSettingsDone = function(data) {
-        if (data.responseData !== undefined && data.responseData.isNewPlugin !== undefined) {
-            this.makePluginActive(data.responseData.pluginCode, true)
-        }
+    PagesPage.prototype.updateComponentList = function(data) {
+
+        $.oc.stripeLoadIndicator.show()
+        $form.request('onUpdateComponentList').always(
+            $.oc.builder.indexController.hideStripeIndicatorProxy
+        ).done(function(data){
+                console.log(data);
+                $form.trigger('close.oc.popup')
+            })
+            .error(function(data)
+            {
+                console.log(data);
+            })
     }
 
     /*

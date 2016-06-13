@@ -37,6 +37,7 @@ use PhpParser\NodeTraverser;
 use PhpParser\BuilderFactory;
 use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Yaml\Dumper;
+use System\Classes\VersionManager;
 use System\Classes\PluginManager;
 use Yaml;
 use ApplicationException;
@@ -96,11 +97,15 @@ class IndexComponentOperations extends IndexOperationsBehaviorBase
 
         $this->makeFiles();
         $this->modifyFiles();
-        $this->octoberUp();
-
-        return;
+//        $this->octoberUp( $vars['author'].".".$vars['plugin']);
+        $this->octoberUp( $vars['author'].".".$vars['plugin']);
+        return "asdfffffff";
     }
 
+    public function onUpdateComponentList()
+    {
+        $this->controller->widget->componentList->refreshActivePlugin();
+    }
     private function makeFiles()
     {
         $old_umask = umask(0);//we will change the umask to make the respective directories and files 777
@@ -110,6 +115,7 @@ class IndexComponentOperations extends IndexOperationsBehaviorBase
         $this->createModel();
         umask($old_umask);//return to the original mask
     }
+
     private function createComponent()
     {
         $input= $this->newPluginData;
@@ -175,7 +181,6 @@ class IndexComponentOperations extends IndexOperationsBehaviorBase
         Model::make($destinationPath, $vars);
     }
 
-
     private function modifyFiles()
     {//the model doesn't need to be modified
         $this->modifyComponent();
@@ -183,7 +188,6 @@ class IndexComponentOperations extends IndexOperationsBehaviorBase
         $this->modifyPlugin();
         $this->modifyVersion();
     }
-
 
     private function modifyController()
     {
@@ -245,12 +249,23 @@ class IndexComponentOperations extends IndexOperationsBehaviorBase
         file_put_contents($yamlDestinationPath, $yaml);
     }
 
-    private function octoberUp()
+    public function octoberUp($pluginCode)
     {
         $pluginManager = PluginManager::instance();
         $pluginManager->loadPlugins();//loads the newly created plugin
-        $manager = UpdateManager::instance()->resetNotes()->update();//updates october's plugins
-        return;
+        $versionManager = VersionManager::instance();
+
+        /*
+         * Update the plugin database and version
+         */
+        if (!($plugin = $pluginManager->findByIdentifier($pluginCode))) {
+            return "Unable to update plugin's database";
+        }
+        $versionManager->resetNotes();
+        if ($versionManager->updatePlugin($plugin) == false) {
+            return "Unable to update plugin's database";
+        }
+        return "adsfasdf";
     }
 
     private function openModifySave($fileDestination, $nodeVisitor)
