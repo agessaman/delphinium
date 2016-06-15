@@ -85,10 +85,13 @@ class Gradebook extends ComponentBase {
             $grading_scheme = $standards[0]->grading_scheme;
 
             $this->addCss("/plugins/delphinium/blossom/assets/css/jsgrid.css");
-            $this->addCss("/plugins/delphinium/blossom/assets/css/bootstrap.min.css");
+            $this->addCss("/plugins/delphinium/blossom/assets/css/storm.css");
+            //$this->addCss("/plugins/delphinium/blossom/assets/css/bootstrap.min.css");
+            $this->addCss("/plugins/delphinium/blossom/assets/css/nouislider.min.css");
             $this->addCss("/plugins/delphinium/blossom/assets/css/gradebook.css");
 
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
+            $this->addJs("/plugins/delphinium/blossom/assets/javascript/nouislider.min.js");
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/gradebook_student.js");
             $this->page['experienceInstanceId'] = $this->property('experienceInstance');
             $userRoles = $_SESSION['roles'];

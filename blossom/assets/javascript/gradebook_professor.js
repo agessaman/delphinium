@@ -502,8 +502,112 @@ function checkboxFunctionality()
     });
 }
 
-function buildTable(data)
-{
+function filterrange(args, item, check) {
+    
+    if (check) {
+        
+        $('.cont').append('<div class="nouislider ' + check + '"><div class="rangearr"></div><div id="' + check + '"></div><span class="left-val" id="' + check + '-lover-value"></span><span id="lower-offset"></span><span class="right-val" id="' + check + '-upper-value"></span><span id="upper-offset"></span></div>');
+
+        var slider_div = $('#' + check + '');
+        noUiSlider.create(slider_div[0], {
+            connect: true,
+            behaviour: 'tap',
+            orientation: 'horizontal',
+            start: [ args['start_min'], args['start_max'] ],
+            range: {
+                'min': [ args['min'] ],
+                'max': [ args['max'] ]
+            }
+        });
+        
+        s_div = $('.' + check + '');
+
+        s_div.css(
+        {
+            'display' : 'block',
+            'width' : '300px',
+            'top' : $(item).offset().top + 40 + 'px',
+            'left': $(item).offset().left + (-110) + 'px'
+        });
+        function leftValue ( handle ) {
+            return handle.parentElement.style.left;
+        }
+
+        var lowerValue = document.getElementById(''+check+'-lover-value'),
+            upperValue = document.getElementById(''+check+'-upper-value'),
+            handles = slider_div.find('.noUi-handle');
+
+        slider_div[0].noUiSlider.on('update', function (values, handle ) {
+            if ( !handle ) {
+                lowerValue.innerHTML = d3.round(values[handle], 2);
+            } else {
+                upperValue.innerHTML = d3.round(values[handle], 2);
+            }
+        });
+    }
+
+}
+
+function buildTable(data) {
+
+    $('body').mousedown(function(event) {
+        if($(event.target).closest('div.nouislider').length == 0) {
+            $('.nouislider').hide();
+        }
+    });
+
+    var table_range = {
+        4:{
+            column: 'expt',
+            start_min: '',
+            start_max: '',
+            min: '',
+            max: ''
+        },
+        5:{
+            column: 'bonus',
+            start_min: '',
+            start_max: '',
+            min: '',
+            max: ''
+        },
+        6:{
+            column: 'penalty',
+            start_min: '',
+            start_max: '',
+            min: '',
+            max: ''
+        },
+        7:{
+            column: 'possBonus',
+            start_min: '',
+            start_max: '',
+            min: '',
+            max: ''
+        },
+        8:{
+            column: 'probPenalty',
+            start_min: '',
+            start_max: '',
+            min: '',
+            max: ''
+        },
+        9:{
+            column: 'total',
+            start_min: '',
+            start_max: '',
+            min: '',
+            max: ''
+        },
+        10:{
+            column: 'currnent',
+            start_min: '',
+            start_max: '',
+            min: '',
+            max: ''
+        }
+}
+
     var field_keys = {
         no: "No<span class='one_point'></span>",
         first_name: "First Name",
@@ -520,50 +624,108 @@ function buildTable(data)
         details: "Details"
     };
 
-    var i = 0;
-    var loadData = [];
-    $.each(data, function(key, row){
-        var data_row = {};
-        var value = null;
-        $.each(field_keys, function(k, v){
-            switch(k){
-                case 'no':
-                  value = ++i;  
-                break;
-                case 'first_name':
-                    var name = row['name'].split(' ');
-                    value = '<a href="' + row.profile_url + '">' + name[0].replace(',','') + '</a>';
-                    break;
-                case 'last_name':
-                    var name = row['name'].split(' ');
-                    nm =  name.length > 1 ? name[1] : '';
-                    value = '<a href="' + row.profile_url + '">' + nm + '</a>';
+    function createData(range, field) {
 
-                    break
-                case 'grade':
-                    value = '<div>' + row[k] + '<span style="display:none">' + key + '</span></div>';
+        if(typeof(field) == "undifined"){
+            range = null;
+            field = null;
+        }
+
+        var i = 0;
+        var loadData = [];
+        var columns_data = {
+          expt: [],
+          bonus: [],
+          penalty: [],
+          possBonus: [],
+          probPenalty: [],
+          total: [],
+          currnent: []
+        };
+
+        $.each(data, function(key, row) {
+            columns_data.expt.push(row.score);
+            columns_data.bonus.push(row.bonuses);
+            columns_data.penalty.push(row.penalties);
+            columns_data.possBonus.push(row.possible_bonus);
+            columns_data.probPenalty.push(row.probable_penalty);
+            columns_data.total.push(row.totalBP);
+            columns_data.currnent.push(row.total);
+        ////////////////////////////////////////////
+            var data_row = {};
+            var value = null;
+            $.each(field_keys, function(k, v) {
+                switch(k){
+                    case 'no':
+                      value = ++i;  
                     break;
-                case 'sections':
-                    value = row[k];
-                    break;
-                case 'details':
-                    value = $("<input/>")
-                                .attr("type","button")
-                                .attr("value",k)
-                                .attr("class","btn btn-info btn-lg btn-sm")
-                                .attr("data-toggle","modal")
-                                .attr("data-target","#modalStudentGradebook")
-                                .on('click', function(){
-                                    showStudentDetails(row);
-                                });
-                    break;
-                default:
-                    value = d3.round(row[k], 2);
-            }
-            data_row[v] = value;
+                    case 'first_name':
+                        var name = row['name'].split(' ');
+                        value = '<a href="' + row.profile_url + '">' + name[0].replace(',','') + '</a>';
+                        break;
+                    case 'last_name':
+                        var name = row['name'].split(' ');
+                        nm =  name.length > 1 ? name[1] : '';
+                        value = '<a href="' + row.profile_url + '">' + nm + '</a>';
+
+                        break
+                    case 'grade':
+                        value = '<div>' + row[k] + '<span style="display:none">' + key + '</span></div>';
+                        break;
+                    case 'sections':
+                        value = row[k];
+                        break;
+                    case 'details':
+                        value = $("<input/>")
+                                    .attr("type","button")
+                                    .attr("value",k)
+                                    .attr("class","btn btn-info btn-lg btn-sm")
+                                    .attr("data-toggle","modal")
+                                    .attr("data-target","#modalStudentGradebook")
+                                    .on('click', function(){
+                                        showStudentDetails(row);
+                                    });
+                        break;
+                    default:
+                        value = d3.round(row[k], 2);
+                }
+                data_row[v] = value;
+            });
+            loadData.push(data_row);
         });
-        loadData.push(data_row);
-    });
+
+        $.each(table_range, function(a,b) {
+            var min_val = Math.min.apply(null, columns_data[b.column]);
+            var max_val = Math.max.apply(null, columns_data[b.column]);
+            table_range[a]['start_min'] = min_val;
+            table_range[a]['start_max'] = max_val;
+            table_range[a]['min'] = min_val;
+            table_range[a]['max'] = max_val;
+        });
+
+        $('.jsgrid-filter-row').find('.range-field')
+        $(document).on('click','#gridContainer .jsgrid-filter-row .range-field', function() {
+            var fnd = $(this).index();
+            var b = $('.jsgrid-table').find('tr').eq(0).children('th').eq(fnd);
+            var itex = b.text().slice(0, 3);
+            col_num = $(this).closest('td').index();
+            var check = $('body').find('#'+itex+'');
+            $('.nouislider').hide();
+            if (!check[0]) {
+                filterrange(table_range[col_num], this, itex);
+            } else {
+                if(check.is(':visible')){
+                    check.closest('.nouislider').hide();
+                }else{
+                    check.closest('.nouislider').show();
+                }
+            }
+
+        });
+
+        return loadData;
+    }
+    var loadData = createData();
 
     var data_controller = {
        loadData: function(filter) {
@@ -599,12 +761,18 @@ function buildTable(data)
         if(client1[field_keys.total] > client2[field_keys.total]) return 1;
     };
 
-    jsGrid.sortStrategies.total = function(index1, index2){
-        if(index1 < index2) return -1;
-        if(index1 === index2) return 0;
-        if(index1 > index2) return 1;
-
+    var MyRangeField = function(config) {
+        jsGrid.Field.call(this, config);
     };
+    MyRangeField.prototype = new jsGrid.Field({
+        css: "range-field"
+    });
+
+    jsGrid.fields.range = MyRangeField;
+
+    /*jsGrid.sortStrategies.total = function(index1, index2){
+        console.log(this.value());
+    };*/
 
     $("#gridContainer").jsGrid({
         height: "70%",
@@ -616,77 +784,169 @@ function buildTable(data)
         pageButtonCount: 3,
         controller: data_controller,
         fields: [
-            { name: field_keys.no, type: "number", width: 70 },
-            { name: field_keys.first_name, type: "text", width: 140 },
-            { name: field_keys.last_name, type: "text", width: 140 },
-            { name: field_keys.sections, type: "text", width: 150 },
-            { name: field_keys.score, type: "number", width: 60 },
-            { name: field_keys.bonuses, type: "number", width: 60 },
-            { name: field_keys.penalties, type: "number",width:70 },
-            { name: field_keys.possible_bonus, type: "number",width:50 },
-            { name: field_keys.probable_penalty, type: "number",width:60 },
-            { name: field_keys.totalBP, type: "number", width:50 },
-            { name: field_keys.total, type: "number", width:60},
+            { name: field_keys.no, type: "hidden", width: 70, sorting: false},
+            { name: field_keys.first_name, type: "text", width: 100 },
+            { name: field_keys.last_name, type: "text", width: 100 },
+            { name: field_keys.sections, type: "text", width: 140 },
+            { name: field_keys.score, type: "range", width: 60 },
+            { name: field_keys.bonuses, type: "range", width: 60 },
+            { name: field_keys.penalties, type: "range",width:70 },
+            { name: field_keys.possible_bonus, type: "range",width:50 },
+            { name: field_keys.probable_penalty, type: "range",width:60 },
+            { name: field_keys.totalBP, type: "range", width:50 },
+            { name: field_keys.total, type: "range", width:60 },
             { name: field_keys.grade, type: "text", width:180, sorter: 'client' },
             { name: field_keys.details, type: "hidden", width:70, sorting: false },
-            { type: 'control', editButton: false, deleteButton: false, clearFilterButton: false, modeSwitchButton: false, width:20}
+            { type: 'control', editButton: false, deleteButton: false, clearFilterButton: false, modeSwitchButton: false , width:0 }
         ]
-    });        
+    });
 
-        
-    /*d3.select("#summaryTable").style("display","block");
-    var tr = d3.select("#tableBody")
-        .selectAll('tr').remove();//Because of the complexity of updating a table, we'll remove the nodes and add them again
-    tr = d3.select("#tableBody")
-        .selectAll('tr').data(data);
+    $('.jsgrid-table tr').eq(1).find('td input[type=text]').each(function(a,b) {
+        $(b).closest('td').prepend('<i class="filter fa fa-filter"></i>');
+    }).focusin(function(){
+        $(this).prev().hide();
+    }).focusout(function() {
+        $(this).prev().show();
+    });
 
-    tr.enter()
-        .append('tr')
-        .append('td')
-        .attr('class', 'title')
-        .html(function(m, i) { return i+1; });
+    var columns = '';
+    var check = getStorage('ListSetup');
+    if (check !== null) {
+        columns = jQuery.parseJSON(check);
+    } else {
+        columns = {
+            0:{
+                column:'no',
+                column_title:'',
+                show: true,
+            },
+            1:{
+                column:'first_name',
+                column_title:'First Name',
+                show: true,
+            },
+            2:{
+                column:'last_name',
+                column_title:'Last Name',
+                show: true,
+            },
+            3:{
+                column:'sections',
+                column_title:'Sections',
+                show: true,
+            },
+            4:{
+                column:'score',
+                column_title:'Exp<span class="one_point"></span> Pts<span class="one_point"></span>',
+                show: true,
+            },
+            5:{
+                column:'bonuses',
+                column_title:'Bonus',
+                show: true,
+            },
+            6:{
+                column:'penalties',
+                column_title:'Penalties',
+                show: true,
+            },
+            7:{
+                column:'probable_penalty',
+                column_title:'Prob<span class="one_point"></span> Penalty',
+                show: true,
+            },
+            8:{
+                column:'possible_bonus',
+                column_title:'Poss<span class="one_point"></span> Bonus',
+                show: true,
+            },
+            9:{
+                column:'totalBP',
+                column_title:'Total B/P',
+                show: true,
+            },
+            10:{
+                column:'total',
+                column_title:'Current Score',
+                show: true,
+            },
+            11:{
+                column:'grade',
+                column_title:'Grade',
+                show: true,
+            }
+        };
+        setStorage('ListSetup',JSON.stringify(columns));
+    }
 
-    tr.append('td')
-        .attr('class', 'tdName')
-        .append("a")
-        .attr("href", function(m){ return m.profile_url;})
-        .attr("target", "_blank")
-        .html(function(m) { return m.name; });
+    var rangeIcon = '<i class="fa fa-arrows-h range" aria-hidden="true"></i>';
+    $('.jsgrid-filter-row').find('.range-field').html(rangeIcon);
+    var popup = $('#content-confirmation .modal-body');
+    var local = new Object;
+    var str = '';
+    var checked_column = '';
+    $.each(columns, function(a, b) {
+        if (b.column != 'no') {
+            if(b.show){
+                checked_column = 'checked="checked"';
+            } else {
+                checked_column = '';
+            }
 
-    tr.append('td')
-        .attr('class', 'title')
-        .html(function(m) { return d3.round(m.score, 2); });
+            str +=  '<li><div class="checkbox custom-checkbox"><input name="checkbox" value="' + a + '" type="checkbox"' + checked_column + ' id="' + b.column + '"/><label  class="" for="' + b.column + '">' + b.column_title + '</label></div></li>';
 
-    tr.append('td')
-        .attr('class', 'title')
-        .html(function(m) { return d3.round(m.bonuses,2); });
+        }
+    });
 
-    tr.append('td')
-        .attr('class', 'title')
-        .html(function(m) { return d3.round(m.penalties,2); });
+    popup.append('<div class="control-simplelist with-checkboxes is-sortable" ><ul data-disposable>' + str + '</ul></div>');
 
-    tr.append('td')
-        .attr('class', 'title')
-        .html(function(m) { return d3.round(m.totalBP,2); });
+    hide_or_show(columns);
 
-    tr.append('td')
-        .attr('class', 'title')
-        .html(function(m) { return d3.round(m.total,2); });
+    $('#content-confirmation .modal-footer button').eq(0).click(function() {
 
-    tr.append('td')
-        .attr('class', 'title')
-        .html(function(m) { return m.grade; });
 
-    tr.append('td')
-        .append("input")
-        .attr("type","button")
-        .attr("value","Details")
-        .attr("class","btn btn-info btn-lg btn-sm")
-        .attr("data-toggle","modal")
-        .attr("data-target","#modalStudentGradebook")
-        .on('click', function(d){
-            showStudentDetails(d);
-        });*/
+        $('#content-confirmation input[type=checkbox]').each(function(a,b) {
+
+            var key = $(b).val();
+            if ($(b).is(':checked')) {
+                columns[key]['show'] = true;
+            } else {
+                columns[key]['show'] = false;
+            }
+        });
+        hide_or_show(columns);
+        setStorage('ListSetup',JSON.stringify(columns));
+    });
+
+}
+
+function hide_or_show(args) {
+    var check_uncheck = [];
+    $.each(args, function(a,b) {
+        if (!b.show) {
+            check_uncheck[a] = false;
+        } else {
+            check_uncheck[a] = true;
+        }
+
+    });
+    $('.jsgrid-table tr').each(function(a, b){
+        $.each(check_uncheck, function(c,d) {
+            if (d) {
+                $('.jsgrid-table').find('tr').eq(a).children('th, td').eq(c).show();
+            } else {
+                $('.jsgrid-table').find('tr').eq(a).children('th, td').eq(c).hide();
+            }
+        });
+    });
+
+}
+function getStorage(key) {
+    return localStorage.getItem(key);
+}
+
+function setStorage(key,args) {
+    localStorage.setItem(key,args);
 }
 
 function callStudentsMilestoneInfo(studentsArr)

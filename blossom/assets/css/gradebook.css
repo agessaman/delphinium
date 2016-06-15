@@ -249,18 +249,51 @@ a:hover
 }
 
 #gridContainer .jsgrid-table td{
-    padding:5px 0px;
     font-size:14px !important;
 }
 #gridContainer .jsgrid-align-right{
     text-align:center;
 }
-#gridContainer table th, #gridContainer table td{
-    border:1px solid silver;
-}
-#gridContainer .jsgrid-filter-row td{
-   padding:0 !important;
-}
 .one_point:after{
     content:'.';
 }
+.nouislider{
+    z-index:100;
+    position : absolute;
+    display:none;
+    padding:20px;
+    background:#333333;
+}
+.left-val{
+    float:left;
+}
+.right-val{
+    float:right;
+}
+.left-val, .right-val{
+    margin-top:5px;
+    color:white;
+}
+.range{
+    font-size: 28px;
+    color: #0084a5;
+    text-align: center;
+    display: block;  
+}
+
+.filter {
+    position: absolute;
+    font-size: 18px !important;
+    color: rgba(67, 68, 68, 0.61);
+    margin: 5px 0 0 7px;
+}
+.rangearr {
+    background: #333333;
+    width: 15px;
+    height: 15px;
+    position: absolute;
+    top: -8px;
+    transform: rotate(45deg);
+    left: 47%;
+}
+/*filter fa fa-filter*/
