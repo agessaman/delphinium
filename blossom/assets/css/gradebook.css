@@ -238,7 +238,7 @@ a:hover
     text-align:left !important;
 }
 #gridContainer{
-    width:90% !important;
+    width:100% !important;
 }
 #gridContainer input{
     width:100%;
@@ -280,11 +280,10 @@ a:hover
     text-align: center;
     display: block;  
 }
-
 .filter {
     position: absolute;
     font-size: 18px !important;
-    color: rgba(67, 68, 68, 0.61);
+    color: #ccc;
     margin: 5px 0 0 7px;
 }
 .rangearr {
@@ -296,4 +295,6 @@ a:hover
     transform: rotate(45deg);
     left: 47%;
 }
-/*filter fa fa-filter*/
+.jsgrid-table td {
+    position: relative;
+}
