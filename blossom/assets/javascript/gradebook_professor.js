@@ -761,6 +761,10 @@ function buildTable(data) {
         if(client1[field_keys.total] > client2[field_keys.total]) return 1;
     };
 
+    jsGrid.sortStrategies.byText = function(value1, value2){
+        return $(value1).text().localeCompare($(value2).text());
+    };
+
     var MyRangeField = function(config) {
         jsGrid.Field.call(this, config);
     };
@@ -785,8 +789,8 @@ function buildTable(data) {
         controller: data_controller,
         fields: [
             { name: field_keys.no, type: "hidden", width: 70, sorting: false},
-            { name: field_keys.first_name, type: "text", width: 100 },
-            { name: field_keys.last_name, type: "text", width: 100 },
+            { name: field_keys.first_name, type: "text", width: 100, sorter: 'byText' },
+            { name: field_keys.last_name, type: "text", width: 100, sorter: 'byText' },
             { name: field_keys.sections, type: "text", width: 140 },
             { name: field_keys.score, type: "range", width: 60 },
             { name: field_keys.bonuses, type: "range", width: 60 },
