@@ -831,7 +831,7 @@ function buildTable(data) {
             { name: field_keys.totalBP, type: "range", width:50 },
             { name: field_keys.total, type: "range", width:60 },
             { name: field_keys.grade, type: "text", width:180, sorter: 'client' },
-            { name: field_keys.details, type: "hidden", width:70, sorting: false },
+            { name: field_keys.details, type: "hidden", width:81, sorting: false },
             { type: 'control', editButton: false, deleteButton: false, clearFilterButton: false, modeSwitchButton: false , width:0 }
         ],
         onDataLoaded: function(args) {
