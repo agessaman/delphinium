@@ -245,11 +245,11 @@ a:hover
 }
 #gridContainer .jsgrid-header-row th{
     text-align:center !important;
-    font-size:14px !important;
+    font-size:12px !important;
 }
 
 #gridContainer .jsgrid-table td{
-    font-size:14px !important;
+    font-size:13px !important;
 }
 #gridContainer .jsgrid-align-right{
     text-align:center;
