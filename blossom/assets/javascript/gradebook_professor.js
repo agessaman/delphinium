@@ -819,23 +819,23 @@ function buildTable(data) {
         pageButtonCount: 3,
         controller: data_controller,
         fields: [
-            { name: field_keys.no, type: "hidden", width: 70, sorting: false},
-            { name: field_keys.first_name, type: "text", width: 100, sorter: 'byText' },
-            { name: field_keys.last_name, type: "text", width: 100, sorter: 'byText' },
-            { name: field_keys.sections, type: "text", width: 140 },
-            { name: field_keys.score, type: "range", width: 60 },
-            { name: field_keys.bonuses, type: "range", width: 60 },
-            { name: field_keys.penalties, type: "range",width:70 },
-            { name: field_keys.possible_bonus, type: "range",width:50 },
-            { name: field_keys.probable_penalty, type: "range",width:60 },
-            { name: field_keys.totalBP, type: "range", width:50 },
-            { name: field_keys.total, type: "range", width:60 },
-            { name: field_keys.grade, type: "text", width:180, sorter: 'client' },
-            { name: field_keys.details, type: "hidden", width:81, sorting: false },
+            { name: field_keys.no, type: "hidden", width: 30, sorting: false},
+            { name: field_keys.first_name, type: "text", width: 50, sorter: 'byText' },
+            { name: field_keys.last_name, type: "text", width: 50, sorter: 'byText' },
+            { name: field_keys.sections, type: "text", width: 70 },
+            { name: field_keys.score, type: "range", width: 30 },
+            { name: field_keys.bonuses, type: "range", width: 30 },
+            { name: field_keys.penalties, type: "range",width:35 },
+            { name: field_keys.possible_bonus, type: "range",width:25 },
+            { name: field_keys.probable_penalty, type: "range",width:30 },
+            { name: field_keys.totalBP, type: "range", width:25 },
+            { name: field_keys.total, type: "range", width:30 },
+            { name: field_keys.grade, type: "text", width:90, sorter: 'client' },
+            { name: field_keys.details, type: "hidden", width:80, sorting: false },
             { type: 'control', editButton: false, deleteButton: false, clearFilterButton: false, modeSwitchButton: false , width:0 }
         ],
         onDataLoaded: function(args) {
-            var index = $('[value="details"]').eq(0).closest('td').index();
+            var index = $('[value="details"]').eq(0).closest('td').index();            
             $('.jsgrid-search-button').hide();
             $('.jsgrid-grid-header tr').eq(1).find('td').eq(index).html('<a data-toggle="modal" style="outline:none;" href="#content-confirmation"><i class="fa fa-cog table_set"></i></a>').css('text-align','center');
             if(getStorage('ListSetup')){
@@ -986,7 +986,6 @@ function hide_or_show(args) {
             }
         });
     });
-
 }
 function getStorage(key) {
     return localStorage.getItem(key);
