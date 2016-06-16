@@ -2618,7 +2618,7 @@ ul.autocomplete.dropdown-menu.inspector-autocomplete li a{padding:5px 12px;white
 }
 .modal-content{-webkit-box-shadow:none;box-shadow:none;-webkit-border-radius:2px;-moz-border-radius:2px;border-radius:2px;border:none;background:#f9f9f9}
 .modal-content .close{color:#fff}
-.modal-header{background:#d35400;color:#ecf0f1;border:none}
+.modal-header{background:#2995e3;color:#ecf0f1;border:none}
 .modal-header h4{font-weight:600;font-size:16px}
 .modal-footer{background:transparent;border:none;margin-top:0;padding:0 20px 20px 20px}
 .modal-body{padding-bottom:0}

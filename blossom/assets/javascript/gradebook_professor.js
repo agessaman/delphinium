@@ -132,7 +132,14 @@ g.append("svg:rect")
         removeTooltipProfessorGradebook();
     });
 
-
+$(window).resize(function(){
+    $.each($('.nouislider'), function(a){
+        var td = $(this).closest('td');
+        $(this).css({
+            'left': $(td).offset().left-(150-(($(td).outerWidth())/2))+'px'
+        });
+    });
+});
 function addLine(data, strokeColor, id)
 {
     // Define the line
@@ -502,11 +509,11 @@ function checkboxFunctionality()
     });
 }
 
-function filterrange(args, item, check) {
+function filterrange(args, item, check,index_td) {
     
     if (check) {
         
-        $('.cont').append('<div class="nouislider ' + check + '"><div class="rangearr"></div><div id="' + check + '"></div><span class="left-val" id="' + check + '-lover-value"></span><span id="lower-offset"></span><span class="right-val" id="' + check + '-upper-value"></span><span id="upper-offset"></span></div>');
+        $('#gridContainer .jsgrid-filter-row td:eq('+index_td+')').append('<div class="nouislider ' + check + '"><div class="rangearr"></div><div id="' + check + '"></div><span class="left-val" id="' + check + '-lover-value"></span><span id="lower-offset"></span><span class="right-val" id="' + check + '-upper-value"></span><span id="upper-offset"></span></div>');
 
         var slider_div = $('#' + check + '');
         noUiSlider.create(slider_div[0], {
@@ -519,15 +526,15 @@ function filterrange(args, item, check) {
                 'max': [ args['max'] ]
             }
         });
-        
+        slider_div[0].noUiSlider.on('end', function(){
+            $('.jsgrid-search-button').trigger('click');
+        });
         s_div = $('.' + check + '');
 
         s_div.css(
         {
             'display' : 'block',
-            'width' : '300px',
-            'top' : $(item).offset().top + 40 + 'px',
-            'left': $(item).offset().left + (-110) + 'px'
+            'left': $(item).offset().left-(150-(($(item).outerWidth())/2))+'px'
         });
         function leftValue ( handle ) {
             return handle.parentElement.style.left;
@@ -544,6 +551,10 @@ function filterrange(args, item, check) {
                 upperValue.innerHTML = d3.round(values[handle], 2);
             }
         });
+
+        if(args['min'] == args['max']){
+            slider_div[0].setAttribute('disabled', true);
+        }
     }
 
 }
@@ -551,7 +562,7 @@ function filterrange(args, item, check) {
 function buildTable(data) {
 
     $('body').mousedown(function(event) {
-        if($(event.target).closest('div.nouislider').length == 0) {
+        if($(event.target).closest('div.nouislider').length == 0 && $(event.target).closest('.range-field').length == 0) {
             $('.nouislider').hide();
         }
     });
@@ -710,10 +721,14 @@ function buildTable(data) {
             var itex = b.text().slice(0, 3);
             col_num = $(this).closest('td').index();
             var check = $('body').find('#'+itex+'');
+            var index_td = $(this).index();
             $('.nouislider').hide();
             if (!check[0]) {
-                filterrange(table_range[col_num], this, itex);
+                filterrange(table_range[col_num], this, itex, index_td);
             } else {
+                check.closest('.nouislider').css({
+                    'left': $(this).offset().left-(150-(($(this).outerWidth())/2))+'px'
+                });
                 if(check.is(':visible')){
                     check.closest('.nouislider').hide();
                 }else{
@@ -726,22 +741,31 @@ function buildTable(data) {
         return loadData;
     }
     var loadData = createData();
-
     var data_controller = {
        loadData: function(filter) {
             return $.grep(this.clients, function(client) {
                 return (!filter[field_keys.no] || client[field_keys.no] === filter[field_keys.no])
-                    && (!filter[field_keys.first_name] || client[field_keys.first_name].indexOf(filter[field_keys.first_name]) > -1)
-                    && (!filter[field_keys.last_name] || client[field_keys.last_name].indexOf(filter[field_keys.last_name]) > -1)
-                    && (!filter[field_keys.sections] || client[field_keys.sections].indexOf(filter[field_keys.sections]) > -1)
-                    && (!filter[field_keys.score] || client[field_keys.score] === filter[field_keys.score])
-                    && (!filter[field_keys.bonuses] || client[field_keys.bonuses] === filter[field_keys.bonuses])
-                    && (!filter[field_keys.penalties] || client[field_keys.penalties] === filter[field_keys.penalties])
-                    && (!filter[field_keys.probable_penalty] || client[field_keys.probable_penalty] === filter[field_keys.probable_penalty])
-                    && (!filter[field_keys.possible_bonus] || client[field_keys.possible_bonus] === filter[field_keys.possible_bonus])
-                    && (!filter[field_keys.totalBP] || client[field_keys.totalBP] === filter[field_keys.totalBP])
-                    && (!filter[field_keys.total] || client[field_keys.total] === filter[field_keys.total])
-                    && (!filter[field_keys.grade] || client[field_keys.grade].indexOf(filter[field_keys.grade]) > -1)
+                    && (!filter[field_keys.first_name].toLowerCase() || $(client[field_keys.first_name]).text().toLowerCase().indexOf(filter[field_keys.first_name].toLowerCase()) > -1)
+
+                    && (!filter[field_keys.last_name].toLowerCase() || $(client[field_keys.last_name]).text().toLowerCase().indexOf(filter[field_keys.last_name].toLowerCase()) > -1)
+
+                    && (!filter[field_keys.sections].toLowerCase() || client[field_keys.sections].toLowerCase().indexOf(filter[field_keys.sections].toLowerCase()) > -1)
+
+                    && (!filter[field_keys.score] || (client[field_keys.score] >= JSON.parse(filter[field_keys.score])['min'] && client[field_keys.score] <= JSON.parse(filter[field_keys.score])['max']))
+
+                    && (!filter[field_keys.bonuses] || (client[field_keys.bonuses] >= JSON.parse(filter[field_keys.bonuses])['min'] && client[field_keys.bonuses] <= JSON.parse(filter[field_keys.bonuses])['max']))
+
+                    && (!filter[field_keys.penalties] || (client[field_keys.penalties] >= JSON.parse(filter[field_keys.penalties])['min'] && client[field_keys.penalties] <= JSON.parse(filter[field_keys.penalties])['max']))
+
+                    && (!filter[field_keys.probable_penalty] || (client[field_keys.probable_penalty] >= JSON.parse(filter[field_keys.probable_penalty])['min'] && client[field_keys.probable_penalty] <= JSON.parse(filter[field_keys.probable_penalty])['max']))
+
+                    && (!filter[field_keys.possible_bonus] || (client[field_keys.possible_bonus] >= JSON.parse(filter[field_keys.possible_bonus])['min'] && client[field_keys.possible_bonus] <= JSON.parse(filter[field_keys.possible_bonus])['max']))
+
+                    && (!filter[field_keys.totalBP] || (client[field_keys.totalBP] >= JSON.parse(filter[field_keys.totalBP])['min'] && client[field_keys.totalBP] <= JSON.parse(filter[field_keys.totalBP])['max']))
+
+                    && (!filter[field_keys.total] || (client[field_keys.total] >= JSON.parse(filter[field_keys.total])['min'] && client[field_keys.total] <= JSON.parse(filter[field_keys.total])['max']))
+
+                    && (!filter[field_keys.grade].toLowerCase() || client[field_keys.grade].toLowerCase().indexOf(filter[field_keys.grade].toLowerCase()) > -1)
 
             });
         }
@@ -769,14 +793,21 @@ function buildTable(data) {
         jsGrid.Field.call(this, config);
     };
     MyRangeField.prototype = new jsGrid.Field({
-        css: "range-field"
+        css: "range-field",
+        autosearch: true,
+        filterValue: function(){
+            var id = this.name.slice(0, 3);
+            var  min = -1000;
+            var  max = 2000;
+            if($('#'+id).length > 0){
+                min = $('#'+id).closest('.'+id).find('.left-val').text();
+                max = $('#'+id).closest('.'+id).find('.right-val').text();
+            }
+            return JSON.stringify({min:min,max:max});
+        }
     });
-
     jsGrid.fields.range = MyRangeField;
 
-    /*jsGrid.sortStrategies.total = function(index1, index2){
-        console.log(this.value());
-    };*/
 
     $("#gridContainer").jsGrid({
         height: "70%",
@@ -802,15 +833,26 @@ function buildTable(data) {
             { name: field_keys.grade, type: "text", width:180, sorter: 'client' },
             { name: field_keys.details, type: "hidden", width:70, sorting: false },
             { type: 'control', editButton: false, deleteButton: false, clearFilterButton: false, modeSwitchButton: false , width:0 }
-        ]
+        ],
+        onDataLoaded: function(args) {
+            var index = $('[value="details"]').eq(0).closest('td').index();
+            $('.jsgrid-grid-header tr').eq(1).find('td').eq(index).append('<a data-toggle="modal" style="outline:none;" href="#content-confirmation"><i class="fa fa-cog table_set"></i></a>').css('text-align','center');
+            if(getStorage('ListSetup')){
+                hide_or_show(jQuery.parseJSON(getStorage('ListSetup')));
+            }
+        }
     });
 
     $('.jsgrid-table tr').eq(1).find('td input[type=text]').each(function(a,b) {
-        $(b).closest('td').prepend('<i class="filter fa fa-filter"></i>');
+        $(b).closest('td').append('<i class="filter fa fa-filter"></i>');
     }).focusin(function(){
-        $(this).prev().hide();
+        $(this).next().hide();
     }).focusout(function() {
-        $(this).prev().show();
+        if($(this).val()){
+            $(this).next().hide();
+        }else{
+            $(this).next().show();
+        }
     });
 
     var columns = '';
