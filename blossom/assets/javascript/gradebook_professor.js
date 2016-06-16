@@ -836,7 +836,8 @@ function buildTable(data) {
         ],
         onDataLoaded: function(args) {
             var index = $('[value="details"]').eq(0).closest('td').index();
-            $('.jsgrid-grid-header tr').eq(1).find('td').eq(index).append('<a data-toggle="modal" style="outline:none;" href="#content-confirmation"><i class="fa fa-cog table_set"></i></a>').css('text-align','center');
+            $('.jsgrid-search-button').hide();
+            $('.jsgrid-grid-header tr').eq(1).find('td').eq(index).html('<a data-toggle="modal" style="outline:none;" href="#content-confirmation"><i class="fa fa-cog table_set"></i></a>').css('text-align','center');
             if(getStorage('ListSetup')){
                 hide_or_show(jQuery.parseJSON(getStorage('ListSetup')));
             }
