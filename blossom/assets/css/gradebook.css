@@ -244,8 +244,10 @@ a:hover
     width:100%;
 }
 #gridContainer .jsgrid-header-row th{
+    position:relative;
     text-align:center !important;
     font-size:12px !important;
+    padding-left:12px !important;
 }
 
 #gridContainer .jsgrid-table td{
@@ -261,7 +263,7 @@ a:hover
     z-index:100;
     position : absolute;
     display:none;
-    padding:20px;
+    padding: 18px 27px 10px 27px;
     background:#333333;
     width : 300px;
     margin-top: 7px;
@@ -273,14 +275,17 @@ a:hover
     float:right;
 }
 .left-val, .right-val{
-    margin-top:5px;
+    margin-top:10px;
     color:white;
 }
 .range{
     font-size: 28px;
-    color: #0084a5;
+    color: #808080;
     text-align: center;
     display: block;  
+}
+.text_blue {
+    color: #2995e3;
 }
 .filter {
     position: relative;
@@ -293,7 +298,7 @@ a:hover
     width: 15px;
     height: 15px;
     position: absolute;
-    top: -8px;
+    top: -7px;
     transform: rotate(45deg);
     left: 47%;
 }
@@ -309,4 +314,53 @@ a:hover
 }
 .jsgrid-table input[type="button"] {
     text-align: center;
+}
+.jsgrid-alt-row td {
+    background: #f5f5f5 !important;
+}
+.jsgrid-selected-row td {
+    background: #c4e2ff !important;
+}
+.col_no {
+    font-size: 15px !important;
+}
+.details_icon {
+    font-size: 28px;
+}
+.details {
+    text-align: center;
+}
+.first_name, .last_name, .grade, .sections {
+    word-wrap: break-word;
+}
+.jsgrid-header-sortable:before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 6px;
+    left:1px;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 5px 5px 5px;
+    border-color: transparent transparent #ccc transparent;
+}
+.jsgrid-header-sortable:after {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 16px;
+    left:1px;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 5px 5px 0 5px;
+    border-color: #ccc transparent transparent transparent;
+}
+.jsgrid-header-sort-desc:before{
+    border-width: 0 5px 5px 5px !important;
+    border-color: transparent transparent #ccc transparent !important;
+}
+.jsgrid-header-sort-desc:after{
+    border-color: #009a67 transparent transparent transparent !important;
 }
