@@ -794,6 +794,13 @@ function buildTable(data) {
         if(client1[field_keys.total] > client2[field_keys.total]) return 1;
     };
 
+    jsGrid.sortStrategies.negative = function(index1, index2){
+        if(parseInt(index1) > parseInt(index2)) return 1;
+        if(parseInt(index1) == parseInt(index2)) return 0;
+        if(parseInt(index1) < parseInt(index2)) return -1;
+
+    };
+
     jsGrid.sortStrategies.byText = function(value1, value2){
         return $(value1).text().localeCompare($(value2).text());
     };
@@ -834,10 +841,10 @@ function buildTable(data) {
             { name: field_keys.sections, type: "text", width: 70, css: 'sections' },
             { name: field_keys.score, type: "range", width: 40 },
             { name: field_keys.bonuses, type: "range", width: 40 },
-            { name: field_keys.penalties, type: "range",width:45 },
+            { name: field_keys.penalties, type: "range",width:45, sorter: 'negative' },
             { name: field_keys.possible_bonus, type: "range",width:35 },
-            { name: field_keys.probable_penalty, type: "range",width:40 },
-            { name: field_keys.totalBP, type: "range", width:35 },
+            { name: field_keys.probable_penalty, type: "range",width:40, sorter: 'negative'},
+            { name: field_keys.totalBP, type: "range", width:35, sorter: 'negative'},
             { name: field_keys.total, type: "range", width:40 },
             { name: field_keys.grade, type: "text", width:70, sorter: 'client', css: 'grade' },
             { name: field_keys.details, type: "hidden", width:30, sorting: false, css: 'details' },
