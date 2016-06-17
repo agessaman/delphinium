@@ -62,6 +62,9 @@ FireworkDisplay = {
             }
             this.displayFirework(this.fireworks[i]);
         }
+        if (firecount == 0) {
+            $('#close-button').fadeIn('slow');
+        }
     },
     addFireworks : function() {
         if (this.blockPointer>=this.allBlocks.length) {

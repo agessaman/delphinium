@@ -19,16 +19,16 @@
  * You may not distribute any version of this software, modified or otherwise
  */
 
-var eggs = [{ name:'harlem_shake', icon:'bolt', comand:'Press "h" and "a" at the same time, make sure your sound is on', value:config.harlem_shake},
-            { name:'ripples', icon:'bullseye', comand: 'Press "r" and "i" at the same time and move the mouse', value:config.ripples},
-            { name:'asteroids', icon:'fa fa-space-shuttle', comand: 'Press "a" and "s" at the same time, space to shoot, arrow keys to move', value:config.asteroids},
-            { name:'katamari', icon:'fa fa-soccer-ball-o', comand:'Press "k" and "a" at the same time, follow instructions', value:config.katamari}, 
-            { name:'bombs', icon:'fa fa-bomb', comand:'Press "b" and "o" at the same time, click mouse in text to drop them', value:config.bombs},
-            { name:'ponies', icon:'fa fa-heart-o', comand:'Press "p" and "o" at the same time, space to re-spawn, arrow keys to move', value:config.ponies},
-            { name:'my_little_pony', icon:'fa fa-heartbeat', comand:'Press "m" and "y" at the same time, watch and enjoy', value:config.my_little_pony},
-            { name:'snow', icon:'cloud', comand:'Press "s" and "n" at the same time, watch and enjoy, follows mouse, break lights', value:config.snow},
-            { name:'raptor', icon:'fa fa-binoculars', comand:'Press "r" and "a" at the same time, make sure your sound is on', value:config.raptor},
-            { name:'fireworks', icon:'fa fa-rocket', comand:'Press "f" and "i" at the same time, make sure your sound is on', value:config.fireworks}];
+var eggs = [{ name:'harlem_shake', icon:'bolt', comand:'Press "h" and "a" at the same time, make sure your sound is on', value:Number(config.harlem_shake)},
+            { name:'ripples', icon:'bullseye', comand: 'Press "r" and "i" at the same time and move the mouse', value:Number(config.ripples)},
+            { name:'asteroids', icon:'fa fa-space-shuttle', comand: 'Press "a" and "s" at the same time, space to shoot, arrow keys to move', value:Number(config.asteroids)},
+            { name:'katamari', icon:'fa fa-soccer-ball-o', comand:'Press "k" and "a" at the same time, follow instructions', value:Number(config.katamari)}, 
+            { name:'bombs', icon:'fa fa-bomb', comand:'Press "b" and "o" at the same time, click mouse in text to drop them', value:Number(config.bombs)},
+            { name:'ponies', icon:'fa fa-heart-o', comand:'Press "p" and "o" at the same time, space to re-spawn, arrow keys to move', value:Number(config.ponies)},
+            { name:'my_little_pony', icon:'fa fa-heartbeat', comand:'Press "m" and "y" at the same time, watch and enjoy', value:Number(config.my_little_pony)},
+            { name:'snow', icon:'cloud', comand:'Press "s" and "n" at the same time, watch and enjoy, follows mouse, break lights', value:Number(config.snow)},
+            { name:'raptor', icon:'fa fa-binoculars', comand:'Press "r" and "a" at the same time, make sure your sound is on', value:Number(config.raptor)},
+            { name:'fireworks', icon:'fa fa-rocket', comand:'Press "f" and "i" at the same time, make sure your sound is on', value:Number(config.fireworks)}];
 eggs.sort(function(a,b){
   return a.value - b.value;
 });
@@ -76,7 +76,7 @@ fireworks['loaded'] = false;
 
 $(document).keydown(function(e) {
 	//Harlem Shake
-  if(role = 'Instructor' || current_grade >= config.harlem_shake){
+  if(role == 'Instructor' || current_grade >= Number(config.harlem_shake)){
     if (e.keyCode in harlemShake) {
       harlemShake[e.keyCode] = true;
       if (harlemShake[keys.H] && harlemShake[keys.A]) {
@@ -113,7 +113,7 @@ $(document).keydown(function(e) {
   }
 
   //Page Ripple
-  if(role = 'Instructor' || current_grade >= config.ripples){
+  if(role == 'Instructor' || current_grade >= Number(config.ripples)){
     if (e.keyCode in ripple) {
       ripple[e.keyCode] = true;
       if (ripple[keys.R] && ripple[keys.I]) {
@@ -139,7 +139,7 @@ $(document).keydown(function(e) {
   }
 
   //Asteroids 
-  if(role = 'Instructor' || current_grade >= config.asteroids){
+  if(role == 'Instructor' || current_grade >= Number(config.asteroids)){
     if (e.keyCode in asteroid) {
       asteroid[e.keyCode] = true;
       if (asteroid[keys.A] && asteroid[keys.S]) {
@@ -154,7 +154,7 @@ $(document).keydown(function(e) {
   }
 
   //Katamari 
-  if(role = 'Instructor' || current_grade >= config.katamari){
+  if(role == 'Instructor' || current_grade >= Number(config.katamari)){
     if (e.keyCode in katamari) {
       katamari[e.keyCode] = true;
       if (katamari[keys.K] && katamari[keys.A]) {
@@ -169,7 +169,7 @@ $(document).keydown(function(e) {
   }
 
   //Bombs 
-  if(role = 'Instructor' || current_grade >= config.bombs){
+  if(role == 'Instructor' || current_grade >= Number(config.bombs)){
     if (e.keyCode in bomb) {
       bomb[e.keyCode] = true;
       if (bomb[keys.B] && bomb[keys.O]) {
@@ -185,7 +185,7 @@ $(document).keydown(function(e) {
   }
 
   //Ponies 
-  if(role = 'Instructor' || current_grade >= config.ponies){
+  if(role == 'Instructor' || current_grade >= Number(config.ponies)){
     if (e.keyCode in pony) {
       pony[e.keyCode] = true;
       if (pony[keys.P] && pony[keys.O]) {
@@ -200,7 +200,7 @@ $(document).keydown(function(e) {
   }
 
   //MyLittlePony
-  if(role = 'Instructor' || current_grade >= config.my_little_pony){
+  if(role == 'Instructor' || current_grade >= Number(config.my_little_pony)){
     if (e.keyCode in myLittlePony) {
       myLittlePony[e.keyCode] = true;
       if (myLittlePony[keys.M] && myLittlePony[keys.Y]) {
@@ -215,7 +215,7 @@ $(document).keydown(function(e) {
   }
 
   //Snow
-  if(role = 'Instructor' || current_grade >= config.snow){
+  if(role == 'Instructor' || current_grade >= Number(config.snow)){
     if (e.keyCode in snowPage) {
       snowPage[e.keyCode] = true;
       if (snowPage[keys.S] && snowPage[keys.N]) {
@@ -223,6 +223,7 @@ $(document).keydown(function(e) {
           smashInit()
         }else{
           snowPage["loaded"] = true;
+          $('body').prepend('<div id="lights"></div>');
           var soundManagerScript = document.createElement('script');
           soundManagerScript.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/soundmanager2-nodebug-jsmin.js");
           document.body.appendChild(soundManagerScript);
@@ -255,7 +256,7 @@ $(document).keydown(function(e) {
   }
 
   //Raptor
-  if(role = 'Instructor' || current_grade >= config.raptor) {
+  if(role == 'Instructor' || current_grade >= Number(config.raptor)){
     if (e.keyCode in raptor) {
       raptor[e.keyCode] = true;
       if (raptor[keys.R] && raptor[keys.A]) {
@@ -267,7 +268,7 @@ $(document).keydown(function(e) {
           document.body.appendChild(raptorScript);
           setTimeout(function() {
             $('body').raptorize({'enterOn': 'timer', 'delayTime': 0});
-          },100);  
+          },500);  
         }else{
           $('body').raptorize({'enterOn': 'timer', 'delayTime': 0});
         }
@@ -276,12 +277,14 @@ $(document).keydown(function(e) {
   }
 
   //Fireworks
-  if(role = 'Instructor' || current_grade >= config.fireworks){
+  if(role == 'Instructor' || current_grade >= Number(config.fireworks)){
     if (e.keyCode in fireworks) {
       fireworks[e.keyCode] = true;
       if (fireworks[keys.F] && fireworks[keys.I]) {
         if(fireworks["loaded"]){
-          //$('#fireworks-content').show();
+          $('#close-button').hide();
+          $('#fireworks-content').show();
+          FireworkDisplay.launchText();
         }else{
           fireworks["loaded"] = true;
           var fireworksScript = document.createElement('script');
@@ -292,10 +295,12 @@ $(document).keydown(function(e) {
           fireworksCss.setAttribute("type", "text/css");
           fireworksCss.setAttribute("href", path + "/plugins/delphinium/blossom/assets/css/fireworks.css");
           document.body.appendChild(fireworksCss);
+          $('body').prepend('<div id="fireworks-content" style="position:absolute;"></div>');
           var canvas = '<canvas id="cv" width="'+$(window).width()+'" height="'+($(window).height()-100)+'" style="position:absolute;left:0;top:0;background-color:black;"></canvas>';
-          var background = '<div id="bg" style="background:url(' + path + 'plugins/delphinium/blossom/assets/images/background.jpg) repeat-x;position:absolute;left:0;top:'+($(window).height()-193)+'px;width:100%;height:200px;"><button id="close-button">close</button></div>';
+          var background = '<div id="bg" style="background:url(' + path + 'plugins/delphinium/blossom/assets/images/background.jpg) repeat-x;position:absolute;left:0;top:'+($(window).height()-193)+'px;width:100%;height:200px;"></div>';
           $('#fireworks-content').append(canvas);
           $('#fireworks-content').append(background);
+          $('#fireworks-content').prepend('<button id="close-button" style="display:none; position:absolute; top: 0; right:0; z-index: 100;">close</button>');
           $('#close-button').on('click', function() { $('#fireworks-content').hide(); });
         }
       }
