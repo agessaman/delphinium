@@ -512,8 +512,8 @@ function checkboxFunctionality()
 function filterrange(args, item, check,index_td) {
     
     if (check) {
-        
-        $('#gridContainer .jsgrid-filter-row td:eq('+index_td+')').append('<div class="nouislider ' + check + '"><div class="rangearr"></div><div id="' + check + '"></div><span class="left-val" id="' + check + '-lover-value"></span><span id="lower-offset"></span><span class="right-val" id="' + check + '-upper-value"></span><span id="upper-offset"></span></div>');
+        var td = $('#gridContainer .jsgrid-filter-row td:eq('+index_td+')');
+        td.append('<div class="nouislider ' + check + '"><div class="rangearr"></div><div id="' + check + '"></div><span class="left-val" id="' + check + '-lover-value"></span><span id="lower-offset"></span><span class="right-val" id="' + check + '-upper-value"></span><span id="upper-offset"></span></div>');
 
         var slider_div = $('#' + check + '');
         noUiSlider.create(slider_div[0], {
@@ -526,7 +526,13 @@ function filterrange(args, item, check,index_td) {
                 'max': [ args['max'] ]
             }
         });
-        slider_div[0].noUiSlider.on('end', function(){
+        slider_div[0].noUiSlider.on('end', function(values){
+            if(parseFloat(args['start_min']) == parseFloat(values[0]) && parseFloat(args['start_max']) == parseFloat(values[1])){
+                td.find('.range').removeClass('text_blue');
+            }else{
+                td.find('.range').addClass('text_blue');
+            }
+
             $('.jsgrid-search-button').trigger('click');
         });
         s_div = $('.' + check + '');
@@ -620,7 +626,7 @@ function buildTable(data) {
 }
 
     var field_keys = {
-        no: "No<span class='one_point'></span>",
+        no: "<span class='col_no'>#</span>",
         first_name: "First Name",
         last_name: "Last Name",
         sections: "Sections",
@@ -687,13 +693,12 @@ function buildTable(data) {
                         value = row[k];
                         break;
                     case 'details':
-                        value = $("<input/>")
-                                    .attr("type","button")
-                                    .attr("value",k)
-                                    .attr("class","btn btn-info btn-lg btn-sm")
+                        value = $("<a/>")
+                                    .attr("href","#")
                                     .attr("data-toggle","modal")
                                     .attr("data-target","#modalStudentGradebook")
-                                    .on('click', function(){
+                                    .html('<i class="fa fa-list-alt details_icon"></i>')
+                                    .on('click', function(e){
                                         showStudentDetails(row);
                                     });
                         break;
@@ -736,6 +741,10 @@ function buildTable(data) {
                 }
             }
 
+        });
+
+        $(document).on('keyup', '.first_name input, .last_name input, .sections input, .grade input', function(){
+            $('.jsgrid-search-button').trigger('click');
         });
 
         return loadData;
@@ -819,28 +828,36 @@ function buildTable(data) {
         pageButtonCount: 3,
         controller: data_controller,
         fields: [
-            { name: field_keys.no, type: "hidden", width: 30, sorting: false},
-            { name: field_keys.first_name, type: "text", width: 50, sorter: 'byText' },
-            { name: field_keys.last_name, type: "text", width: 50, sorter: 'byText' },
-            { name: field_keys.sections, type: "text", width: 70 },
-            { name: field_keys.score, type: "range", width: 30 },
-            { name: field_keys.bonuses, type: "range", width: 30 },
-            { name: field_keys.penalties, type: "range",width:35 },
-            { name: field_keys.possible_bonus, type: "range",width:25 },
-            { name: field_keys.probable_penalty, type: "range",width:30 },
-            { name: field_keys.totalBP, type: "range", width:25 },
-            { name: field_keys.total, type: "range", width:30 },
-            { name: field_keys.grade, type: "text", width:90, sorter: 'client' },
-            { name: field_keys.details, type: "hidden", width:80, sorting: false },
+            { name: field_keys.no, type: "hidden", width: 25, sorting: false},
+            { name: field_keys.first_name, type: "text", width: 50, sorter: 'byText', css: 'first_name' },
+            { name: field_keys.last_name, type: "text", width: 50, sorter: 'byText', css: 'last_name' },
+            { name: field_keys.sections, type: "text", width: 70, css: 'sections' },
+            { name: field_keys.score, type: "range", width: 40 },
+            { name: field_keys.bonuses, type: "range", width: 40 },
+            { name: field_keys.penalties, type: "range",width:45 },
+            { name: field_keys.possible_bonus, type: "range",width:35 },
+            { name: field_keys.probable_penalty, type: "range",width:40 },
+            { name: field_keys.totalBP, type: "range", width:35 },
+            { name: field_keys.total, type: "range", width:40 },
+            { name: field_keys.grade, type: "text", width:70, sorter: 'client', css: 'grade' },
+            { name: field_keys.details, type: "hidden", width:30, sorting: false, css: 'details' },
             { type: 'control', editButton: false, deleteButton: false, clearFilterButton: false, modeSwitchButton: false , width:0 }
         ],
         onDataLoaded: function(args) {
-            var index = $('[value="details"]').eq(0).closest('td').index();            
+            var td = $('.jsgrid-grid-header tr').eq(1).find('td');
             $('.jsgrid-search-button').hide();
-            $('.jsgrid-grid-header tr').eq(1).find('td').eq(index).html('<a data-toggle="modal" style="outline:none;" href="#content-confirmation"><i class="fa fa-cog table_set"></i></a>').css('text-align','center');
+            td.eq(td.length-2).html('<a data-toggle="modal" style="outline:none;" href="#content-confirmation"><i class="fa fa-cog table_set"></i></a>').css('text-align','center');
             if(getStorage('ListSetup')){
                 hide_or_show(jQuery.parseJSON(getStorage('ListSetup')));
             }
+        },
+        onRefreshed: function(args) {
+            if(args.grid.data.length == 0)
+                return;
+
+            $.each(args.grid.data, function(i,row){
+            $('.jsgrid-grid-body').find('tr').eq(i).find('td').eq(0).html(i+=1);
+            });
         }
     });
 
@@ -863,7 +880,7 @@ function buildTable(data) {
     } else {
         columns = {
             0:{
-                column:'no',
+                column:'#',
                 column_title:'',
                 show: true,
             },
