@@ -247,9 +247,10 @@ a:hover
     position:relative;
     text-align:center !important;
     font-size:12px !important;
-    padding-left:12px !important;
 }
-
+#gridContainer .jsgrid-header-row th:not(.details){
+    padding-left: 12px !important;
+}
 #gridContainer .jsgrid-table td{
     font-size:13px !important;
 }
@@ -280,7 +281,7 @@ a:hover
 }
 .range{
     font-size: 28px;
-    color: #808080;
+    color: #ccc;
     text-align: center;
     display: block;  
 }
@@ -330,6 +331,10 @@ a:hover
 .details {
     text-align: center;
 }
+td.details a {
+    outline: none;
+}
+
 .first_name, .last_name, .grade, .sections {
     word-wrap: break-word;
 }
