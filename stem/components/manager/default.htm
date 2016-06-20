@@ -740,14 +740,14 @@
                     </div>
                 </div>
                 <ol ui-tree-nodes="" ng-model="item.children" ng-class="{hidden: collapsed}">
-                    <li ng-repeat="item in item.children" ui-tree-node ng-include="'nodes_renderer.html'">
+                    <li class="liItem" ng-repeat="item in item.children" ui-tree-node ng-include="'nodes_renderer.html'">
                     </li>
                 </ol>
                </script>
 
             <div ui-tree callbacks="treeOptions" id="tree-root">
                 <ol ui-tree-nodes="" ng-model="data">
-                    <li class="treeItem" ng-repeat="item in data" ui-tree-node ng-include="'nodes_renderer.html'"></li>
+                    <li class="treeItem liItem" ng-repeat="item in data" ui-tree-node ng-include="'nodes_renderer.html'"></li>
                 </ol>
             </div>
         </div>

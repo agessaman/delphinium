@@ -76,7 +76,7 @@ class ModuleItem {
         }
         
         
-        if($tags)
+        if(!is_null($tags))
         {
             
             if(!$content_id)
@@ -92,7 +92,7 @@ class ModuleItem {
         }
         else
         {
-            $this->tags = $tags;
+            $this->tags = '';
         }
         
         $this->title = $title;
