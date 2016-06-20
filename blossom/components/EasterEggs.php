@@ -75,6 +75,7 @@ class EasterEggs extends ComponentBase
             // use the record in the component and frontend form 
             $this->page['config'] = json_encode($config);
             
+            
             /** get roles, a comma delimited string
              * check if Student
              * if not then set to Instructor. disregard any other roles?

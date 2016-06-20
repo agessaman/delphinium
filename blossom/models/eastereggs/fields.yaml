@@ -54,15 +54,13 @@ fields:
         span: auto
         comment: Enter a point threshold
 
-
-    fireworks_string:
-        label: Fireworks Message
-        span: auto
-        comment: Enter a string
-
-
     menu:
         label: Show shortcuts
         type: checkbox
         span: auto
         default: false
+
+    fireworks_string:
+        label: Fireworks Message
+        span: auto
+        comment: Enter a string
