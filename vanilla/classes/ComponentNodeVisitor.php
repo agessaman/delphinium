@@ -20,7 +20,7 @@
  * You may not distribute any version of this software, modified or otherwise
  */
 
-namespace Delphinium\Testing\Classes;
+namespace Delphinium\Vanilla\Classes;
 
 use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
@@ -111,7 +111,6 @@ class ComponentNodeVisitor extends NodeVisitorAbstract
                 if($method->name =="componentDetails" &&count($method->stmts)>0)
                 {
                     $method->stmts[0]->expr->items[1]->value->value = $this->description;
-                    var_dump($method->stmts[0]->expr->items[1]->value->value);
                     $this->hasBoot = true;
                 }
             }
