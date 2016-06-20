@@ -20,6 +20,12 @@ tabs:
             commentAbove: A dedicated model will be created for this component
             tab: rainlab.builder::lang.plugin.tab_general
 
+        icon:
+            type: dropdown
+            label: Component icon
+            commentAbove: rainlab.builder::lang.common.field_icon_description
+            tab: rainlab.builder::lang.plugin.tab_general
+
         description:
             label: rainlab.builder::lang.plugin.field_description
             type: textarea

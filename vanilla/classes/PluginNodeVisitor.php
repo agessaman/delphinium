@@ -69,6 +69,10 @@ class PluginNodeVisitor extends NodeVisitorAbstract
                 {
                     $this->hasBoot = true;
                 }
+                if($method->name =="pluginDetails")
+                {
+
+                }
             }
             if(!$this->hasBoot)
             {
@@ -208,7 +212,7 @@ class PluginNodeVisitor extends NodeVisitorAbstract
         $label = $this->newArrayItem('label', $this->controllerAlias);
         $icon = $this->newArrayItem('icon', $this->icon);
         $owner = $this->newArrayItem('owner', 'Delphinium.Greenhouse');
-        $group = $this->newArrayItem('group', $this->controllerAlias);
+        $group = $this->newArrayItem('group', $this->plugin);
         $arr = array($label, $icon, $owner, $urlItem, $group);
 
         $newSideItem = $this->newArrayItem($this->controllerAlias,$arr, false);

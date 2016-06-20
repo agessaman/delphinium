@@ -66,16 +66,16 @@ class Delphiniumize extends ComponentBase
 
     public function onRun()
     {
-        $vars =  array("author"=>"Author","plugin"=>"Vanillaando", "component"=>"MyComp", "controller"=>"MyConr", "model"=>"MyMod");
+        $vars =  array("author"=>"Author","plugin"=>"NewPl", "component"=>"NewComp", "controller"=>"NewCont", "model"=>"NewMod", "description"=>"Some desc");
 //        $vars =  array("author"=>"author","plugin"=>"newPlugin", "component"=>"newComponent", "controller"=>"newController", "model"=>"newModel");
 
         $this->readyVars = $this->processVars($vars);
 
         $this->newPluginData = $vars;
 //        $this->makeFiles();
-//        $this->modifyFiles();
+        $this->modifyFiles();
 //        $this->octoberUp($this->newPluginData['author'].".".$this->newPluginData['plugin']);
-        $this->octoberUp("Author.Vanillaando");
+//        $this->octoberUp("Author.Vanillaando");
     }
 
     public function onAddItem()
@@ -180,10 +180,10 @@ class Delphiniumize extends ComponentBase
 
     private function modifyFiles()
     {//the model doesn't need to be modified
-        $this->modifyController();
+//        $this->modifyController();
         $this->modifyComponent();
-        $this->modifyPlugin();
-        $this->modifyVersion();
+//        $this->modifyPlugin();
+//        $this->modifyVersion();
 
     }
 
@@ -205,7 +205,7 @@ class Delphiniumize extends ComponentBase
         $destinationPath = base_path() . '/plugins/' . $readyVars['lower_author'] . '/' .$readyVars['lower_plugin']."/components/".$readyVars['studly_component'].".php";
         $modelUseStmt = $readyVars['studly_author'] . '\\' . $readyVars['studly_plugin']."\\Models\\".$readyVars['studly_model'];
         $controllerUseStmt = $readyVars['studly_author'] . '\\' . $readyVars['studly_plugin']."\\Controllers\\".$readyVars['studly_controller'];
-        $componentNodevisitor = new ComponentNodeVisitor($modelUseStmt, "MyModel", $controllerUseStmt, "MyController", $readyVars['studly_model']);
+        $componentNodevisitor = new ComponentNodeVisitor($modelUseStmt, "MyModel", $controllerUseStmt, "MyController", $readyVars['studly_model'], $readyVars['description']);
 
         $this->openModifySave($destinationPath, $componentNodevisitor);
     }

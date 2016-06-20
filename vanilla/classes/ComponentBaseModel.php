@@ -19,6 +19,7 @@
  * You may not distribute any version of this software, modified or otherwise
  */
 namespace Delphinium\Vanilla\Classes;
+use RainLab\Builder\Classes\IconList;
 use RainLab\Builder\Models\Settings as PluginSettings;
 use System\Classes\UpdateManager;
 use System\Classes\PluginManager;

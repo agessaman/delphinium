@@ -39,8 +39,9 @@ class ComponentNodeVisitor extends NodeVisitorAbstract
     protected $studlyModel;
     protected $hasModel;
     protected $hasController;
+    protected $description;
 
-    public function  __construct($modelUseStmt, $modelAlias, $controllerUseStmt, $controllerAlias, $studlyModel)
+    public function  __construct($modelUseStmt, $modelAlias, $controllerUseStmt, $controllerAlias, $studlyModel, $description)
     {
         $this->modelUseStmt = $modelUseStmt;
         $this->modelAlias = $modelAlias;
@@ -49,6 +50,7 @@ class ComponentNodeVisitor extends NodeVisitorAbstract
         $this->controllerUseStmt = $controllerUseStmt;
         $this->controllerAlias = $controllerAlias;
         $this->hasController = false;
+        $this->description = $description;
     }
 
     public function enterNode(\PhpParser\Node $node)
@@ -100,7 +102,22 @@ class ComponentNodeVisitor extends NodeVisitorAbstract
                 $useC = $this->createUse($controllerArr, $this->controllerAlias);
                 array_unshift($node->stmts, $useC);
             }
-        } else {
+        }
+        else if($node instanceof Node\Stmt\Class_)//look for the componentDetails method
+        {
+            $methods = $node->stmts;
+            foreach($methods as $method)
+            {
+                if($method->name =="componentDetails" &&count($method->stmts)>0)
+                {
+                    $method->stmts[0]->expr->items[1]->value->value = $this->description;
+                    var_dump($method->stmts[0]->expr->items[1]->value->value);
+                    $this->hasBoot = true;
+                }
+            }
+        }
+        else
+        {
             NodeTraverser::DONT_TRAVERSE_CHILDREN;
         }
     }
