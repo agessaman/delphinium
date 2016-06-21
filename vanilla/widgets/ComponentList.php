@@ -103,7 +103,6 @@ class ComponentList extends WidgetBase
         {
             $this->plugin =$this->controller->pluginVectorToPluginClass();
         }
-
         $searchTerm = Str::lower($this->getSearchTerm());
         $searchWords = [];
         if (strlen($searchTerm)) {
@@ -253,14 +252,13 @@ class ComponentList extends WidgetBase
     public function getComponentFiles($activeComponent)
     {
         $pluginsPath = \Config::get('cms.pluginsPath');
-        $dirPath = base_path().$pluginsPath.$activeComponent->className;
-
+        $rawDirPath = strtolower(base_path().$pluginsPath.$activeComponent->className);
+        $dirPath = str_replace('\\', '/', $rawDirPath);
         $result = [];
 
         if (!File::isDirectory($dirPath)) {
             return $result;
         }
-
         $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dirPath));
         $it->setMaxDepth(1); // Support only a single level of subdirectories
         $it->rewind();
@@ -300,7 +298,7 @@ class ComponentList extends WidgetBase
             $fileName .= '.'.static::$defaultExtension;
         }
 
-        $fullPath =$dirPath."\\".$fileName;//static::getFilePath($theme, $fileName);
+        $fullPath =$dirPath."/".$fileName;//static::getFilePath($theme, $fileName);
 
         if (!File::isFile($fullPath)) {
             return null;
