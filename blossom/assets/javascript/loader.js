@@ -22,6 +22,7 @@ var WebSplatPony = "aj";
 
     var ponyIDs = ["ts", "rd", "aj", "pp", "r", "fs"];
     var imageBase = path + 'plugins/delphinium/blossom/assets/images/ponies/';
+    //http://websplat.bitbucket.org/imgs/dda.dd0r.png
     var head;
 
     function dce(type) {
