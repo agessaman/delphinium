@@ -204,10 +204,11 @@ class EasterEggs extends ComponentBase
     public function onSave()
     {
         $data = post('EasterEggs');
+        //var_dump($data);
         $config = $this->firstOrNewCourseInstance($data['name']);//get the instance
         $config->name = $data['name'];
         $config->menu = $data['menu'];
-        $config->course_id = $data['course_id'];
+        //$config->course_id = $data['course_id'];
         $config->harlem_shake = $data['harlem_shake'];
         $config->ripples = $data['ripples'];
         $config->asteroids = $data['asteroids'];

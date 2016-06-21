@@ -282,7 +282,7 @@ $(document).keydown(function(e) {
       fireworks[e.keyCode] = true;
       if (fireworks[keys.F] && fireworks[keys.I]) {
         if(fireworks["loaded"]){
-          $('#close-button').hide();
+          close = false;
           $('#fireworks-content').show();
           FireworkDisplay.launchText();
         }else{
@@ -300,8 +300,11 @@ $(document).keydown(function(e) {
           var background = '<div id="bg" style="background:url(' + path + 'plugins/delphinium/blossom/assets/images/background.jpg) repeat-x;position:absolute;left:0;top:'+($(window).height()-193)+'px;width:100%;height:200px;"></div>';
           $('#fireworks-content').append(canvas);
           $('#fireworks-content').append(background);
-          $('#fireworks-content').prepend('<button id="close-button" style="display:none; position:absolute; top: 0; right:0; z-index: 100;">close</button>');
-          $('#close-button').on('click', function() { $('#fireworks-content').hide(); });
+          $('#fireworks-content').prepend('<div style="position:absolute; top: 0; right:0; z-index: 100; background-color:white; height: 15px; width: 15px;"><i id="close-button" class="fa fa-times"></i></div>');
+          $('#close-button').on('click', function() {
+            $('#fireworks-content').hide();
+            close = true;
+          });
         }
       }
     }
