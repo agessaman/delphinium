@@ -44,6 +44,7 @@ class Gradebook extends ComponentBase {
     public $roots;
     public $studentData;
     public $users;
+    public $submissions;
     public $allStudentSubmissions;
 
     public function componentDetails() {
@@ -230,7 +231,7 @@ class Gradebook extends ComponentBase {
 
     private function getProfessorData() {
 
-        // $aggregateSubmissionScores = $this->aggregateSubmissionScores();
+        $aggregateSubmissionScores = $this->aggregateSubmissionScores();
         $users = $this->roots->getStudentsInCourse();
         $userMasterArr= array();
         foreach($users as $userCourse)
@@ -239,7 +240,7 @@ class Gradebook extends ComponentBase {
         }
         $this->page['users'] = json_encode($userMasterArr);
         $this->users = $userMasterArr;
-
+        $this->page['submissions'] = json_encode($aggregateSubmissionScores);
         //comment these two lines
         // $submissionData = $this->matchSubmissionsAndUsers($users, $aggregateSubmissionScores);
         // $this->studentData = $submissionData;
@@ -434,6 +435,7 @@ class Gradebook extends ComponentBase {
         $res = $this->orderSubmissionsByUsersAndDate($result);
         //set the results as a class variable
         $this->submissions = $res;
+
         //aggregate the scores
         $masterArr = array();
         $scoresArr = array();
@@ -497,7 +499,6 @@ class Gradebook extends ComponentBase {
             $masterArr[] = $student;
             $scoresArr[] = $subm;
         }
-
         $this->page['submissions'] = json_encode($masterArr);
         // return $scoresArr;
         return $masterArr;
@@ -601,7 +602,6 @@ class Gradebook extends ComponentBase {
         //get all students in course
 
         $roots = new Roots();
-       //print_r($stats_data);die('aaa');
         $returned_data = $roots->getStudentsInCourseGradebook();
         $users = $returned_data['studentsInCourse'];
         $sections = $returned_data['studentsWithSection'];
@@ -618,7 +618,6 @@ class Gradebook extends ComponentBase {
         $potentisal_array = array();
         foreach($filteredUsers as $user)
         {
-////            print_r($user->user_id);
             $potentialOfUser = $this->getPotential($experienceInstanceId, $user->user_id);
             $item = $this->getUserMilestoneInfo($user, $milestonesOrderedByPointsDesc, $ptsPerSecond, $stDate, $endDate, $bonusPerSecond, $bonusSeconds,
                 $penaltyPerSecond, $penaltySeconds, $maxExperiencePts, $grading_scheme, $sections, $potentialOfUser);

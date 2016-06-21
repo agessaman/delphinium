@@ -52,6 +52,7 @@ var monthNames = [
     "Aug", "Sep", "Oct",
     "Nov", "Dec"
 ];
+////////////////////////////////////////////////////////
 var margin = {top: 30, right: 20, bottom: 30, left: 50},
     width = 800 - margin.left - margin.right,
     height = 400 - margin.top - margin.bottom;
@@ -131,6 +132,7 @@ g.append("svg:rect")
     .on("mouseout", function (d) {
         removeTooltipProfessorGradebook();
     });
+///////////////////////////////////////
 
 $(window).resize(function(){
     $.each($('.nouislider'), function(a){
@@ -142,6 +144,10 @@ $(window).resize(function(){
 });
 function addLine(data, strokeColor, id)
 {
+    if($("#path" + id).length > 0){
+        return false;
+    }
+
     // Define the line
     var valueline = d3.svg.line()
         .x(function (d) {
@@ -189,7 +195,6 @@ function addLine(data, strokeColor, id)
                 removeTooltipProfessorGradebook();
             }
         });
-
     g.selectAll("dot")
         .data(data.filter(function (d, i) {
             if (i === 0) {
