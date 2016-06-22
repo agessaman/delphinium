@@ -9,6 +9,8 @@ use ValidationException;
 use Cms\Classes\ViewBag;
 use Cms\Classes\CodeBase;
 use Cms\Classes\CmsException;
+use Cms\Classes\SectionParser;
+use Cms\Classes\ComponentManager;
 use Cms\Twig\Loader as TwigLoader;
 use Cms\Twig\Extension as CmsTwigExtension;
 use System\Twig\Extension as SystemTwigExtension;
@@ -86,10 +88,9 @@ class ContentCompoundObject extends ContentObject
         if (($obj = parent::load($theme, $fileName, $type)) === null) {
             return null;
         }
-        CmsException::mask($obj, 200);
+//        CmsException::mask($obj, 200);
         $parsedData = SectionParser::parse($obj->content);
-        CmsException::unmask();
-
+//        CmsException::unmask();
         $obj->settings = $parsedData['settings'];
         $obj->code = $parsedData['code'];
         $obj->markup = $parsedData['markup'];
