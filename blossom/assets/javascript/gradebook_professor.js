@@ -135,13 +135,30 @@ g.append("svg:rect")
 ///////////////////////////////////////
 
 $(window).resize(function(){
-    $.each($('.nouislider'), function(a){
-        var td = $(this).closest('td');
-        $(this).css({
-            'left': $(td).offset().left-(150-(($(td).outerWidth())/2))+'px'
+    var range = $('.nouislider:visible');
+    var content = $('.checkbox_filter_conternt:visible');
+    
+    if(range.length > 0){
+        var td = range.closest('td');
+        range.css({
+            'left': $(td).offset().left-(148-(($(td).outerWidth())/2))+'px'
         });
-    });
+    }
+    
+    if(content.length > 0){
+        resizefix(content);
+    }
 });
+
+function resizefix(content){
+    var td = $(content).closest('td');
+    var offset = td.offset(),
+        width_td = td.outerWidth(),
+        width_content = content.outerWidth(true);                
+    var left = offset.left - (width_content - width_td);
+    $(content).css({left:left});
+}
+
 function addLine(data, strokeColor, id)
 {
     if($("#path" + id).length > 0){
@@ -545,7 +562,7 @@ function filterrange(args, item, check,index_td) {
         s_div.css(
         {
             'display' : 'block',
-            'left': $(item).offset().left-(150-(($(item).outerWidth())/2))+'px'
+            'left': $(item).offset().left-(148-(($(item).outerWidth())/2))+'px'
         });
         function leftValue ( handle ) {
             return handle.parentElement.style.left;
@@ -575,6 +592,11 @@ function buildTable(data) {
     $('body').mousedown(function(event) {
         if($(event.target).closest('div.nouislider').length == 0 && $(event.target).closest('.range-field').length == 0) {
             $('.nouislider').hide();
+        }
+
+        if ($(event.target).closest('.checkbox_filter_conternt').length == 0 && $(event.target).closest('td.checkbox-field').length == 0) {
+            $('.checkbox_filter_conternt').hide();
+            $('.my-arrow').hide();
         }
     });
 
@@ -628,7 +650,7 @@ function buildTable(data) {
             min: '',
             max: ''
         }
-}
+    }
 
     var field_keys = {
         no: "<span class='col_no'>#</span>",
@@ -645,6 +667,39 @@ function buildTable(data) {
         grade: "Grade",
         details: "Details"
     };
+
+    function get_checkboxes(col_name) {
+        
+        var checkboxes_arr = {},
+            checkboxes = '';
+            b = 0;
+
+        $.each(data, function(key,val){
+            $.each(data[key][col_name].split('<br>'),function(k,v){
+                checkboxes_arr[v] = true;
+            });
+        });
+
+        $.each(checkboxes_arr,function(key,val){
+            checkboxes += '<div class="checkbox custom-checkbox"><input type="checkbox" id="' + b + col_name + '" checked="checked" value="'+ key +'" /><label for="'+b + col_name +'">'+ key +'</label></div>';
+            b++;
+        });
+
+        return checkboxes;
+    }
+
+    function get_column_info(col_name) {
+        var ret_d = {},
+            ret_data = {};
+
+        $.each(data, function(key,val){
+            $.each(data[key][col_name].split('<br>'),function(k,v){
+                ret_data[v] = true;
+            });
+        });
+
+        return ret_data;
+    }
 
     function createData(range, field) {
 
@@ -724,7 +779,22 @@ function buildTable(data) {
             table_range[a]['max'] = max_val;
         });
 
-        $('.jsgrid-filter-row').find('.range-field')
+        $(document).on('click', '.jsgrid-grid-header td.checkbox-field', function(){
+            var self = $(this);
+            var content = self.find('.checkbox_filter_conternt');
+            $('.checkbox_filter_conternt').not(content).hide();
+            $('.my-arrow').not(self.find('.my-arrow')).hide();
+            if (content.is(':visible')){
+                content.hide();
+                self.find('.my-arrow').hide();
+            } else {
+                resizefix(content);
+                content.show();
+                self.find('.my-arrow').show();
+
+            }
+        });
+        
         $(document).on('click','#gridContainer .jsgrid-filter-row .range-field', function() {
             var fnd = $(this).index();
             var b = $('.jsgrid-table').find('tr').eq(0).children('th').eq(fnd);
@@ -737,7 +807,7 @@ function buildTable(data) {
                 filterrange(table_range[col_num], this, itex, index_td);
             } else {
                 check.closest('.nouislider').css({
-                    'left': $(this).offset().left-(150-(($(this).outerWidth())/2))+'px'
+                    'left': $(this).offset().left-(148-(($(this).outerWidth())/2))+'px'
                 });
                 if(check.is(':visible')){
                     check.closest('.nouislider').hide();
@@ -752,18 +822,43 @@ function buildTable(data) {
             $('.jsgrid-search-button').trigger('click');
         });
 
+        $(document).on('change', '.checkbox_filter_conternt input[type=checkbox]', function(){
+           $('.jsgrid-search-button').trigger('click'); 
+        });
+
         return loadData;
     }
     var loadData = createData();
     var data_controller = {
        loadData: function(filter) {
             return $.grep(this.clients, function(client) {
+                var sections_res = -1;
+                $.each(filter[field_keys.sections], function(f_v){
+                    $.each(client[field_keys.sections].split('<br>'), function(key,c_v){
+                        if(f_v == c_v){
+                            sections_res = 1;
+                            return;
+                        }
+                    });
+                });
+                
+                var grade_res = -1;
+                var reg = /<div>.+<span/.exec(client[field_keys.grade]);
+                reg = reg[0].replace(/<div>|<span/gi, function myFunction(x){return '';}).trim();
+                $.each(filter[field_keys.grade], function(v){
+
+                   if(v == reg){
+                        grade_res = 1;
+                        return;
+                   } 
+                });
+
                 return (!filter[field_keys.no] || client[field_keys.no] === filter[field_keys.no])
                     && (!filter[field_keys.first_name].toLowerCase() || $(client[field_keys.first_name]).text().toLowerCase().indexOf(filter[field_keys.first_name].toLowerCase()) > -1)
 
                     && (!filter[field_keys.last_name].toLowerCase() || $(client[field_keys.last_name]).text().toLowerCase().indexOf(filter[field_keys.last_name].toLowerCase()) > -1)
 
-                    && (!filter[field_keys.sections].toLowerCase() || client[field_keys.sections].toLowerCase().indexOf(filter[field_keys.sections].toLowerCase()) > -1)
+                    && (!filter[field_keys.sections] || sections_res > -1)
 
                     && (!filter[field_keys.score] || (client[field_keys.score] >= JSON.parse(filter[field_keys.score])['min'] && client[field_keys.score] <= JSON.parse(filter[field_keys.score])['max']))
 
@@ -779,7 +874,7 @@ function buildTable(data) {
 
                     && (!filter[field_keys.total] || (client[field_keys.total] >= JSON.parse(filter[field_keys.total])['min'] && client[field_keys.total] <= JSON.parse(filter[field_keys.total])['max']))
 
-                    && (!filter[field_keys.grade].toLowerCase() || client[field_keys.grade].toLowerCase().indexOf(filter[field_keys.grade].toLowerCase()) > -1)
+                    && (!filter[field_keys.grade] || grade_res > -1)
 
             });
         }
@@ -809,6 +904,32 @@ function buildTable(data) {
     jsGrid.sortStrategies.byText = function(value1, value2){
         return $(value1).text().localeCompare($(value2).text());
     };
+
+    
+    var MyCheckboxField = function(config) {
+        jsGrid.Field.call(this, config);
+    }
+
+    MyCheckboxField.prototype = new jsGrid.Field({
+        css: 'checkbox-field',
+        autosearch: true,
+        filterValue: function() {
+            var checkbox_cont = $('.' + this.name),
+                checkboxes = {};
+            if (checkbox_cont.length>0){
+                $.each(checkbox_cont.find('input:checked'),function(i,checkbox) {
+                    checkboxes[$(checkbox).val()] = true;
+                });
+            } else {
+                checkboxes = get_column_info(this.name.toLowerCase());
+            }
+
+            return checkboxes;
+        }
+
+    });
+
+    jsGrid.fields.checkbox = MyCheckboxField;
 
     var MyRangeField = function(config) {
         jsGrid.Field.call(this, config);
@@ -843,7 +964,7 @@ function buildTable(data) {
             { name: field_keys.no, type: "hidden", width: 25, sorting: false},
             { name: field_keys.first_name, type: "text", width: 50, sorter: 'byText', css: 'first_name' },
             { name: field_keys.last_name, type: "text", width: 50, sorter: 'byText', css: 'last_name' },
-            { name: field_keys.sections, type: "text", width: 70, css: 'sections' },
+            { name: field_keys.sections, type: "checkbox", width: 70 },
             { name: field_keys.score, type: "range", width: 40 },
             { name: field_keys.bonuses, type: "range", width: 40 },
             { name: field_keys.penalties, type: "range",width:45, sorter: 'negative' },
@@ -851,7 +972,7 @@ function buildTable(data) {
             { name: field_keys.probable_penalty, type: "range",width:40, sorter: 'negative'},
             { name: field_keys.totalBP, type: "range", width:35, sorter: 'negative'},
             { name: field_keys.total, type: "range", width:40 },
-            { name: field_keys.grade, type: "text", width:70, sorter: 'client', css: 'grade' },
+            { name: field_keys.grade, type: "checkbox", width:70, sorter: 'client' },
             { name: field_keys.details, type: "hidden", width:30, sorting: false, css: 'details' },
             { type: 'control', editButton: false, deleteButton: false, clearFilterButton: false, modeSwitchButton: false , width:0 }
         ],
@@ -861,6 +982,14 @@ function buildTable(data) {
             td.eq(td.length-2).html('<a data-toggle="modal" style="outline:none;" href="#content-confirmation"><i class="fa fa-cog table_set"></i></a>').css('text-align','center');
             if(getStorage('ListSetup')){
                 hide_or_show(jQuery.parseJSON(getStorage('ListSetup')));
+            }
+            if($('.filter_checkbox').length == 0){
+                var sections = get_checkboxes('sections'),
+                    grade = get_checkboxes('grade');
+
+                $('.jsgrid-grid-header').find('td.checkbox-field').html('<i class="fa fa-filter filter_checkbox"></i>');
+                $('.jsgrid-grid-header').find('td.checkbox-field').eq(0).append('<div class="my-arrow"></div><div class="checkbox_filter_conternt Sections" style="display:none;">'+ sections +'</div>');
+                $('.jsgrid-grid-header').find('td.checkbox-field').eq(1).append('<div class="my-arrow"></div><div class="checkbox_filter_conternt Grade" style="display:none;">'+ grade +'</div>');
             }
         },
         onRefreshed: function(args) {

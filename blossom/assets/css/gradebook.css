@@ -334,7 +334,32 @@ a:hover
 td.details a {
     outline: none;
 }
-
+td.checkbox-field {
+    text-align: center;
+}
+td.checkbox-field .filter_checkbox {
+    font-size: 24px;
+    color: #ccc;
+}
+.checkbox_filter_conternt {
+    position: absolute;
+    min-width: 180px;
+    border: 1px solid #ccc;
+    margin-left: -6px;
+    text-align: left;
+    display: block;
+    background: #fff;
+    max-height: 250px;
+    max-width: 16%;
+    margin-top: 17px;
+    overflow-y: auto;
+}
+.checkbox_filter_conternt input{
+    width: auto !important;
+    margin-right: 7px;
+    position: relative;
+    top: 2px;
+}
 .first_name, .last_name, .grade, .sections {
     word-wrap: break-word;
 }
@@ -368,4 +393,23 @@ td.details a {
 }
 .jsgrid-header-sort-desc:after{
     border-color: #009a67 transparent transparent transparent !important;
+}
+.checkbox_filter_conternt .custom-checkbox {
+    margin-left: 11px !important;
+}
+.checkbox_filter_conternt label{
+    padding-top: 12px !important;
+}
+.my-arrow {
+    background: #fff;
+    border-top: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    margin-top: 7px;
+    transform: rotate(45deg);
+    margin-left: 6%;
+    z-index: 11;
+    display: none;
 }
