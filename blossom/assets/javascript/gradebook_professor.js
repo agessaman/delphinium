@@ -961,7 +961,7 @@ function buildTable(data) {
         pageButtonCount: 3,
         controller: data_controller,
         fields: [
-            { name: field_keys.no, type: "hidden", width: 25, sorting: false},
+            { name: field_keys.no, type: "hidden", width: 25, sorting: false, css: 'number'},
             { name: field_keys.first_name, type: "text", width: 50, sorter: 'byText', css: 'first_name' },
             { name: field_keys.last_name, type: "text", width: 50, sorter: 'byText', css: 'last_name' },
             { name: field_keys.sections, type: "checkbox", width: 70 },
