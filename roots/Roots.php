@@ -49,8 +49,8 @@ class Roots
 {
     public $dbHelper;
     public $canvasHelper;
-    
-    function __construct() 
+
+    function __construct()
     {
         $this->dbHelper = new DbHelper();
         $this->canvasHelper = new CanvasHelper();
@@ -58,17 +58,17 @@ class Roots
     /*
      * Public Functions
      */
-    
+
     public function modules(ModulesRequest $request)
     {
         switch($request->getActionType())
         {
             case (ActionType::GET):
-                
+
                 if(!$request->getFreshData())
                 {
                     $data = $this->dbHelper->getModuleData($request);
-                    
+
                     //depending on the request we can get an eloquent collection or one of our models. Need to validate them differently
                     switch(get_class($data))
                     {
@@ -83,7 +83,7 @@ class Roots
                     return $this->getModuleDataFromLms($request);
                 }
                 break;
-                
+
             case(ActionType::PUT):
                 switch ($request->getLms())
                 {
@@ -118,9 +118,9 @@ class Roots
                 }
                 break;
         }
-        
+
     }
-    
+
     public function submissions(SubmissionsRequest $request)
     {
         switch($request->getActionType())
@@ -143,16 +143,16 @@ class Roots
                 return $result;
             default :
                 throw new InvalidActionException($request->getActionType(), get_class($request));
-        
+
         }
     }
-    
+
     public function assignments(AssignmentsRequest $request)
     {
         switch($request->getActionType())
         {
             case(ActionType::GET):
-                
+
                 if(!$request->getFresh_data())
                 {
                     $data = $this->dbHelper->getAssignmentData( $request);
@@ -183,12 +183,12 @@ class Roots
                         $canvas = new CanvasHelper(DataType::ASSIGNMENTS);
                         return $canvas->updateAssignment($request);
                 }
-                //If another action was given throw exception
+            //If another action was given throw exception
             default :
                 throw new InvalidActionException($request->getActionType(), get_class($request));
         }
     }
-    
+
     public function assignmentGroups(AssignmentGroupsRequest $request)
     {
         switch($request->getActionType())
@@ -209,18 +209,18 @@ class Roots
                 {
                     return $this->getAssignmentGroupDataFromLms( $request);
                 }
-                
-            break;
-        default :
-            throw new InvalidActionException($request->getActionType(), get_class($request));
+
+                break;
+            default :
+                throw new InvalidActionException($request->getActionType(), get_class($request));
         }
     }
-    
-    
+
+
     /*
      * OTHER HELPER METHODS
      */
-    
+
     public function updateModuleOrder($modules, $updateLms)
     {
         $ordered = array();
@@ -232,10 +232,10 @@ class Roots
             {
 //              UPDATE positioning in LMS
                 $module = new Module(null, null, null, null, $order);
-                $req = new ModulesRequest(ActionType::PUT, $item->module_id, null,  
+                $req = new ModulesRequest(ActionType::PUT, $item->module_id, null,
                     false, false, $module, null , false);
                 $res = $this->modules($req);
-                               
+
                 $order++;
 
             }
@@ -245,17 +245,17 @@ class Roots
         }
         return $ordered;
     }
-    
+
     public function updateModuleParent(DbModule $module)
     {
         $this->dbHelper->updateOrderedModule($module);
     }
     public function addPage(Page $page)
     {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
         $lms = strtoupper($_SESSION['lms']);
         switch ($lms)
         {
@@ -269,13 +269,13 @@ class Roots
                 break;
         }
     }
-    
+
     public function addDiscussion(Discussion $discussion)
     {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
         $lms = strtoupper($_SESSION['lms']);
         switch ($lms)
         {
@@ -287,14 +287,14 @@ class Roots
                 return $canvas->addDiscussion($discussion);
         }
     }
-    
+
     public function addQuiz(Quiz $quiz)
     {
-        
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
+
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
         $lms = strtoupper($_SESSION['lms']);
         switch ($lms)
         {
@@ -306,13 +306,13 @@ class Roots
                 return $canvas->addQuiz($quiz);
         }
     }
-    
+
     public function addExternalTool($externalTool)
     {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
         $lms = strtoupper($_SESSION['lms']);
         switch ($lms)
         {
@@ -324,13 +324,13 @@ class Roots
                 return $canvas->addExternalTool($externalTool);
         }
     }
-    
+
     public function uploadFile(File $file)
     {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
         $lms = strtoupper($_SESSION['lms']);
         switch ($lms)
         {
@@ -342,13 +342,13 @@ class Roots
                 return $canvas->uploadFile($file);
         }
     }
-    
+
     public function uploadFileStepTwo($params, $file, $upload_url)
     {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
         $lms = strtoupper($_SESSION['lms']);
         switch ($lms)
         {
@@ -359,15 +359,15 @@ class Roots
                 $canvas = new CanvasHelper();
                 return $canvas->uploadFileStepTwo($params, $file, $upload_url);
         }
-        
+
     }
-    
+
     public function uploadFileStepThree($location)
     {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
         $lms = strtoupper($_SESSION['lms']);
         switch ($lms)
         {
@@ -378,14 +378,14 @@ class Roots
                 $canvas = new CanvasHelper();
                 return $canvas->uploadFileStepThree($location);
         }
-        
+
     }
-    
+
     public function getAvailableTags()
     {
         return $this->dbHelper->getAvailableTags();
     }
-    
+
     public function getModuleStates(ModulesRequest $request)
     {
         switch ($request->getLms())
@@ -446,22 +446,22 @@ class Roots
     {
         return ModuleItemType::getConstants();
     }
-    
+
     public function getCompletionRequirementTypes()
     {
         return CompletionRequirementType::getConstants();
     }
     public function getPageEditingRoles()
     {
-         return PageEditingRoles::getConstants();
+        return PageEditingRoles::getConstants();
     }
-    
+
     public function getFiles()
     {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
         $lms = strtoupper($_SESSION['lms']);
         if(Lms::isValidValue($lms))
         {
@@ -477,7 +477,7 @@ class Roots
                     $files = ($canvasHelper->getFiles());
                     break;
             }
-            
+
             $return =array();
             $i=0;
             foreach($files as $item)
@@ -494,16 +494,16 @@ class Roots
         }
         else
         {
-           throw new \Exception("Invalid LMS");  
+            throw new \Exception("Invalid LMS");
         }
     }
-    
+
     public function getPages()
     {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
         $lms = strtoupper($_SESSION['lms']);
         if(Lms::isValidValue($lms))
         {
@@ -519,7 +519,7 @@ class Roots
                     $pages = $canvasHelper->getPages();
                     break;
             }
-            
+
             $return =array();
             $i=0;
             foreach($pages as $item)
@@ -537,20 +537,20 @@ class Roots
         }
         else
         {
-           throw new \Exception("Invalid LMS");  
+            throw new \Exception("Invalid LMS");
         }
     }
-    
+
     public function quizzes(QuizRequest $request)
     {
         switch($request->getActionType())
         {
             case (ActionType::GET):
-                
+
                 if(!$request->getFresh_data())
                 {
                     $data = $this->dbHelper->getQuizzes($request);
-                    
+
                     //depending on the request we can get an eloquent collection or one of our models. Need to validate them differently
                     switch(get_class($data))
                     {
@@ -569,7 +569,7 @@ class Roots
                             {
                                 return $this->getQuizzesFromLms($request);
                             }
-                            else 
+                            else
                             {
                                 return $data;
                             }
@@ -582,15 +582,15 @@ class Roots
                 }
                 break;
         }
-        
-        
+
+
     }
     public function getExternalTools()
     {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
         $lms = strtoupper($_SESSION['lms']);
         if(Lms::isValidValue($lms))
         {
@@ -606,7 +606,7 @@ class Roots
                     $tools = ($canvasHelper->getExternalTools());
                     break;
             }
-            
+
             $return =array();
             $i=0;
             foreach($tools as $item)
@@ -624,16 +624,16 @@ class Roots
         }
         else
         {
-           throw new \Exception("Invalid LMS");  
+            throw new \Exception("Invalid LMS");
         }
     }
-            
+
     public function getAnalyticsAssignmentData($includeTags = false)
     {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
         $lms = strtoupper($_SESSION['lms']);
         if(Lms::isValidValue($lms))
         {
@@ -646,11 +646,11 @@ class Roots
                     {
                         $result = [];
                         foreach($data as $item)
-                        {   
+                        {
                             $item->tags = $canvasHelper->matchAssignmentIdWithTags($item->assignment_id);
                             $result[] = $item;
                         }
-                        
+
                         return $result;
                     }
                     return $data;
@@ -661,11 +661,11 @@ class Roots
                     {
                         $result = [];
                         foreach($data as $item)
-                        {   
+                        {
                             $item->tags = $canvasHelper->matchAssignmentIdWithTags($item->assignment_id);
                             $result[] = item;
                         }
-                        
+
                         return $result;
                     }
                     return $data;
@@ -673,15 +673,15 @@ class Roots
         }
         else
         {
-           throw new \Exception("Invalid LMS");  
+            throw new \Exception("Invalid LMS");
         }
     }
     public function getAnalyticsStudentAssignmentData($includeTags = false, $userId = null)
     {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
         $lms = strtoupper($_SESSION['lms']);
         if(Lms::isValidValue($lms))
         {
@@ -694,11 +694,11 @@ class Roots
                     {
                         $result = [];
                         foreach($data as $item)
-                        {   
+                        {
                             $item->tags = $canvasHelper->matchAssignmentIdWithTags($item->assignment_id);
                             $result[] = $item;
                         }
-                        
+
                         return $result;
                     }
                     return $data;
@@ -709,11 +709,11 @@ class Roots
                     {
                         $result = [];
                         foreach($data as $item)
-                        {   
+                        {
                             $item->tags = $canvasHelper->matchAssignmentIdWithTags($item->assignment_id);
                             $result[] = item;
                         }
-                        
+
                         return $result;
                     }
                     return $data;
@@ -721,16 +721,16 @@ class Roots
         }
         else
         {
-           throw new \Exception("Invalid LMS");  
+            throw new \Exception("Invalid LMS");
         }
     }
-     
+
     public function getUsersInCourse()
     {
-    	if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
         $lms = strtoupper($_SESSION['lms']);
         if(Lms::isValidValue($lms))
         {
@@ -746,16 +746,16 @@ class Roots
         }
         else
         {
-           throw new \Exception("Invalid LMS");  
+            throw new \Exception("Invalid LMS");
         }
     }
-    
+
     public function getStudentsInCourse()
     {
-    	if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
         $lms = strtoupper($_SESSION['lms']);
         $courseId = $_SESSION['courseID'];
         $users = $this->dbHelper->getUsersInCourseWithRole($courseId, 'Learner');
@@ -779,16 +779,16 @@ class Roots
         }
         else
         {
-           throw new \Exception("Invalid LMS");  
+            throw new \Exception("Invalid LMS");
         }
     }
-    
+
     public function getUser($userId)
     {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
         $lms = strtoupper($_SESSION['lms']);
         if(Lms::isValidValue($lms))
         {
@@ -804,15 +804,15 @@ class Roots
         }
         else
         {
-           throw new \Exception("Invalid LMS");  
+            throw new \Exception("Invalid LMS");
         }
     }
     public function getUserEnrollments()
     {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
         $lms = strtoupper($_SESSION['lms']);
         if(Lms::isValidValue($lms))
         {
@@ -828,16 +828,16 @@ class Roots
         }
         else
         {
-           throw new \Exception("Invalid LMS");  
+            throw new \Exception("Invalid LMS");
         }
     }
-    
+
     public function getGradingStandards()
     {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
         $lms = strtoupper($_SESSION['lms']);
         if(Lms::isValidValue($lms))
         {
@@ -853,15 +853,15 @@ class Roots
         }
         else
         {
-           throw new \Exception("Invalid LMS");  
+            throw new \Exception("Invalid LMS");
         }
     }
     public function getCourse()
     {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
         $lms = strtoupper($_SESSION['lms']);
         if(Lms::isValidValue($lms))
         {
@@ -877,16 +877,16 @@ class Roots
         }
         else
         {
-           throw new \Exception("Invalid LMS");  
+            throw new \Exception("Invalid LMS");
         }
     }
-    
+
     public function getAccount($accountId)
     {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
         $lms = strtoupper($_SESSION['lms']);
         if(Lms::isValidValue($lms))
         {
@@ -902,7 +902,7 @@ class Roots
         }
         else
         {
-           throw new \Exception("Invalid LMS");  
+            throw new \Exception("Invalid LMS");
         }
     }
     /*
@@ -922,7 +922,7 @@ class Roots
                 return $this->dbHelper->getModuleData($request);
         }
     }
-    
+
     private function getAssignmentDataFromLms(AssignmentsRequest $request)
     {
         switch ($request->getLms())
@@ -937,7 +937,7 @@ class Roots
                 return $this->dbHelper->getAssignmentData( $request);
         }
     }
-    
+
     private function getAssignmentGroupDataFromLms(AssignmentGroupsRequest $request)
     {
         switch ($request->getLms())
@@ -952,13 +952,13 @@ class Roots
                 return $this->dbHelper->getAssignmentGroupData($request);
         }
     }
-    
+
     private function getQuizzesFromLms(QuizRequest $request)
     {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
         $lms = strtoupper($_SESSION['lms']);
         if(Lms::isValidValue($lms))
         {
@@ -999,16 +999,16 @@ class Roots
         }
         else
         {
-           throw new \Exception("Invalid LMS");  
+            throw new \Exception("Invalid LMS");
         }
     }
-    
+
     public function getQuizSubmission($quizId, $quizSubmissionId=null, $studentId=null)
     {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
         if(is_null($studentId))
         {
             $studentId = $_SESSION['userID'];
@@ -1027,7 +1027,7 @@ class Roots
                 }
             }else
             {
-               throw new \Exception("Invalid LMS");  
+                throw new \Exception("Invalid LMS");
             }
         }
         else
@@ -1035,7 +1035,7 @@ class Roots
             return $quizSubmission;
         }
     }
-    
+
     public function getQuizQuestion($quizId, $question_id = null)
     {
         $quizQuestion = $this->dbHelper->getQuizQuestion($quizId, $question_id);
@@ -1054,10 +1054,10 @@ class Roots
     }
     private function getQuizQuestionsFromLms($quizId, $questionId = null)
     {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
         $lms = strtoupper($_SESSION['lms']);
         if(Lms::isValidValue($lms))
         {
@@ -1071,10 +1071,10 @@ class Roots
     }
     public function postQuizTakingSession($quizId, $studentId)
     {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
         $lms = strtoupper($_SESSION['lms']);
         if(Lms::isValidValue($lms))
         {
@@ -1086,7 +1086,7 @@ class Roots
             }
         }else
         {
-           throw new \Exception("Invalid LMS");  
+            throw new \Exception("Invalid LMS");
         }
     }
 
@@ -1109,13 +1109,13 @@ class Roots
             throw new \Exception("Invalid LMS");
         }
     }
-    
+
     public function postTurnInQuiz($quizId, $quizSubmission)
     {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
         $lms = strtoupper($_SESSION['lms']);
         if(Lms::isValidValue($lms))
         {
@@ -1126,28 +1126,28 @@ class Roots
             }
         }else
         {
-           throw new \Exception("Invalid LMS");  
+            throw new \Exception("Invalid LMS");
         }
     }
-    
+
     public function isQuestionAnswered($quizId, $questionId, $quizSubmissionId)
     {
-            if(!isset($_SESSION)) 
-            { 
-                session_start(); 
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
+        $lms = strtoupper($_SESSION['lms']);
+        if(Lms::isValidValue($lms))
+        {
+            switch ($lms)
+            {
+                case (Lms::CANVAS):
+                    return $this->canvasHelper->isQuestionAnswered($quizId, $questionId, $quizSubmissionId);
             }
-            $lms = strtoupper($_SESSION['lms']);
-            if(Lms::isValidValue($lms))
-            {
-                switch ($lms)
-                {
-                    case (Lms::CANVAS):
-                        return $this->canvasHelper->isQuestionAnswered($quizId, $questionId, $quizSubmissionId);
-                }
-            }else
-            {
-               throw new \Exception("Invalid LMS");  
-            } 
+        }else
+        {
+            throw new \Exception("Invalid LMS");
+        }
     }
 
     public function getQuizSubmissionQuestions($quizSubmission)

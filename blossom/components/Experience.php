@@ -236,8 +236,11 @@ class Experience extends ComponentBase {
             $this->submissions = $this->getSubmissions();
         }
 
-        foreach ($this->submissions as $item) {
-            $score = $score + floatval($item['score']);
+        if(count($this->submissions)>0)
+        {
+            foreach ($this->submissions as $item) {
+                $score = $score + floatval($item['score']);
+            }
         }
         return $score;
     }
@@ -433,23 +436,26 @@ class Experience extends ComponentBase {
         });
         $milestoneInfo = array();
         $carryingScore = 0;
-        foreach ($this->submissions as $submission) {
+        if(count($this->submissions)>0)
+        {
+            foreach ($this->submissions as $submission) {
 
-            $carryingScore = $carryingScore + floatval($submission['score']);
+                $carryingScore = $carryingScore + floatval($submission['score']);
 
-            foreach ($localMilestones as $key => $mile) {
+                foreach ($localMilestones as $key => $mile) {
 
-                if ($carryingScore >= $mile->points) {//milestone cleared
-                    $mileClearance = new \stdClass();
-                    $mileClearance->milestone_id = $mile->id;
-                    $mileClearance->name = $mile->name;
-                    $mileClearance->cleared = 1;
-                    $mileClearance->cleared_at = $submission['submitted_at'];
-                    $mileClearance->bonusPenalty = $this->calculateBonusOrPenalty($mile->points, new DateTime($submission['submitted_at']), $endDateUTC, true);
-                    $mileClearance->points = $mile->points;
-                    $mileClearance->due_at = $this->calculateMilestoneDueDate($mile->points);
-                    $milestoneInfo[] = $mileClearance;
-                    unset($localMilestones[$key]);
+                    if ($carryingScore >= $mile->points) {//milestone cleared
+                        $mileClearance = new \stdClass();
+                        $mileClearance->milestone_id = $mile->id;
+                        $mileClearance->name = $mile->name;
+                        $mileClearance->cleared = 1;
+                        $mileClearance->cleared_at = $submission['submitted_at'];
+                        $mileClearance->bonusPenalty = $this->calculateBonusOrPenalty($mile->points, new DateTime($submission['submitted_at']), $endDateUTC, true);
+                        $mileClearance->points = $mile->points;
+                        $mileClearance->due_at = $this->calculateMilestoneDueDate($mile->points);
+                        $milestoneInfo[] = $mileClearance;
+                        unset($localMilestones[$key]);
+                    }
                 }
             }
         }
@@ -540,7 +546,6 @@ class Experience extends ComponentBase {
         $this->setBonusSeconds($experienceInstance->bonus_days * 24 * 60 * 60);
         $this->setPenaltyPerSecond($experienceInstance->penalty_per_day / 24 / 60 / 60);
         $this->setPenaltySeconds($experienceInstance->penalty_days * 24 * 60 * 60);
-
         if (is_null($this->submissions)) {
             $this->submissions = $this->getSubmissions($userId);
         }

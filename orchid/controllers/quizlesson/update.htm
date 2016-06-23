@@ -18,15 +18,12 @@
   ~ You can modify personal copy of source-code but cannot distribute modifications
   ~ You may not distribute any version of this software, modified or otherwise
   -->
-<?php Block::put('breadcrumb') ?>
-
-
-<ul>
+<div class="control-breadcrumb">
+    <ul>
         <li><a href="<?= Backend::url('delphinium/orchid/quizlesson') ?>">Quizlesson</a></li>
         <li><?= e($this->pageTitle) ?></li>
     </ul>
-<?php Block::endPut() ?>
-
+</div>
 <?php if (!$this->fatalError): ?>
 
     <?= Form::open(['class' => 'layout']) ?>
