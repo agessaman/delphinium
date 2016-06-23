@@ -267,7 +267,7 @@ a:hover
     padding: 18px 27px 10px 27px;
     background:#333333;
     width : 300px;
-    margin-top: 7px;
+    margin-top: 8px;
 }
 .left-val{
     float:left;
@@ -280,7 +280,7 @@ a:hover
     color:white;
 }
 .range{
-    font-size: 28px;
+    font-size: 26px;
     color: #ccc;
     text-align: center;
     display: block;  
@@ -338,7 +338,7 @@ td.checkbox-field {
     text-align: center;
 }
 td.checkbox-field .filter_checkbox {
-    font-size: 24px;
+    font-size: 22px;
     color: #ccc;
 }
 .checkbox_filter_conternt {
@@ -412,4 +412,7 @@ td.checkbox-field .filter_checkbox {
     margin-left: 6%;
     z-index: 11;
     display: none;
+}
+.jsgrid-grid-body td.number {
+    padding-left: 1em;
 }
