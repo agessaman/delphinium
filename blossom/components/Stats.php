@@ -263,6 +263,7 @@ class Stats extends ComponentBase
             session_start();
         }
         $roleStr = $_SESSION['roles'];
+
         if(stristr($roleStr, 'Learner'))
         {
             return $this->student($experienceInstanceId);
@@ -291,8 +292,10 @@ class Stats extends ComponentBase
         //get red line points
         $experienceComp = new ExperienceComponent();
         $redLine = $experienceComp->getRedLinePoints($experienceInstanceId);
+
         //get milestoneClearance info to get potential bonuses and penalties
         $milestoneClearanceInfo = $experienceComp->getMilestoneClearanceInfo($experienceInstanceId);
+
         $potentialBonus =0.0;
         $potentialPenalties=0.0;
         $penalties=0.0;
@@ -331,7 +334,6 @@ class Stats extends ComponentBase
         $milestoneSummary->bonuses = $bonus;
         $milestoneSummary->penalties = $penalties;
         $milestoneSummary->total = $experienceComp->getUserPoints();
-
         $milestoneNum = count($experience->milestones);
         $healthObj = new \stdClass();
         $healthObj->maxPenalties = $maxPenalties*$milestoneNum;
@@ -363,26 +365,35 @@ class Stats extends ComponentBase
         $i=0;
         $averageObj = new \stdClass();
 
-        foreach($analytics as $item)
+        if(count($analytics)>0)
         {
-            if(isset($item->submission)&&!is_null($item->submission->score)&&!is_null($item->points_possible) &&($item->points_possible>0))
-            {
-                if($i==10)
-                {//take the average of the first 10 assignments
-                    $averageObj->ten = array_sum($percentageArr) / count($percentageArr);
-                }
-                $percentageArr[] = ($item->submission->score/$item->points_possible)*100;
 
-                $i++;
+            foreach($analytics as $item)
+            {
+                if(isset($item->submission)&&!is_null($item->submission->score)&&!is_null($item->points_possible) &&($item->points_possible>0))
+                {
+                    if($i==10)
+                    {//take the average of the first 10 assignments
+                        $averageObj->ten = array_sum($percentageArr) / count($percentageArr);
+                    }
+                    $percentageArr[] = ($item->submission->score/$item->points_possible)*100;
+
+                    $i++;
+                }
+            }
+
+            $average = array_sum($percentageArr) / count($percentageArr);
+            $averageObj->total = $average;
+
+            if(count($analytics)<=10)
+            {//if there were less than 10 assignments we'll show the same average for both options
+                $averageObj->ten = $average;
             }
         }
-
-        $average = array_sum($percentageArr) / count($percentageArr);
-        $averageObj->total = $average;
-
-        if(count($analytics)<=10)
-        {//if there were less than 10 assignments we'll show the same average for both options
-            $averageObj->ten = $average;
+        else
+        {
+            $averageObj->total = 0;
+            $averageObj->ten = 0;
         }
         return $averageObj;
     }

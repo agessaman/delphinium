@@ -86,6 +86,7 @@ class Plugin extends PluginBase
 
     public function boot()
     {
+        return;
         Event::listen('backend.menu.extendItems', function($manager) {
 
             $manager->addSideMenuItems('Delphinium.Greenhouse', 'greenhouse', [

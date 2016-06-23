@@ -29,6 +29,7 @@
 var launchCount = 0;
 var explodeCount = 0;
 var cheerCount = 0;
+var close = false;
 
 FireworkDisplay = {
     GRAVITY : 5,
@@ -148,6 +149,11 @@ FireworkDisplay = {
             var launch = new Audio(path + "plugins/delphinium/blossom/assets/sound/launch.wav");
             launch.volume = 0.2;
             launch.play(); 
+            setInterval(function(){
+                if(close){
+                    launch.pause();
+                }
+            },1);
         }
         launchCount++;
         
@@ -166,12 +172,22 @@ FireworkDisplay = {
         if(explodeCount % 5 == 0){
             var explode = new Audio(path + "plugins/delphinium/blossom/assets/sound/explode.wav");
             explode.play(); 
+            setInterval(function(){
+                if(close){
+                    explode.pause();
+                }
+            },1);
         }
         explodeCount++;
         if(cheerCount % 75 == 0){
             var cheer = new Audio(path + "plugins/delphinium/blossom/assets/sound/cheer.wav");
             //cheer.volume = 0.75;
             cheer.play(); 
+            setInterval(function(){
+                if(close){
+                    cheer.pause();
+                }
+            },1);
         }
         cheerCount++;
         // add the fragments

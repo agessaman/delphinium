@@ -87,11 +87,12 @@ class Gradebook extends ComponentBase {
 
             $this->addCss("/plugins/delphinium/blossom/assets/css/jsgrid.css");
             $this->addCss("/plugins/delphinium/blossom/assets/css/storm.css");
-            //$this->addCss("/plugins/delphinium/blossom/assets/css/bootstrap.min.css");
+            $this->addCss("/plugins/delphinium/blossom/assets/css/range.css");
             $this->addCss("/plugins/delphinium/blossom/assets/css/nouislider.min.css");
             $this->addCss("/plugins/delphinium/blossom/assets/css/gradebook.css");
 
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
+            $this->addJs("/plugins/delphinium/blossom/assets/javascript/range-min.js");
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/nouislider.min.js");
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/gradebook_student.js");
             $this->page['experienceInstanceId'] = $this->property('experienceInstance');
@@ -254,7 +255,6 @@ class Gradebook extends ComponentBase {
     private function getRedLineData() {
         if (!is_null($this->property('experienceInstance'))) {
             $instance = ExperienceModel::find($this->property('experienceInstance'));
-
             $milestones = $instance->milestones;
             $this->page['numMilestones'] = count($milestones);
 
@@ -285,8 +285,14 @@ class Gradebook extends ComponentBase {
             $final = array_merge($newArr, $milestoneData);
 
             usort($final, function($a, $b) {
-                if ($a->date == $b->date) {
+                if ($a->date == $b->date && $a->points == $b->points) {
                     return 0;
+                }
+                if($a->date == $b->date && $a->points < $b->points){
+                    return -1;
+                }
+                if($a->date == $b->date && $a->points > $b->points){
+                    return 1;
                 }
                 return $a->date > $b->date ? 1 : -1;
             });
