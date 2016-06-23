@@ -123,7 +123,7 @@ $(document).keydown(function(e) {
           rippleScript.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/jquery.ripples.js");
           document.body.appendChild(rippleScript);
           $('body').css('backgroundImage', 'url(' + path + 'plugins/delphinium/blossom/assets/images/pebbles.png)');
-        } else {
+          $('body').prepend('<div id="ripple-close-div" class="close-div"><i class="close-button fa fa-times"></i></div>');
           setInterval(function() {
             var $el = $('body');
             var x = Math.random() * $el.outerWidth();
@@ -133,6 +133,13 @@ $(document).keydown(function(e) {
 
             $el.ripples('drop', x, y, dropRadius, strength);
           }, 2000);
+          $('#ripple-close-div').on('click', function() {
+            $('body').ripples("hide");
+            $('#ripple-close-div').hide();
+          });
+        } else {
+          $('body').ripples("show");
+          $('#ripple-close-div').show();
         }        
       }
     }
@@ -300,8 +307,8 @@ $(document).keydown(function(e) {
           var background = '<div id="bg" style="background:url(' + path + 'plugins/delphinium/blossom/assets/images/background.jpg) repeat-x;position:absolute;left:0;top:'+($(window).height()-193)+'px;width:100%;height:200px;"></div>';
           $('#fireworks-content').append(canvas);
           $('#fireworks-content').append(background);
-          $('#fireworks-content').prepend('<div style="position:absolute; top: 0; right:0; z-index: 100; background-color:white; height: 15px; width: 15px;"><i id="close-button" class="fa fa-times"></i></div>');
-          $('#close-button').on('click', function() {
+          $('#fireworks-content').prepend('<div class="close-div"><i id="fire-close" class="close-button fa fa-times"></i></div>');
+          $('#fire-close').on('click', function() {
             $('#fireworks-content').hide();
             close = true;
           });
