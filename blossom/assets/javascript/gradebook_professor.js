@@ -41,6 +41,14 @@ promise.then(function (data1, textStatus, jqXHR) {
     });
 callStudentsMilestoneInfo(students);
 
+function getCHartDragPoints() {
+    var min_max = [];
+    min_max[0] = parseInt($('.pointer-label.low').text());
+    min_max[1] = parseInt($('.pointer-label.high').text());
+
+    return min_max;
+}
+
 div = d3.select("body").append("div")
     .attr("class", "tooltip")
     .style("opacity", 0);
@@ -83,7 +91,6 @@ var g = svg.append("g")
         "translate(" + margin.left + "," + margin.top + ")")
     .attr("id", "gChart");
 
-console.log(chartData);
 // Get the data
 data = parseDates(chartData);
 // Scale the range of the data
@@ -93,6 +100,7 @@ x.domain(d3.extent(data, function (d) {
 y.domain([0, d3.max(data, function (d) {
     return d.points;
 })]);
+
 // Add the X Axis
 g.append("g")
     .attr("class", "x axis")
@@ -276,9 +284,10 @@ d3.select(".deselectAll").on("change", function () {
     {
         d.checked = allSelected;
         var num = parseInt(d.value);
+        var min_max = getCHartDragPoints();
         if (allSelected)
         {
-            checkedBox(num);
+            checkedBox(num,min_max);
             selectedStudents.push(num);
         }
         else
@@ -316,7 +325,8 @@ d3.selectAll(".single").on("change", function () {
     {//add line
         if (!isNaN(num))
         {
-            checkedBox(num);
+            var min_max = getCHartDragPoints();          
+            checkedBox(num,min_max);
         }
         else
         {
@@ -415,14 +425,22 @@ function uncheckedBox(id)
     d3.selectAll(selector).remove();
 }
 
-function checkedBox(id)
+function checkedBox(id,min_max)
 {
     var masterArr = submissions.filter(function (d) {
         return d.id === id;
     });
     if (masterArr.length > 0)
     {
-        var parsedData = parseDates(masterArr[0].items);
+        var masterItems = masterArr[0].items,
+            masterItemsDrag = [];
+        $.each(masterItems, function(k,v){
+            if(v.points >= min_max[0] && v.points <= min_max[1]){
+                masterItemsDrag.push(masterItems[k]);
+            }
+        });
+        masterItems = masterItemsDrag;
+        var parsedData = parseDates(masterItems);
         addLine(parsedData, "steelblue", masterArr[0].id);
     }
 }
@@ -575,6 +593,7 @@ function filterrange(args, item, check,index_td) {
 
         slider_div[0].noUiSlider.on('update', function (values, handle ) {
             if ( !handle ) {
+
                 lowerValue.innerHTML = d3.round(values[handle], 2);
             } else {
                 upperValue.innerHTML = d3.round(values[handle], 2);
@@ -1221,14 +1240,35 @@ function roundToTwo(num) {
     return +(Math.round(num + "e+2")  + "e-2");
 }
 
+function chartDragPoints(min_max) {
+    $.each($('input.single:checked'), function(k,input){
+        var id = parseInt($(input).val());
+        uncheckedBox(id);
+        checkedBox(id,min_max);
+    });
+}
 
+
+var rMax = d3.max(data, function (d) {
+    return d.points;
+});
+$('.range-slider').val(rMax);
 $('.range-slider').jRange({
     from: 0,
-    to: 100,
+    to: rMax,
     step: 1,
     /*scale: [0,25,50,75,100],*/
     format: '%s',
     width: 300,
     showLabels: true,
-    isRange : true
+    isRange : true,
+    onbarclicked: function(a){
+        var drag_res = a.split(',');
+        chartDragPoints(drag_res);
+    },
+    ondragend: function(a){
+        var drag_res = a.split(',');
+        chartDragPoints(drag_res);
+    }
+
 });
