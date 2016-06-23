@@ -1,0 +1,11 @@
+<div class="components subitems">
+    <div class="list-container">
+        <ul class="list">
+            <?php foreach ($files as $index => $file): ?>
+            <li class="item" data-item-fullpath ="<?= e(ltrim($file->fullPath, '/')) ?>" data-item-path="<?= e(ltrim($file->path, '/')) ?>"  data-item-type="htm" >
+                <a class="name"><?= e($file->fileName) ?></a>
+            </li>
+            <?php endforeach ?>
+        </ul>
+    </div>
+</div>

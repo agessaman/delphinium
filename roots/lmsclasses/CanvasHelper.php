@@ -1172,6 +1172,10 @@ $req = curl_exec($curl);*/
 
             $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
             $response = GuzzleHelper::makeRequest($request, $url, false,$token);
+            if(count($response)<1)
+            {
+                return[];
+            }
             return $this->processCanvasSubmissionData($response, $request->getIncludeTags(), $request->getGrouped());
         }
 
@@ -1264,8 +1268,15 @@ $req = curl_exec($curl);*/
         $urlArgs[]="access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
-        $response = GuzzleHelper::getAsset($url);
-        return $response;
+        try
+        {
+            $response = GuzzleHelper::getAsset($url);
+            return $response;
+        }
+        catch(\GuzzleHttp\Exception\ClientException $e)
+        {
+            return [];
+        }
     }
 
     public function getUsersInCourse()
@@ -1506,7 +1517,7 @@ $req = curl_exec($curl);*/
                     continue;
                 }
             }
-            if(($key==="tags")||($key==="published"))//tags will be handled by us (not by Canvas). Published cannot be set when creating 
+            if(($key==="tags")||($key==="published"))//tags will be handled by us (not by Canvas). Published cannot be set when creating
             {//a module item
                 continue;
             }

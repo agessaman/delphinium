@@ -52,7 +52,7 @@
             bonus/penalties are denoted by a clock icon <i class="fa fa-clock-o"></i>.
             <br/>
         </p>
-        <div id="image0"></div>
+        <div id="pace-img"></div>
     </div>
     <h3>Health</h3>
     <div>
@@ -61,7 +61,7 @@
             will be green. If the balance is
             negative, the bar will be red.
         </p>
-        <div id="image1"></div>
+        <div id="health-img"></div>
     </div>
     <h3>Gap</h3>
     <div>
@@ -70,7 +70,7 @@
             will be green.
             If they are behind of the line, the bar will be red.
         </p>
-        <div id="image2"></div>
+        <div id="gap-img"></div>
     </div>
     <h3>Stamina</h3>
     <div>
@@ -81,7 +81,7 @@
             view the percent of points
             earned for all assignments they have completed so far, or just the last 10 assignments.
         </p>
-        <div id="image3"></div>
+        <div id="stamina-img"></div>
     </div>
 </div>
 
@@ -96,28 +96,28 @@
         background-repeat: no-repeat;
         background-size: contain;
     }
-    #image0{
+    #pace-img{
         width: 100%;
         height: 80px;
         background-image: url('<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/stats_pace.png');
         background-repeat: no-repeat;
         background-size: contain;
     }
-    #image1{
+    #health-img{
         width: 100%;
         height: 72px;
         background-image: url('<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/stats_health.png');
         background-repeat: no-repeat;
         background-size: contain;
     }
-    #image2{
+    #gap-img{
         width: 100%;
         height: 75px;
         background-image: url('<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/stats_gap.png');
         background-repeat: no-repeat;
         background-size: contain;
      }
-    #image3{
+    #stamina-img{
         width: 100%;
         height: 90px;
         background-image: url('<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/stats_stamina.png');

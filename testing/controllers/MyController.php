@@ -48,7 +48,6 @@ class MyController extends Controller
         BackendMenu::setContext('Delphinium.Greenhouse', 'greenhouse', 'greenhouse');
 
         $plugins = $this->getPluginList();
-        var_dump($plugins);
         new Delphiniumize($this, 'delphiniumize');
     }
 

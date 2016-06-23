@@ -83,6 +83,7 @@ var g = svg.append("g")
         "translate(" + margin.left + "," + margin.top + ")")
     .attr("id", "gChart");
 
+console.log(chartData);
 // Get the data
 data = parseDates(chartData);
 // Scale the range of the data
@@ -1219,3 +1220,15 @@ function showStudentDetails(studentSummaryData)
 function roundToTwo(num) {
     return +(Math.round(num + "e+2")  + "e-2");
 }
+
+
+$('.range-slider').jRange({
+    from: 0,
+    to: 100,
+    step: 1,
+    /*scale: [0,25,50,75,100],*/
+    format: '%s',
+    width: 300,
+    showLabels: true,
+    isRange : true
+});
