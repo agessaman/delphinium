@@ -1019,13 +1019,14 @@ class CanvasHelper
      */
     public function processSubmissionsRequest(SubmissionsRequest $request)
     {
+
         $asynch = false;//this variable will determine whether we'll send the request asynchronously or not.
         if(!isset($_SESSION))
         {
             session_start();
         }
         $domain = $_SESSION['domain'];
-        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $token = \Crypt::decrypt($_SESSION['userToken']);       
         $courseId = $_SESSION['courseID'];
         $userId = $_SESSION['userID'];
 
@@ -1079,7 +1080,6 @@ class CanvasHelper
                 }
                 $urlArgs[]="access_token={$token}&per_page=100";
                 $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
-		
 /*$curl = curl_init();
 curl_setopt_array($curl,array(
 	CURLOPT_RETURNTRANSFER => 1,
@@ -1093,7 +1093,6 @@ $req = curl_exec($curl);*/
 //print_r($req);die(':end');
 
                 $req =  new \GuzzleHttp\Psr7\Request('GET', $url);
-
 		$requests[] = $req;
 
                 $client = new Client();
@@ -1103,11 +1102,11 @@ $req = curl_exec($curl);*/
                     'concurrency' => count($requests),
                     'fulfilled' => function ($response, $index) use (&$returnData, $request) {
                         $newData = json_decode($response->getBody());
-                        $processedData = $this->processCanvasSubmissionData($newData, $request->getIncludeTags(), $request->getGrouped());
+                        $processedData = $this->processCanvasSubmissionData($newData, $request->getIncludeTags(), $request->getGrouped());   
                         $returnData = array_merge($returnData,$processedData);
                     },
                     'rejected' => function ($reason, $index) {
-                        //TODO: figure out what to do here
+			//TODO: figure out what to do here
                     },
                 ]);
                 // Initiate the transfers and create a promise
