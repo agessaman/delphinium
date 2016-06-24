@@ -42,11 +42,16 @@ promise.then(function (data1, textStatus, jqXHR) {
 callStudentsMilestoneInfo(students);
 
 function getCHartDragPoints() {
-    var min_max = [];
-    min_max[0] = parseInt($('.pointer-label.low').text());
-    min_max[1] = parseInt($('.pointer-label.high').text());
+    var min_max = [],
+        rangeSliderContainer = $('.range-slider-container'); 
+    min_max[0] = parseInt(rangeSliderContainer.find('.pointer-label.low').text());
+    min_max[1] = parseInt(rangeSliderContainer.find('.pointer-label.high').text());
 
     return min_max;
+}
+
+function getChartDate() {
+    return $('.ui-slider-pip-selected').find('.ui-slider-label').attr('data-value');
 }
 
 div = d3.select("body").append("div")
@@ -284,10 +289,9 @@ d3.select(".deselectAll").on("change", function () {
     {
         d.checked = allSelected;
         var num = parseInt(d.value);
-        var min_max = getCHartDragPoints();
         if (allSelected)
         {
-            checkedBox(num,min_max);
+            checkedBox(num);
             selectedStudents.push(num);
         }
         else
@@ -324,9 +328,8 @@ d3.selectAll(".single").on("change", function () {
     else
     {//add line
         if (!isNaN(num))
-        {
-            var min_max = getCHartDragPoints();          
-            checkedBox(num,min_max);
+        {       
+            checkedBox(num);
         }
         else
         {
@@ -425,18 +428,22 @@ function uncheckedBox(id)
     d3.selectAll(selector).remove();
 }
 
-function checkedBox(id,min_max)
+function checkedBox(id)
 {
     var masterArr = submissions.filter(function (d) {
         return d.id === id;
-    });
+    }),
+        min_max = getCHartDragPoints(),
+        dragDate = getChartDate();
     if (masterArr.length > 0)
     {
         var masterItems = masterArr[0].items,
             masterItemsDrag = [];
         $.each(masterItems, function(k,v){
             if(v.points >= min_max[0] && v.points <= min_max[1]){
-                masterItemsDrag.push(masterItems[k]);
+                if(Date.parse(v.date) <= parseInt(dragDate) || v.date <= parseInt(dragDate)){
+                    masterItemsDrag.push(masterItems[k]);
+                }
             }
         });
         masterItems = masterItemsDrag;
@@ -1240,35 +1247,91 @@ function roundToTwo(num) {
     return +(Math.round(num + "e+2")  + "e-2");
 }
 
-function chartDragPoints(min_max) {
+function chartDragPoints() {
     $.each($('input.single:checked'), function(k,input){
         var id = parseInt($(input).val());
         uncheckedBox(id);
-        checkedBox(id,min_max);
+        checkedBox(id);
     });
 }
 
+function chartDateRange() {
+    var date = getChartDate();
+    var orangeLine = x(date);
+    $('.todayLine').attr('x',orangeLine);
+    chartDragPoints();
+}
 
-var rMax = d3.max(data, function (d) {
-    return d.points;
-});
+var rMax = d3.max(data, function (d) {return d.points;});
 $('.range-slider').val(rMax);
 $('.range-slider').jRange({
     from: 0,
     to: rMax,
     step: 1,
-    /*scale: [0,25,50,75,100],*/
     format: '%s',
     width: 300,
     showLabels: true,
     isRange : true,
     onbarclicked: function(a){
-        var drag_res = a.split(',');
-        chartDragPoints(drag_res);
+        chartDragPoints();
     },
     ondragend: function(a){
-        var drag_res = a.split(',');
-        chartDragPoints(drag_res);
+        chartDragPoints();
     }
 
+});
+var dTo = new Date();
+var dFrom = d3.min(data, function(d){return d.date}),
+    rDTo = Date.parse(dTo),
+    speed;
+labels = [];
+for(var i = dFrom; i<=dTo; i+=86400000){
+    labels.push(new Date(i));
+}
+
+$(".my-ui-slider").slider({
+    min: dFrom,
+    max: rDTo,
+    value: rDTo,
+    step: 86400000
+}).slider("pips")
+.on("slidechange", function(e,d) {
+    pointDate = $('.ui-slider-pip-selected').index()-1;
+    chartDateRange();
+}).slider('float', {
+    labels: labels
+});
+
+$('.ui-slider-pip-first').find('.ui-slider-label').text(new Date(dFrom));
+$('.ui-slider-pip-last').find('.ui-slider-label').text(dTo);
+
+
+pointDate = 0;
+function intervalIts() {
+    var points = $('.my-ui-slider').children('span').not('.ui-slider-handle');
+    var count = points.length;
+    if(count > pointDate){
+        var point = points.eq(pointDate); 
+        var left = point[0].style.left;
+        var val = point.find('.ui-slider-label').attr('data-value');
+        $('.my-ui-slider').find('.ui-slider-handle').css('left',left).find('span').text(val);
+        $('.ui-slider-pip').removeClass('ui-slider-pip-selected').eq(pointDate).addClass('ui-slider-pip-selected');
+        chartDateRange();
+    }else{
+        $('button.player').find('i').removeClass('fa-pause').addClass('fa-play');
+        pointDate = -1;
+        clearInterval(speed);
+    }
+    pointDate++;
+}
+
+$(document).on('click','.player', function() {
+    var i = $(this).find('i');
+    if(i.hasClass('fa-play')){ 
+        speed = setInterval(intervalIts,500);
+        i.removeClass('fa-play').addClass('fa-pause');
+    } else { 
+        i.removeClass('fa-pause').addClass('fa-play');
+        clearInterval(speed);
+    }
 });
