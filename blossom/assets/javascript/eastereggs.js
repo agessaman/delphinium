@@ -269,14 +269,17 @@ $(document).keydown(function(e) {
       if (raptor[keys.R] && raptor[keys.A]) {
         if(!raptor["loaded"]) {
           //load the script
+          console.log("raptor loading");
           raptor["loaded"] = true;
           var raptorScript = document.createElement('script');
           raptorScript.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/jquery.raptorize.1.0.js");
+          console.log(raptorScript);
           document.body.appendChild(raptorScript);
           setTimeout(function() {
             $('body').raptorize({'enterOn': 'timer', 'delayTime': 0});
-          },500);  
+          },1000);  
         }else{
+          console.log("raptor loaded");
           $('body').raptorize({'enterOn': 'timer', 'delayTime': 0});
         }
       }
