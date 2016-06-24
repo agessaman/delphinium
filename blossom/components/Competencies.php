@@ -271,7 +271,8 @@ class Competencies extends ComponentBase
 
 			// ready to finish loading assets
 			$this->addCss("/modules/system/assets/ui/storm.css", "core");// loader storm changes modal-header override css
-			$this->addJs("/modules/system/assets/ui/storm-min.js", "core");
+//			$this->addJs("/modules/system/assets/ui/storm-min.js", "core");
+			$this->addJs('/modules/system/assets/ui/js/flashmessage.js', 'core');
 			$this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
 			$this->addCss("/plugins/delphinium/blossom/assets/css/competencies.css");
 			$this->addJs("/plugins/delphinium/blossom/assets/javascript/competencies.js");
