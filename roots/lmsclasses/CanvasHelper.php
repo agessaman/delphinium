@@ -483,10 +483,6 @@ class CanvasHelper
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
         $response = GuzzleHelper::makeRequest($request, $url, false, $token);
 
-//        if(intval($moduleRow->id)==380213)
-//        {
-//            echo json_encode($moduleRow)."_";
-//        }
         return $this->processCanvasModuleData($response, $courseId);
     }
 
@@ -1516,6 +1512,7 @@ class CanvasHelper
             //we'll create an array with all the moduleIds that belong to this courseId
             $moduleIdsArray[] = $moduleRow->id;
             $module = $this->processSingleModule($moduleRow, $courseId, $i, $firstItemId, $moduleItemIdsArray);
+
             $items[] = $module;
             $i++;
         }
@@ -1548,6 +1545,9 @@ class CanvasHelper
             //save moduleItems
             $moduleItems = $this->saveModuleItems($moduleRow->items, $courseId, $itemIdsArr);
             $module->module_items = $moduleItems;
+
+            //do specific quality assurance on each module (in case module items have been moved around)
+            $this->dbHelper->specificModuleQualityAssurance($courseId, $moduleRow->id, $moduleRow->items);
         }
 
         $orderedMod = $this->retrieveOrderedModuleInfo($moduleRow->id, $courseId);
@@ -1572,6 +1572,8 @@ class CanvasHelper
         $module->save();
         $modArr = $module->toArray();
         $modArr['module_items'] = $module->module_items->toArray();
+
+
         return $modArr;
     }
 
@@ -1592,6 +1594,7 @@ class CanvasHelper
             array_push($allItems, $moduleArr);
         }
 
+        //quality assurance: delete from the module the items that have been removed...
         return $allItems;
     }
 
