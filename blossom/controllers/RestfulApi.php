@@ -127,8 +127,16 @@ class RestfulApi extends Controller
         $userId = $_SESSION['userID'];
         $this->roots = new Roots();
         $request = new SubmissionsRequest(ActionType::GET, array($userId), false, array(), true, false, true, false);
-        $submissions =  $this->roots->submissions($request);
-        return $submissions;
+        try{
+            $submissions =  $this->roots->submissions($request);
+            return $submissions;
+        }
+        catch (\Exception $e)
+        {
+            trace_log($e);
+            return [];
+        }
+
     }
 
     private function calculateBonusOrPenalty($milestonePoints, $submittedAt)//submittedAt will also be in UTC

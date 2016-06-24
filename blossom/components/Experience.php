@@ -564,14 +564,14 @@ class Experience extends ComponentBase {
         $request = new SubmissionsRequest(ActionType::GET, array($userId), false, array(), true, false, true, false);
 
 
-        try
-        {
+        try {
             $submissions = $roots->submissions($request);
             return $submissions;
-        } catch (\Delphinium\Roots\Exceptions\InvalidRequestException $e) {
-            if($e->getCode()===401)
-            {return [];}
-            else{throw $e;}
+        }
+        catch (\Exception $e)
+		{
+            trace_log($e);
+            return [];
         }
 
     }
