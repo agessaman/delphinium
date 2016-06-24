@@ -46,6 +46,9 @@
 .m-l-3 {
     margin-left: 30px;
 }
+.m-l-12 {
+    margin-left: 120px;
+}
 .m-r-1 {
     margin-right: 10px;
 }
@@ -63,6 +66,12 @@
 }
 .m-b-3 {
     margin-bottom: 30px;
+}
+.m-b-4 {
+    margin-bottom: 40px;
+}
+.m-b-5 {
+    margin-bottom: 50px;
 }
 .tooltip
 {
@@ -452,6 +461,26 @@ td.checkbox-field .filter_checkbox {
 .jsgrid-grid-body td.number {
     padding-left: 1em;
 }
-.range-slider-container {
-
+.ui-slider-pip-first .ui-slider-label,
+.ui-slider-pip-last .ui-slider-label {
+    width: 9em !important;
+}
+.bottomSpinnerDiv i, .spinnerDiv i {
+    font-size: 40px !important;
+}
+.player {
+    height: 19px;
+    margin-top: -2px;
+}
+.ui-slider-pip .ui-slider-label {
+    left: -27px !important;
+}
+.ui-slider-float .ui-slider-tip, .ui-slider-float .ui-slider-tip-label {
+    width: 280px !important;
+}
+.ui-slider-float .ui-slider-tip:after {
+    left: 6.1% !important;
+}
+.ui-slider-float .ui-slider-tip:before {
+    left: 6.1% !important;
 }
