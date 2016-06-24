@@ -41,7 +41,7 @@ class Leaderboard extends ComponentBase
     {
         return [
             'name'        => 'Leaderboard',
-            'description' => 'Shows where student sits compaired to others in the class'
+            'description' => 'Shows where a student stands compared to others in the class'
         ];
     }
 
