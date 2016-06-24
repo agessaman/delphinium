@@ -484,3 +484,8 @@ td.checkbox-field .filter_checkbox {
 .ui-slider-float .ui-slider-tip:before {
     left: 6.1% !important;
 }
+.slider-container {
+    display: block !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
