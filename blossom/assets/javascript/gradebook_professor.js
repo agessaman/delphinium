@@ -1281,18 +1281,20 @@ $('.range-slider').jRange({
 
 });
 var dTo = new Date();
+var endDate = Date.parse(endDate);
 var dFrom = d3.min(data, function(d){return d.date}),
     rDTo = Date.parse(dTo),
-    speed;
+    speed,
+    endDate = (endDate < dTo) ? endDate : rDTo;
 labels = [];
-for(var i = dFrom; i<=dTo; i+=86400000){
+for(var i = dFrom; i<=endDate; i+=86400000){
     labels.push(new Date(i));
 }
 
 $(".my-ui-slider").slider({
     min: dFrom,
-    max: rDTo,
-    value: rDTo,
+    max: endDate,
+    value: endDate,
     step: 86400000
 }).slider("pips")
 .on("slidechange", function(e,d) {
