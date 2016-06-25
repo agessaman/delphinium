@@ -239,6 +239,7 @@ class Gradebook extends ComponentBase {
         $aggregateSubmissionScores = $this->aggregateSubmissionScores();
         $users = $this->roots->getStudentsInCourse();
         $userMasterArr= array();
+        $courseEnd = $this->roots->getCourse()->end_at;
         foreach($users as $userCourse)
         {
             $userMasterArr[] = $userCourse->user;
@@ -246,12 +247,16 @@ class Gradebook extends ComponentBase {
         $this->page['users'] = json_encode($userMasterArr);
         $this->users = $userMasterArr;
         $this->page['submissions'] = json_encode($aggregateSubmissionScores);
+
+        $this->page['courseDate'] = json_encode($courseEnd);
+
         //comment these two lines
         // $submissionData = $this->matchSubmissionsAndUsers($users, $aggregateSubmissionScores);
         // $this->studentData = $submissionData;
         // chart data
 
         $this->page['chartData'] = json_encode($this->getRedLineData());
+        $this->page['endDate'] = json_encode($courseEnd);
         $experience = new ExperienceComponent();
         $this->page['today'] = $experience->getRedLinePoints($this->property('experienceInstance'));
 
@@ -430,6 +435,14 @@ class Gradebook extends ComponentBase {
         }
         return $masterArr;
     }
+
+    /*private function getCourseDate() {
+        
+        session_start();
+        if(!empty($_SESSION['courseID']) && !empty($_SESSION['userToken'])) {
+
+        }
+    }*/
 
     public function aggregateSubmissionScores() {
 
