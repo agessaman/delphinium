@@ -508,6 +508,8 @@ td.checkbox-field .filter_checkbox {
 .rg {
     line-height: 14px;
     font-size: 17px;
+    float: left;
+    margin-right: 17px;
 }
 .jsgrid-filter-row td,
 .ui-slider-handle,
