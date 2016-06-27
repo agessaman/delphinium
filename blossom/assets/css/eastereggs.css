@@ -64,6 +64,8 @@ html{
 	background-color:white; 
 	height: 50px; 
 	width: 50px;
+	cursor: pointer;
+	color: black;
 }
 
 #close-div .close-button {
