@@ -300,7 +300,7 @@
         the new label colours shown */
 .ui-slider-pips [class*=ui-slider-pip-initial] {
   font-weight: bold;
-  color: #14CA82;
+  color: #ca6214;
 }
 
 .ui-slider-pips .ui-slider-pip-initial-2 {
@@ -319,7 +319,6 @@
 .ui-slider-pips .ui-slider-pip-selected-2 {
   color: #E70081;
 }
-
 .ui-slider-pips [class*=ui-slider-pip-selected] .ui-slider-line,
 .ui-slider-pips .ui-slider-pip-inrange .ui-slider-line {
   background: black;
