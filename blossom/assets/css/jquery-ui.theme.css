@@ -8,7 +8,7 @@
  *
  * http://api.jqueryui.com/category/theming/
  *
- * To view and modify this theme, visit http://jqueryui.com/themeroller/?ffDefault=Gill%20Sans%2CArial%2Csans-serif&fwDefault=bold&fsDefault=1.2em&cornerRadius=4px&bgColorHeader=35414f&bgTextureHeader=dots_small&bgImgOpacityHeader=35&borderColorHeader=2c4359&fcHeader=e1e463&iconColorHeader=e1e463&bgColorContent=ffffff&bgTextureContent=flat&bgImgOpacityContent=75&borderColorContent=aaaaaa&fcContent=2c4359&iconColorContent=c02669&bgColorDefault=93c3cd&bgTextureDefault=diagonals_small&bgImgOpacityDefault=50&borderColorDefault=93c3cd&fcDefault=333333&iconColorDefault=ffffff&bgColorHover=ccd232&bgTextureHover=diagonals_small&bgImgOpacityHover=75&borderColorHover=999999&fcHover=212121&iconColorHover=454545&bgColorActive=db4865&bgTextureActive=diagonals_small&bgImgOpacityActive=40&borderColorActive=ff6b7f&fcActive=ffffff&iconColorActive=ffffff&bgColorHighlight=ffff38&bgTextureHighlight=dots_medium&bgImgOpacityHighlight=80&borderColorHighlight=b4d100&fcHighlight=363636&iconColorHighlight=88a206&bgColorError=ff3853&bgTextureError=diagonals_small&bgImgOpacityError=50&borderColorError=ff6b7f&fcError=ffffff&iconColorError=ffeb33&bgColorOverlay=f7f7ba&bgTextureOverlay=white_lines&bgImgOpacityOverlay=85&opacityOverlay=80&bgColorShadow=ba9217&bgTextureShadow=flat&bgImgOpacityShadow=75&opacityShadow=20&thicknessShadow=10px&offsetTopShadow=8px&offsetLeftShadow=8px&cornerRadiusShadow=5px
+ * To view and modify this theme, visit http://jqueryui.com/themeroller/?ffDefault=Gill%20Sans%2CArial%2Csans-serif&fsDefault=1.2em&fwDefault=bold&cornerRadius=4px&bgColorHeader=%2335414f&bgTextureHeader=dots_small&borderColorHeader=%232c4359&fcHeader=%23e1e463&iconColorHeader=%23e1e463&bgColorContent=%23ffffff&bgTextureContent=flat&borderColorContent=%23aaaaaa&fcContent=%232c4359&iconColorContent=%23c02669&bgColorDefault=%2393c3cd&bgTextureDefault=diagonals_small&borderColorDefault=%2393c3cd&fcDefault=%23333333&iconColorDefault=%23ffffff&bgColorHover=%23ccd232&bgTextureHover=diagonals_small&borderColorHover=%23999999&fcHover=%23212121&iconColorHover=%23454545&bgColorActive=%23fba810&bgTextureActive=diagonals_small&borderColorActive=%23fba810&fcActive=%23ffffff&iconColorActive=%23ffffff&bgColorHighlight=%23ffff38&bgTextureHighlight=dots_medium&borderColorHighlight=%23b4d100&fcHighlight=%23363636&iconColorHighlight=%2388a206&bgColorError=%23ff3853&bgTextureError=diagonals_small&borderColorError=%23ff6b7f&fcError=%23ffffff&iconColorError=%23ffeb33&bgColorOverlay=%23f7f7ba&bgTextureOverlay=white_lines&bgImgOpacityOverlay=85&opacityOverlay=80&bgColorShadow=%23ba9217&bgTextureShadow=flat&bgImgOpacityShadow=75&opacityShadow=20&thicknessShadow=10px&offsetTopShadow=8px&offsetLeftShadow=8px&cornerRadiusShadow=5px&bgImgOpacityHeader=35&bgImgOpacityContent=75&bgImgOpacityDefault=50&bgImgOpacityHover=75&bgImgOpacityActive=40&bgImgOpacityHighlight=80&bgImgOpacityError=50
  */
 
 
@@ -87,8 +87,8 @@
 .ui-state-active,
 .ui-widget-content .ui-state-active,
 .ui-widget-header .ui-state-active {
-	border: 1px solid #ff6b7f;
-	background: #db4865 url("images/ui-bg_diagonals-small_40_db4865_40x40.png") 50% 50% repeat;
+	border: 1px solid #fba810;
+	background: #fba810 url("images/ui-bg_diagonals-small_40_fba810_40x40.png") 50% 50% repeat;
 	font-weight: bold;
 	color: #ffffff;
 }

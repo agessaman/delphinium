@@ -43,15 +43,16 @@ callStudentsMilestoneInfo(students);
 
 function getCHartDragPoints() {
     var min_max = [],
-        rangeSliderContainer = $('.range-slider-container'); 
-    min_max[0] = parseInt(rangeSliderContainer.find('.pointer-label.low').text());
-    min_max[1] = parseInt(rangeSliderContainer.find('.pointer-label.high').text());
+        rangeSliderContainer = $('.range-slider'); 
+    min_max[0] = parseInt(rangeSliderContainer.find('.ui-slider-handle').eq(0).find('.ui-slider-tip').text());
+    min_max[1] = parseInt(rangeSliderContainer.find('.ui-slider-handle').eq(1).find('.ui-slider-tip').text());
 
     return min_max;
 }
 
 function getChartDate() {
-    return $('.ui-slider-pip-selected').find('.ui-slider-label').attr('data-value');
+    var index = $('.ui-slider-pip-selected').find('.ui-slider-label').attr('data-value');
+    return Date.parse(dateRange[index]);
 }
 
 div = d3.select("body").append("div")
@@ -468,6 +469,17 @@ function parseDates(data)
     return data;
 }
 
+$('.line' ).on('mouseover',function(event) {
+    div.transition()
+        .duration(200)
+        .style("opacity", .9);
+    div.html('Expected Performance')
+        .style("left", (event.pageX) + "px")
+        .style("top", (event.pageY - 28) + "px");
+}).mouseout(function() {
+    removeTooltipProfessorGradebook();
+});
+
 function addTooltipProfessorGradebook(text)
 {
     div.transition()
@@ -495,6 +507,15 @@ function parseTimestamp(UNIX_timestamp)
 
     var time = formatAMPM(date);
     return monthNames[monthIndex] + " " + day + " @ " + time;
+}
+
+function parseDayMonth(UNIX_timestamp) {
+    var date = new Date(UNIX_timestamp);
+    var monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    var day = date.getDate();
+    var monthIndex = date.getMonth();
+
+    return monthNames[monthIndex] + " " + day;
 }
 
 function formatAMPM(date) {
@@ -575,7 +596,7 @@ function filterrange(args, item, check,index_td) {
             }
         });
         slider_div[0].noUiSlider.on('end', function(values){
-            if(parseFloat(args['start_min']) == parseFloat(values[0]) && parseFloat(args['start_max']) == parseFloat(values[1])){
+            if(parseFloat(args['start_min']).toFixed(2) == parseFloat(values[0]) && parseFloat(args['start_max']).toFixed(2) == parseFloat(values[1])){
                 td.find('.range').removeClass('text_blue');
             }else{
                 td.find('.range').addClass('text_blue');
@@ -967,10 +988,10 @@ function buildTable(data) {
         filterValue: function(){
             var id = this.name.slice(0, 3);
             var  min = -1000;
-            var  max = 2000;
+            var  max = 5000;
             if($('#'+id).length > 0){
-                min = $('#'+id).closest('.'+id).find('.left-val').text();
-                max = $('#'+id).closest('.'+id).find('.right-val').text();
+                min = parseFloat($('#'+id).closest('.'+id).find('.left-val').text()).toFixed(2);
+                max = parseFloat($('#'+id).closest('.'+id).find('.right-val').text()).toFixed(2);
             }
             return JSON.stringify({min:min,max:max});
         }
@@ -1263,23 +1284,17 @@ function chartDateRange() {
 }
 
 var rMax = d3.max(data, function (d) {return d.points;});
-$('.range-slider').val(rMax);
-$('.range-slider').jRange({
-    from: 0,
-    to: rMax,
+$(".range-slider").slider({
+    max: rMax,
+    values: [0,rMax],
     step: 1,
-    format: '%s',
-    width: 300,
-    showLabels: true,
-    isRange : true,
-    onbarclicked: function(a){
-        chartDragPoints();
-    },
-    ondragend: function(a){
-        chartDragPoints();
-    }
-
+    range: true
+}).slider("pips")
+.on("slidechange", function(e,d) {
+}).slider('float', {
+    labels: true
 });
+
 var dTo = new Date();
 var endDate = Date.parse(endDate);
 var dFrom = d3.min(data, function(d){return d.date}),
@@ -1287,25 +1302,28 @@ var dFrom = d3.min(data, function(d){return d.date}),
     speed,
     endDate = (endDate < dTo) ? endDate : rDTo;
 labels = [];
+dateRange = [];
 for(var i = dFrom; i<=endDate; i+=86400000){
-    labels.push(new Date(i));
+    labels.push(parseDayMonth(i));
+    dateRange.push(new Date(i));
 }
-
+labels.push(parseDayMonth(endDate));
+dateRange.push(new Date(endDate));
+var dateMax = labels.length - 1;
 $(".my-ui-slider").slider({
-    min: dFrom,
-    max: endDate,
-    value: endDate,
-    step: 86400000
+    min: 0,
+    max: dateMax,
+    value: dateMax,
+    step: 1
 }).slider("pips")
 .on("slidechange", function(e,d) {
-    pointDate = $('.ui-slider-pip-selected').index()-1;
-    chartDateRange();
+    pointDate = $('.my-ui-slider .ui-slider-pip-selected').index()-1;
 }).slider('float', {
     labels: labels
 });
 
-$('.ui-slider-pip-first').find('.ui-slider-label').text(new Date(dFrom));
-$('.ui-slider-pip-last').find('.ui-slider-label').text(dTo);
+$('.my-ui-slider .ui-slider-pip-first').find('.ui-slider-label').text(parseDayMonth(dFrom));
+$('.my-ui-slider .ui-slider-pip-last').find('.ui-slider-label').text(parseDayMonth(dTo));
 
 
 pointDate = 0;
@@ -1315,7 +1333,8 @@ function intervalIts() {
     if(count > pointDate){
         var point = points.eq(pointDate); 
         var left = point[0].style.left;
-        var val = point.find('.ui-slider-label').attr('data-value');
+        var index = point.find('.ui-slider-label').attr('data-value');
+        var val = labels[index];
         $('.my-ui-slider').find('.ui-slider-handle').css('left',left).find('span').text(val);
         $('.ui-slider-pip').removeClass('ui-slider-pip-selected').eq(pointDate).addClass('ui-slider-pip-selected');
         chartDateRange();

@@ -46,6 +46,9 @@
 .m-l-3 {
     margin-left: 30px;
 }
+.m-l-4 {
+    margin-left: 40px; 
+}
 .m-l-12 {
     margin-left: 120px;
 }
@@ -294,7 +297,7 @@ a:hover
     font-size:12px !important;
 }
 #gridContainer .jsgrid-header-row th:not(.details){
-    padding-left: 12px !important;
+    padding-left: 20px !important;
 }
 #gridContainer .jsgrid-table td{
     font-size:13px !important;
@@ -329,6 +332,10 @@ a:hover
     color: #ccc;
     text-align: center;
     display: block;  
+}
+
+.range:hover, .checkbox-field:hover > .filter_checkbox {
+    color: #757575 !important;
 }
 .text_blue {
     color: #2995e3;
@@ -375,9 +382,15 @@ a:hover
 }
 .details {
     text-align: center;
+    cursor: default !important;
 }
 td.details a {
     outline: none;
+    cursor: pointer;
+    color: #4da7e8 !important;
+}
+td.details a:hover{
+    color: #337ab7 !important;
 }
 td.checkbox-field {
     text-align: center;
@@ -412,8 +425,8 @@ td.checkbox-field .filter_checkbox {
     content: " ";
     display: block;
     position: absolute;
-    top: 6px;
-    left:1px;
+    top: 14px;
+    left: 5px;
     width: 0;
     height: 0;
     border-style: solid;
@@ -424,8 +437,8 @@ td.checkbox-field .filter_checkbox {
     content: " ";
     display: block;
     position: absolute;
-    top: 16px;
-    left:1px;
+    top: 22px;
+    left: 5px;
     width: 0;
     height: 0;
     border-style: solid;
@@ -475,17 +488,32 @@ td.checkbox-field .filter_checkbox {
 .ui-slider-pip .ui-slider-label {
     left: -27px !important;
 }
-.ui-slider-float .ui-slider-tip, .ui-slider-float .ui-slider-tip-label {
-    width: 280px !important;
+.my-ui-slider .ui-slider-handle .ui-slider-tip {
+    left: 2px !important;
 }
-.ui-slider-float .ui-slider-tip:after {
-    left: 6.1% !important;
-}
-.ui-slider-float .ui-slider-tip:before {
-    left: 6.1% !important;
+.my-ui-slider .ui-slider-tip, .my-ui-slider .ui-slider-tip-label {
+    width: 50px !important;
 }
 .slider-container {
     display: block !important;
     margin-left: auto !important;
     margin-right: auto !important;
+}
+.date{
+    display: inline-block;
+    font-size: 17px;
+    float: left;
+    line-height: 14px;
+}
+.rg {
+    line-height: 14px;
+    font-size: 17px;
+}
+.jsgrid-filter-row td,
+.ui-slider-handle,
+.noUi-handle {
+    cursor:pointer !important;
+}
+.jsgrid-header-scrollbar {
+    margin-top: 20px;
 }

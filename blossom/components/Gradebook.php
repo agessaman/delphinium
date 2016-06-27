@@ -87,16 +87,14 @@ class Gradebook extends ComponentBase {
 
             $this->addCss("/plugins/delphinium/blossom/assets/css/jsgrid.css");
             $this->addCss("/plugins/delphinium/blossom/assets/css/storm.css");
-            $this->addCss("/plugins/delphinium/blossom/assets/css/range.css");
             $this->addCss("/plugins/delphinium/blossom/assets/css/nouislider.min.css");
             $this->addCss("/plugins/delphinium/blossom/assets/css/gradebook.css");
             $this->addCss("/plugins/delphinium/blossom/assets/css/jquery-ui-slider-pips.css");
             $this->addCss("/plugins/delphinium/blossom/assets/css/jquery-ui.theme.css");
-            $this->addCss("/plugins/delphinium/blossom/assets/css/jquery-ui.css");
+            $this->addCss("/plugins/delphinium/blossom/assets/css/jquery-ui.min.css");
 
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/ui/jquery-ui.min.js");
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
-            $this->addJs("/plugins/delphinium/blossom/assets/javascript/range-min.js");
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/ui/jquery-ui-slider-pips.js");
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/nouislider.min.js");
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/gradebook_student.js");
