@@ -238,7 +238,7 @@ $(document).keydown(function(e) {
         }else{
           snowPage["loaded"] = true;
           loaded = true;
-          $('body').prepend('<div id="lights"></div>');
+          $('body').prepend('<div id="lights" style="display:block;"></div>');
           var soundManagerScript = document.createElement('script');
           soundManagerScript.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/soundmanager2-nodebug-jsmin.js");
           document.body.appendChild(soundManagerScript);
@@ -297,7 +297,6 @@ $(document).keydown(function(e) {
       fireworks[e.keyCode] = true;
       if (fireworks[keys.F] && fireworks[keys.I]) {
         if(fireworks["loaded"]){
-          //close = false;
           $('#fireworks-content').show();
           FireworkDisplay.launchText();
         }else{
@@ -316,11 +315,6 @@ $(document).keydown(function(e) {
           var background = '<div id="bg" style="background:url(' + path + 'plugins/delphinium/blossom/assets/images/background.jpg) repeat-x;position:absolute;left:0;top:'+($(window).height()-193)+'px;width:100%;height:200px;"></div>';
           $('#fireworks-content').append(canvas);
           $('#fireworks-content').append(background);
-          /*$('#fireworks-content').prepend('<div class="close-div"><i id="fire-close" class="close-button fa fa-times"></i></div>');
-          $('#fire-close').on('click', function() {
-            $('#fireworks-content').hide();
-            close = true;
-          });*/
         }
       }
     }
@@ -329,7 +323,7 @@ $(document).keydown(function(e) {
   if(loaded){
     var closeDiv = document.getElementById('close-div');
     if (closeDiv === null) {
-      $('body').prepend('<div id="close-div" onClick="window.location.reload();"><i class="close-button fa fa-times"></i></div>');
+      $('body').prepend('<div id="close-div" onClick="window.location.reload();" title="Reset Easter Eggs" data-toggle="tooltip" data-placement="left"><i class="close-button fa fa-times"></i></div>');
     }
   }
 
