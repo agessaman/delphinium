@@ -125,6 +125,7 @@ addRedLineDots();
 
 //add a vertical rect denoting today
 var todayDate = new Date();
+todayDate = (Date.parse(endDate) > Date.parse(todayDate)) ? todayDate : new Date(endDate);
 var parsed = Date.parse(todayDate);
 g.append("svg:rect")
     .attr("x", function (d) {
@@ -469,7 +470,7 @@ function parseDates(data)
     return data;
 }
 
-$('.line' ).on('mouseover',function(event) {
+$(document).on('mouseover','.line',function(event) {
     div.transition()
         .duration(200)
         .style("opacity", .9);
@@ -998,6 +999,20 @@ function buildTable(data) {
     });
     jsGrid.fields.range = MyRangeField;
 
+    var fieldIndex = '';
+    var countClick = 1;
+    $(document).on('click','.jsgrid-header-row th:not(.number,.details)',function(){
+        var index = $(this).index();
+        if(fieldIndex == index){
+            countClick+=1;
+        }else{
+            fieldIndex = index;
+            countClick = 1;
+        }
+        if(countClick%3 == 0){
+            $("#gridContainer").jsGrid("_sortReset");
+        }
+    });
 
     $("#gridContainer").jsGrid({
         height: "70%",
@@ -1139,7 +1154,7 @@ function buildTable(data) {
     var str = '';
     var checked_column = '';
     $.each(columns, function(a, b) {
-        if (b.column != 'no') {
+        if (b.column != '#') {
             if(b.show){
                 checked_column = 'checked="checked"';
             } else {
@@ -1151,7 +1166,9 @@ function buildTable(data) {
         }
     });
 
-    popup.append('<div class="control-simplelist with-checkboxes is-sortable" ><ul data-disposable>' + str + '</ul></div>');
+    if(!$('.with-checkboxes').length){
+        popup.append('<div class="control-simplelist with-checkboxes is-sortable" ><ul data-disposable>' + str + '</ul></div>');
+    }
 
     hide_or_show(columns);
 
@@ -1299,16 +1316,18 @@ var dTo = new Date();
 var endDate = Date.parse(endDate);
 var dFrom = d3.min(data, function(d){return d.date}),
     rDTo = Date.parse(dTo),
-    speed,
-    endDate = (endDate < dTo) ? endDate : rDTo;
+    speed;
+var endDateTo = (endDate < dTo) ? endDate : rDTo;
 labels = [];
 dateRange = [];
-for(var i = dFrom; i<=endDate; i+=86400000){
+for(var i = dFrom; i<=endDateTo; i+=86400000){
     labels.push(parseDayMonth(i));
     dateRange.push(new Date(i));
 }
-labels.push(parseDayMonth(endDate));
-dateRange.push(new Date(endDate));
+if(endDate>dTo){
+    labels.push(parseDayMonth(endDateTo));
+    dateRange.push(new Date(endDateTo));
+}
 var dateMax = labels.length - 1;
 $(".my-ui-slider").slider({
     min: 0,
@@ -1323,7 +1342,7 @@ $(".my-ui-slider").slider({
 });
 
 $('.my-ui-slider .ui-slider-pip-first').find('.ui-slider-label').text(parseDayMonth(dFrom));
-$('.my-ui-slider .ui-slider-pip-last').find('.ui-slider-label').text(parseDayMonth(dTo));
+$('.my-ui-slider .ui-slider-pip-last').find('.ui-slider-label').text(parseDayMonth(endDate));
 
 
 pointDate = 0;

@@ -519,3 +519,6 @@ td.checkbox-field .filter_checkbox {
 .jsgrid-header-scrollbar {
     margin-top: 20px;
 }
+.graphContainer {
+    margin: 0 auto;
+}
