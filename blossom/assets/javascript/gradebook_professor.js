@@ -1376,3 +1376,13 @@ $(document).on('click','.player', function() {
         clearInterval(speed);
     }
 });
+
+$(document).bind('keydown change', '.multiselect', function(event) {
+
+    if($(this,':checkbox:checked').length == 1) {
+        
+        if(event.which >= 37 && event.which <= 40) {
+            $(this).find(':checkbox:checked')[0].scrollIntoView(false);
+        }
+    }
+});
