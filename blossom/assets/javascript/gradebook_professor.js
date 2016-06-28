@@ -1227,18 +1227,20 @@ function callStudentsMilestoneInfo(studentsArr)
     {
         var currentStudent = studentsArr[i];
         idsArr.push(currentStudent.user_id);
-        if((i!=0)&&(i%10==0))
-        {//we'll send requests every 10 students.
+        //if( ( i!=0 ) && ( i % 10 == 0 ) )
+        //{
+        //we'll send requests every 10 students.
 
-            $.get("gradebook/getSetOfUsersMilestoneInfo",{experienceInstanceId:experienceInstanceId, userIds:(idsArr)},function(data,status,xhr)
-            {
-                d3.select(".bottomSpinnerDiv").style("display","none");
-                bottomExperienceScores = bottomExperienceScores.concat(data);//append the new data to the old
-                buildTable(data);
-            });
+          //  $.get("gradebook/getSetOfUsersMilestoneInfo",{experienceInstanceId:experienceInstanceId, userIds:(idsArr)},function(data,status,xhr)
+           // {
+             //   d3.select(".bottomSpinnerDiv").style("display","none");
+               // bottomExperienceScores = bottomExperienceScores.concat(data);//append the new data to the old
+            //    buildTable(data);
+            //);
 
-            var idsArr =[];//initialize the array again.
-        }
+            //var idsArr =[];
+            //initialize the array again.
+        //}
 
     }
 
@@ -1248,7 +1250,6 @@ function callStudentsMilestoneInfo(studentsArr)
         $.get("gradebook/getSetOfUsersMilestoneInfo",{experienceInstanceId:experienceInstanceId, userIds:(idsArr)},function(data,status,xhr)
         {
             d3.select(".bottomSpinnerDiv").style("display","none");
-            //bottomExperienceScores = bottomExperienceScores.concat(data);//append the new data to the old
             buildTable(data);
 
         });
