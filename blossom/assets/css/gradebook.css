@@ -229,7 +229,7 @@ a:hover
     text-align:center;
 }
 .multiselect {
-    width:180px;
+    max-width:180px;
     height:370px;
     border:solid 1px #c0c0c0;
     overflow:auto;
