@@ -22,7 +22,7 @@
 var submissions = [];
 var bottomExperienceScores=[];
 document.tabdata = '';
-
+var windowData = '';
 //GET DATA FOR THE TOP CHART
 var promise = $.get("gradebook/getAllStudentSubmissions");
 promise.then(function (data1, textStatus, jqXHR) {
@@ -32,9 +32,7 @@ promise.then(function (data1, textStatus, jqXHR) {
             inputs[i].disabled = false;
         }
         d3.selectAll(".nameLabel").style("color","black");
-        d3.select(".spinnerDiv").style("display","none");
         d3.select("#chart").style("opacity","1");
-        d3.select("#topRight").style("opacity","1");
     })
     .fail(function (data2) {
         console.log("Unable to retrieve student submissions");
@@ -53,6 +51,63 @@ function getCHartDragPoints() {
 function getChartDate() {
     var index = $('.ui-slider-pip-selected').find('.ui-slider-label').attr('data-value');
     return Date.parse(dateRange[index]);
+}
+
+function sortingByName(type,info) {
+    var info = windowData.slice();
+    if(type){
+        info.sort(function (a, b) {
+            nameA = a.name.toLowerCase();
+            nameB = b.name.toLowerCase();
+            if (nameA > nameB) {
+                return 1;
+            }
+            if (nameA < nameB) {
+                return -1;
+            }
+            return 0;
+        });
+        if(type == 'asc'){
+            info.reverse();
+        }
+    }
+    getSortingResult(info);
+}
+
+function sortingByPoint(type) {
+    var info = windowData.slice();
+    if(type){
+        info.sort(function (a, b) {
+            totalA = a.total.toFixed(2);
+            totalB = b.total.toFixed(2);
+            if (totalA > totalB) {
+                return 1;
+            }
+            if (totalA < totalB) {
+                return -1;
+            }
+            return 0;
+        });
+        if(type == 'asc'){
+            info.reverse();
+        }
+    }
+    getSortingResult(info);
+}
+
+function getSortingResult(arr) {
+    var checkeds = [],
+        multiselect = $('.multiselect').find('label');
+    $.each($('.checkboxMultiselect:checked'), function(k,input){
+        checkeds.push(input.value);
+    });
+    $.each(arr, function(k,v){
+        if($.inArray(v.id,checkeds) > -1){
+            multiselect.eq(k).html('<input class="single checkboxMultiselect" type="checkbox" checked="checked" value="'+v.id+'">'+v.name+'');
+        }else{
+            multiselect.eq(k).html('<input class="single checkboxMultiselect" type="checkbox" value="'+v.id+'">'+v.name+'');
+        }
+    });
 }
 
 div = d3.select("body").append("div")
@@ -411,6 +466,7 @@ d3.select(".multiselect").on("keydown", function() {
                         success = true;
                     }
                 }
+                $('.checkboxMultiselect[value='+newStudent.user_id+']')[0].scrollIntoView(false);
                 // || (index+change)<0
             }
 
@@ -1015,7 +1071,7 @@ function buildTable(data) {
     });
 
     $("#gridContainer").jsGrid({
-        height: "70%",
+        height: "100%",
         width: "100%",
         filtering: true,
         sorting: true,
@@ -1042,6 +1098,7 @@ function buildTable(data) {
         onDataLoaded: function(args) {
             var td = $('.jsgrid-grid-header tr').eq(1).find('td');
             $('.jsgrid-search-button').hide();
+            //$('.sort-name,.sort-total').removeClass('hide');
             td.eq(td.length-2).html('<a data-toggle="modal" style="outline:none;" href="#content-confirmation"><i class="fa fa-cog table_set"></i></a>').css('text-align','center');
             if(getStorage('ListSetup')){
                 hide_or_show(jQuery.parseJSON(getStorage('ListSetup')));
@@ -1250,7 +1307,10 @@ function callStudentsMilestoneInfo(studentsArr)
         $.get("gradebook/getSetOfUsersMilestoneInfo",{experienceInstanceId:experienceInstanceId, userIds:(idsArr)},function(data,status,xhr)
         {
             d3.select(".bottomSpinnerDiv").style("display","none");
-            buildTable(data);
+            d3.select(".spinnerDiv").style("display","none");
+            d3.select("#topRight").style("opacity","1");
+            windowData = jQuery.parseJSON(xhr.responseText);
+            buildTable(windowData);
 
         });
     }
@@ -1377,12 +1437,65 @@ $(document).on('click','.player', function() {
     }
 });
 
-$(document).bind('keydown change', '.multiselect', function(event) {
-
-    if($(this,':checkbox:checked').length == 1) {
-        
-        if(event.which >= 37 && event.which <= 40) {
-            $(this).find(':checkbox:checked')[0].scrollIntoView(false);
+var i = 0;
+var b = 0;
+$(document).on('click','.sort-name', function(){
+    i+=1;
+    b = 0;
+    var type = '';
+    $('.sort-total').removeClass('sort-name-desc sort-name-asc');
+    if(i%3 != 0 )  {
+        if($(this).hasClass('sort-name-desc')) {
+            $(this).removeClass('sort-name-desc').addClass('sort-name-asc');
+            type = 'asc';
+        } else {
+            $(this).removeClass('sort-name-asc').addClass('sort-name-desc');
+            type = 'desc';
         }
+    } else {
+        $(this).removeClass('sort-name-asc').removeClass('sort-name-desc');
+        type = false;
     }
+    sortingByName(type);
 });
+
+$(document).on('click','.sort-total', function(){
+    b+=1;
+    i = 0;
+    var type = '';
+    $('.sort-name').removeClass('sort-name-desc sort-name-asc');
+    if(b%3 != 0 )  {
+        if($(this).hasClass('sort-name-desc')) {
+            $(this).removeClass('sort-name-desc').addClass('sort-name-asc');
+            type = 'asc';
+        } else {
+            $(this).removeClass('sort-name-asc').addClass('sort-name-desc');
+            type = 'desc';
+        }
+    } else {
+        $(this).removeClass('sort-name-asc').removeClass('sort-name-desc');
+        type = false;
+    }
+    sortingByPoint(type);
+});
+
+var tabIndex = getStorage('tab');
+if(tabIndex == null)
+{
+    tabIndex = 0;
+}
+$('.grade-tabs li').eq(tabIndex).addClass('active');
+$('.tab-pane').eq(tabIndex).addClass('active');
+
+$(document).on('click','.grade-tabs li',function(){
+    setStorage('tab', $(this).index());
+    $("#gridContainer").jsGrid("_refreshSize");
+});
+
+/*$(document)
+    .off('click', $('.jsgrid-filter-row .details').eq(0).find('a'))
+    .on('click', $('.jsgrid-filter-row .details').eq(0).find('a'), function() {
+    console.log(11111);
+});*/
+
+$('.jsgrid-filter-row .details').children('a').off('click');

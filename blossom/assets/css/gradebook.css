@@ -180,7 +180,7 @@ a:hover
 }
 #gridContainer
 {
-    margin-top:70px;
+    /*margin-top:70px;*/
     width:900px !important;
 }
 .container th:after {
@@ -256,6 +256,7 @@ a:hover
 .labelSelectAll
 {
     float:left;
+    margin-top: -8px;
 }
 .todayLine
 {
@@ -521,4 +522,71 @@ td.checkbox-field .filter_checkbox {
 }
 .graphContainer {
     margin: 0 auto;
+}
+.cont-sorting {
+    color: #000;
+    text-align: left;
+}
+.sort-name,
+.sort-total {
+    position: relative;
+    cursor: pointer;
+}
+.sort-name i,
+.sort-total i {
+    font-size: 18px;
+}
+.sort-name i {
+    margin-left: 20px;
+}
+.sort-name {
+    float: left;
+    margin-right: 40px;
+}
+.sort-total {
+    float: right;
+}
+.sort-name:after,
+.sort-total:after {
+    position: absolute;
+    top: 11px;
+    content: " ";
+    display: block;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 5px 5px 0 5px;
+    border-color: #ccc transparent transparent transparent;
+}
+.sort-name:after {
+    left: 6px;
+}
+.sort-total:after {
+    right: 19px;
+}
+.sort-name:before,
+.sort-total:before {
+    position: absolute;
+    top: 2px;
+    content: " ";
+    display: block;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 5px 5px 5px;
+    border-color: transparent transparent #ccc transparent;
+}
+.sort-name:before {
+    left: 6px;
+}
+.sort-name-desc:before {
+    border-width: 0 5px 5px 5px;
+    border-color: transparent transparent #009a67 transparent;
+}
+.sort-name-asc:after {
+    border-width: 5px 5px 0 5px;
+    border-color: #009a67 transparent transparent transparent;
+}
+.sort-total:before {
+    right: 19px
 }
