@@ -128,7 +128,8 @@ a:hover
 {
     text-align: center;
 }
-.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+.table-hover tbody tr:hover td,
+.table-hover tbody tr:hover th {
     background-color: #ebf1ff;
 }
 .gradebook
@@ -318,6 +319,18 @@ a:hover
     width : 300px;
     margin-top: 8px;
 }
+.nouislider .ui-slider-handle .ui-slider-tip{
+    width: 50px !important;
+    margin-left: -25px !important;
+}
+.my-ui-slider .ui-slider-label,
+.range-slider .ui-slider-label {
+    color: #FF7A00 !important;
+}
+.my-ui-slider .ui-slider-label:hover,
+.range-slider .ui-slider-label:hover {
+    color: #999 !important;
+}
 .left-val{
     float:left;
 }
@@ -335,7 +348,9 @@ a:hover
     display: block;  
 }
 
-.range:hover, .checkbox-field:hover > .filter_checkbox {
+.range:hover,
+.checkbox-field:hover > .filter_checkbox,
+.table_set:hover {
     color: #757575 !important;
 }
 .text_blue {
@@ -363,8 +378,8 @@ a:hover
     text-align: center;
 }
 .table_set {
-    font-size: 28px;
-    color: #949494;
+    font-size: 22px;
+    color: #ccc;
 }
 .jsgrid-table input[type="button"] {
     text-align: center;
@@ -472,6 +487,9 @@ td.checkbox-field .filter_checkbox {
     z-index: 11;
     display: none;
 }
+.jsgrid-grid-body td {
+    cursor: default !important;
+}
 .jsgrid-grid-body td.number {
     padding-left: 1em;
 }
@@ -502,13 +520,13 @@ td.checkbox-field .filter_checkbox {
 }
 .date{
     display: inline-block;
-    font-size: 17px;
+    font-size: 15px;
     float: left;
     line-height: 14px;
 }
 .rg {
     line-height: 14px;
-    font-size: 17px;
+    font-size: 15px;
     float: left;
     margin-right: 17px;
 }
@@ -589,4 +607,7 @@ td.checkbox-field .filter_checkbox {
 }
 .sort-total:before {
     right: 19px
+}
+.grade-tabs li > a {
+    cursor: pointer;
 }

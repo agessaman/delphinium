@@ -636,61 +636,90 @@ function checkboxFunctionality()
 }
 
 function filterrange(args, item, check,index_td) {
-    
     if (check) {
-        var td = $('#gridContainer .jsgrid-filter-row td:eq('+index_td+')');
-        td.append('<div class="nouislider ' + check + '"><div class="rangearr"></div><div id="' + check + '"></div><span class="left-val" id="' + check + '-lover-value"></span><span id="lower-offset"></span><span class="right-val" id="' + check + '-upper-value"></span><span id="upper-offset"></span></div>');
-
-        var slider_div = $('#' + check + '');
-        noUiSlider.create(slider_div[0], {
-            connect: true,
-            behaviour: 'tap',
-            orientation: 'horizontal',
-            start: [ args['start_min'], args['start_max'] ],
-            range: {
-                'min': [ args['min'] ],
-                'max': [ args['max'] ]
-            }
-        });
-        slider_div[0].noUiSlider.on('end', function(values){
-            if(parseFloat(args['start_min']).toFixed(2) == parseFloat(values[0]) && parseFloat(args['start_max']).toFixed(2) == parseFloat(values[1])){
+        var td = $('#gridContainer .jsgrid-filter-row td:eq('+index_td+')'),
+            start_min = parseFloat(args['start_min'].toFixed(2)),
+            start_max = parseFloat(args['start_max'].toFixed(2));
+        td.append('<div class="nouislider ' + check + '"><div class="rangearr"></div><div id="' + check + '"></div></div>');
+        $('#'+check).slider({
+            min: start_min,
+            max: start_max,
+            values: [start_min,start_max],
+            step: 0.01,
+            range: true
+        }).slider("pips")
+        .on("slidechange", function(e,d) {
+            table_range[index_td]['min'] = d.values[0];
+            table_range[index_td]['max'] = d.values[1];
+            if(start_min == d.values[0] && start_max == d.values[1]){
                 td.find('.range').removeClass('text_blue');
             }else{
                 td.find('.range').addClass('text_blue');
             }
-
             $('.jsgrid-search-button').trigger('click');
+        }).slider('float', {
+            labels: true
         });
         s_div = $('.' + check + '');
-
-        s_div.css(
-        {
+        s_div.css({
             'display' : 'block',
             'left': $(item).offset().left-(148-(($(item).outerWidth())/2))+'px'
         });
-        function leftValue ( handle ) {
-            return handle.parentElement.style.left;
-        }
-
-        var lowerValue = document.getElementById(''+check+'-lover-value'),
-            upperValue = document.getElementById(''+check+'-upper-value'),
-            handles = slider_div.find('.noUi-handle');
-
-        slider_div[0].noUiSlider.on('update', function (values, handle ) {
-            if ( !handle ) {
-
-                lowerValue.innerHTML = d3.round(values[handle], 2);
-            } else {
-                upperValue.innerHTML = d3.round(values[handle], 2);
-            }
-        });
-
-        if(args['min'] == args['max']){
-            slider_div[0].setAttribute('disabled', true);
-        }
     }
 
 }
+
+var table_range = {
+    4:{
+        column: 'expt',
+        start_min: '',
+        start_max: '',
+        min: '',
+        max: ''
+    },
+    5:{
+        column: 'bonus',
+        start_min: '',
+        start_max: '',
+        min: '',
+        max: ''
+    },
+    6:{
+        column: 'penalty',
+        start_min: '',
+        start_max: '',
+        min: '',
+        max: ''
+    },
+    7:{
+        column: 'possBonus',
+        start_min: '',
+        start_max: '',
+        min: '',
+        max: ''
+    },
+    8:{
+        column: 'probPenalty',
+        start_min: '',
+        start_max: '',
+        min: '',
+        max: ''
+    },
+    9:{
+        column: 'total',
+        start_min: '',
+        start_max: '',
+        min: '',
+        max: ''
+    },
+    10:{
+        column: 'currnent',
+        start_min: '',
+        start_max: '',
+        min: '',
+        max: ''
+    }
+    }
 
 function buildTable(data) {
 
@@ -704,58 +733,6 @@ function buildTable(data) {
             $('.my-arrow').hide();
         }
     });
-
-    var table_range = {
-        4:{
-            column: 'expt',
-            start_min: '',
-            start_max: '',
-            min: '',
-            max: ''
-        },
-        5:{
-            column: 'bonus',
-            start_min: '',
-            start_max: '',
-            min: '',
-            max: ''
-        },
-        6:{
-            column: 'penalty',
-            start_min: '',
-            start_max: '',
-            min: '',
-            max: ''
-        },
-        7:{
-            column: 'possBonus',
-            start_min: '',
-            start_max: '',
-            min: '',
-            max: ''
-        },
-        8:{
-            column: 'probPenalty',
-            start_min: '',
-            start_max: '',
-            min: '',
-            max: ''
-        },
-        9:{
-            column: 'total',
-            start_min: '',
-            start_max: '',
-            min: '',
-            max: ''
-        },
-        10:{
-            column: 'currnent',
-            start_min: '',
-            start_max: '',
-            min: '',
-            max: ''
-        }
-    }
 
     var field_keys = {
         no: "<span class='col_no'>#</span>",
@@ -1047,8 +1024,9 @@ function buildTable(data) {
             var  min = -1000;
             var  max = 5000;
             if($('#'+id).length > 0){
-                min = parseFloat($('#'+id).closest('.'+id).find('.left-val').text()).toFixed(2);
-                max = parseFloat($('#'+id).closest('.'+id).find('.right-val').text()).toFixed(2);
+                var id = $('#'+id).closest('td').index();
+                min = table_range[id]['min'];
+                max = table_range[id]['max'];
             }
             return JSON.stringify({min:min,max:max});
         }
@@ -1071,7 +1049,7 @@ function buildTable(data) {
     });
 
     $("#gridContainer").jsGrid({
-        height: "100%",
+        height: "720px",
         width: "100%",
         filtering: true,
         sorting: true,
@@ -1080,7 +1058,7 @@ function buildTable(data) {
         pageButtonCount: 3,
         controller: data_controller,
         fields: [
-            { name: field_keys.no, type: "hidden", width: 25, sorting: false, css: 'number'},
+            { name: field_keys.no, type: "hidden", width: 26, sorting: false, css: 'number'},
             { name: field_keys.first_name, type: "text", width: 50, sorter: 'byText', css: 'first_name' },
             { name: field_keys.last_name, type: "text", width: 50, sorter: 'byText', css: 'last_name' },
             { name: field_keys.sections, type: "checkbox", width: 70 },
@@ -1363,6 +1341,7 @@ function chartDateRange() {
 
 var rMax = d3.max(data, function (d) {return d.points;});
 $(".range-slider").slider({
+    min: 0,
     max: rMax,
     values: [0,rMax],
     step: 1,
@@ -1403,7 +1382,7 @@ $(".my-ui-slider").slider({
 });
 
 $('.my-ui-slider .ui-slider-pip-first').find('.ui-slider-label').text(parseDayMonth(dFrom));
-$('.my-ui-slider .ui-slider-pip-last').find('.ui-slider-label').text(parseDayMonth(endDate));
+$('.my-ui-slider .ui-slider-pip-last').find('.ui-slider-label').text(parseDayMonth(endDateTo));
 
 
 pointDate = 0;
@@ -1491,11 +1470,3 @@ $(document).on('click','.grade-tabs li',function(){
     setStorage('tab', $(this).index());
     $("#gridContainer").jsGrid("_refreshSize");
 });
-
-/*$(document)
-    .off('click', $('.jsgrid-filter-row .details').eq(0).find('a'))
-    .on('click', $('.jsgrid-filter-row .details').eq(0).find('a'), function() {
-    console.log(11111);
-});*/
-
-$('.jsgrid-filter-row .details').children('a').off('click');

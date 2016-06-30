@@ -73,9 +73,9 @@
             });
         }
 
-        this.$tabsContainer.toolbar({
-            scrollClassContainer: this.$el
-        })
+        // this.$tabsContainer.toolbar({
+        //     scrollClassContainer: this.$el
+        // })
 
         this.updateClasses()
     }
