@@ -378,13 +378,12 @@ class Gradebook extends ComponentBase {
         $zeroMile->date = $experienceStartDateUTC->format('c');
         $newArr[] = $zeroMile;
 
-        $interval = "P1D";
+        $interval = "P0D";
         $dayBeforeMile = new \stdClass();
         $dayBeforeMile->points =0;
         $dayB = $firstD->sub(new DateInterval($interval));
         $dayBeforeMile->date = $dayB->format('c');
         $newArr[] = $dayBeforeMile;
-
 
 
         for ($i = 0; $i <= count($milestoneData) - 1; $i++) {
