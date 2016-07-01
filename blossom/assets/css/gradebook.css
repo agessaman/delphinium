@@ -181,7 +181,7 @@ a:hover
 }
 #gridContainer
 {
-    /*margin-top:70px;*/
+    padding: 0 5px !important;
     width:900px !important;
 }
 .container th:after {
@@ -216,7 +216,7 @@ a:hover
 }
 .spinnerDiv
 {
-    width:400px;
+    width:80% !important;
     height:800px;
     position:absolute;
     margin:auto;
@@ -257,7 +257,6 @@ a:hover
 .labelSelectAll
 {
     float:left;
-    margin-top: -8px;
 }
 .todayLine
 {
@@ -297,8 +296,9 @@ a:hover
     position:relative;
     text-align:center !important;
     font-size:12px !important;
+    padding: 5px 13px;
 }
-#gridContainer .jsgrid-header-row th:not(.details){
+#gridContainer .jsgrid-header-row th:not(.details, .checkbox-field){
     padding-left: 20px !important;
 }
 #gridContainer .jsgrid-table td{
@@ -315,9 +315,10 @@ a:hover
     position : absolute;
     display:none;
     padding: 18px 27px 10px 27px;
-    background:#333333;
+    background:#fff;
     width : 300px;
     margin-top: 8px;
+    border: 1px solid #CCC !important;
 }
 .nouislider .ui-slider-handle .ui-slider-tip{
     width: 50px !important;
@@ -338,7 +339,7 @@ a:hover
     float:right;
 }
 .left-val, .right-val{
-    margin-top:10px;
+    margin-top:13px;
     color:white;
 }
 .range{
@@ -363,13 +364,15 @@ a:hover
     margin: -23px 0 0 5px;
 }
 .rangearr {
-    background: #333333;
+    background: #fff;
     width: 15px;
     height: 15px;
     position: absolute;
-    top: -7px;
+    top: -8px;
     transform: rotate(45deg);
     left: 47%;
+    border-top: 1px solid #CCCCCC;
+    border-left: 1px solid #CCCCCC;
 }
 .jsgrid-table td {
     position: initial;
@@ -410,6 +413,9 @@ td.details a:hover{
 }
 td.checkbox-field {
     text-align: center;
+}
+.checkbox-field {
+    padding-left: 10px !important;
 }
 td.checkbox-field .filter_checkbox {
     font-size: 22px;
@@ -536,7 +542,7 @@ td.checkbox-field .filter_checkbox {
     cursor:pointer !important;
 }
 .jsgrid-header-scrollbar {
-    margin-top: 20px;
+    margin-top: 10px;
 }
 .graphContainer {
     margin: 0 auto;
@@ -544,6 +550,7 @@ td.checkbox-field .filter_checkbox {
 .cont-sorting {
     color: #000;
     text-align: left;
+    float: right;
 }
 .sort-name,
 .sort-total {
@@ -559,7 +566,8 @@ td.checkbox-field .filter_checkbox {
 }
 .sort-name {
     float: left;
-    margin-right: 40px;
+    margin-right: 27px;
+    margin-left: 14px;
 }
 .sort-total {
     float: right;
@@ -610,4 +618,20 @@ td.checkbox-field .filter_checkbox {
 }
 .grade-tabs li > a {
     cursor: pointer;
+}
+.Q123MinMax {
+    text-align: left;
+    position: relative;
+    top: 20px;
+    left: 50px;
+}
+.Q123MinMax label {
+    margin-right: 5px;
+}
+.nameLabel span {
+    position: relative;
+    top: -3px;
+}
+.range-field {
+
 }

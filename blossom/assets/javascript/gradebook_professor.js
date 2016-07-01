@@ -151,7 +151,8 @@ var g = svg.append("g")
     .attr("transform",
         "translate(" + margin.left + "," + margin.top + ")")
     .attr("id", "gChart");
-
+//Milestone data
+var yArr = [];
 // Get the data
 data = parseDates(chartData);
 // Scale the range of the data
@@ -203,6 +204,13 @@ g.append("svg:rect")
     .on("mouseout", function (d) {
         removeTooltipProfessorGradebook();
     });
+// Add Milestones horizontal lines
+chartData.forEach(function(v){
+    if($.inArray(v.points,yArr) == -1){
+        yArr.push(v.points);
+    }
+});
+addMilestonesLine(yArr);
 ///////////////////////////////////////
 
 $(window).resize(function(){
@@ -220,6 +228,143 @@ $(window).resize(function(){
         resizefix(content);
     }
 });
+
+function addMilestonesLine(yArr){
+    yArr.forEach(function(v){
+            g.append("svg:rect")
+            .attr("x", 0)
+            .attr("y", y(v))
+            .attr("height", 0.5)
+            .attr("width", width)
+            .attr("stroke-width", 1.5)
+            .attr("class", "milestone");
+        });
+}
+// Add median, min, max, Q1 and Q3 lines
+function addQuartileMinMaxLine(lineName){
+    var Q123MinMax = {
+        avQ1: getQ1Q2Q3(1/4),
+        avMedian: getQ1Q2Q3(2/4),
+        avQ3: getQ1Q2Q3(3/4),
+        avMin: getMin(),
+        avMax: getMax(),
+        avMean: getMean()
+    };
+    var lineData = Q123MinMax[lineName];
+    addQuartileMinMax(lineName,lineData);
+}
+
+function removeQuartileMinMaxLine(lineName){
+    $('#'+lineName).remove();
+}
+
+function addQuartileMinMax(id,data){
+    data.unshift({date: new Date(dFrom),point: 0});
+    valueline = d3.svg.line()
+        .x(function (d) {
+            return x(Date.parse(d.date));
+        })
+        .y(function (d) {
+            return y(d.point);
+        });
+    g.append("path")
+        .attr("id",id)
+        .attr("class","greenLine")
+        .attr("d", valueline(data))
+        .style("stroke", "#27b327");
+}
+function getSubmissionsDays(){
+    var submissionsDays = {};
+    $.each(dateRange, function(dK,dV){
+        var pushVal = [];
+        $.each(submissions, function(k,v){
+           $.each(v.items,function(itemK,itemV){
+                if(Date.parse(itemV.date) >= Date.parse(dateRange[dK]) && Date.parse(itemV.date) <= Date.parse(dateRange[dK+1])){
+                    pushVal.push(itemV);
+                }
+           }); 
+        });
+        if(pushVal.length > 0){
+            submissionsDays[dV] = pushVal;
+            delete pushVal;
+        }
+    });
+    return submissionsDays;
+}
+function getQ1Q2Q3(del){
+    var Q1,
+        Q1DataDay = [],
+        point,
+        daysDate = getSubmissionsDays();
+    $.each(daysDate,function(k,day){
+        var Q1ValArr = [];
+        $.each(day,function(itemK,itemV){
+            Q1ValArr.push(itemV.points);
+        });
+        var Q1ValArr = Q1ValArr.slice().sort(function (a, b){
+            return a-b;
+        });
+        var key = Math.floor((Q1ValArr.length + 1)*del);
+        point = Q1ValArr[key];
+        Q1DataDay.push({date:k,point:point});
+    });
+    Q1 = ($.extend([], Q1DataDay));
+    return Q1;
+}
+
+function getMin(){
+    var min,
+        minDataDay = [],
+        daysDate = getSubmissionsDays();
+     $.each(daysDate,function(k,day){
+        var minValArr = [];
+        $.each(day,function(itemK,itemV){
+            minValArr.push(itemV.points);
+        });
+        var minValArr = minValArr.slice().sort(function (a, b){
+            return a-b;
+        });
+        point = minValArr[0];
+        minDataDay.push({date:k,point:point});
+    });
+    min = $.extend([], minDataDay);
+    return min;
+}
+
+function getMax(){
+    var max,
+        maxDataDay = [],
+        daysDate = getSubmissionsDays();
+     $.each(daysDate,function(k,day){
+        var maxValArr = [];
+        $.each(day,function(itemK,itemV){
+            maxValArr.push(itemV.points);
+        });
+        var maxValArr = maxValArr.slice().sort(function (a, b){
+            return b-a;
+        });
+        point = maxValArr[0];
+        maxDataDay.push({date:k,point:point});
+    });
+    max = $.extend([], maxDataDay);
+    return max;
+}
+
+function getMean(){
+    var mean,
+        meanDataDay = [],
+        daysDate = getSubmissionsDays();
+     $.each(daysDate,function(k,day){
+        var meanValArr = [];
+        $.each(day,function(itemK,itemV){
+            meanValArr.push(itemV.points);
+        });
+        point = (meanValArr.reduce(function(a, b){return a+b;}))/meanValArr.length;
+        meanDataDay.push({date:k,point:point});
+    });
+    mean = $.extend([], meanDataDay);
+    return mean;
+}
 
 function resizefix(content){
     var td = $(content).closest('td');
@@ -719,16 +864,16 @@ var table_range = {
         min: '',
         max: ''
     }
-    }
+}
 
 function buildTable(data) {
 
     $('body').mousedown(function(event) {
-        if($(event.target).closest('div.nouislider').length == 0 && $(event.target).closest('.range-field').length == 0) {
+        if($(event.target).closest('div.nouislider').length == 0 && $(event.target).closest('.jsgrid-filter-row .range-field').length == 0) {
             $('.nouislider').hide();
         }
 
-        if ($(event.target).closest('.checkbox_filter_conternt').length == 0 && $(event.target).closest('td.checkbox-field').length == 0) {
+        if ($(event.target).closest('.checkbox_filter_conternt').length == 0 && $(event.target).closest('.jsgrid-filter-row td.checkbox-field').length == 0) {
             $('.checkbox_filter_conternt').hide();
             $('.my-arrow').hide();
         }
@@ -1078,9 +1223,6 @@ function buildTable(data) {
             $('.jsgrid-search-button').hide();
             //$('.sort-name,.sort-total').removeClass('hide');
             td.eq(td.length-2).html('<a data-toggle="modal" style="outline:none;" href="#content-confirmation"><i class="fa fa-cog table_set"></i></a>').css('text-align','center');
-            if(getStorage('ListSetup')){
-                hide_or_show(jQuery.parseJSON(getStorage('ListSetup')));
-            }
             if($('.filter_checkbox').length == 0){
                 var sections = get_checkboxes('sections'),
                     grade = get_checkboxes('grade');
@@ -1088,6 +1230,9 @@ function buildTable(data) {
                 $('.jsgrid-grid-header').find('td.checkbox-field').html('<i class="fa fa-filter filter_checkbox"></i>');
                 $('.jsgrid-grid-header').find('td.checkbox-field').eq(0).append('<div class="my-arrow"></div><div class="checkbox_filter_conternt Sections" style="display:none;">'+ sections +'</div>');
                 $('.jsgrid-grid-header').find('td.checkbox-field').eq(1).append('<div class="my-arrow"></div><div class="checkbox_filter_conternt Grade" style="display:none;">'+ grade +'</div>');
+            }
+            if(getStorage('ListSetup')){
+                hide_or_show(jQuery.parseJSON(getStorage('ListSetup')));
             }
         },
         onRefreshed: function(args) {
@@ -1097,6 +1242,9 @@ function buildTable(data) {
             $.each(args.grid.data, function(i,row){
             $('.jsgrid-grid-body').find('tr').eq(i).find('td').eq(0).html(i+=1);
             });
+            if(getStorage('ListSetup')){
+                hide_or_show(jQuery.parseJSON(getStorage('ListSetup')));
+            }
         }
     });
 
@@ -1377,6 +1525,9 @@ $(".my-ui-slider").slider({
 }).slider("pips")
 .on("slidechange", function(e,d) {
     pointDate = $('.my-ui-slider .ui-slider-pip-selected').index()-1;
+    if(pointDate == dateMax){
+      pointDate = 0;  
+    }
 }).slider('float', {
     labels: labels
 });
@@ -1469,4 +1620,13 @@ $('.tab-pane').eq(tabIndex).addClass('active');
 $(document).on('click','.grade-tabs li',function(){
     setStorage('tab', $(this).index());
     $("#gridContainer").jsGrid("_refreshSize");
+});
+
+$(document).on('click','.Q123MinMax input:checkbox',function(){
+    var lineName = $(this).attr('class');
+    if($(this).is(':checked')){
+        addQuartileMinMaxLine(lineName);    
+    }else{
+        removeQuartileMinMaxLine(lineName);
+    }
 });

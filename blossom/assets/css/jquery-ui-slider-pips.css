@@ -304,7 +304,7 @@
 }
 
 .ui-slider-pips .ui-slider-pip-initial-2 {
-  color: #1897C9;
+  color: #FF7A00;
 }
 
 .ui-slider-pips [class*=ui-slider-pip-selected] {
@@ -317,7 +317,7 @@
 }
 
 .ui-slider-pips .ui-slider-pip-selected-2 {
-  color: #E70081;
+  color: ##FF7A00;
 }
 .ui-slider-pips [class*=ui-slider-pip-selected] .ui-slider-line,
 .ui-slider-pips .ui-slider-pip-inrange .ui-slider-line {
