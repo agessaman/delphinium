@@ -206,7 +206,7 @@ g.append("svg:rect")
     });
 // Add Milestones horizontal lines
 chartData.forEach(function(v){
-    if($.inArray(v.points,yArr) == -1){
+    if($.inArray(v.points,yArr) == -1 && parseInt(v.points) != 0){
         yArr.push(v.points);
     }
 });
@@ -236,9 +236,8 @@ function addMilestonesLine(yArr){
             .attr("y", y(v))
             .attr("height", 0.5)
             .attr("width", width)
-            .attr("stroke-width", 1.5)
-            .attr("class", "milestone")
-            .style("stroke","#ccc");
+            .attr("stroke-width", 0.5)
+            .attr("class", "milestone");
         });
 }
 // Add median, min, max, Q1 and Q3 lines

@@ -635,3 +635,6 @@ td.checkbox-field .filter_checkbox {
 .range-field {
 
 }
+.milestone {
+    stroke: rgba(204,204,204,0.5);
+}
