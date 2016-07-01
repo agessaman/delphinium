@@ -257,7 +257,6 @@ a:hover
 .labelSelectAll
 {
     float:left;
-    margin-top: -8px;
 }
 .todayLine
 {
@@ -610,4 +609,13 @@ td.checkbox-field .filter_checkbox {
 }
 .grade-tabs li > a {
     cursor: pointer;
+}
+.Q123MinMax {
+    text-align: left;
+    position: relative;
+    top: 20px;
+    left: 50px;
+}
+.Q123MinMax label {
+    margin-right: 5px;
 }
