@@ -237,7 +237,8 @@ function addMilestonesLine(yArr){
             .attr("height", 0.5)
             .attr("width", width)
             .attr("stroke-width", 1.5)
-            .attr("class", "milestone");
+            .attr("class", "milestone")
+            .style("stroke","#ccc");
         });
 }
 // Add median, min, max, Q1 and Q3 lines
