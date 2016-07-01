@@ -719,16 +719,16 @@ var table_range = {
         min: '',
         max: ''
     }
-    }
+}
 
 function buildTable(data) {
 
     $('body').mousedown(function(event) {
-        if($(event.target).closest('div.nouislider').length == 0 && $(event.target).closest('.range-field').length == 0) {
+        if($(event.target).closest('div.nouislider').length == 0 && $(event.target).closest('.jsgrid-filter-row .range-field').length == 0) {
             $('.nouislider').hide();
         }
 
-        if ($(event.target).closest('.checkbox_filter_conternt').length == 0 && $(event.target).closest('td.checkbox-field').length == 0) {
+        if ($(event.target).closest('.checkbox_filter_conternt').length == 0 && $(event.target).closest('.jsgrid-filter-row td.checkbox-field').length == 0) {
             $('.checkbox_filter_conternt').hide();
             $('.my-arrow').hide();
         }
@@ -1078,9 +1078,6 @@ function buildTable(data) {
             $('.jsgrid-search-button').hide();
             //$('.sort-name,.sort-total').removeClass('hide');
             td.eq(td.length-2).html('<a data-toggle="modal" style="outline:none;" href="#content-confirmation"><i class="fa fa-cog table_set"></i></a>').css('text-align','center');
-            if(getStorage('ListSetup')){
-                hide_or_show(jQuery.parseJSON(getStorage('ListSetup')));
-            }
             if($('.filter_checkbox').length == 0){
                 var sections = get_checkboxes('sections'),
                     grade = get_checkboxes('grade');
@@ -1088,6 +1085,9 @@ function buildTable(data) {
                 $('.jsgrid-grid-header').find('td.checkbox-field').html('<i class="fa fa-filter filter_checkbox"></i>');
                 $('.jsgrid-grid-header').find('td.checkbox-field').eq(0).append('<div class="my-arrow"></div><div class="checkbox_filter_conternt Sections" style="display:none;">'+ sections +'</div>');
                 $('.jsgrid-grid-header').find('td.checkbox-field').eq(1).append('<div class="my-arrow"></div><div class="checkbox_filter_conternt Grade" style="display:none;">'+ grade +'</div>');
+            }
+            if(getStorage('ListSetup')){
+                hide_or_show(jQuery.parseJSON(getStorage('ListSetup')));
             }
         },
         onRefreshed: function(args) {
@@ -1097,6 +1097,9 @@ function buildTable(data) {
             $.each(args.grid.data, function(i,row){
             $('.jsgrid-grid-body').find('tr').eq(i).find('td').eq(0).html(i+=1);
             });
+            if(getStorage('ListSetup')){
+                hide_or_show(jQuery.parseJSON(getStorage('ListSetup')));
+            }
         }
     });
 
