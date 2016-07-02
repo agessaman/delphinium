@@ -31,7 +31,7 @@ promise.then(function (data1, textStatus, jqXHR) {
         for(var i = 0; i < inputs.length; i++) {
             inputs[i].disabled = false;
         }
-        //d3.selectAll(".nameLabel").style("color","black");
+        d3.selectAll(".nameLabel").style("color","black");
         d3.select("#chart").style("opacity","1");
     })
     .fail(function (data2) {
@@ -206,7 +206,7 @@ g.append("svg:rect")
     });
 // Add Milestones horizontal lines
 chartData.forEach(function(v){
-    if($.inArray(v.points,yArr) == -1){
+    if($.inArray(v.points,yArr) == -1 && parseInt(v.points) != 0){
         yArr.push(v.points);
     }
 });
@@ -234,14 +234,14 @@ function addMilestonesLine(yArr){
             g.append("svg:rect")
             .attr("x", 0)
             .attr("y", y(v))
-            .attr("height", 0.5)
+            .attr("height", 0.1)
             .attr("width", width)
-            .attr("stroke-width", 1.5)
+            .attr("stroke-width", 0.5)
             .attr("class", "milestone");
         });
 }
 // Add median, min, max, Q1 and Q3 lines
-function addQuartileMinMaxLine(lineName){
+function addQuartileMinMaxLine(){
     var Q123MinMax = {
         avQ1: getQ1Q2Q3(1/4),
         avMedian: getQ1Q2Q3(2/4),
@@ -250,12 +250,26 @@ function addQuartileMinMaxLine(lineName){
         avMax: getMax(),
         avMean: getMean()
     };
-    var lineData = Q123MinMax[lineName];
-    addQuartileMinMax(lineName,lineData);
+    $.each(Q123MinMax,function(k,lineData){
+        if($('.Q123MinMax #'+k).is(':checked')){
+            $('path#' + k).remove();
+            addQuartileMinMax(k,lineData);
+        }else{
+            $('path#' + k).remove();
+        }
+    });
 }
 
 function addQuartileMinMax(id,data){
+    var endDate = getChartDate(),
+        newDate = [];
     data.unshift({date: new Date(dFrom),point: 0});
+    $.each(data,function(k,d){
+        if(Date.parse(d.date) <= endDate){
+            newDate.push(d);
+        }
+    });
+    data = newDate;
     valueline = d3.svg.line()
         .x(function (d) {
             return x(Date.parse(d.date));
@@ -275,7 +289,7 @@ function getSubmissionsDays(){
         var pushVal = [];
         $.each(submissions, function(k,v){
            $.each(v.items,function(itemK,itemV){
-                if(Date.parse(itemV.date) >= Date.parse(dateRange[dK]) && Date.parse(itemV.date) <= Date.parse(dateRange[dK+1])){
+                if(itemV.date >= Date.parse(dateRange[dK]) && itemV.date <= Date.parse(dateRange[dK+1])){
                     pushVal.push(itemV);
                 }
            }); 
@@ -507,8 +521,8 @@ $(document).on("change", '.deselectAll',  function () {
         addLine(data, "red", "red");
         addRedLineDots();
     }
-})
 
+})
 var selectedStudents = [];
 d3.selectAll(".single").on("change", function () {
     var selected = this.value;
@@ -637,16 +651,18 @@ function checkedBox(id)
     if (masterArr.length > 0)
     {
         var masterItems = masterArr[0].items,
-            masterItemsDrag = [];
+            show_student_line = true;
         $.each(masterItems, function(k,v){
-            if(v.points >= min_max[0] && v.points <= min_max[1]){
-                if(Date.parse(v.date) <= parseInt(dragDate) || v.date <= parseInt(dragDate)){
-                    masterItemsDrag.push(masterItems[k]);
-                }
+            if(v.points < min_max[0] || v.points > min_max[1]) {
+                show_student_line = false;
+                return;
+            }
+            if(Date.parse(v.date) > parseInt(dragDate) || v.date > parseInt(dragDate)){
+                show_student_line = false;
+                return;
             }
         });
-        masterItems = masterItemsDrag;
-        var parsedData = parseDates(masterItems);
+        var parsedData = (show_student_line) ? parseDates(masterItems) : parseDates([]);
         addLine(parsedData, "steelblue", masterArr[0].id);
     }
 }
@@ -1223,7 +1239,7 @@ function buildTable(data) {
                 var sections = get_checkboxes('sections'),
                     grade = get_checkboxes('grade');
 
-                $('.jsgrid-grid-header').find('td.checkbox-field').html('<i class="fa fa-cog filter_checkbox"></i>');
+                $('.jsgrid-grid-header').find('td.checkbox-field').html('<i class="fa fa-filter filter_checkbox"></i>');
                 $('.jsgrid-grid-header').find('td.checkbox-field').eq(0).append('<div class="my-arrow"></div><div class="checkbox_filter_conternt Sections" style="display:none;">'+ sections +'</div>');
                 $('.jsgrid-grid-header').find('td.checkbox-field').eq(1).append('<div class="my-arrow"></div><div class="checkbox_filter_conternt Grade" style="display:none;">'+ grade +'</div>');
             }
@@ -1436,9 +1452,9 @@ function callStudentsMilestoneInfo(studentsArr)
             var checkboxes = d3.selectAll(".single");
             checkboxes[0].forEach(function (d, i)
             {
-                d.checked = true;
-                var num = parseInt(d.value);
-                checkedBox(num);
+               d.checked = true;
+               var num = parseInt(d.value);
+               checkedBox(num);
             });
 
         });
@@ -1476,6 +1492,7 @@ function roundToTwo(num) {
 }
 
 function chartDragPoints() {
+    addQuartileMinMaxLine();
     $.each($('input.single:checked'), function(k,input){
         var id = parseInt($(input).val());
         uncheckedBox(id);
@@ -1626,10 +1643,5 @@ $(document).on('click','.grade-tabs li',function(){
 });
 
 $(document).on('click','.Q123MinMax .btn-group',function(){
-    var lineName = $(this).find('input:checkbox');
-    if($(lineName).is(':checked')){
-        addQuartileMinMaxLine($(lineName).prop('id'));
-    } else {
-        $('path#'+$(lineName).prop('id')).remove();
-    }
+    addQuartileMinMaxLine();
 });
