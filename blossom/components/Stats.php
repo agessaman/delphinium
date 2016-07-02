@@ -383,9 +383,16 @@ class Stats extends ComponentBase
                     $i++;
                 }
             }
-
-            $average = array_sum($percentageArr) / count($percentageArr);
-            $averageObj->total = $average;
+			if(count($percentageArr)<1)
+			{
+				$averageObj->total = 0;
+				$averageObj->ten = 0;
+			}
+			else
+			{
+				$average = array_sum($percentageArr) / count($percentageArr);
+				$averageObj->total = $average;
+			}
 
             if(count($analytics)<=10)
             {//if there were less than 10 assignments we'll show the same average for both options
