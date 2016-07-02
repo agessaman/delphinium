@@ -76,12 +76,12 @@
 
 .jsgrid-header-sort-asc:before {
     border-width: 0 5px 5px 5px;
-    border-color: transparent transparent #009a67 transparent;
+    border-color: transparent transparent #39B3D7 transparent;
 }
 
 .jsgrid-header-sort-desc:before {
     border-width: 5px 5px 0 5px;
-    border-color: #009a67 transparent transparent transparent;
+    border-color: #39B3D7 transparent transparent transparent;
 }
 
 .jsgrid-grid-body {

@@ -31,7 +31,7 @@ promise.then(function (data1, textStatus, jqXHR) {
         for(var i = 0; i < inputs.length; i++) {
             inputs[i].disabled = false;
         }
-        d3.selectAll(".nameLabel").style("color","black");
+        //d3.selectAll(".nameLabel").style("color","black");
         d3.select("#chart").style("opacity","1");
     })
     .fail(function (data2) {
@@ -125,7 +125,7 @@ var monthNames = [
 var margin = {top: 30, right: 20, bottom: 30, left: 50},
     width = 800 - margin.left - margin.right,
     height = 400 - margin.top - margin.bottom;
-var allSelected = false;
+var allSelected = true;
 // Parse the date / time
 var parseDate = d3.time.format("%d-%b-%y").parse;
 
@@ -206,7 +206,7 @@ g.append("svg:rect")
     });
 // Add Milestones horizontal lines
 chartData.forEach(function(v){
-    if($.inArray(v.points,yArr) == -1 && parseInt(v.points) != 0){
+    if($.inArray(v.points,yArr) == -1){
         yArr.push(v.points);
     }
 });
@@ -234,14 +234,14 @@ function addMilestonesLine(yArr){
             g.append("svg:rect")
             .attr("x", 0)
             .attr("y", y(v))
-            .attr("height", 0.1)
+            .attr("height", 0.5)
             .attr("width", width)
-            .attr("stroke-width", 0.5)
+            .attr("stroke-width", 1.5)
             .attr("class", "milestone");
         });
 }
 // Add median, min, max, Q1 and Q3 lines
-function addQuartileMinMaxLine(){
+function addQuartileMinMaxLine(lineName){
     var Q123MinMax = {
         avQ1: getQ1Q2Q3(1/4),
         avMedian: getQ1Q2Q3(2/4),
@@ -250,30 +250,12 @@ function addQuartileMinMaxLine(){
         avMax: getMax(),
         avMean: getMean()
     };
-    $.each(Q123MinMax,function(k,lineData){
-        if($('.'+k).is(':checked')){
-            removeQuartileMinMaxLine(k);
-            addQuartileMinMax(k,lineData);
-        }else{
-            removeQuartileMinMaxLine(k);
-        }
-    });
-}
-
-function removeQuartileMinMaxLine(lineName){
-    $('#'+lineName).remove();
+    var lineData = Q123MinMax[lineName];
+    addQuartileMinMax(lineName,lineData);
 }
 
 function addQuartileMinMax(id,data){
-    var endDate = getChartDate(),
-        newDate = [];
     data.unshift({date: new Date(dFrom),point: 0});
-    $.each(data,function(k,d){
-        if(Date.parse(d.date) <= endDate){
-            newDate.push(d);
-        }
-    });
-    data = newDate;
     valueline = d3.svg.line()
         .x(function (d) {
             return x(Date.parse(d.date));
@@ -498,7 +480,7 @@ function addLine(data, strokeColor, id)
 
 }
 
-d3.select(".deselectAll").on("change", function () {
+$(document).on("change", '.deselectAll',  function () {
     allSelected = !allSelected;
     var checkboxes = d3.selectAll(".single");
     checkboxes[0].forEach(function (d, i)
@@ -525,8 +507,8 @@ d3.select(".deselectAll").on("change", function () {
         addLine(data, "red", "red");
         addRedLineDots();
     }
-
 })
+
 var selectedStudents = [];
 d3.selectAll(".single").on("change", function () {
     var selected = this.value;
@@ -655,18 +637,16 @@ function checkedBox(id)
     if (masterArr.length > 0)
     {
         var masterItems = masterArr[0].items,
-            show_student_line = true;
+            masterItemsDrag = [];
         $.each(masterItems, function(k,v){
-            if(v.points < min_max[0] || v.points > min_max[1]) {
-                show_student_line = false;
-                return;
-            }
-            if(Date.parse(v.date) > parseInt(dragDate) || v.date > parseInt(dragDate)){
-                show_student_line = false;
-                return;
+            if(v.points >= min_max[0] && v.points <= min_max[1]){
+                if(Date.parse(v.date) <= parseInt(dragDate) || v.date <= parseInt(dragDate)){
+                    masterItemsDrag.push(masterItems[k]);
+                }
             }
         });
-        var parsedData = (show_student_line) ? parseDates(masterItems) : parseDates([]);
+        masterItems = masterItemsDrag;
+        var parsedData = parseDates(masterItems);
         addLine(parsedData, "steelblue", masterArr[0].id);
     }
 }
@@ -1243,7 +1223,7 @@ function buildTable(data) {
                 var sections = get_checkboxes('sections'),
                     grade = get_checkboxes('grade');
 
-                $('.jsgrid-grid-header').find('td.checkbox-field').html('<i class="fa fa-filter filter_checkbox"></i>');
+                $('.jsgrid-grid-header').find('td.checkbox-field').html('<i class="fa fa-cog filter_checkbox"></i>');
                 $('.jsgrid-grid-header').find('td.checkbox-field').eq(0).append('<div class="my-arrow"></div><div class="checkbox_filter_conternt Sections" style="display:none;">'+ sections +'</div>');
                 $('.jsgrid-grid-header').find('td.checkbox-field').eq(1).append('<div class="my-arrow"></div><div class="checkbox_filter_conternt Grade" style="display:none;">'+ grade +'</div>');
             }
@@ -1453,6 +1433,13 @@ function callStudentsMilestoneInfo(studentsArr)
             d3.select("#topRight").style("opacity","1");
             windowData = jQuery.parseJSON(xhr.responseText);
             buildTable(windowData);
+            var checkboxes = d3.selectAll(".single");
+            checkboxes[0].forEach(function (d, i)
+            {
+                d.checked = true;
+                var num = parseInt(d.value);
+                checkedBox(num);
+            });
 
         });
     }
@@ -1489,7 +1476,6 @@ function roundToTwo(num) {
 }
 
 function chartDragPoints() {
-    addQuartileMinMaxLine();
     $.each($('input.single:checked'), function(k,input){
         var id = parseInt($(input).val());
         uncheckedBox(id);
@@ -1639,6 +1625,11 @@ $(document).on('click','.grade-tabs li',function(){
     $("#gridContainer").jsGrid("_refreshSize");
 });
 
-$(document).on('click','.Q123MinMax input:checkbox',function(){
-    addQuartileMinMaxLine();
+$(document).on('click','.Q123MinMax .btn-group',function(){
+    var lineName = $(this).find('input:checkbox');
+    if($(lineName).is(':checked')){
+        addQuartileMinMaxLine($(lineName).prop('id'));
+    } else {
+        $('path#'+$(lineName).prop('id')).remove();
+    }
 });

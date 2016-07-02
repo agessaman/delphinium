@@ -250,10 +250,10 @@ a:hover
 {
     margin:0 3px !important;
 }
-.nameLabel
+/*.nameLabel
 {
     color:gray;
-}
+}*/
 .labelSelectAll
 {
     float:left;
@@ -328,9 +328,21 @@ a:hover
 .range-slider .ui-slider-label {
     color: #FF7A00 !important;
 }
+.ui-slider-label {font-weight: normal;}
+.cont {
+    width: 100%;
+    height: 470px;
+}
 .my-ui-slider .ui-slider-label:hover,
 .range-slider .ui-slider-label:hover {
     color: #999 !important;
+}
+#topRight .left-val {
+    width: 172px;
+    height: 40px;
+    position: relative;
+    top: -39px;
+    left: 357px;
 }
 .left-val{
     float:left;
@@ -472,7 +484,7 @@ td.checkbox-field .filter_checkbox {
     border-color: transparent transparent #ccc transparent !important;
 }
 .jsgrid-header-sort-desc:after{
-    border-color: #009a67 transparent transparent transparent !important;
+    border-color: #39B3D7 transparent transparent transparent !important;
 }
 .checkbox_filter_conternt .custom-checkbox {
     margin-left: 11px !important;
@@ -548,6 +560,10 @@ td.checkbox-field .filter_checkbox {
     margin: 0 auto;
 }
 .cont-sorting {
+    background: #EEEEEE;
+    height: 38px;
+    width: 84px;
+    border-radius: 3px;
     color: #000;
     text-align: left;
     float: right;
@@ -566,11 +582,13 @@ td.checkbox-field .filter_checkbox {
 }
 .sort-name {
     float: left;
-    margin-right: 27px;
-    margin-left: 14px;
+    margin-left: -1px;
+    margin-top: 8px;
 }
 .sort-total {
     float: right;
+    margin-top: 7px;
+    margin-right: 8px;
 }
 .sort-name:after,
 .sort-total:after {
@@ -607,11 +625,11 @@ td.checkbox-field .filter_checkbox {
 }
 .sort-name-desc:before {
     border-width: 0 5px 5px 5px;
-    border-color: transparent transparent #009a67 transparent;
+    border-color: transparent transparent #39B3D7 transparent;
 }
 .sort-name-asc:after {
     border-width: 5px 5px 0 5px;
-    border-color: #009a67 transparent transparent transparent;
+    border-color: #39B3D7 transparent transparent transparent;
 }
 .sort-total:before {
     right: 19px
@@ -620,21 +638,41 @@ td.checkbox-field .filter_checkbox {
     cursor: pointer;
 }
 .Q123MinMax {
-    text-align: left;
-    position: relative;
-    top: 20px;
-    left: 50px;
+    width: 409px;
+    margin-top: 17px;
+    margin-left: 34px;
+    float: left;
 }
-.Q123MinMax label {
+/*.Q123MinMax label {
     margin-right: 5px;
-}
+}*/
 .nameLabel span {
     position: relative;
     top: -3px;
 }
-.range-field {
-
-}
 .milestone {
     stroke: rgba(204,204,204,0.5);
+}
+.btn-info {
+    color: #555555;
+    border: 1px solid #C0C0C0 !important;
+    background: #fff;
+}
+.btn-info .active {
+    border: 1px solid #fff;
+}
+::-webkit-scrollbar
+{
+  width: 8px;  /* for vertical scrollbars */
+  height: 12px; /* for horizontal scrollbars */
+}
+
+::-webkit-scrollbar-track
+{
+  background: rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb
+{
+  background: rgba(0, 0, 0, 0.5);
 }

@@ -1359,7 +1359,7 @@ to{background-position:0 0}
 .control-tabs > ul.nav-tabs > li span.tab-close,.control-tabs > div > ul.nav-tabs > li span.tab-close,.control-tabs > div > div > ul.nav-tabs > li span.tab-close{display:none}
 .control-tabs > ul.nav-tabs > li.active a,.control-tabs > div > ul.nav-tabs > li.active a,.control-tabs > div > div > ul.nav-tabs > li.active a{color:#405261}
 .control-tabs > ul.nav-tabs > li.active:after,.control-tabs > div > ul.nav-tabs > li.active:after,.control-tabs > div > div > ul.nav-tabs > li.active:after{width:100%;height:3px;bottom:0;background:#5fb6f5}
-.control-tabs > div.tab-content > div.tab-pane{padding:20px 0 0 0;display:none}
+.control-tabs > div.tab-content > div.tab-pane{padding:0;display:none}
 .control-tabs > div.tab-content > div.tab-pane:before,.control-tabs > div.tab-content > div.tab-pane:after{content:" ";display:table}
 .control-tabs > div.tab-content > div.tab-pane:after{clear:both}
 .control-tabs > div.tab-content > div.tab-pane:before,.control-tabs > div.tab-content > div.tab-pane:after{content:" ";display:table}
