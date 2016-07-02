@@ -234,14 +234,14 @@ function addMilestonesLine(yArr){
             g.append("svg:rect")
             .attr("x", 0)
             .attr("y", y(v))
-            .attr("height", 0.5)
+            .attr("height", 0.1)
             .attr("width", width)
             .attr("stroke-width", 0.5)
             .attr("class", "milestone");
         });
 }
 // Add median, min, max, Q1 and Q3 lines
-function addQuartileMinMaxLine(lineName){
+function addQuartileMinMaxLine(){
     var Q123MinMax = {
         avQ1: getQ1Q2Q3(1/4),
         avMedian: getQ1Q2Q3(2/4),
@@ -250,8 +250,14 @@ function addQuartileMinMaxLine(lineName){
         avMax: getMax(),
         avMean: getMean()
     };
-    var lineData = Q123MinMax[lineName];
-    addQuartileMinMax(lineName,lineData);
+    $.each(Q123MinMax,function(k,lineData){
+        if($('.'+k).is(':checked')){
+            removeQuartileMinMaxLine(k);
+            addQuartileMinMax(k,lineData);
+        }else{
+            removeQuartileMinMaxLine(k);
+        }
+    });
 }
 
 function removeQuartileMinMaxLine(lineName){
@@ -259,7 +265,15 @@ function removeQuartileMinMaxLine(lineName){
 }
 
 function addQuartileMinMax(id,data){
+    var endDate = getChartDate(),
+        newDate = [];
     data.unshift({date: new Date(dFrom),point: 0});
+    $.each(data,function(k,d){
+        if(Date.parse(d.date) <= endDate){
+            newDate.push(d);
+        }
+    });
+    data = newDate;
     valueline = d3.svg.line()
         .x(function (d) {
             return x(Date.parse(d.date));
@@ -641,16 +655,18 @@ function checkedBox(id)
     if (masterArr.length > 0)
     {
         var masterItems = masterArr[0].items,
-            masterItemsDrag = [];
+            show_student_line = true;
         $.each(masterItems, function(k,v){
-            if(v.points >= min_max[0] && v.points <= min_max[1]){
-                if(Date.parse(v.date) <= parseInt(dragDate) || v.date <= parseInt(dragDate)){
-                    masterItemsDrag.push(masterItems[k]);
-                }
+            if(v.points < min_max[0] || v.points > min_max[1]) {
+                show_student_line = false;
+                return;
+            }
+            if(Date.parse(v.date) > parseInt(dragDate) || v.date > parseInt(dragDate)){
+                show_student_line = false;
+                return;
             }
         });
-        masterItems = masterItemsDrag;
-        var parsedData = parseDates(masterItems);
+        var parsedData = (show_student_line) ? parseDates(masterItems) : parseDates([]);
         addLine(parsedData, "steelblue", masterArr[0].id);
     }
 }
@@ -1473,6 +1489,7 @@ function roundToTwo(num) {
 }
 
 function chartDragPoints() {
+    addQuartileMinMaxLine();
     $.each($('input.single:checked'), function(k,input){
         var id = parseInt($(input).val());
         uncheckedBox(id);
@@ -1623,10 +1640,5 @@ $(document).on('click','.grade-tabs li',function(){
 });
 
 $(document).on('click','.Q123MinMax input:checkbox',function(){
-    var lineName = $(this).attr('class');
-    if($(this).is(':checked')){
-        addQuartileMinMaxLine(lineName);    
-    }else{
-        removeQuartileMinMaxLine(lineName);
-    }
+    addQuartileMinMaxLine();
 });
