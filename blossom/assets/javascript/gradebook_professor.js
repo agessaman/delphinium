@@ -692,7 +692,7 @@ function parseDates(data)
     return data;
 }
 
-$(document).on('mouseover','.line',function(event) {
+$(document).on('mouseover','.line:not(.bluePath)',function(event) {
     div.transition()
         .duration(200)
         .style("opacity", .9);
