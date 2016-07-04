@@ -23,6 +23,7 @@ var submissions = [];
 var bottomExperienceScores=[];
 document.tabdata = '';
 var windowData = '';
+var sortType = [];
 //GET DATA FOR THE TOP CHART
 var promise = $.get("gradebook/getAllStudentSubmissions");
 promise.then(function (data1, textStatus, jqXHR) {
@@ -31,7 +32,7 @@ promise.then(function (data1, textStatus, jqXHR) {
         for(var i = 0; i < inputs.length; i++) {
             inputs[i].disabled = false;
         }
-        d3.selectAll(".nameLabel").style("color","black");
+        //d3.selectAll(".nameLabel").style("color","black");
         d3.select("#chart").style("opacity","1");
     })
     .fail(function (data2) {
@@ -1064,6 +1065,10 @@ function buildTable(data) {
                 }
             }
 
+            /*if (sortType.length >= 1)  {
+                $("#gridContainer").jsGrid("mySort");
+            }*/
+
         });
 
         $(document).on('keyup', '.first_name input, .last_name input, .sections input, .grade input', function(){
@@ -1224,7 +1229,7 @@ function buildTable(data) {
         pageButtonCount: 3,
         controller: data_controller,
         fields: [
-            { name: field_keys.no, type: "hidden", width: 26, sorting: false, css: 'number'},
+            { name: field_keys.no, type: "hidden", width: 30, sorting: false, css: 'number'},
             { name: field_keys.first_name, type: "text", width: 50, sorter: 'byText', css: 'first_name' },
             { name: field_keys.last_name, type: "text", width: 50, sorter: 'byText', css: 'last_name' },
             { name: field_keys.sections, type: "checkbox", width: 70 },
@@ -1654,4 +1659,20 @@ $(document).on('click','.grade-tabs li',function(){
 
 $(document).on('click','.Q123MinMax .btn-group',function(){
     addQuartileMinMaxLine();
+});
+
+$(document).on('click', '.jsgrid-header-row th', function() {
+    if ($(this).find('.jsgrid-header-sort-desc').length == 1) {
+        sortType = [];
+        sortType[0] = 'desc';
+        sortType[1] = $(this).index();
+    } else {
+        sortType = [];
+        sortType[0] = 'asc';
+        sortType[1] = $(this).index();
+    }
+});
+
+$(document).on('click', '.but',  function() {
+    $("#gridContainer").jsGrid("mySort");
 });
