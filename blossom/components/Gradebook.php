@@ -378,7 +378,7 @@ class Gradebook extends ComponentBase {
         $zeroMile->date = $experienceStartDateUTC->format('c');
         $newArr[] = $zeroMile;
 
-        $interval = "P0D";
+        $interval = "PT2H";
         $dayBeforeMile = new \stdClass();
         $dayBeforeMile->points =0;
         $dayB = $firstD->sub(new DateInterval($interval));
