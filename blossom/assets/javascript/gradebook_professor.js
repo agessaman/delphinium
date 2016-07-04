@@ -286,17 +286,23 @@ function addQuartileMinMax(id,data){
 function getSubmissionsDays(){
     var submissionsDays = {};
     $.each(dateRange, function(dK,dV){
-        var pushVal = [];
+        var pushUserVal = [],
+            pushVal = [];
         $.each(submissions, function(k,v){
            $.each(v.items,function(itemK,itemV){
-                if(itemV.date >= Date.parse(dateRange[dK]) && itemV.date <= Date.parse(dateRange[dK+1])){
-                    pushVal.push(itemV);
+                if(itemV.date >= Date.parse(dateRange[dK]) && itemV.date <= Date.parse(dateRange[dK+1]) && typeof dateRange[dK+1] != 'undifined'){
+                    pushUserVal[v.id] = itemV;
+                }else if(itemV.date >= Date.parse(dateRange[dK]) && typeof dateRange[dK+1] == 'undifined'){
+                    pushUserVal[v.id] = itemV;
                 }
-           }); 
+           });
+           if(Object.keys(pushUserVal).length > 0){
+                pushVal.push(pushUserVal[v.id]);
+           }
+            pushUserVal = [];
         });
         if(pushVal.length > 0){
             submissionsDays[dV] = pushVal;
-            delete pushVal;
         }
     });
     return submissionsDays;
@@ -314,7 +320,8 @@ function getQ1Q2Q3(del){
         var Q1ValArr = Q1ValArr.slice().sort(function (a, b){
             return a-b;
         });
-        var key = Math.floor((Q1ValArr.length + 1)*del);
+        var key = Math.round((Q1ValArr.length + 1)*del);
+        key = key-1;
         point = Q1ValArr[key];
         Q1DataDay.push({date:k,point:point});
     });
