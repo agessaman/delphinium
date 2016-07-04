@@ -125,7 +125,7 @@ var monthNames = [
 var margin = {top: 30, right: 20, bottom: 30, left: 50},
     width = 800 - margin.left - margin.right,
     height = 400 - margin.top - margin.bottom;
-var allSelected = false;
+var allSelected = true;
 // Parse the date / time
 var parseDate = d3.time.format("%d-%b-%y").parse;
 
@@ -251,17 +251,13 @@ function addQuartileMinMaxLine(){
         avMean: getMean()
     };
     $.each(Q123MinMax,function(k,lineData){
-        if($('.'+k).is(':checked')){
-            removeQuartileMinMaxLine(k);
+        if($('.Q123MinMax #'+k).is(':checked')){
+            $('path#' + k).remove();
             addQuartileMinMax(k,lineData);
         }else{
-            removeQuartileMinMaxLine(k);
+            $('path#' + k).remove();
         }
     });
-}
-
-function removeQuartileMinMaxLine(lineName){
-    $('#'+lineName).remove();
 }
 
 function addQuartileMinMax(id,data){
@@ -293,7 +289,7 @@ function getSubmissionsDays(){
         var pushVal = [];
         $.each(submissions, function(k,v){
            $.each(v.items,function(itemK,itemV){
-                if(Date.parse(itemV.date) >= Date.parse(dateRange[dK]) && Date.parse(itemV.date) <= Date.parse(dateRange[dK+1])){
+                if(itemV.date >= Date.parse(dateRange[dK]) && itemV.date <= Date.parse(dateRange[dK+1])){
                     pushVal.push(itemV);
                 }
            }); 
@@ -498,7 +494,7 @@ function addLine(data, strokeColor, id)
 
 }
 
-d3.select(".deselectAll").on("change", function () {
+$(document).on("change", '.deselectAll',  function () {
     allSelected = !allSelected;
     var checkboxes = d3.selectAll(".single");
     checkboxes[0].forEach(function (d, i)
@@ -1453,6 +1449,13 @@ function callStudentsMilestoneInfo(studentsArr)
             d3.select("#topRight").style("opacity","1");
             windowData = jQuery.parseJSON(xhr.responseText);
             buildTable(windowData);
+            var checkboxes = d3.selectAll(".single");
+            checkboxes[0].forEach(function (d, i)
+            {
+               d.checked = true;
+               var num = parseInt(d.value);
+               checkedBox(num);
+            });
 
         });
     }
@@ -1639,6 +1642,6 @@ $(document).on('click','.grade-tabs li',function(){
     $("#gridContainer").jsGrid("_refreshSize");
 });
 
-$(document).on('click','.Q123MinMax input:checkbox',function(){
+$(document).on('click','.Q123MinMax .btn-group',function(){
     addQuartileMinMaxLine();
 });
