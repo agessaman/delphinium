@@ -286,17 +286,23 @@ function addQuartileMinMax(id,data){
 function getSubmissionsDays(){
     var submissionsDays = {};
     $.each(dateRange, function(dK,dV){
-        var pushVal = [];
+        var pushUserVal = [],
+            pushVal = [];
         $.each(submissions, function(k,v){
            $.each(v.items,function(itemK,itemV){
-                if(itemV.date >= Date.parse(dateRange[dK]) && itemV.date <= Date.parse(dateRange[dK+1])){
-                    pushVal.push(itemV);
+                if(itemV.date >= Date.parse(dateRange[dK]) && itemV.date <= Date.parse(dateRange[dK+1]) && typeof dateRange[dK+1] != 'undifined'){
+                    pushUserVal[v.id] = itemV;
+                }else if(itemV.date >= Date.parse(dateRange[dK]) && typeof dateRange[dK+1] == 'undifined'){
+                    pushUserVal[v.id] = itemV;
                 }
-           }); 
+           });
+           if(Object.keys(pushUserVal).length > 0){
+                pushVal.push(pushUserVal[v.id]);
+           }
+            pushUserVal = [];
         });
         if(pushVal.length > 0){
             submissionsDays[dV] = pushVal;
-            delete pushVal;
         }
     });
     return submissionsDays;
@@ -315,6 +321,9 @@ function getQ1Q2Q3(del){
             return a-b;
         });
         var key = Math.floor((Q1ValArr.length + 1)*del);
+        if(key == Q1ValArr.length){
+            key--;
+        }
         point = Q1ValArr[key];
         Q1DataDay.push({date:k,point:point});
     });
@@ -683,7 +692,7 @@ function parseDates(data)
     return data;
 }
 
-$(document).on('mouseover','.line',function(event) {
+$(document).on('mouseover','.line:not(.bluePath)',function(event) {
     div.transition()
         .duration(200)
         .style("opacity", .9);
@@ -1233,6 +1242,7 @@ function buildTable(data) {
         onDataLoaded: function(args) {
             var td = $('.jsgrid-grid-header tr').eq(1).find('td');
             $('.jsgrid-search-button').hide();
+            $('.Q123MinMax').find('.btn-group').find('.btn-info').removeClass('disabled');
             //$('.sort-name,.sort-total').removeClass('hide');
             td.eq(td.length-2).html('<a data-toggle="modal" style="outline:none;" href="#content-confirmation"><i class="fa fa-cog table_set"></i></a>').css('text-align','center');
             if($('.filter_checkbox').length == 0){
