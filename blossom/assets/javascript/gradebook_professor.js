@@ -320,8 +320,10 @@ function getQ1Q2Q3(del){
         var Q1ValArr = Q1ValArr.slice().sort(function (a, b){
             return a-b;
         });
-        var key = Math.round((Q1ValArr.length + 1)*del);
-        key = key-1;
+        var key = Math.floor((Q1ValArr.length + 1)*del);
+        if(key == Q1ValArr.length){
+            key--;
+        }
         point = Q1ValArr[key];
         Q1DataDay.push({date:k,point:point});
     });
