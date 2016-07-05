@@ -518,17 +518,20 @@ td.checkbox-field .filter_checkbox {
 .bottomSpinnerDiv i, .spinnerDiv i {
     font-size: 40px !important;
 }
-.player {
+.player,
+.histogram-player {
     height: 19px;
     margin-top: -2px;
 }
 .ui-slider-pip .ui-slider-label {
     left: -27px !important;
 }
-.my-ui-slider .ui-slider-handle .ui-slider-tip {
+.my-ui-slider .ui-slider-handle .ui-slider-tip,
+.histogram-date  .ui-slider-handle .ui-slider-tip {
     left: 2px !important;
 }
-.my-ui-slider .ui-slider-tip, .my-ui-slider .ui-slider-tip-label {
+.my-ui-slider .ui-slider-tip, .my-ui-slider .ui-slider-tip-label,
+.histogram-date .ui-slider-tip, .histogram-date .ui-slider-tip-label {
     width: 50px !important;
 }
 .slider-container {
