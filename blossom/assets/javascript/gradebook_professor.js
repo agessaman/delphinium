@@ -1827,4 +1827,3 @@ $(document).on('click', '.but',  function() {
 // }).slider('float', {
 //     labels: true
 // });
->>>>>>> 7f1d2af8b21c704a8646bff1104b393a75890c98
