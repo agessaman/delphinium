@@ -610,22 +610,16 @@ class Gradebook extends ComponentBase {
             $this->roots = new Roots();
         }
         $userSubmissions = $this->roots->submissions($req);
-// echo "sorting submissions at ". json_encode(new \DateTime('now'))."--";
         //sort submissions by date
         usort($userSubmissions, function($a, $b) {
-            if ((!is_null($a['submitted_at']))||(isset($a['submitted_at'])) && (!is_null($a['submitted_at'])) &&(isset($b['submitted_at']))) {
-                $adate = new DateTime($a['submitted_at']);
-                $bdate = new DateTime($b['submitted_at']);
-                $ad = $adate->getTimestamp();
-                $bd = $bdate->getTimestamp();
-                if ($ad == $bd) {
-                    return 0;
-                }
-                return $ad > $bd ? 1 : -1;
-            } else {
+            $ad = new DateTime($a['submitted_at']);
+            $bd = new DateTime($b['submitted_at']);
+
+            if ($ad == $bd) {
                 return 0;
             }
 
+            return $ad > $bd ? 1 : -1;
         });
 
 
