@@ -802,13 +802,13 @@ function checkboxFunctionality()
     });
 }
 
-function filterrange(args, item, check,index_td) {
+function filterrange(args, item, check, index_td) {
     if (check) {
-        var td = $('#gridContainer .jsgrid-filter-row td:eq('+index_td+')'),
-            start_min = parseFloat(args['start_min'].toFixed(2)),
-            start_max = parseFloat(args['start_max'].toFixed(2));
+        var td = $('#gridContainer .jsgrid-filter-row td:eq('+index_td+')');
+        var start_min = parseFloat(args['start_min'].toFixed(2));
+        var start_max = parseFloat(args['start_max'].toFixed(2));
         td.append('<div class="nouislider ' + check + '"><div class="rangearr"></div><div id="' + check + '"></div></div>');
-        $('#'+check).slider({
+        $('#' + check).slider({
             min: start_min,
             max: start_max,
             values: [start_min,start_max],
@@ -1672,7 +1672,17 @@ $(document).on('click', '.jsgrid-header-row th', function() {
         sortType[1] = $(this).index();
     }
 });
+/*$('.sort-total').hover(function() {
+    console.log($('.sort-total::after'));
+    $('.sort-total:after').css({
+        'border-top-color' : 'rgb(204, 204, 204)',
+        'border-right-color': 'transparent',
+        'border-bottom-color': 'transparent',
+        'border-left-color': 'transparent'
+    });
+});*/
 
 $(document).on('click', '.but',  function() {
     $("#gridContainer").jsGrid("mySort");
 });
+
