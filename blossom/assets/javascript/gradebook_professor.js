@@ -290,26 +290,30 @@ function addQuartileMinMax(id,data){
         .style("stroke", "#27b327");
 }
 function getSubmissionsDays(){
-    var submissionsDays = {};
+    var submissionsDays = {},
+        usersOldValue = [];
     $.each(dateRange, function(dK,dV){
-        var pushUserVal = [],
-            pushVal = [];
+        var pushVal = [];
         $.each(submissions, function(k,v){
-           $.each(v.items,function(itemK,itemV){
-                if(itemV.date >= Date.parse(dateRange[dK]) && itemV.date <= Date.parse(dateRange[dK+1]) && typeof dateRange[dK+1] != 'undifined'){
+            var pushUserVal = [];
+            $.each(v.items,function(itemK,itemV){
+                if(itemV.date >= Date.parse(dateRange[dK]) && itemV.date <= Date.parse(dateRange[dK+1]) && typeof dateRange[dK+1] != 'undefined'){
                     pushUserVal[v.id] = itemV;
-                }else if(itemV.date >= Date.parse(dateRange[dK]) && typeof dateRange[dK+1] == 'undifined'){
+                    usersOldValue[v.id] = itemV;
+                }else if(itemV.date >= Date.parse(dateRange[dK]) && typeof dateRange[dK+1] == 'undefined'){
                     pushUserVal[v.id] = itemV;
+                    usersOldValue[v.id] = itemV;
                 }
-           });
-           if(Object.keys(pushUserVal).length > 0){
-                pushVal.push(pushUserVal[v.id]);
-           }
-            pushUserVal = [];
+            });
+            if(pushUserVal.length == 0 && dK == 0){
+                pushUserVal[v.id] = {points:0,date:Date.parse(dateRange[dK])};
+                usersOldValue[v.id] = {points:0,date:Date.parse(dateRange[dK])};
+            }else if(pushUserVal.length == 0 && dK > 0){
+                pushUserVal[v.id] = usersOldValue[v.id];
+            }
+            pushVal.push(pushUserVal[v.id]);
         });
-        if(pushVal.length > 0){
-            submissionsDays[dV] = pushVal;
-        }
+        submissionsDays[dV] = pushVal;
     });
     return submissionsDays;
 }
@@ -397,7 +401,7 @@ function resizefix(content){
     $(content).css({left:left});
 }
 
-function addLine(data, strokeColor, id, showDoth)
+function addLine(data, strokeColor, id)
 {
     if($("#path" + id).length > 0){
         return false;
@@ -490,7 +494,7 @@ function addLine(data, strokeColor, id, showDoth)
             }
         });
 
-    if (id != "red" && showDoth)
+    if (id != "red")
     {
         var paragraphs = g.selectAll(".cir" + id);
         paragraphs[0].forEach(function (d, i) {
@@ -672,9 +676,8 @@ function checkedBox(id,slideDays)
                     }
                 }
             });
-            var trueFalse = (typeof newData[newData.length-1] != 'undefined') ? (newData[newData.length-1].points == masterItems[masterItems.length-1].points) ? true: false : false;
             var parsedData = parseDates(newData);
-            addLine(parsedData, "steelblue", masterArr[0].id,trueFalse);
+            addLine(parsedData, "steelblue", masterArr[0].id);
         }else{
             var masterItems = masterArr[0].items;
             var show_student_line = false;
@@ -686,7 +689,7 @@ function checkedBox(id,slideDays)
                 }
             }
             var parsedData = (show_student_line) ? parseDates(masterItems) : parseDates([]);
-            addLine(parsedData, "steelblue", masterArr[0].id,true);
+            addLine(parsedData, "steelblue", masterArr[0].id);
         }
     }
 }
