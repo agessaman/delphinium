@@ -208,7 +208,7 @@ g.append("svg:rect")
 // Add Milestones horizontal lines
 chartData.forEach(function(v){
     if($.inArray(v.points,yArr) == -1 && parseInt(v.points) != 0){
-        yArr.push(v);
+        yArr.push(v.points);
     }
 });
 addMilestonesLine(yArr);
@@ -234,17 +234,11 @@ function addMilestonesLine(yArr){
     yArr.forEach(function(v){
             g.append("svg:rect")
             .attr("x", 0)
-            .attr("y", y(v.points))
+            .attr("y", y(v))
             .attr("height", 0.1)
             .attr("width", width)
             .attr("stroke-width", 0.5)
-            .attr("class", "milestone")
-            .on("mouseover", function () {
-                addTooltipProfessorGradebook(roundToTwo(v.points) + " points due " + parseTimestamp(v.date));
-            })
-            .on("mouseout", function () {
-                removeTooltipProfessorGradebook();
-            });
+            .attr("class", "milestone");
         });
 }
 // Add median, min, max, Q1 and Q3 lines
@@ -331,7 +325,10 @@ function getQ1Q2Q3(del){
         var Q1ValArr = Q1ValArr.slice().sort(function (a, b){
             return a-b;
         });
-        var key = Math.floor((Q1ValArr.length - 1)*del);
+        var key = Math.floor((Q1ValArr.length + 1)*del);
+        if(key == Q1ValArr.length){
+            key--;
+        }
         point = Q1ValArr[key];
         Q1DataDay.push({date:k,point:point});
     });
@@ -658,7 +655,7 @@ function uncheckedBox(id)
     d3.selectAll(selector).remove();
 }
 
-function checkedBox(id,slideDays)
+function checkedBox(id)
 {
     var masterArr = submissions.filter(function (d) {
         return d.id === id;
@@ -692,6 +689,20 @@ function checkedBox(id,slideDays)
             var parsedData = (show_student_line) ? parseDates(masterItems) : parseDates([]);
             addLine(parsedData, "steelblue", masterArr[0].id);
         }
+        var masterItems = masterArr[0].items,
+            show_student_line = true;
+        $.each(masterItems, function(k,v){
+            if(v.points < min_max[0] || v.points > min_max[1]) {
+                show_student_line = false;
+                return;
+            }
+            if(Date.parse(v.date) > parseInt(dragDate) || v.date > parseInt(dragDate)){
+                show_student_line = false;
+                return;
+            }
+        });
+        var parsedData = (show_student_line) ? parseDates(masterItems) : parseDates([]);
+        addLine(parsedData, "steelblue", masterArr[0].id);
     }
 }
 
@@ -1265,11 +1276,7 @@ function buildTable(data) {
         onDataLoaded: function(args) {
             var td = $('.jsgrid-grid-header tr').eq(1).find('td');
             $('.jsgrid-search-button').hide();
-            $('.Q123MinMax,.histogramGroup').find('.btn-group').find('.btn-info').removeClass('disabled');
-            if($('#histogram svg').length == 0){
-                // histogramData = getHistogramDateByPoints();
-                // histogram(histogramData);
-            }
+            $('.Q123MinMax').find('.btn-group').find('.btn-info').removeClass('disabled');
             //$('.sort-name,.sort-total').removeClass('hide');
             td.eq(td.length-2).html('<a data-toggle="modal" style="outline:none;" href="#content-confirmation"><i class="fa fa-cog table_set"></i></a>').css('text-align','center');
             if($('.filter_checkbox').length == 0){
@@ -1528,20 +1535,20 @@ function roundToTwo(num) {
     return +(Math.round(num + "e+2")  + "e-2");
 }
 
-function chartDragPoints(days) {
+function chartDragPoints() {
     addQuartileMinMaxLine();
     $.each($('input.single:checked'), function(k,input){
         var id = parseInt($(input).val());
         uncheckedBox(id);
-        (days) ? checkedBox(id,true) : checkedBox(id,false);
+        checkedBox(id);
     });
 }
 
-function chartDateRange(days) {
+function chartDateRange() {
     var date = getChartDate();
     var orangeLine = x(date);
     $('.todayLine').attr('x',orangeLine);
-    chartDragPoints(days);
+    chartDragPoints();
 }
 
 var rMax = d3.max(data, function (d) {return d.points;});
@@ -1604,7 +1611,7 @@ function intervalIts() {
         var val = labels[index];
         $('.my-ui-slider').find('.ui-slider-handle').css('left',left).find('span').text(val);
         $('.ui-slider-pip').removeClass('ui-slider-pip-selected').eq(pointDate).addClass('ui-slider-pip-selected');
-        chartDateRange(true);
+        chartDateRange();
     }else{
         $('button.player').find('i').removeClass('fa-pause').addClass('fa-play');
         pointDate = -1;
@@ -1707,7 +1714,6 @@ $(document).on('click', '.jsgrid-header-row th', function() {
 $(document).on('click', '.but',  function() {
     $("#gridContainer").jsGrid("mySort");
 });
-
 // function getHistogramDateByPoints(start,end){
 //     var pushVal = [],
 //         step = 100;
