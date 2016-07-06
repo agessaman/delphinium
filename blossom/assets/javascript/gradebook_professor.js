@@ -23,6 +23,7 @@ var submissions = [];
 var bottomExperienceScores=[];
 document.tabdata = '';
 var windowData = '';
+var sortType = [];
 //GET DATA FOR THE TOP CHART
 var promise = $.get("gradebook/getAllStudentSubmissions");
 promise.then(function (data1, textStatus, jqXHR) {
@@ -31,7 +32,6 @@ promise.then(function (data1, textStatus, jqXHR) {
         for(var i = 0; i < inputs.length; i++) {
             inputs[i].disabled = false;
         }
-        d3.selectAll(".nameLabel").style("color","black");
         d3.select("#chart").style("opacity","1");
     })
     .fail(function (data2) {
@@ -1278,6 +1278,7 @@ function buildTable(data) {
             if(getStorage('ListSetup')){
                 hide_or_show(jQuery.parseJSON(getStorage('ListSetup')));
             }
+            //$("#gridContainer").jsGrid("mySort");
         },
         onRefreshed: function(args) {
             if(args.grid.data.length == 0)
@@ -1678,7 +1679,7 @@ $(document).on('click','.Q123MinMax .btn-group',function(){
     addQuartileMinMaxLine();
 });
 
-$(document).on('click', '.jsgrid-header-row th', function() {
+/*$(document).on('click', '.jsgrid-header-row th', function() {
     if ($(this).find('.jsgrid-header-sort-desc').length == 1) {
         sortType = [];
         sortType[0] = 'desc';
@@ -1688,7 +1689,7 @@ $(document).on('click', '.jsgrid-header-row th', function() {
         sortType[0] = 'asc';
         sortType[1] = $(this).index();
     }
-});
+});*/
 /*$('.sort-total').hover(function() {
     console.log($('.sort-total::after'));
     $('.sort-total:after').css({
@@ -1699,8 +1700,8 @@ $(document).on('click', '.jsgrid-header-row th', function() {
     });
 });*/
 
-$(document).on('click', '.but',  function() {
-    $("#gridContainer").jsGrid("mySort");
+$(document).on('click', '.jsgrid-header-row td',  function() {
+    sortType[2] = false;
 });
 // function getHistogramDateByPoints(start,end){
 //     var pushVal = [],
