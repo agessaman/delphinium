@@ -23,7 +23,6 @@ var submissions = [];
 var bottomExperienceScores=[];
 document.tabdata = '';
 var windowData = '';
-var sortType = [];
 //GET DATA FOR THE TOP CHART
 var promise = $.get("gradebook/getAllStudentSubmissions");
 promise.then(function (data1, textStatus, jqXHR) {
@@ -32,7 +31,7 @@ promise.then(function (data1, textStatus, jqXHR) {
         for(var i = 0; i < inputs.length; i++) {
             inputs[i].disabled = false;
         }
-        //d3.selectAll(".nameLabel").style("color","black");
+        d3.selectAll(".nameLabel").style("color","black");
         d3.select("#chart").style("opacity","1");
     })
     .fail(function (data2) {
@@ -208,7 +207,7 @@ g.append("svg:rect")
 // Add Milestones horizontal lines
 chartData.forEach(function(v){
     if($.inArray(v.points,yArr) == -1 && parseInt(v.points) != 0){
-        yArr.push(v.points);
+        yArr.push(v);
     }
 });
 addMilestonesLine(yArr);
@@ -234,11 +233,17 @@ function addMilestonesLine(yArr){
     yArr.forEach(function(v){
             g.append("svg:rect")
             .attr("x", 0)
-            .attr("y", y(v))
+            .attr("y", y(v.points))
             .attr("height", 0.1)
             .attr("width", width)
             .attr("stroke-width", 0.5)
-            .attr("class", "milestone");
+            .attr("class", "milestone")
+            .on("mouseover", function () {
+                addTooltipProfessorGradebook(roundToTwo(v.points) + " points due " + parseTimestamp(v.date));
+            })
+            .on("mouseout", function () {
+                removeTooltipProfessorGradebook();
+            });
         });
 }
 // Add median, min, max, Q1 and Q3 lines
@@ -285,26 +290,30 @@ function addQuartileMinMax(id,data){
         .style("stroke", "#27b327");
 }
 function getSubmissionsDays(){
-    var submissionsDays = {};
+    var submissionsDays = {},
+        usersOldValue = [];
     $.each(dateRange, function(dK,dV){
-        var pushUserVal = [],
-            pushVal = [];
+        var pushVal = [];
         $.each(submissions, function(k,v){
-           $.each(v.items,function(itemK,itemV){
-                if(itemV.date >= Date.parse(dateRange[dK]) && itemV.date <= Date.parse(dateRange[dK+1]) && typeof dateRange[dK+1] != 'undifined'){
+            var pushUserVal = [];
+            $.each(v.items,function(itemK,itemV){
+                if(itemV.date >= Date.parse(dateRange[dK]) && itemV.date <= Date.parse(dateRange[dK+1]) && typeof dateRange[dK+1] != 'undefined'){
                     pushUserVal[v.id] = itemV;
-                }else if(itemV.date >= Date.parse(dateRange[dK]) && typeof dateRange[dK+1] == 'undifined'){
+                    usersOldValue[v.id] = itemV;
+                }else if(itemV.date >= Date.parse(dateRange[dK]) && typeof dateRange[dK+1] == 'undefined'){
                     pushUserVal[v.id] = itemV;
+                    usersOldValue[v.id] = itemV;
                 }
-           });
-           if(Object.keys(pushUserVal).length > 0){
-                pushVal.push(pushUserVal[v.id]);
-           }
-            pushUserVal = [];
+            });
+            if(pushUserVal.length == 0 && dK == 0){
+                pushUserVal[v.id] = {points:0,date:Date.parse(dateRange[dK])};
+                usersOldValue[v.id] = {points:0,date:Date.parse(dateRange[dK])};
+            }else if(pushUserVal.length == 0 && dK > 0){
+                pushUserVal[v.id] = usersOldValue[v.id];
+            }
+            pushVal.push(pushUserVal[v.id]);
         });
-        if(pushVal.length > 0){
-            submissionsDays[dV] = pushVal;
-        }
+        submissionsDays[dV] = pushVal;
     });
     return submissionsDays;
 }
@@ -321,10 +330,7 @@ function getQ1Q2Q3(del){
         var Q1ValArr = Q1ValArr.slice().sort(function (a, b){
             return a-b;
         });
-        var key = Math.floor((Q1ValArr.length + 1)*del);
-        if(key == Q1ValArr.length){
-            key--;
-        }
+        var key = Math.floor((Q1ValArr.length - 1)*del);
         point = Q1ValArr[key];
         Q1DataDay.push({date:k,point:point});
     });
@@ -651,7 +657,7 @@ function uncheckedBox(id)
     d3.selectAll(selector).remove();
 }
 
-function checkedBox(id)
+function checkedBox(id,slideDays)
 {
     var masterArr = submissions.filter(function (d) {
         return d.id === id;
@@ -660,20 +666,31 @@ function checkedBox(id)
         dragDate = getChartDate();
     if (masterArr.length > 0)
     {
-        var masterItems = masterArr[0].items,
-            show_student_line = true;
-        $.each(masterItems, function(k,v){
-            if(v.points < min_max[0] || v.points > min_max[1]) {
-                show_student_line = false;
-                return;
+        if(slideDays){
+            var masterItems = masterArr[0].items,
+                newData = [];
+            $.each(masterItems,function(k,v){
+                if(v.points >= min_max[0] && v.points <= min_max[1]) {
+                    if(Date.parse(v.date) <= parseInt(dragDate) || v.date <= parseInt(dragDate)){
+                        newData.push(v);
+                    }
+                }
+            });
+            var parsedData = parseDates(newData);
+            addLine(parsedData, "steelblue", masterArr[0].id);
+        }else{
+            var masterItems = masterArr[0].items;
+            var show_student_line = false;
+            var maxPoint = masterItems[masterItems.length-1].points;
+            var maxDate = masterItems[masterItems.length-1].date;
+            if(maxPoint >= min_max[0] && maxPoint <= min_max[1]) {
+                if(Date.parse(maxDate) <= parseInt(dragDate) || maxDate <= parseInt(dragDate)){
+                    show_student_line = true;
+                }
             }
-            if(Date.parse(v.date) > parseInt(dragDate) || v.date > parseInt(dragDate)){
-                show_student_line = false;
-                return;
-            }
-        });
-        var parsedData = (show_student_line) ? parseDates(masterItems) : parseDates([]);
-        addLine(parsedData, "steelblue", masterArr[0].id);
+            var parsedData = (show_student_line) ? parseDates(masterItems) : parseDates([]);
+            addLine(parsedData, "steelblue", masterArr[0].id);
+        }
     }
 }
 
@@ -802,13 +819,13 @@ function checkboxFunctionality()
     });
 }
 
-function filterrange(args, item, check, index_td) {
+function filterrange(args, item, check,index_td) {
     if (check) {
-        var td = $('#gridContainer .jsgrid-filter-row td:eq('+index_td+')');
-        var start_min = parseFloat(args['start_min'].toFixed(2));
-        var start_max = parseFloat(args['start_max'].toFixed(2));
+        var td = $('#gridContainer .jsgrid-filter-row td:eq('+index_td+')'),
+            start_min = parseFloat(args['start_min'].toFixed(2)),
+            start_max = parseFloat(args['start_max'].toFixed(2));
         td.append('<div class="nouislider ' + check + '"><div class="rangearr"></div><div id="' + check + '"></div></div>');
-        $('#' + check).slider({
+        $('#'+check).slider({
             min: start_min,
             max: start_max,
             values: [start_min,start_max],
@@ -1065,10 +1082,6 @@ function buildTable(data) {
                 }
             }
 
-            /*if (sortType.length >= 1)  {
-                $("#gridContainer").jsGrid("mySort");
-            }*/
-
         });
 
         $(document).on('keyup', '.first_name input, .last_name input, .sections input, .grade input', function(){
@@ -1229,7 +1242,7 @@ function buildTable(data) {
         pageButtonCount: 3,
         controller: data_controller,
         fields: [
-            { name: field_keys.no, type: "hidden", width: 30, sorting: false, css: 'number'},
+            { name: field_keys.no, type: "hidden", width: 26, sorting: false, css: 'number'},
             { name: field_keys.first_name, type: "text", width: 50, sorter: 'byText', css: 'first_name' },
             { name: field_keys.last_name, type: "text", width: 50, sorter: 'byText', css: 'last_name' },
             { name: field_keys.sections, type: "checkbox", width: 70 },
@@ -1247,7 +1260,11 @@ function buildTable(data) {
         onDataLoaded: function(args) {
             var td = $('.jsgrid-grid-header tr').eq(1).find('td');
             $('.jsgrid-search-button').hide();
-            $('.Q123MinMax').find('.btn-group').find('.btn-info').removeClass('disabled');
+            $('.Q123MinMax,.histogramGroup').find('.btn-group').find('.btn-info').removeClass('disabled');
+            if($('#histogram svg').length == 0){
+                // histogramData = getHistogramDateByPoints();
+                // histogram(histogramData);
+            }
             //$('.sort-name,.sort-total').removeClass('hide');
             td.eq(td.length-2).html('<a data-toggle="modal" style="outline:none;" href="#content-confirmation"><i class="fa fa-cog table_set"></i></a>').css('text-align','center');
             if($('.filter_checkbox').length == 0){
@@ -1506,20 +1523,20 @@ function roundToTwo(num) {
     return +(Math.round(num + "e+2")  + "e-2");
 }
 
-function chartDragPoints() {
+function chartDragPoints(days) {
     addQuartileMinMaxLine();
     $.each($('input.single:checked'), function(k,input){
         var id = parseInt($(input).val());
         uncheckedBox(id);
-        checkedBox(id);
+        (days) ? checkedBox(id,true) : checkedBox(id,false);
     });
 }
 
-function chartDateRange() {
+function chartDateRange(days) {
     var date = getChartDate();
     var orangeLine = x(date);
     $('.todayLine').attr('x',orangeLine);
-    chartDragPoints();
+    chartDragPoints(days);
 }
 
 var rMax = d3.max(data, function (d) {return d.points;});
@@ -1582,7 +1599,7 @@ function intervalIts() {
         var val = labels[index];
         $('.my-ui-slider').find('.ui-slider-handle').css('left',left).find('span').text(val);
         $('.ui-slider-pip').removeClass('ui-slider-pip-selected').eq(pointDate).addClass('ui-slider-pip-selected');
-        chartDateRange();
+        chartDateRange(true);
     }else{
         $('button.player').find('i').removeClass('fa-pause').addClass('fa-play');
         pointDate = -1;
@@ -1660,29 +1677,125 @@ $(document).on('click','.grade-tabs li',function(){
 $(document).on('click','.Q123MinMax .btn-group',function(){
     addQuartileMinMaxLine();
 });
+// function getHistogramDateByPoints(start,end){
+//     var pushVal = [],
+//         step = 100;
+//     for(var i=0;i<=parseInt(end);i+=100){
+//         console.log(i);
+//     }
+//     return pushVal;
+// }
+// function histogram(data){
+//     var margin = {top: 20, right: 20, bottom: 30, left: 40},
+//         width = 960 - margin.left - margin.right,
+//         height = 500 - margin.top - margin.bottom;
 
-$(document).on('click', '.jsgrid-header-row th', function() {
-    if ($(this).find('.jsgrid-header-sort-desc').length == 1) {
-        sortType = [];
-        sortType[0] = 'desc';
-        sortType[1] = $(this).index();
-    } else {
-        sortType = [];
-        sortType[0] = 'asc';
-        sortType[1] = $(this).index();
-    }
-});
-/*$('.sort-total').hover(function() {
-    console.log($('.sort-total::after'));
-    $('.sort-total:after').css({
-        'border-top-color' : 'rgb(204, 204, 204)',
-        'border-right-color': 'transparent',
-        'border-bottom-color': 'transparent',
-        'border-left-color': 'transparent'
-    });
-});*/
+//     var x = d3.scale.ordinal()
+//         .rangeRoundBands([0, width], .1);
 
-$(document).on('click', '.but',  function() {
-    $("#gridContainer").jsGrid("mySort");
-});
+//     var y = d3.scale.linear()
+//         .range([height, 0]);
 
+//     var xAxis = d3.svg.axis()
+//         .scale(x)
+//         .orient("bottom");
+
+//     var yAxis = d3.svg.axis()
+//         .scale(y)
+//         .orient("left")
+//         .ticks(10, "d");
+
+//     var svg = d3.select("#histogram").append("svg")
+//         .attr("width", width + margin.left + margin.right)
+//         .attr("height", height + margin.top + margin.bottom)
+//       .append("g")
+//         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+//     svg.append("g")
+//         .attr("class", "x axis histogramXA")
+//         .attr("transform", "translate(0," + height + ")")
+
+//     svg.append("g")
+//         .attr("class", "y axis")
+//         .append("text")
+//         .attr("transform", "rotate(-90)")
+//         .attr("y", 6)
+//         .attr("dy", ".71em")
+//         .style("text-anchor", "end")
+//         .text("Frequency");
+
+//       replay(data);
+
+//     function type(d) {
+//       d.frequency = +d.frequency;
+//       return d;
+//     }
+
+//     function replay(data) {
+//       var slices = [];
+//       for (var i = 0; i < data.length; i++) {
+//         slices.push(data.slice(0, i+1));
+//       }
+//       slices.forEach(function(slice, index){
+//           draw(slice);
+//       });
+//     }
+//     y.domain([0, d3.max(data, function(d) { return d.frequency; })]);
+//     svg.select(".y.axis").call(yAxis);
+//     function draw(data) {
+//         x.domain(data.map(function(d) { return d.points; }));
+//         svg.select('.x.axis').call(xAxis);
+
+//         var bars = svg.selectAll(".bar").data(data, function(d) { return d.points; })
+
+//         bars.exit()
+//         .transition()
+//         .duration(300)
+//         .attr("y", y(0))
+//         .attr("height", height - y(0))
+//         .style('fill-opacity', 1e-6)
+//         .remove();
+
+//         bars.enter().append("rect")
+//         .attr("class", "bar")
+//         .attr("y", y(0))
+//         .attr("height", height - y(0));
+//         bars.attr("x", function(d) { return x(d.points); })
+//         .attr("width", x.rangeBand())
+//         .attr('fill','#4da7e8')
+//         .attr("y", function(d) { return y(d.frequency); })
+//         .attr("height", function(d) { return height - y(d.frequency); });
+
+//         // $('.histogramXA').find('g').remove();
+//     }
+// }
+
+// $(".histogram-date").slider({
+//     min: 0,
+//     max: dateMax,
+//     value: dateMax,
+//     step: 1
+// }).slider("pips")
+// .on("slidechange", function(e,d) {
+//     pointDate = $('.histogram-date .ui-slider-pip-selected').index()-1;
+//     if(pointHistDate == dateMax){
+//       pointHistDate = 0;  
+//     }
+// }).slider('float', {
+//     labels: labels
+// });
+
+// $('.histogram-date .ui-slider-pip-first').find('.ui-slider-label').text(parseDayMonth(dFrom));
+// $('.histogram-date .ui-slider-pip-last').find('.ui-slider-label').text(parseDayMonth(endDateTo));
+
+// $(".histogram-range-slider").slider({
+//     min: 0,
+//     max: rMax,
+//     values: [0,rMax],
+//     step: 1,
+//     range: true
+// }).slider("pips")
+// .on("slidechange", function(e,d) {
+// }).slider('float', {
+//     labels: true
+// });
