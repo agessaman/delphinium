@@ -23,7 +23,6 @@ var submissions = [];
 var bottomExperienceScores=[];
 document.tabdata = '';
 var windowData = '';
-var sortType = [];
 //GET DATA FOR THE TOP CHART
 var promise = $.get("gradebook/getAllStudentSubmissions");
 promise.then(function (data1, textStatus, jqXHR) {
@@ -32,7 +31,7 @@ promise.then(function (data1, textStatus, jqXHR) {
         for(var i = 0; i < inputs.length; i++) {
             inputs[i].disabled = false;
         }
-        //d3.selectAll(".nameLabel").style("color","black");
+        d3.selectAll(".nameLabel").style("color","black");
         d3.select("#chart").style("opacity","1");
     })
     .fail(function (data2) {
@@ -208,7 +207,7 @@ g.append("svg:rect")
 // Add Milestones horizontal lines
 chartData.forEach(function(v){
     if($.inArray(v.points,yArr) == -1 && parseInt(v.points) != 0){
-        yArr.push(v.points);
+        yArr.push(v);
     }
 });
 addMilestonesLine(yArr);
@@ -234,11 +233,17 @@ function addMilestonesLine(yArr){
     yArr.forEach(function(v){
             g.append("svg:rect")
             .attr("x", 0)
-            .attr("y", y(v))
+            .attr("y", y(v.points))
             .attr("height", 0.1)
             .attr("width", width)
             .attr("stroke-width", 0.5)
-            .attr("class", "milestone");
+            .attr("class", "milestone")
+            .on("mouseover", function () {
+                addTooltipProfessorGradebook(roundToTwo(v.points) + " points due " + parseTimestamp(v.date));
+            })
+            .on("mouseout", function () {
+                removeTooltipProfessorGradebook();
+            });
         });
 }
 // Add median, min, max, Q1 and Q3 lines
@@ -325,10 +330,7 @@ function getQ1Q2Q3(del){
         var Q1ValArr = Q1ValArr.slice().sort(function (a, b){
             return a-b;
         });
-        var key = Math.floor((Q1ValArr.length + 1)*del);
-        if(key == Q1ValArr.length){
-            key--;
-        }
+        var key = Math.floor((Q1ValArr.length - 1)*del);
         point = Q1ValArr[key];
         Q1DataDay.push({date:k,point:point});
     });
@@ -655,7 +657,7 @@ function uncheckedBox(id)
     d3.selectAll(selector).remove();
 }
 
-function checkedBox(id)
+function checkedBox(id,slideDays)
 {
     var masterArr = submissions.filter(function (d) {
         return d.id === id;
@@ -689,20 +691,6 @@ function checkedBox(id)
             var parsedData = (show_student_line) ? parseDates(masterItems) : parseDates([]);
             addLine(parsedData, "steelblue", masterArr[0].id);
         }
-        var masterItems = masterArr[0].items,
-            show_student_line = true;
-        $.each(masterItems, function(k,v){
-            if(v.points < min_max[0] || v.points > min_max[1]) {
-                show_student_line = false;
-                return;
-            }
-            if(Date.parse(v.date) > parseInt(dragDate) || v.date > parseInt(dragDate)){
-                show_student_line = false;
-                return;
-            }
-        });
-        var parsedData = (show_student_line) ? parseDates(masterItems) : parseDates([]);
-        addLine(parsedData, "steelblue", masterArr[0].id);
     }
 }
 
@@ -831,13 +819,13 @@ function checkboxFunctionality()
     });
 }
 
-function filterrange(args, item, check, index_td) {
+function filterrange(args, item, check,index_td) {
     if (check) {
-        var td = $('#gridContainer .jsgrid-filter-row td:eq('+index_td+')');
-        var start_min = parseFloat(args['start_min'].toFixed(2));
-        var start_max = parseFloat(args['start_max'].toFixed(2));
+        var td = $('#gridContainer .jsgrid-filter-row td:eq('+index_td+')'),
+            start_min = parseFloat(args['start_min'].toFixed(2)),
+            start_max = parseFloat(args['start_max'].toFixed(2));
         td.append('<div class="nouislider ' + check + '"><div class="rangearr"></div><div id="' + check + '"></div></div>');
-        $('#' + check).slider({
+        $('#'+check).slider({
             min: start_min,
             max: start_max,
             values: [start_min,start_max],
@@ -1094,10 +1082,6 @@ function buildTable(data) {
                 }
             }
 
-            /*if (sortType.length >= 1)  {
-                $("#gridContainer").jsGrid("mySort");
-            }*/
-
         });
 
         $(document).on('keyup', '.first_name input, .last_name input, .sections input, .grade input', function(){
@@ -1258,7 +1242,7 @@ function buildTable(data) {
         pageButtonCount: 3,
         controller: data_controller,
         fields: [
-            { name: field_keys.no, type: "hidden", width: 30, sorting: false, css: 'number'},
+            { name: field_keys.no, type: "hidden", width: 26, sorting: false, css: 'number'},
             { name: field_keys.first_name, type: "text", width: 50, sorter: 'byText', css: 'first_name' },
             { name: field_keys.last_name, type: "text", width: 50, sorter: 'byText', css: 'last_name' },
             { name: field_keys.sections, type: "checkbox", width: 70 },
@@ -1276,7 +1260,11 @@ function buildTable(data) {
         onDataLoaded: function(args) {
             var td = $('.jsgrid-grid-header tr').eq(1).find('td');
             $('.jsgrid-search-button').hide();
-            $('.Q123MinMax').find('.btn-group').find('.btn-info').removeClass('disabled');
+            $('.Q123MinMax,.histogramGroup').find('.btn-group').find('.btn-info').removeClass('disabled');
+            if($('#histogram svg').length == 0){
+                // histogramData = getHistogramDateByPoints();
+                // histogram(histogramData);
+            }
             //$('.sort-name,.sort-total').removeClass('hide');
             td.eq(td.length-2).html('<a data-toggle="modal" style="outline:none;" href="#content-confirmation"><i class="fa fa-cog table_set"></i></a>').css('text-align','center');
             if($('.filter_checkbox').length == 0){
@@ -1535,20 +1523,20 @@ function roundToTwo(num) {
     return +(Math.round(num + "e+2")  + "e-2");
 }
 
-function chartDragPoints() {
+function chartDragPoints(days) {
     addQuartileMinMaxLine();
     $.each($('input.single:checked'), function(k,input){
         var id = parseInt($(input).val());
         uncheckedBox(id);
-        checkedBox(id);
+        (days) ? checkedBox(id,true) : checkedBox(id,false);
     });
 }
 
-function chartDateRange() {
+function chartDateRange(days) {
     var date = getChartDate();
     var orangeLine = x(date);
     $('.todayLine').attr('x',orangeLine);
-    chartDragPoints();
+    chartDragPoints(days);
 }
 
 var rMax = d3.max(data, function (d) {return d.points;});
@@ -1611,7 +1599,7 @@ function intervalIts() {
         var val = labels[index];
         $('.my-ui-slider').find('.ui-slider-handle').css('left',left).find('span').text(val);
         $('.ui-slider-pip').removeClass('ui-slider-pip-selected').eq(pointDate).addClass('ui-slider-pip-selected');
-        chartDateRange();
+        chartDateRange(true);
     }else{
         $('button.player').find('i').removeClass('fa-pause').addClass('fa-play');
         pointDate = -1;
@@ -1835,4 +1823,5 @@ $(document).on('click', '.but',  function() {
 // .on("slidechange", function(e,d) {
 // }).slider('float', {
 //     labels: true
+// });
 // });
