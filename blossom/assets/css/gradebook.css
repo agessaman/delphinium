@@ -208,6 +208,7 @@ a:hover
 #chart{
     display: inline-block;
     float:left;
+    margin-left: 9px;
 }
 #chart path {
     stroke: steelblue;
@@ -346,8 +347,8 @@ a:hover
     width: 196px;
     height: 40px;
     position: relative;
-    top: -19px;
-    left: 357px;
+    top: 5px;
+    left: 366px;
 }
 .left-val{
     float:left;
@@ -436,9 +437,9 @@ td.checkbox-field {
 .jsgrid-filter-row .checkbox-field {
     text-align: center !important;
 }
-.checkbox-field {
+/*.checkbox-field {
     padding: 5px 13 5px 20px !important;
-}
+}*/
 td.checkbox-field .filter_checkbox {
     font-size: 22px;
     color: #ccc;
@@ -580,6 +581,9 @@ td.checkbox-field .filter_checkbox {
     color: #000;
     text-align: left;
     float: right;
+    position: relative;
+    left: -18px;
+    top: 2px;
 }
 .sort-name,
 .sort-total {
@@ -604,8 +608,8 @@ td.checkbox-field .filter_checkbox {
     background: #fff;
     width: 46px;
     border: 1px solid silver;
-    top: 0px;
-    left: -19px;
+    top: -2px;
+    left: -1px;
 }
 .sort-name-desc:before  {
     border-color:#fff transparent #fff transparent !important;
@@ -625,9 +629,9 @@ td.checkbox-field .filter_checkbox {
     width: 48px;
     background: #fff;
     border: 1px solid silver;
-    left: 26px;
+    left: 44px;
     border-radius: 0 2px 2px 0;
-    top: -38px;
+    top: -40px;
 }
 .sort-name:after,
 .sort-total:after {
@@ -717,7 +721,7 @@ td.checkbox-field .filter_checkbox {
     top: -3px;
 }
 .milestone {
-    stroke: rgba(204,204,204,0.5);
+    stroke: #f5f5f5 !important;
 }
 .btn-info {
     color: #555555;
@@ -746,4 +750,7 @@ td.checkbox-field .filter_checkbox {
 }
 ::-webkit-scrollbar-thumb:active {
     background: #808080;
+}
+th.details {
+    padding-left: 10px !important;
 }

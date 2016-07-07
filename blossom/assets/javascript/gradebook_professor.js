@@ -24,6 +24,7 @@ var bottomExperienceScores=[];
 document.tabdata = '';
 var windowData = '';
 var sortType = [];
+var count = 0;
 //GET DATA FOR THE TOP CHART
 var promise = $.get("gradebook/getAllStudentSubmissions");
 promise.then(function (data1, textStatus, jqXHR) {
@@ -174,11 +175,17 @@ g.append("g")
     .attr("class", "y axis")
     .call(yAxis);
 
+// Add Milestones horizontal lines
+chartData.forEach(function(v){
+    if($.inArray(v.points,yArr) == -1 && parseInt(v.points) != 0){
+        yArr.push(v);
+    }
+});
+addMilestonesLine(yArr);
 // add the red line chart
 addLine(data, "red", "red");
 // add circles for each milestone
 addRedLineDots();
-
 //add a vertical rect denoting today
 var todayDate = new Date();
 todayDate = (Date.parse(endDate) > Date.parse(todayDate)) ? todayDate : new Date(endDate);
@@ -204,13 +211,6 @@ g.append("svg:rect")
     .on("mouseout", function (d) {
         removeTooltipProfessorGradebook();
     });
-// Add Milestones horizontal lines
-chartData.forEach(function(v){
-    if($.inArray(v.points,yArr) == -1 && parseInt(v.points) != 0){
-        yArr.push(v);
-    }
-});
-addMilestonesLine(yArr);
 ///////////////////////////////////////
 
 $(window).resize(function(){
@@ -509,7 +509,7 @@ function addLine(data, strokeColor, id)
     }
 
 }
-
+///////////////////////////////////////////////////////////////////////
 $(document).on("change", '.deselectAll',  function () {
     allSelected = !allSelected;
     var checkboxes = d3.selectAll(".single");
@@ -819,7 +819,7 @@ function checkboxFunctionality()
     });
 }
 
-function filterrange(args, item, check,index_td) {
+function filterrange(args, item, check, index_td) {
     if (check) {
         var td = $('#gridContainer .jsgrid-filter-row td:eq('+index_td+')'),
             start_min = parseFloat(args['start_min'].toFixed(2)),
@@ -841,6 +841,11 @@ function filterrange(args, item, check,index_td) {
                 td.find('.range').addClass('text_blue');
             }
             $('.jsgrid-search-button').trigger('click');
+            
+            if (sortType[1]) {
+                $("#gridContainer").jsGrid("sort", sortType[0], sortType[1]);
+            }
+
         }).slider('float', {
             labels: true
         });
@@ -1229,11 +1234,12 @@ function buildTable(data) {
         }
         if(countClick%3 == 0){
             $("#gridContainer").jsGrid("_sortReset");
+            sortType[1] = false;
         }
     });
 
     $("#gridContainer").jsGrid({
-        height: "720px",
+        height: "760px",
         width: "100%",
         filtering: true,
         sorting: true,
@@ -1678,18 +1684,9 @@ $(document).on('click','.grade-tabs li',function(){
 $(document).on('click','.Q123MinMax .btn-group',function(){
     addQuartileMinMaxLine();
 });
-
-/*$(document).on('click', '.jsgrid-header-row th', function() {
-    if ($(this).find('.jsgrid-header-sort-desc').length == 1) {
-        sortType = [];
-        sortType[0] = 'desc';
-        sortType[1] = $(this).index();
-    } else {
-        sortType = [];
-        sortType[0] = 'asc';
-        sortType[1] = $(this).index();
-    }
-});*/
+$(document).on('click', '.jsgrid-header-row th',  function() {
+    sortType[0] = $(this).index();
+});
 /*$('.sort-total').hover(function() {
     console.log($('.sort-total::after'));
     $('.sort-total:after').css({
@@ -1700,9 +1697,6 @@ $(document).on('click','.Q123MinMax .btn-group',function(){
     });
 });*/
 
-$(document).on('click', '.jsgrid-header-row td',  function() {
-    sortType[2] = false;
-});
 // function getHistogramDateByPoints(start,end){
 //     var pushVal = [],
 //         step = 100;
