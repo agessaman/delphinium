@@ -1,10 +1,6 @@
 // Christmas Light Smashfest
 // Adapted from XLSF 2007 as originally used on http://schillmania.com/?theme=2007&christmas=1
 
-function $(sID) {
-  return document.getElementById(sID);
-}
-
 function start() {
      if(window.YAHOO) {
            Y = {
@@ -433,8 +429,6 @@ function XLSF(oTarget,urlBase) {
   var i=0;
   var j=0;
 
-  $('lights').style.display = 'block';
-
   // start lights to the right of <h1>
   var offset = 0; // parseInt(document.getElementsByTagName('h1')[0].offsetWidth)+16;
 
@@ -458,8 +452,8 @@ function smashInit() {
     return false;
   }
   xlsf = new XLSF(document.getElementById('lights'),urlBase?urlBase:null);
-  if ($('loading')) {
-    $('loading').style.display = 'none';	
+  if ($('#loading')) {
+    $('#loading').css('display','none');	
   }
   xlsf.initSounds();
 }

@@ -54,4 +54,22 @@ html{
 .modal-header {background:none !important;border-bottom:1px solid #e5e5e5 !important;color:#333333 !important}
 .modal-header .close{color:black !important;background:transparent !important;}
 .modal-body {padding-bottom: 10px;}
-.hiddenFromTeacher{display:none;}//This style is to hide instructions that don't apply to the professor in Canvas.
+.hiddenFromTeacher{display:none;}
+
+#close-div{
+	position:absolute; 
+	top: 0; 
+	right:0; 
+	z-index: 100; 
+	background-color:white; 
+	height: 50px; 
+	width: 50px;
+	cursor: pointer;
+	color: black;
+}
+
+#close-div .close-button {
+	font-size: 60px;
+	top: -5;
+	position: absolute;
+}

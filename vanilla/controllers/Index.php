@@ -166,7 +166,6 @@ class Index extends Controller
 
             return null;
         }
-
         if ($type == 'content') {
             $fileName = $object->getFileName();
             $extension = pathinfo($fileName, PATHINFO_EXTENSION);

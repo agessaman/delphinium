@@ -311,7 +311,7 @@ class ComponentList extends WidgetBase
         $obj = new \stdClass();//new static($theme);
         $obj->fileName = $fileName;
         $obj->path = "/components/".$activeComponent->alias."/".$fileName;
-        $obj->fullPath = $dirPath."\\".$fileName;
+        $obj->fullPath = $dirPath."/".$fileName;
         $obj->originalFileName = $fileName;
         $obj->mtime = File::lastModified($fullPath);
         $obj->content = $content;

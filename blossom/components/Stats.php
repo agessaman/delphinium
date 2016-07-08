@@ -96,7 +96,8 @@ class Stats extends ComponentBase
 //        try
 //        {
         $this->addCss('/modules/system/assets/ui/storm.css', 'core');
-        $this->addJs('/modules/system/assets/ui/storm-min.js', 'core');
+//        $this->addJs('/modules/system/assets/ui/storm-min.js', 'core');
+        $this->addJs('/modules/system/assets/ui/js/flashmessage.js', 'core');
         $this->addCss('/modules/system/assets/ui/storm.less', 'core');
         $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
         $this->addJs("/plugins/delphinium/blossom/assets/javascript/stats.js");
@@ -381,9 +382,16 @@ class Stats extends ComponentBase
                     $i++;
                 }
             }
-
-            $average = array_sum($percentageArr) / count($percentageArr);
-            $averageObj->total = $average;
+			if(count($percentageArr)<1)
+			{
+				$averageObj->total = 0;
+				$averageObj->ten = 0;
+			}
+			else
+			{
+				$average = array_sum($percentageArr) / count($percentageArr);
+				$averageObj->total = $average;
+			}
 
             if(count($analytics)<=10)
             {//if there were less than 10 assignments we'll show the same average for both options
