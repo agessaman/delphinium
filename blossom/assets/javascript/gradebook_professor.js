@@ -1321,7 +1321,7 @@ function buildTable(data) {
             if($('#histogram svg').length == 0){
                 histogram({yP:students.length});
                 $('.histogramRVS').removeClass('histogramRVS');
-                if(submissions.length == 0){
+                /*if(submissions.length == 0){
                     $(".my-ui-slider")
                         .slider({disabled: true});
                     $(".range-slider")
@@ -1331,9 +1331,9 @@ function buildTable(data) {
                     $(".histogram-date")
                         .slider({disabled: true});
                     $('.player,.histogram-player').addClass('disabled').prop('disabled',true);
-                }else{
+                }else{*/
                     $('.Q123MinMax,.histogramGroup').find('.btn-group').find('.btn-info').removeClass('disabled');
-                }
+                // }
             }
             //$('.sort-name,.sort-total').removeClass('hide');
             td.eq(td.length-2).html('<a data-toggle="modal" style="outline:none;" href="#content-confirmation"><i class="fa fa-cog table_set"></i></a>').css('text-align','center');
