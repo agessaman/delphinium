@@ -739,6 +739,7 @@ td.checkbox-field .filter_checkbox {
   width: 8px;
   height: 8px;
 }
+<<<<<<< HEAD
 ::-webkit-scrollbar-track{
     background: #f1f1f1;
 }
@@ -753,6 +754,9 @@ td.checkbox-field .filter_checkbox {
 }
 th.details {
     padding-left: 10px !important;
+=======
+
+>>>>>>> dd425162d202171d8f4aa211a59f6d97242252e8
 ::-webkit-scrollbar-thumb
 {
   background: rgba(0, 0, 0, 0.5);
@@ -790,4 +794,21 @@ th.details {
 }
 .empty {
     height: 30px;
+<<<<<<< HEAD
+=======
+::-webkit-scrollbar-track{
+    background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb{
+    background: #c1c1c1;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #989898;
+}
+::-webkit-scrollbar-thumb:active {
+    background: #808080;
+}
+th.details {
+    padding-left: 10px !important;
+>>>>>>> dd425162d202171d8f4aa211a59f6d97242252e8
 }

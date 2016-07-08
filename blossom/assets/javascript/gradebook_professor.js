@@ -1690,9 +1690,12 @@ $(document).on('click','.grade-tabs li',function(){
 $(document).on('click','.Q123MinMax .btn-group',function(){
     addQuartileMinMaxLine();
 });
+<<<<<<< HEAD
 $(document).on('click', '.jsgrid-header-row th',  function() {
     sortType[0] = $(this).index();
 });
+=======
+>>>>>>> dd425162d202171d8f4aa211a59f6d97242252e8
 function getHistogramDataByPoints(startEnd){
     var endArr = [],
         intervals = [],
@@ -2131,3 +2134,9 @@ function getBoxPlotData(data){
         q3 = getQ1Q3MedianForBoxPlot(allPoints,0.75);
     return [{day:1,min:min,max:max,median:median,q1:q1,q3:q3}];
 }
+<<<<<<< HEAD
+=======
+$(document).on('click', '.jsgrid-header-row th',  function() {
+    sortType[0] = $(this).index();
+});
+>>>>>>> dd425162d202171d8f4aa211a59f6d97242252e8
