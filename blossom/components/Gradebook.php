@@ -79,7 +79,7 @@ class Gradebook extends ComponentBase {
     }
 
     public function onRender() {
-        try{
+        //try{
 
             $this->roots = new Roots();
             $standards = $this->roots->getGradingStandards();
@@ -145,7 +145,6 @@ class Gradebook extends ComponentBase {
 
             }
 
-
             //modify grading scheme for display to users
             foreach($grading_scheme as $grade)
             {
@@ -153,36 +152,36 @@ class Gradebook extends ComponentBase {
             }
             $this->page['grading_scheme'] = json_encode($grading_scheme);
 
-        }
-        catch(\Delphinium\Roots\Exceptions\InvalidRequestException $e)
-        {
-            if($e->getCode()==401)//meaning there are two professors and one is trying to access the other professor's grades
-            {
-                return;
-            }
-            else
-            {
-                return \Response::make($this->controller->run('error'), 500);
-            }
-        }
-        catch (\GuzzleHttp\Exception\ClientException $e) {
-            return;
-        }
-        catch(Delphinium\Roots\Exceptions\NonLtiException $e)
-        {
-            if($e->getCode()==584)
-            {
-                return \Response::make($this->controller->run('nonlti'), 500);
-            }
-        }
-        catch(\Exception $e)
-        {
-            if($e->getMessage()=='Invalid LMS')
-            {
-                return \Response::make($this->controller->run('nonlti'), 500);
-            }
-            return \Response::make($this->controller->run('error'), 500);
-        }
+        // }
+        // catch(\Delphinium\Roots\Exceptions\InvalidRequestException $e)
+        // {
+        //     if($e->getCode()==401)//meaning there are two professors and one is trying to access the other professor's grades
+        //     {
+        //         return;
+        //     }
+        //     else
+        //     {
+        //         return \Response::make($this->controller->run('error'), 500);
+        //     }
+        // }
+        // catch (\GuzzleHttp\Exception\ClientException $e) {
+        //     return;
+        // }
+        // catch(Delphinium\Roots\Exceptions\NonLtiException $e)
+        // {
+        //     if($e->getCode()==584)
+        //     {
+        //         return \Response::make($this->controller->run('nonlti'), 500);
+        //     }
+        // }
+        // catch(\Exception $e)
+        // {
+        //     if($e->getMessage()=='Invalid LMS')
+        //     {
+        //         return \Response::make($this->controller->run('nonlti'), 500);
+        //     }
+        //     return \Response::make($this->controller->run('error'), 500);
+        // }
     }
 
     function onGetContent() {
@@ -254,6 +253,7 @@ class Gradebook extends ComponentBase {
         // $submissionData = $this->matchSubmissionsAndUsers($users, $aggregateSubmissionScores);
         // $this->studentData = $submissionData;
         // chart data
+
         $this->page['chartData'] = json_encode($this->getRedLineData());
         $this->page['endDate'] = json_encode($courseEnd);
         $experience = new ExperienceComponent();
@@ -274,7 +274,6 @@ class Gradebook extends ComponentBase {
             $expComponent = new ExperienceComponent();
 
             $ptsPerSecond = $expComponent->getPtsPerSecond($stDate, $endDate, $instance->total_points);
-
             $milestoneData = array();
             foreach ($milestones as $milestone) {
                 $secsTranspired = ceil($milestone->points / $ptsPerSecond);
@@ -292,7 +291,7 @@ class Gradebook extends ComponentBase {
             $newArr = $this->fillInMissingDays($stDate, $milestoneData);
             //merge arrays and order by date
             $final = array_merge($newArr, $milestoneData);
-
+		
             usort($final, function($a, $b) {
                 if ($a->date == $b->date && $a->points == $b->points) {
                     return 0;

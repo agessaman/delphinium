@@ -68,7 +68,7 @@ class Manager extends ComponentBase
             }
             $this->page['courseId'] = $_SESSION['courseID'];
             $this->page['lmsUrl'] =  json_encode($this->getLmsUrl());
-            $this->prepareData(true);//$this->prepareData(false);
+            $this->prepareData(false);
 
         // }catch (\GuzzleHttp\Exception\ClientException $e) {
         //     return;
@@ -138,7 +138,7 @@ class Manager extends ComponentBase
 
         $roots = new Roots();
         $moduleData = $roots->modules($req);
-        $modArr = $moduleData->toArray();
+	$modArr = $moduleData->toArray();
 
         $simpleModules = array();
         foreach($modArr as $item)
@@ -164,11 +164,13 @@ class Manager extends ComponentBase
 
             //The parent will be the first PUBLISHED item
             $firstItem;
+            echo json_encode($moduleData);
             foreach($moduleData as $item)
             {
                 if($item['published'] == "1")
                 {
                     $firstItem = $item;
+                    var_dump($firstItem);
                     break;
                 }
             }

@@ -481,9 +481,8 @@ class CanvasHelper
         $urlArgs[]="access_token={$token}&per_page=5000";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+        
         $response = GuzzleHelper::makeRequest($request, $url, false, $token);
-
-//        if(intval($moduleRow->id)==380213)
 //        {
 //            echo json_encode($moduleRow)."_";
 //        }
@@ -1020,13 +1019,14 @@ class CanvasHelper
      */
     public function processSubmissionsRequest(SubmissionsRequest $request)
     {
+
         $asynch = false;//this variable will determine whether we'll send the request asynchronously or not.
         if(!isset($_SESSION))
         {
             session_start();
         }
         $domain = $_SESSION['domain'];
-        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $token = \Crypt::decrypt($_SESSION['userToken']);       
         $courseId = $_SESSION['courseID'];
         $userId = $_SESSION['userID'];
 
@@ -1067,12 +1067,12 @@ class CanvasHelper
                         $urlArgs[]="access_token={$token}&per_page=100";
 
                         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+
                         $req =  new \GuzzleHttp\Psr7\Request('GET', $url);
                         $requests[] = $req;
                         $urlArgs = array();
                     }
                 }//for
-
                 //at the end we'll have requests left that need to be sent
                 if($request->getGrouped())
                 {
@@ -1080,21 +1080,33 @@ class CanvasHelper
                 }
                 $urlArgs[]="access_token={$token}&per_page=100";
                 $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+/*$curl = curl_init();
+curl_setopt_array($curl,array(
+	CURLOPT_RETURNTRANSFER => 1,
+	CURLOPT_URL=>$url,
+CURLOPT_SSL_VERIFYHOST=> 0,
+CURLOPT_SSL_VERIFYPEER => 0
+));
+$req = curl_exec($curl);*/
+//var_dump($result);
+//echo $url;
+//print_r($req);die(':end');
 
                 $req =  new \GuzzleHttp\Psr7\Request('GET', $url);
-                $requests[] = $req;
+		$requests[] = $req;
 
                 $client = new Client();
                 $returnData = array();
+
                 $pool = new Pool($client, $requests, [
                     'concurrency' => count($requests),
                     'fulfilled' => function ($response, $index) use (&$returnData, $request) {
                         $newData = json_decode($response->getBody());
-                        $processedData = $this->processCanvasSubmissionData($newData, $request->getIncludeTags(), $request->getGrouped());
+                        $processedData = $this->processCanvasSubmissionData($newData, $request->getIncludeTags(), $request->getGrouped());   
                         $returnData = array_merge($returnData,$processedData);
                     },
                     'rejected' => function ($reason, $index) {
-                        //TODO: figure out what to do here
+			//TODO: figure out what to do here
                     },
                 ]);
                 // Initiate the transfers and create a promise
@@ -1378,6 +1390,7 @@ class CanvasHelper
         $urlArgs[]="access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+
         $response = GuzzleHelper::getAsset($url);
         return $response;
     }
@@ -1830,7 +1843,9 @@ class CanvasHelper
             }
             else
             {
+
                 $submissions[] = $this->processSingleSubmission($data, $includeTags);
+
             }
         }
         return $submissions;

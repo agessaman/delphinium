@@ -177,7 +177,7 @@ a:hover
 #topContainer
 {
     text-align:center;
-    margin:auto;
+    margin-top: -20px;
 }
 #gridContainer
 {
@@ -208,6 +208,7 @@ a:hover
 #chart{
     display: inline-block;
     float:left;
+    margin-left: 9px;
 }
 #chart path {
     stroke: steelblue;
@@ -230,11 +231,16 @@ a:hover
     text-align:center;
 }
 .multiselect {
-    max-width:180px;
-    height:370px;
-    border:solid 1px #c0c0c0;
-    overflow:auto;
-    text-align:left;
+    max-width: 300px;
+    height: 363px;
+    border: solid 1px #c0c0c0;
+    overflow: auto;
+    text-align: left;
+    margin-top: 28px;
+    position: relative;
+    top: 29px;
+    margin-right: 10px;
+    min-width: 100px;
 }
 
 .multiselect label {
@@ -296,7 +302,7 @@ a:hover
     position:relative;
     text-align:center !important;
     font-size:12px !important;
-    padding: 5px 13px;
+    padding-left: 18px;
 }
 #gridContainer .jsgrid-header-row th:not(.details, .checkbox-field){
     padding-left: 20px !important;
@@ -326,7 +332,7 @@ a:hover
 }
 .my-ui-slider .ui-slider-label,
 .range-slider .ui-slider-label {
-    color: #FF7A00 !important;
+    /*color: #FF7A00 !important;*/
 }
 .ui-slider-label {font-weight: normal;}
 .cont {
@@ -338,11 +344,11 @@ a:hover
     color: #999 !important;
 }
 #topRight .left-val {
-    width: 172px;
+    width: 196px;
     height: 40px;
     position: relative;
-    top: -39px;
-    left: 357px;
+    top: 5px;
+    left: 366px;
 }
 .left-val{
     float:left;
@@ -362,8 +368,7 @@ a:hover
 }
 
 .range:hover,
-.checkbox-field:hover > .filter_checkbox,
-.table_set:hover {
+.checkbox-field:hover > .filter_checkbox {
     color: #757575 !important;
 }
 .text_blue {
@@ -394,7 +399,10 @@ a:hover
 }
 .table_set {
     font-size: 22px;
-    color: #ccc;
+    color: #4da7e8;
+}
+.table_set:hover {
+    color: #0181b9;
 }
 .jsgrid-table input[type="button"] {
     text-align: center;
@@ -424,11 +432,14 @@ td.details a:hover{
     color: #337ab7 !important;
 }
 td.checkbox-field {
-    text-align: center;
+    text-align: left;
 }
-.checkbox-field {
-    padding-left: 10px !important;
+.jsgrid-filter-row .checkbox-field {
+    text-align: center !important;
 }
+/*.checkbox-field {
+    padding: 5px 13 5px 20px !important;
+}*/
 td.checkbox-field .filter_checkbox {
     font-size: 22px;
     color: #ccc;
@@ -563,13 +574,16 @@ td.checkbox-field .filter_checkbox {
     margin: 0 auto;
 }
 .cont-sorting {
-    background: #EEEEEE;
+    background: #fff;
     height: 38px;
-    width: 84px;
+    width: 90px;
     border-radius: 3px;
     color: #000;
     text-align: left;
     float: right;
+    position: relative;
+    left: -18px;
+    top: 2px;
 }
 .sort-name,
 .sort-total {
@@ -580,23 +594,49 @@ td.checkbox-field .filter_checkbox {
 .sort-total i {
     font-size: 18px;
 }
+.sort-total i {
+    margin-top: 9px;
+    margin-left: 22px;
+}
 .sort-name i {
     margin-left: 20px;
+    margin-top: 8px;
 }
 .sort-name {
     float: left;
-    margin-left: -1px;
-    margin-top: 8px;
+    height: 38px;
+    background: #fff;
+    width: 46px;
+    border: 1px solid silver;
+    top: -2px;
+    left: -1px;
+}
+.sort-name-desc:before  {
+    border-color:#fff transparent #fff transparent !important;
+}
+.sort-name-desc:after  {
+    border-color:transparent !important;
+}
+.sort-name-asc:after{
+    border-color:#fff transparent #fff transparent !important;
+}
+.sort-name-asc:before{
+    border-color:transparent !important;
 }
 .sort-total {
-    float: right;
-    margin-top: 7px;
-    margin-right: 8px;
+    float: left;
+    height: 38px;
+    width: 48px;
+    background: #fff;
+    border: 1px solid silver;
+    left: 44px;
+    border-radius: 0 2px 2px 0;
+    top: -40px;
 }
 .sort-name:after,
 .sort-total:after {
     position: absolute;
-    top: 11px;
+    top: 18px;
     content: " ";
     display: block;
     width: 0;
@@ -609,12 +649,12 @@ td.checkbox-field .filter_checkbox {
     left: 6px;
 }
 .sort-total:after {
-    right: 19px;
+    right: 28px;
 }
 .sort-name:before,
 .sort-total:before {
     position: absolute;
-    top: 2px;
+    top: 9px;
     content: " ";
     display: block;
     width: 0;
@@ -626,6 +666,22 @@ td.checkbox-field .filter_checkbox {
 .sort-name:before {
     left: 6px;
 }
+.sort-name-desc {
+    background: #39b3d7;
+}
+.sort-name-desc i, .sort-name-asc i {
+    color: #fff;
+}
+.sort-name-desc:hover {
+    background: rgba(57, 179, 215, 0.66) !important
+}
+.sort-name-asc:hover {
+    background: rgba(57, 179, 215, 0.66) !important
+}
+.sort-name-asc{
+    background: #39b3d7;
+}
+
 .sort-name-desc:before {
     border-width: 0 5px 5px 5px;
     border-color: transparent transparent #39B3D7 transparent;
@@ -635,7 +691,7 @@ td.checkbox-field .filter_checkbox {
     border-color: #39B3D7 transparent transparent transparent;
 }
 .sort-total:before {
-    right: 19px
+    right: 28px;
 }
 .grade-tabs li > a {
     cursor: pointer;
@@ -645,16 +701,27 @@ td.checkbox-field .filter_checkbox {
     margin-top: 17px;
     margin-left: 34px;
     float: left;
+    clear: both;
 }
-/*.Q123MinMax label {
-    margin-right: 5px;
-}*/
+.sort-total:hover, .sort-name:hover {
+    background: #39b3d7;
+    color: black;
+}
+.sort-total:hover:after, .sort-total:hover:before, .sort-name:hover:after, .sort-name:hover:before  {
+    border-color:#fafbf9 transparent #fff transparent;
+}
+.sort-name:hover >  i, .sort-total:hover >  i {
+    color: #fff;
+}
+.range-blocks {
+    margin-top:0px;
+}
 .nameLabel span {
     position: relative;
     top: -3px;
 }
 .milestone {
-    stroke: rgba(204,204,204,0.5);
+    stroke: #f5f5f5 !important;
 }
 .btn-info {
     color: #555555;
@@ -663,16 +730,14 @@ td.checkbox-field .filter_checkbox {
 }
 .btn-info .active {
     border: 1px solid #fff;
+    color: #fff;
 }
-::-webkit-scrollbar
-{
-  width: 8px;  /* for vertical scrollbars */
-  height: 12px; /* for horizontal scrollbars */
+.btn-group label.active:hover {
+    background: rgba(57, 179, 215, 0.66) !important;
 }
-
-::-webkit-scrollbar-track
-{
-  background: rgba(0, 0, 0, 0.1);
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-thumb
@@ -712,4 +777,18 @@ td.checkbox-field .filter_checkbox {
 }
 .empty {
     height: 30px;
+::-webkit-scrollbar-track{
+    background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb{
+    background: #c1c1c1;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #989898;
+}
+::-webkit-scrollbar-thumb:active {
+    background: #808080;
+}
+th.details {
+    padding-left: 10px !important;
 }
