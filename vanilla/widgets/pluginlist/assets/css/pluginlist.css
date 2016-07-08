@@ -6,8 +6,26 @@
     font-size:12px;
 }
 .control-filelist.hero ul li.active > a {
-    background-color: #e67e22;
+    background-color: #d35400;
     color:white;
     border-left:0px;
 }
+
+.inDescription{
+    color:#2b3e50;
+}
+
+.control-filelist.hero ul li > a span.inDescription:hover
+{
+    /*color:white !important;*/
+}
+
+.oc-bg-logo {
+    background-image: url(../../../../assets/images/delphinium.png);
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    background-size: 50% auto;
+    opacity:0.2;
+}
+
 /*#e67e22*/

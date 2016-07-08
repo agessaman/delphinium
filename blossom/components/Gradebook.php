@@ -101,7 +101,6 @@ class Gradebook extends ComponentBase {
                 {
                     session_start();
                 }
-                // $_SESSION['userID'] = 1230622;
 
                 $bonusPenalties = $this->getBonusPenalties();
 
@@ -610,10 +609,14 @@ class Gradebook extends ComponentBase {
             $this->roots = new Roots();
         }
         $userSubmissions = $this->roots->submissions($req);
+
         //sort submissions by date
+
         usort($userSubmissions, function($a, $b) {
-            $ad = new DateTime($a['submitted_at']);
-            $bd = new DateTime($b['submitted_at']);
+            $aDate = isset($a['submitted_at'])?$a['submitted_at']:$a['graded_at'];
+            $bDate = isset($b['submitted_at'])?$b['submitted_at']:$b['graded_at'];
+            $ad = new DateTime($aDate);
+            $bd = new DateTime($bDate);
 
             if ($ad == $bd) {
                 return 0;
@@ -655,7 +658,7 @@ class Gradebook extends ComponentBase {
         $obj = new \stdClass();
         $obj->bonus = 0;
         $obj->penalties = 0;
-
+// echo json_encode($userMilestoneInfo);
         foreach ($userMilestoneInfo as $item) {
             if (($item->cleared)) {
                 if ($item->bonusPenalty > 0) {

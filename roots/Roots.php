@@ -41,8 +41,8 @@ use Delphinium\Roots\Enums\ModuleItemType;
 use Delphinium\Roots\Enums\PageEditingRoles;
 use Delphinium\Roots\Enums\CompletionRequirementType;
 use Delphinium\Roots\Lmsclasses\CanvasHelper;
-use Delphinium\Roots\Cache\CacheHelper;
 use Delphinium\Roots\Exceptions\InvalidActionException;
+use Delphinium\Roots\Exceptions\InvalidRequestException;
 use Delphinium\Roots\DB\DbHelper;
 
 class Roots
@@ -121,7 +121,7 @@ class Roots
 
     }
 
-    public function submissions(SubmissionsRequest $request)
+    public function submissions(SubmissionsRequest $request, $params =null)
     {
         switch($request->getActionType())
         {
@@ -140,6 +140,14 @@ class Roots
 
                 }
 
+                return $result;
+            case(ActionType::POST):
+                if(is_null($params))
+                {
+                    throw new InvalidRequestException("post submission", "no parameters in submission");
+                }
+                $canvas = new CanvasHelper(DataType::SUBMISSIONS);
+                $result = $canvas->postSubmission($request, $params);
                 return $result;
             default :
                 throw new InvalidActionException($request->getActionType(), get_class($request));
