@@ -789,6 +789,9 @@ th.details {
 .histogramGroup {
     margin-top: 7px;
 }
+.histogramGroup .btn {
+    padding: 9px !important;
+}
 .empty {
     height: 30px;
 }
