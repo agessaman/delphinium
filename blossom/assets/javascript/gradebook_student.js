@@ -19,43 +19,94 @@
  * You may not distribute any version of this software, modified or otherwise
  */
 
-$(document).ready(function(){
-    div = d3.select("body").append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0);
+function Student() 
+{
+    this.__init.call(this);
+};
 
-    d3.select("#iGradeTooltip").on("mouseover", function (d) {
+Student.prototype = {
 
-            var str = "<table class='table table-condensed table-gradingScheme'><thead> <tr> <th>Points</th> <th>Letter Grade</th></tr> </thead> <tbody> ";
-            for(var i=0;i<=gradingScheme.length-1;i++)
-            {
-                var item = gradingScheme[i];
+    __init: function () 
+    {
+        this.domFunctions();
+        this.get();
+    },
 
-                str+="<tr><td>"+item.value+"</td> <td>"+item.name+"</td> </tr>";
+    get: function() {
+
+    },
+
+    domFunctions: function () 
+    {
+        var self = this;
+        $.ajax({
+            url: 'gradebook/getStudentSubmission',
+            success: function (data) {
+                console.log(data);
             }
-            str+="</tbody> </table>";
-            addTooltipGrade(str, event);
-        })
-        .on("mouseout", function (d) {
-            removeTooltipGrade();
         });
-});
 
+        $(document).ready(function(){
+            div = d3.select("body").append("div")
+                .attr("class", "tooltip")
+                .style("opacity", 0);
+            d3.select("#iGradeTooltip").on("mouseover", function (d) {
+                var str = "<table class='table table-condensed table-gradingScheme'><thead> <tr> <th>Points</th> <th>Letter Grade</th></tr> </thead> <tbody> ";
+                for(var i=0;i<=gradingScheme.length-1;i++)
+                {
+                    var item = gradingScheme[i];
 
-function addTooltipGrade(text, event)
-{
-    div.transition()
-        .duration(200)
-        .style("opacity", .9);
-    div.html(text)
-        .style("left", (d3.event.pageX) + "px")
-        .style("top", (d3.event.pageY - 28) + "px");
+                    str+="<tr><td>"+item.value+"</td> <td>"+item.name+"</td> </tr>";
+                }
+                str+="</tbody> </table>";
+                self.addTooltipGrade(str, event);
+            })
+            .on("mouseout", function (d) {
+                self.removeTooltipGrade();
+            });
+        });
+
+        //to save the last active tab after page reload
+        var tabIndex = self.getStorage('tab');
+        if(tabIndex == null)
+        {
+            tabIndex = 0;
+        }
+        $('.grade-tabs li').eq(tabIndex).addClass('active');
+        $('.tab-pane').eq(tabIndex).addClass('active');
+        $(document).on('click','.grade-tabs li',function(){
+            self.setStorage('tab', $(this).index());
+        });
+
+    },
+
+    addTooltipGrade: function(text, event)
+    {
+        div.transition()
+            .duration(200)
+            .style("opacity", .9);
+        div.html(text)
+            .style("left", (d3.event.pageX) + "px")
+            .style("top", (d3.event.pageY - 28) + "px");
+    },
+
+    removeTooltipGrade: function()
+    {
+        div.transition()
+            .duration(500)
+            .style("opacity", 0);
+    },
+
+    getStorage: function(key) 
+    {
+        return localStorage.getItem(key);
+    },
+
+    setStorage: function(key,args)
+    {
+        localStorage.setItem(key,args);
+    }
+
 }
 
-
-function removeTooltipGrade()
-{
-    div.transition()
-        .duration(500)
-        .style("opacity", 0);
-}
+var StudentClass = new Student();

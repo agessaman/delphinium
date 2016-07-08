@@ -42,7 +42,7 @@ callStudentsMilestoneInfo(students);
 
 function getCHartDragPoints() {
     var min_max = [],
-        rangeSliderContainer = $('.range-slider'); 
+        rangeSliderContainer = $('.range-slider');
     min_max[0] = parseInt(rangeSliderContainer.find('.ui-slider-handle').eq(0).find('.ui-slider-tip').text());
     min_max[1] = parseInt(rangeSliderContainer.find('.ui-slider-handle').eq(1).find('.ui-slider-tip').text());
 
