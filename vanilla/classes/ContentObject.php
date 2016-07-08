@@ -194,12 +194,12 @@ class ContentObject implements ArrayAccess
         if (($content = @File::get($fullPath)) === false) {
             return null;
         }
-
         $obj = new static($plugin);
         $obj->fileName = $fileName;
         $obj->originalFileName = $fileName;
         $obj->mtime = File::lastModified($fullPath);
         $obj->content = $content;
+
         return $obj;
     }
 

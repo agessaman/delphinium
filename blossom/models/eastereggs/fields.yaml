@@ -64,7 +64,3 @@ fields:
         label: Fireworks Message
         span: auto
         comment: Enter a string
-
-    name:
-        label: Name
-        span: auto
