@@ -42,7 +42,7 @@ callStudentsMilestoneInfo(students);
 
 function getCHartDragPoints() {
     var min_max = [],
-        rangeSliderContainer = $('.range-slider'); 
+        rangeSliderContainer = $('.range-slider');
     min_max[0] = parseInt(rangeSliderContainer.find('.ui-slider-handle').eq(0).find('.ui-slider-tip').text());
     min_max[1] = parseInt(rangeSliderContainer.find('.ui-slider-handle').eq(1).find('.ui-slider-tip').text());
 
@@ -582,7 +582,7 @@ $(document).on("change", '.deselectAll',  function () {
 
 })
 var selectedStudents = [];
-d3.selectAll(".single").on("change", function () {
+$(document).on("change", '.single', function () {
     var selected = this.value;
     var checked = this.checked;
     var num = parseInt(selected);
@@ -1137,10 +1137,16 @@ function buildTable(data) {
 
         $(document).on('keyup', '.first_name input, .last_name input, .sections input, .grade input', function(){
             $('.jsgrid-search-button').trigger('click');
+            if (sortType[1]) {
+                $("#gridContainer").jsGrid("sort", sortType[0], sortType[1]);
+            }
         });
 
         $(document).on('change', '.checkbox_filter_conternt input[type=checkbox]', function(){
            $('.jsgrid-search-button').trigger('click'); 
+           if (sortType[1]) {
+                $("#gridContainer").jsGrid("sort", sortType[0], sortType[1]);
+            }
         });
 
         return loadData;
@@ -1744,6 +1750,9 @@ $(document).on('click','.Q123MinMax .btn-group',function(){
         addQuartileMinMaxLine();
     }
 });
+$(document).on('click', '.jsgrid-header-row th',  function() {
+    sortType[0] = $(this).index();
+});
 function getHistogramDataByPoints(startEnd){
     var endArr = [],
         intervals = [],
@@ -2181,6 +2190,3 @@ function getBoxPlotData(data){
         q3 = getQ1Q3MedianForBoxPlot(allPoints,0.75);
     return [{day:1,min:min,max:max,median:median,q1:q1,q3:q3}];
 }
-$(document).on('click', '.jsgrid-header-row th',  function() {
-    sortType[0] = $(this).index();
-});

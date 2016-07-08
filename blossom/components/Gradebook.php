@@ -525,6 +525,87 @@ class Gradebook extends ComponentBase {
         return $masterArr;
     }
 
+    public function aggregateSubmissionStudentScores() {
+
+        $req = new SubmissionsRequest(ActionType::GET, array(), true, array(), true, true, true, false, true);
+
+        if (is_null($this->roots)) {
+            $this->roots = new Roots();
+        }
+        $result = $this->roots->submissions($req);
+        $res = $this->orderSubmissionsByUsersAndDate($result);
+        //set the results as a class variable
+        $this->submissions = $res;
+        //print_r($this->submissions);die();
+
+        //aggregate the scores
+        $masterArr = array();
+        $scoresArr = array();
+        $subm = new \stdClass();
+        $carryingScore = 0;
+        $userId = 0;
+
+        $student = new \stdClass();
+        $studentItems = array();
+        foreach ($res as $submission) {
+            if (!isset($submission['submitted_at'])) {//skip items that have no submission date
+                continue;
+            }
+
+            if ($userId === 0) {//init variables
+
+                $student->id = $submission['user_id'];
+                $subm = new \stdClass();
+                $subm->user_id = $submission['user_id'];
+            }
+            $carryingScore = $carryingScore + $submission['score'];
+            $item = new \stdClass();
+
+            $item->points = $userId === 0 ? $submission['score'] : $carryingScore;
+            $item->date = $submission['submitted_at'];
+
+            if ($userId === 0 || $userId === $submission['user_id']) {//first loop or looping through same user
+
+                //Add the current item to this user's item array
+                $studentItems[] = $item;
+                $userId = $submission['user_id'];
+                $subm->score = $carryingScore;
+            } else {//we moved on to a new student
+
+                $student->items = $studentItems;
+                //add the previous student to the master array
+                $masterArr[] = $student;
+                $student = new \stdClass(); //reset the student
+                $student->id = $submission['user_id'];
+                //if we have moved to a new student we must reset the carrying score
+                $item->points = $submission['score'];
+                $studentItems = array(); //reset the items array
+                $studentItems[] = $item;
+                //add the last item to the array
+//                $subm->score = $carryingScore;
+                $scoresArr[] = $subm;
+
+                //and start a new one
+                $subm = new \stdClass();
+                $subm->user_id = $submission['user_id'];
+                $carryingScore = $submission['score'];
+                $userId = $submission['user_id'];
+            }
+        }
+
+        //add the last student to the master array;
+        if(count($res)>0)
+        {
+            $student->id = $userId;
+            $student->items = $studentItems;
+            $masterArr[] = $student;
+            $scoresArr[] = $subm;
+        }
+        $this->page['submissions'] = json_encode($masterArr);
+        // return $scoresArr;
+        return $masterArr;
+    }
+
     public function getAllUserClearedMilestoneData($experienceInstanceId)
     {
         //init experience variables

@@ -1,0 +1,64 @@
+<script>
+    var gradingScheme = {{grading_scheme|raw}};
+</script>
+<!-- STUDENT'S INTERFACE
+ 	Bonus/penalties-->
+<div class="control-tabs primary-tabs m-t-1" data-control="tab">
+    <ul class="nav nav-tabs grade-tabs">
+        <li><a>Progress</a></li>
+        <li><a>Grades</a></li>
+        <li><a>Assignments</a></li>
+    </ul>
+    <div class="tab-content">
+        <!-- Progress -->
+        <div class="tab-pane">
+        </div>
+        <!-- Grades -->
+        <div class="tab-pane">
+            <div class="gradebook top">
+                <table class="table table-condensed table-responsive table-bordered table-striped table-hover">
+                    <caption>Current Grade</caption>
+                    <thead>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <th class='name td'>Experience Points</td>
+                        <td>{{totalPts|round(2, 'common')}}</td>
+                    </tr>
+                    <tr>
+                        <th class='name td'>Bonus</td>
+                        <td>{{bonus|round(2, 'common')}}</td>
+                    </tr>
+                    <tr>
+                        <th class='name td'>Penalties</td>
+                        <td>{{penalties|round(2, 'common')}}</td>
+                    </tr>
+                    <tr>
+                        <th class='imp'>Total Points</td>
+                        <td class='imp'>{{(totalPts + bonus + penalties)|round(2, 'common')}}</td>
+                    </tr>
+                    <tr id="currentGrade">
+                        <th class='imp'>Current Grade</td>
+                        <td class='imp'>{{letterGrade}} <a style="color:#337AB7 !important;font-size:20px;"><i id="iGradeTooltip" class="fa fa-question-circle"></i></a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="gradebook" id="gradebook" style="text-align:center;">
+                <div id="spinner">
+                    <span id="bottomSpinner" class="icon-refresh icon-spin icon-3x icon-fw margin-bottom"></span>
+                </div>
+            </div>
+
+        </div>
+        <!-- Assignments -->
+        <div class="tab-pane">
+
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var bonus = {{bonus}};
+    var penalties = {{penalties}};
+</script>
+<!-- <script type="text/javascript" src="plugins/delphinium/blossom/assets/javascript/boxplot_d3.js"></script> -->
