@@ -679,3 +679,37 @@ td.checkbox-field .filter_checkbox {
 {
   background: rgba(0, 0, 0, 0.5);
 }
+.histogramRVS {
+    display: none;
+}
+#boxPlot {
+    height: 80px;
+    margin-left: 25px;
+}
+#boxPlot svg {
+  border: none;
+}
+
+#boxPlot line {
+  shape-rendering: crispEdges;
+  stroke: #000000;
+}
+
+#boxPlot  line.minor  {
+  stroke: #777777;
+  stroke-dasharray: 2,2;
+}
+
+#boxPlot  path.domain {
+  fill: none;
+  stroke: black;
+}
+.histogramXA .tick {
+    font-size: 12px !important;
+}
+.histogramGroup {
+    margin-top: 7px;
+}
+.empty {
+    height: 30px;
+}
