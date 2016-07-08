@@ -297,19 +297,21 @@ function getSubmissionsDays(){
         $.each(submissions, function(k,v){
             var pushUserVal = [];
             $.each(v.items,function(itemK,itemV){
-                if(itemV.date >= Date.parse(dateRange[dK]) && itemV.date <= Date.parse(dateRange[dK+1]) && typeof dateRange[dK+1] != 'undefined'){
+                var itemVDate = (typeof itemV.date == 'number') ? itemV.date : Date.parse(itemV.date);
+                if(itemVDate >= Date.parse(dateRange[dK]) && itemVDate <= Date.parse(dateRange[dK+1]) && typeof dateRange[dK+1] != 'undefined'){
                     pushUserVal[v.id] = itemV;
                     usersOldValue[v.id] = itemV;
-                }else if(itemV.date >= Date.parse(dateRange[dK]) && typeof dateRange[dK+1] == 'undefined'){
+                }else if(itemVDate >= Date.parse(dateRange[dK]) && typeof dateRange[dK+1] == 'undefined'){
                     pushUserVal[v.id] = itemV;
                     usersOldValue[v.id] = itemV;
                 }
             });
             if(pushUserVal.length == 0 && dK == 0){
-                pushUserVal[v.id] = {points:0,date:Date.parse(dateRange[dK])};
+                pushUserVal[v.id] = {points:0,date:Date.parse(dateRange[dK]),id:v.id};
                 usersOldValue[v.id] = {points:0,date:Date.parse(dateRange[dK])};
             }else if(pushUserVal.length == 0 && dK > 0){
                 pushUserVal[v.id] = usersOldValue[v.id];
+                pushUserVal[v.id].id = v.id;
             }
             pushVal.push(pushUserVal[v.id]);
         });
@@ -908,7 +910,8 @@ var table_range = {
         min: '',
         max: ''
     }
-}
+},
+clearLoop = true;
 
 function buildTable(data) {
 
@@ -920,6 +923,9 @@ function buildTable(data) {
         if ($(event.target).closest('.checkbox_filter_conternt').length == 0 && $(event.target).closest('.jsgrid-filter-row td.checkbox-field').length == 0) {
             $('.checkbox_filter_conternt').hide();
             $('.my-arrow').hide();
+        }
+        if($(event.target).closest('.histogram-range-slider').length){
+            clearLoop = true;
         }
     });
 
@@ -1268,8 +1274,8 @@ function buildTable(data) {
             $('.jsgrid-search-button').hide();
             $('.Q123MinMax,.histogramGroup').find('.btn-group').find('.btn-info').removeClass('disabled');
             if($('#histogram svg').length == 0){
-                // histogramData = getHistogramDateByPoints();
-                // histogram(histogramData);
+                histogram({yP:students.length});
+                $('.histogramRVS').removeClass('histogramRVS');
             }
             //$('.sort-name,.sort-total').removeClass('hide');
             td.eq(td.length-2).html('<a data-toggle="modal" style="outline:none;" href="#content-confirmation"><i class="fa fa-cog table_set"></i></a>').css('text-align','center');
@@ -1687,136 +1693,441 @@ $(document).on('click','.Q123MinMax .btn-group',function(){
 $(document).on('click', '.jsgrid-header-row th',  function() {
     sortType[0] = $(this).index();
 });
-/*$('.sort-total').hover(function() {
-    console.log($('.sort-total::after'));
-    $('.sort-total:after').css({
-        'border-top-color' : 'rgb(204, 204, 204)',
-        'border-right-color': 'transparent',
-        'border-bottom-color': 'transparent',
-        'border-left-color': 'transparent'
+function getHistogramDataByPoints(startEnd){
+    var endArr = [],
+        intervals = [],
+        step = 100,
+        users = [];
+    $.each(submissions,function(k,v){
+        endArr.push(v.items[v.items.length-1].points);
     });
-});*/
+    endArr.sort(function(a,b){
+        return b-a;
+    });
+    var end = (endArr[0]>=100) ? endArr[0] : 100;
+    for(var i=0;i<=parseInt(end);i+=step){
+        if(startEnd){
+            if(i >= startEnd[0] && i<= startEnd[1]){
+                intervals.push(i);
+            }
+        }else{
+            intervals.push(i);
+        }
+    }
+    if(intervals[intervals.length-1] < endArr[0] && !startEnd){
+        intervals.push(intervals[intervals.length-1] + 100);
+    }else if(startEnd){
+        if(intervals[intervals.length-1] < startEnd[1]){
+            intervals.push(intervals[intervals.length-1] + 100);
+        }
+        if(intervals[0] > startEnd[0]){
+            intervals.unshift(intervals[0] - 100);
+        }
+    }
+    var retVal = getStudentsCount(intervals);
+    return {usersCount:retVal,xPoints:intervals,maxPoint:endArr[0]};
+}
 
-// function getHistogramDateByPoints(start,end){
-//     var pushVal = [],
-//         step = 100;
-//     for(var i=0;i<=parseInt(end);i+=100){
-//         console.log(i);
-//     }
-//     return pushVal;
-// }
-// function histogram(data){
-//     var margin = {top: 20, right: 20, bottom: 30, left: 40},
-//         width = 960 - margin.left - margin.right,
-//         height = 500 - margin.top - margin.bottom;
+function getHistogramDataByMilestones(startEnd){
+    var intervals = [];
+        step = 100,
+        users = [],
+        endPoint = chartData[chartData.length-1].points;
+    var end = (endPoint >= 100) ? endPoint : 100;
 
-//     var x = d3.scale.ordinal()
-//         .rangeRoundBands([0, width], .1);
+    for(var i=0;i<=parseInt(end);i+=step){
+        if(startEnd){
+            if(i >= startEnd[0] && i<= startEnd[1]){
+                intervals.push(i);
+            }
+        }else{
+            intervals.push(i);
+        }
+    }
+    if(intervals[intervals.length-1] < endPoint && !startEnd){
+        intervals.push(intervals[intervals.length-1] + 100);
+    }else if(startEnd){
+        if(intervals[intervals.length-1] < startEnd[1]){
+            intervals.push(intervals[intervals.length-1] + 100);
+        }
+        if(intervals[0] > startEnd[0]){
+            intervals.unshift(intervals[0] - 100);
+        }
+    }
+    var retVal = getStudentsCount(intervals);
+    return {usersCount:retVal,xPoints:intervals,maxPoint:endPoint};
+}
 
-//     var y = d3.scale.linear()
-//         .range([height, 0]);
+function getHistogramDataByGrades(){
+    var intervals = [];
+    $.each(gradingScheme,function(k,v){
+        intervals.push(v.value);
+    });
+    intervals.sort(function(a,b){
+        return a-b;
+    });
+    var retVal = getStudentsCount(intervals);
+    return {usersCount:retVal,xPoints:intervals};
+}
 
-//     var xAxis = d3.svg.axis()
-//         .scale(x)
-//         .orient("bottom");
+function getStudentsCount(intervals){
+    var retVal = [],
+        submitionsDays = getSubmissionsDays(),
+        endDate = Date.parse(dateRange[pointHistDate]);
+    $.each(intervals,function(k,v){
+        var userPoint = [];
+        $.each(submitionsDays,function(subK,subV){
+            if((Date.parse(subK) <= endDate || subK <= endDate) || pointHistDateAll == 0){
+                $.each(subV,function(itemsK,item){
+                    var id = $.inArray(item.id,userPoint);
+                    if(intervals[k] <= item.points && intervals[k+1] >= item.points && id == -1 && typeof intervals[k+1] != 'undefined'){
+                        userPoint.push(item.id);
+                        return;
+                    }
+                });
+            }
+        });
+        retVal.push(userPoint.length);
+    });
+    return retVal;
+}
 
-//     var yAxis = d3.svg.axis()
-//         .scale(y)
-//         .orient("left")
-//         .ticks(10, "d");
+function histogram(data){
+    var margin = {top: 20, right: 20, bottom: 30, left: 40},
+        width = 960 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
 
-//     var svg = d3.select("#histogram").append("svg")
-//         .attr("width", width + margin.left + margin.right)
-//         .attr("height", height + margin.top + margin.bottom)
-//       .append("g")
-//         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    var y = d3.scale.linear()
+        .range([height, 0]);
 
-//     svg.append("g")
-//         .attr("class", "x axis histogramXA")
-//         .attr("transform", "translate(0," + height + ")")
+    var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left")
+        .ticks(10, "d");
 
-//     svg.append("g")
-//         .attr("class", "y axis")
-//         .append("text")
-//         .attr("transform", "rotate(-90)")
-//         .attr("y", 6)
-//         .attr("dy", ".71em")
-//         .style("text-anchor", "end")
-//         .text("Frequency");
+    var svg = d3.select("#histogram").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-//       replay(data);
+    svg.append("g")
+        .attr("class", "y axis")
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .text("Frequency");
 
-//     function type(d) {
-//       d.frequency = +d.frequency;
-//       return d;
-//     }
+    y.domain([0, data.yP]);
+    svg.select(".y.axis").call(yAxis);
 
-//     function replay(data) {
-//       var slices = [];
-//       for (var i = 0; i < data.length; i++) {
-//         slices.push(data.slice(0, i+1));
-//       }
-//       slices.forEach(function(slice, index){
-//           draw(slice);
-//       });
-//     }
-//     y.domain([0, d3.max(data, function(d) { return d.frequency; })]);
-//     svg.select(".y.axis").call(yAxis);
-//     function draw(data) {
-//         x.domain(data.map(function(d) { return d.points; }));
-//         svg.select('.x.axis').call(xAxis);
+    function addxBar(data){
+        $('#histogram').find('.x.axis').remove();
+        $('#histogram').find('.bar').remove();
 
-//         var bars = svg.selectAll(".bar").data(data, function(d) { return d.points; })
+        svg.append("g")
+        .attr("class", "x axis histogramXA")
+        .attr("transform", "translate(0," + height + ")")
+        var x = d3.scale.ordinal()
+            .rangeRoundBands([0, width], 0.01);
+        var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom");
 
-//         bars.exit()
-//         .transition()
-//         .duration(300)
-//         .attr("y", y(0))
-//         .attr("height", height - y(0))
-//         .style('fill-opacity', 1e-6)
-//         .remove();
+        x.domain(data.xPUserC.xPoints.map(function(d) { return d; }));
+        
+        svg.select('.x.axis').call(xAxis);
 
-//         bars.enter().append("rect")
-//         .attr("class", "bar")
-//         .attr("y", y(0))
-//         .attr("height", height - y(0));
-//         bars.attr("x", function(d) { return x(d.points); })
-//         .attr("width", x.rangeBand())
-//         .attr('fill','#4da7e8')
-//         .attr("y", function(d) { return y(d.frequency); })
-//         .attr("height", function(d) { return height - y(d.frequency); });
+        data.xPUserC.usersCount.forEach(function(d, id){
+            svg.append("rect")
+            .attr("class", "bar")
+            .attr("y", y(d))
+            .attr("height", height - y(d))
+            .attr("x", x(data.xPUserC.xPoints[id])+(x.rangeBand()/2))
+            .attr("width", x.rangeBand())
+            .attr('fill','#4da7e8')
+            .attr("y", y(d))
+            .attr("height", height - y(d));
+        });
+    }
+    pointHistDate = 0;
+    pointHistDateAll = 0;
+    function intervalHistIts() {
+        var points = $('.histogram-date').children('span').not('.ui-slider-handle');
+        var count = points.length;
+        if(count > pointHistDate){
+            pointHistDateAll = 1;
+            var point = points.eq(pointHistDate); 
+            var left = point[0].style.left;
+            var index = point.find('.ui-slider-label').attr('data-value');
+            var val = labels[index];
+            addBarToHistogram();
+            $('.histogram-date').find('.ui-slider-handle').css('left',left).find('span').text(val);
+            $('.histogram-date').find('.ui-slider-pip').removeClass('ui-slider-pip-selected').eq(pointHistDate).addClass('ui-slider-pip-selected');
+        }else{
+            $('button.histogram-player').find('i').removeClass('fa-pause').addClass('fa-play');
+            pointHistDate = -1;
+            pointHistDateAll = 0;
+            clearInterval(speed);
+        }
+        pointHistDate++;
+    }
 
-//         // $('.histogramXA').find('g').remove();
-//     }
-// }
+    function addBarToHistogram(){
+        var checkedV = $('.histRadio:checked').attr('id'),
+            start = $('.histogram-range-slider').find('.ui-slider-handle').eq(0).find('span').text(),
+            end = $('.histogram-range-slider').find('.ui-slider-handle').eq(1).find('span').text();
+        if(checkedV == 'hPoint'){
+            var startEnd = [start,end];
+            var histogramData = getHistogramDataByPoints(startEnd);
+        }
+        if(checkedV == 'hMilestone'){
+            var startEnd = [start,end];
+            var histogramData = getHistogramDataByMilestones(startEnd);
+        }
+        if(checkedV == 'hGrade'){
+            var histogramData = getHistogramDataByGrades();
+        }
+        addxBar({xPUserC:histogramData});
+        var boxPlotData = getBoxPlotData(histogramData);
+        PrintBoxPlot(boxPlotData);
+    }
 
-// $(".histogram-date").slider({
-//     min: 0,
-//     max: dateMax,
-//     value: dateMax,
-//     step: 1
-// }).slider("pips")
-// .on("slidechange", function(e,d) {
-//     pointDate = $('.histogram-date .ui-slider-pip-selected').index()-1;
-//     if(pointHistDate == dateMax){
-//       pointHistDate = 0;  
-//     }
-// }).slider('float', {
-//     labels: labels
-// });
+    $(document).on('click','.histogram-player', function() {
+        var i = $(this).find('i');
+        if(i.hasClass('fa-play')){ 
+            speed = setInterval(intervalHistIts,500);
+            i.removeClass('fa-play').addClass('fa-pause');
+        } else { 
+            i.removeClass('fa-pause').addClass('fa-play');
+            clearInterval(speed);
+        }
+    });
+    $(".histogram-date").slider({
+        min: 0,
+        max: dateMax,
+        value: dateMax,
+        step: 1
+    }).slider("pips")
+    .on("slidechange", function(e,d) {
+        pointHistDate = $('.histogram-date .ui-slider-pip-selected').index()-1;
+        pointHistDateAll = 1;
+        if(pointHistDate == dateMax){
+          pointHistDate = 0;
+          pointHistDateAll = 0;
+        }
+        addBarToHistogram();
+    }).slider('float', {
+        labels: labels
+    });
 
-// $('.histogram-date .ui-slider-pip-first').find('.ui-slider-label').text(parseDayMonth(dFrom));
-// $('.histogram-date .ui-slider-pip-last').find('.ui-slider-label').text(parseDayMonth(endDateTo));
+    $('.histogram-date .ui-slider-pip-first').find('.ui-slider-label').text(parseDayMonth(dFrom));
+    $('.histogram-date .ui-slider-pip-last').find('.ui-slider-label').text(parseDayMonth(endDateTo));
+    var histogramData = getHistogramDataByPoints();
+    var dataBoxPlot = getBoxPlotData(histogramData);
+    addxBar({xPUserC:histogramData});
+    boxPlotChart(dataBoxPlot);
+    var maxPoint =histogramData.maxPoint,
+        checked = '';
+    
+    $(".histogram-range-slider").slider({
+        min: 0,
+        max: maxPoint,
+        values: [0,maxPoint],
+        step: 1,
+        range: true
+    }).slider("pips")
+    .on("slidechange", function(e,d) {
+        var startEnd = d.values;
+        if(clearLoop){
+            if(checked == 'hPoint'){
+                var histogramData = getHistogramDataByPoints(startEnd);
+            }else{
+                var histogramData = getHistogramDataByMilestones(startEnd);
+            }
+            var boxPlotData = getBoxPlotData(histogramData);
+            addxBar({xPUserC:histogramData});
+            PrintBoxPlot(boxPlotData);
+        }
+    }).slider('float', {
+        labels: true
+    });
+    $(document).on('change','.histRadio',function(){
+        $('.histRadio').closest('label').removeClass('active');
+        $(this).closest('label').addClass('active');
+        if($(this).attr('id') == 'hGrade'){
+            $(".histogram-range-slider")
+            .slider({disabled: true});
+        }else{
+            clearLoop = false,
+            checked = $(this).attr('id');
+            if($(this).attr('id') == 'hMilestone'){
+                var maxVal = yArr[yArr.length-1].points;
+            }else{
+                var maxVal = maxPoint;
+            }
+            $(".histogram-range-slider")
+            .slider({
+                disabled: false,
+                min: 0,
+                max: maxVal,
+                values: [0,maxVal]
+            });
 
-// $(".histogram-range-slider").slider({
-//     min: 0,
-//     max: rMax,
-//     values: [0,rMax],
-//     step: 1,
-//     range: true
-// }).slider("pips")
-// .on("slidechange", function(e,d) {
-// }).slider('float', {
-//     labels: true
-// });
-// });
+            $('.histogram-range-slider .ui-slider-pip-first').find('.ui-slider-label').text(0);
+            $('.histogram-range-slider .ui-slider-pip-last').find('.ui-slider-label').text(maxVal);
+        }
+        addBarToHistogram();
+    });
+}
+
+function getQ1Q3MedianForBoxPlot(arr,del){
+    var key = Math.floor((arr.length - 1)*del);
+        point = arr[key];
+    return point;
+}
+
+function boxPlotChart(data){
+    var h = 80,
+      w = 960;
+
+  var margin = {
+    'top': 20,
+    'bottom': 20,
+    'left': 20,
+    'right': 30 
+  }
+  var svg = d3.select("#boxPlot").append("svg")
+    .attr("height", h)
+    .attr("width", w);
+
+
+    xScale = d3.scale.linear()
+    .domain([0,100])
+    .range([
+      margin.left,
+      w - margin.right
+    ]);
+
+    yScale = d3.scale.linear()
+    .domain([
+      Number(d3.max(data, function(d){ return d.day })) + 1,
+      Number(d3.min(data, function(d){ return d.day })) - 1
+    ])    
+    .range([
+      h - margin.bottom,
+      margin.top
+    ]);
+    xAxis = d3.svg.axis()
+    .scale(xScale)
+    .orient("bottom")
+    .ticks(10)
+    .tickSize(-5)
+    .tickSubdivide(true);
+
+    svg.append("g")
+    .attr("transform", "translate(0,65)")
+    .attr("id", "xAxisG")
+    .call(xAxis);
+    var days = data.map(function(d){ return Number(d.day)});
+
+
+    svg.selectAll("circle.median")
+    .data(data)
+    .enter()
+    .append("circle")
+    .attr("class", "tweets")
+    .attr("r", 5)
+    .attr("cx", function(d) {return xScale(d.median)})
+    .attr("cy", function(d) {return yScale(d.day)})
+    .style("fill", "none");
+    PrintBoxPlot(data);
+
+}
+
+function PrintBoxPlot(data){
+    var svg = d3.select("#boxPlot svg");
+    d3.selectAll('g.box').remove();
+    svg.selectAll("g.box")
+    .data(data)
+    .enter()
+    .append("g")
+    .attr("class", "box")
+    .attr("transform", function(d){
+      return "translate(" + xScale(d.median) + "," + 
+        yScale(d.day) + ")"
+    })
+    .each(function(d,i){
+      
+      d3.select(this)
+        .append("line")
+        .attr("class", "range")
+        .attr("x1", xScale(d.max) - xScale(d.median))
+        .attr("x2", xScale(d.min) - xScale(d.median))
+        .attr("y1", 0)
+        .attr("y2", 0)
+        .style("stroke", "black")
+        .style("stroke-width", "4px");
+
+      d3.select(this)
+        .append("line")
+        .attr("class", "max")
+        .attr("x1", xScale(d.max) - xScale(d.median))
+        .attr("x2", xScale(d.max) - xScale(d.median))
+        .attr("y1", -10)
+        .attr("y2", 10)
+        .style("stroke", "black")
+        .style("stroke-width", "4px");
+
+      d3.select(this)
+        .append("line")
+        .attr("class", "min")
+        .attr("x1", xScale(d.min) - xScale(d.median))
+        .attr("x2", xScale(d.min) - xScale(d.median))
+        .attr("y1", -10)
+        .attr("y2", 10)
+        .style("stroke", "black")
+        .style("stroke-width", "4px");        
+
+      d3.select(this)
+        .append("rect")
+        .attr("class", "range")
+        .attr("x", xScale(d.q1) - xScale(d.median))
+        .attr("y", -10)
+        .attr("height", 20)
+        .attr("width", xScale(d.q3) - xScale(d.q1))
+        .style("fill", "white")
+        .style("stroke", "black")
+        .style("stroke-width", "2px");
+
+      d3.select(this)
+        .append("line")
+        .attr("x1", 0)
+        .attr("x2", 0)
+        .attr("y1", -10)
+        .attr("y2", 10)
+        .style("stroke", "darkgray")
+        .style("stroke-width", "4px");
+        
+    })
+}
+
+function getBoxPlotData(data){
+    var allPoints = [];
+    $.each(data.usersCount,function(k,v){
+        if($.inArray(v,allPoints) == -1){
+            allPoints.push(v);
+        }
+    });
+    allPoints.sort(function(a,b){
+        return a-b;
+    });
+    var min = allPoints[0],
+        max = allPoints[allPoints.length-1],
+        median = getQ1Q3MedianForBoxPlot(allPoints,0.5),
+        q1 = getQ1Q3MedianForBoxPlot(allPoints,1/3),
+        q3 = getQ1Q3MedianForBoxPlot(allPoints,0.75);
+    return [{day:1,min:min,max:max,median:median,q1:q1,q3:q3}];
+}
