@@ -126,7 +126,7 @@ class {{studly_name}} extends ComponentBase
              //if you desire to use OctoberCMS' ui library (See https://octobercms.com/docs/ui/form) uncomment the following three lines
 
                 $this->addCss('/modules/system/assets/ui/storm.css', 'core');
-                $this->addJs('/modules/system/assets/ui/storm-min.js', 'core');
+                $this->addJs('/modules/system/assets/ui/js/flashmessage.js', 'core');
                 $this->addCss('/modules/system/assets/ui/storm.less', 'core');
                 $this->addJs('/plugins/{{lower_author}}/{{lower_plugin}}/assets/{{lower_model}}_instructor.js');
                 $formController = new MyController();

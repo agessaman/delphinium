@@ -542,6 +542,35 @@ class DbHelper
         }
     }
 
+    public function specificModuleQualityAssurance($courseId, $module_id, $allModuleItems)
+    {
+        $newIds = [];
+        foreach($allModuleItems as $moduleItem)
+        {
+            $newIds[] = $moduleItem->id;
+        }
+        $modulesItems = ModuleItem::where(array(
+            'course_id' => $courseId,
+            'module_id' => $module_id
+        ))->select('module_item_id')->get();
+        $fromDBArr = array();
+        foreach($modulesItems as $item)
+        {
+            $fromDBArr[] = $item['module_item_id'];
+        }
+
+        $toBeDeleted =array_diff($fromDBArr,$newIds);
+
+        foreach($toBeDeleted as $module_item_id)
+        {
+            ModuleItem::where(array(
+                'course_id' => $courseId,
+                'module_id' => $module_id,
+                'module_item_id'=>intval($module_item_id)
+            ))->delete();
+        }
+    }
+
     public function getAssignment($assignment_id)
     {
         return Assignment::where(array('assignment_id' => $assignment_id))->first();

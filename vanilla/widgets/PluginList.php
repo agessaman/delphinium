@@ -52,6 +52,14 @@ class PluginList extends WidgetBase
         $this->putSession('activePlugin', $pluginCodeObj->toCode());
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    protected function loadAssets()
+    {
+        $this->addCss('css/pluginlist.css', 'core');
+    }
+
     public function getActivePluginVector()
     {
         $pluginCode = $this->getActivePluginCode();

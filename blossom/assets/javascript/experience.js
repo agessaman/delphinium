@@ -88,8 +88,7 @@ function drawMilestoneInfo(bonus_penalties) {
     });
     encouragementAxisScale = d3.scale.linear()
         .domain([0, maxPoints])//maxPoints
-        .rangeRound([bottom - 5, 10])
-        .nice(2);
+        .rangeRound([bottom - 5, 10]);
 
     //add a line per milestone
     var g = d3.select("#experienceAxis").append("svg:g");

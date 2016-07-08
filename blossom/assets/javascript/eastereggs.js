@@ -73,6 +73,7 @@ raptor['loaded'] = false;
 fireworks[keys.F] = false;
 fireworks[keys.I] = false;
 fireworks['loaded'] = false;
+var loaded = false;
 
 $(document).keydown(function(e) {
 	//Harlem Shake
@@ -82,6 +83,7 @@ $(document).keydown(function(e) {
       if (harlemShake[keys.H] && harlemShake[keys.A]) {
         if(!harlemShake["loaded"]){
           harlemShake["loaded"] = true;
+          loaded = true;
           var harlemShakeScript = document.createElement('script');
           harlemShakeScript.setAttribute('src', path + 'plugins/delphinium/blossom/assets/javascript/harlem-shake.js');
           document.body.appendChild(harlemShakeScript);
@@ -119,11 +121,11 @@ $(document).keydown(function(e) {
       if (ripple[keys.R] && ripple[keys.I]) {
         if(!ripple["loaded"]){
           ripple["loaded"] = true;
+          loaded = true;
           var rippleScript = document.createElement('script');
           rippleScript.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/jquery.ripples.js");
           document.body.appendChild(rippleScript);
           $('body').css('backgroundImage', 'url(' + path + 'plugins/delphinium/blossom/assets/images/pebbles.png)');
-        } else {
           setInterval(function() {
             var $el = $('body');
             var x = Math.random() * $el.outerWidth();
@@ -133,6 +135,13 @@ $(document).keydown(function(e) {
 
             $el.ripples('drop', x, y, dropRadius, strength);
           }, 2000);
+          /*$('#ripple-close-div').on('click', function() {
+            $('body').ripples("hide");
+            $('#ripple-close-div').hide();
+          });*/
+        } else {
+          $('body').ripples("show");
+          //$('#ripple-close-div').show();
         }        
       }
     }
@@ -145,6 +154,7 @@ $(document).keydown(function(e) {
       if (asteroid[keys.A] && asteroid[keys.S]) {
         if(!asteroid["loaded"]){
           asteroid["loaded"] = true;
+          loaded = true;
           var asteroidScript = document.createElement('script');
           asteroidScript.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/kickass.js");
           document.body.appendChild(asteroidScript);
@@ -160,6 +170,7 @@ $(document).keydown(function(e) {
       if (katamari[keys.K] && katamari[keys.A]) {
         if(!katamari["loaded"]){
           katamari["loaded"] = true;
+          loaded = true;
         	var katamariScript = document.createElement('script');
     			katamariScript.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/kh.js");
     			document.body.appendChild(katamariScript);
@@ -175,6 +186,7 @@ $(document).keydown(function(e) {
       if (bomb[keys.B] && bomb[keys.O]) {
         if(!bomb["loaded"]){
           bomb["loaded"] = true;
+          loaded = true;
         	window.FONTBOMB_HIDE_CONFIRMATION = true;
         	var bombScript = document.createElement('script');
     			bombScript.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/bomb.js");
@@ -191,6 +203,7 @@ $(document).keydown(function(e) {
       if (pony[keys.P] && pony[keys.O]) {
         if(!pony["loaded"]){
           pony["loaded"] = true;
+          loaded = true;
         	var ponyScript = document.createElement('script');
     			ponyScript.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/loader.js");
     			document.body.appendChild(ponyScript);
@@ -206,6 +219,7 @@ $(document).keydown(function(e) {
       if (myLittlePony[keys.M] && myLittlePony[keys.Y]) {
         if(!myLittlePony["loaded"]){
           myLittlePony["loaded"] = true;
+          loaded = true;
         	var myLittlePonyScript = document.createElement('script');
         	myLittlePonyScript.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/browserponies.js");
         	document.body.appendChild(myLittlePonyScript);
@@ -223,7 +237,8 @@ $(document).keydown(function(e) {
           smashInit()
         }else{
           snowPage["loaded"] = true;
-          $('body').prepend('<div id="lights"></div>');
+          loaded = true;
+          $('body').prepend('<div id="lights" style="display:block;"></div>');
           var soundManagerScript = document.createElement('script');
           soundManagerScript.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/soundmanager2-nodebug-jsmin.js");
           document.body.appendChild(soundManagerScript);
@@ -261,8 +276,8 @@ $(document).keydown(function(e) {
       raptor[e.keyCode] = true;
       if (raptor[keys.R] && raptor[keys.A]) {
         if(!raptor["loaded"]) {
-          //load the script
           raptor["loaded"] = true;
+          loaded = true;
           var raptorScript = document.createElement('script');
           raptorScript.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/jquery.raptorize.1.0.js");
           document.body.appendChild(raptorScript);
@@ -282,11 +297,11 @@ $(document).keydown(function(e) {
       fireworks[e.keyCode] = true;
       if (fireworks[keys.F] && fireworks[keys.I]) {
         if(fireworks["loaded"]){
-          close = false;
           $('#fireworks-content').show();
           FireworkDisplay.launchText();
         }else{
           fireworks["loaded"] = true;
+          loaded = true;
           var fireworksScript = document.createElement('script');
           fireworksScript.setAttribute('src', path + "plugins/delphinium/blossom/assets/javascript/fireworks.js");
           document.body.appendChild(fireworksScript);
@@ -300,13 +315,15 @@ $(document).keydown(function(e) {
           var background = '<div id="bg" style="background:url(' + path + 'plugins/delphinium/blossom/assets/images/background.jpg) repeat-x;position:absolute;left:0;top:'+($(window).height()-193)+'px;width:100%;height:200px;"></div>';
           $('#fireworks-content').append(canvas);
           $('#fireworks-content').append(background);
-          $('#fireworks-content').prepend('<div style="position:absolute; top: 0; right:0; z-index: 100; background-color:white; height: 15px; width: 15px;"><i id="close-button" class="fa fa-times"></i></div>');
-          $('#close-button').on('click', function() {
-            $('#fireworks-content').hide();
-            close = true;
-          });
         }
       }
+    }
+  }
+
+  if(loaded){
+    var closeDiv = document.getElementById('close-div');
+    if (closeDiv === null) {
+      $('body').prepend('<div id="close-div" onClick="window.location.reload();" title="Reset Easter Eggs" data-toggle="tooltip" data-placement="left"><i class="close-button fa fa-times"></i></div>');
     }
   }
 
