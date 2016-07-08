@@ -259,8 +259,10 @@ function addQuartileMinMaxLine(){
     $.each(Q123MinMax,function(k,lineData){
         if($('.Q123MinMax #'+k).is(':checked')){
             $('path#' + k).remove();
+            $('.cir'+k).remove();
             addQuartileMinMax(k,lineData);
         }else{
+            $('.cir'+k).remove();
             $('path#' + k).remove();
         }
     });
@@ -288,6 +290,44 @@ function addQuartileMinMax(id,data){
         .attr("class","greenLine")
         .attr("d", valueline(data))
         .style("stroke", "#27b327");
+
+    g.selectAll("dot")
+        .data(data.filter(function (d, i) {
+            if (i === 0) {
+                return d;
+            }
+            if(data[i].date != data[i - 1].date)
+            {
+                return d;
+            }
+        }))
+        .enter().append("circle")
+        .attr("r", 2)
+        .attr("class", function (d)
+        {
+            return "cir cir"+id;
+        })
+        .attr("fill", "darkgreen")
+        .attr("cx", function (d) {
+            return x(Date.parse(d.date));
+        })
+        .attr("cy", function (d) {
+            return y(d.point);
+        })
+        .on("mouseover", function (d) {
+            var date = new Date(d.date);
+            var day = date.getDate();
+            var monthIndex = date.getMonth();
+            var time = formatAMPM(date);
+            var text = id.slice(2);
+            addTooltipProfessorGradebook(text + " " + roundToTwo(d.point) + " pts earned on " + monthNames[monthIndex] + " " + day + " @ " + time);
+        })
+        .on("mouseout", function (d) {
+            if (id != "red")
+            {
+                removeTooltipProfessorGradebook();
+            }
+        });
 }
 function getSubmissionsDays(){
     var submissionsDays = {},
