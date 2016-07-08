@@ -188,7 +188,7 @@ addLine(data, "red", "red");
 addRedLineDots();
 //add a vertical rect denoting today
 var todayDate = new Date();
-todayDate = (Date.parse(endDate) > Date.parse(todayDate)) ? todayDate : new Date(endDate);
+todayDate = (Date.parse(endDate) > Date.parse(todayDate) || submissions.length == 0) ? todayDate : new Date(endDate);
 var parsed = Date.parse(todayDate);
 g.append("svg:rect")
     .attr("x", function (d) {
@@ -1312,10 +1312,22 @@ function buildTable(data) {
         onDataLoaded: function(args) {
             var td = $('.jsgrid-grid-header tr').eq(1).find('td');
             $('.jsgrid-search-button').hide();
-            $('.Q123MinMax,.histogramGroup').find('.btn-group').find('.btn-info').removeClass('disabled');
             if($('#histogram svg').length == 0){
                 histogram({yP:students.length});
                 $('.histogramRVS').removeClass('histogramRVS');
+                if(submissions.length == 0){
+                    $(".my-ui-slider")
+                        .slider({disabled: true});
+                    $(".range-slider")
+                        .slider({disabled: true});
+                    $(".histogram-range-slider")
+                        .slider({disabled: true});
+                    $(".histogram-date")
+                        .slider({disabled: true});
+                    $('.player,.histogram-player').addClass('disabled').prop('disabled',true);
+                }else{
+                    $('.Q123MinMax,.histogramGroup').find('.btn-group').find('.btn-info').removeClass('disabled');
+                }
             }
             //$('.sort-name,.sort-total').removeClass('hide');
             td.eq(td.length-2).html('<a data-toggle="modal" style="outline:none;" href="#content-confirmation"><i class="fa fa-cog table_set"></i></a>').css('text-align','center');
@@ -1728,7 +1740,9 @@ $(document).on('click','.grade-tabs li',function(){
 });
 
 $(document).on('click','.Q123MinMax .btn-group',function(){
-    addQuartileMinMaxLine();
+    if(!$(this).find('label').hasClass('disabled')){
+        addQuartileMinMaxLine();
+    }
 });
 $(document).on('click', '.jsgrid-header-row th',  function() {
     sortType[0] = $(this).index();
@@ -1969,9 +1983,9 @@ function histogram(data){
     var dataBoxPlot = getBoxPlotData(histogramData);
     addxBar({xPUserC:histogramData});
     boxPlotChart(dataBoxPlot);
-    var maxPoint =histogramData.maxPoint,
+    var maxPoint =(typeof histogramData.maxPoint != 'undefined') ? histogramData.maxPoint : 100,
         checked = '';
-    
+    console.log(maxPoint);
     $(".histogram-range-slider").slider({
         min: 0,
         max: maxPoint,
