@@ -1091,9 +1091,9 @@ $req = curl_exec($curl);*/
 //print_r($req);die(':end');
 
                 $req =  new \GuzzleHttp\Psr7\Request('GET', $url);
-        echo '<pre>';
-        print_r($_SESSION);die();
-
+        /*echo '<pre>';
+        print_r($url);die();*/
+        
         $requests[] = $req;
 
                 $client = new Client();
