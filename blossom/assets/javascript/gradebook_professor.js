@@ -582,7 +582,7 @@ $(document).on("change", '.deselectAll',  function () {
 
 })
 var selectedStudents = [];
-d3.selectAll(".single").on("change", function () {
+$(document).on("change", '.single', function () {
     var selected = this.value;
     var checked = this.checked;
     var num = parseInt(selected);
@@ -1137,10 +1137,16 @@ function buildTable(data) {
 
         $(document).on('keyup', '.first_name input, .last_name input, .sections input, .grade input', function(){
             $('.jsgrid-search-button').trigger('click');
+            if (sortType[1]) {
+                $("#gridContainer").jsGrid("sort", sortType[0], sortType[1]);
+            }
         });
 
         $(document).on('change', '.checkbox_filter_conternt input[type=checkbox]', function(){
            $('.jsgrid-search-button').trigger('click'); 
+           if (sortType[1]) {
+                $("#gridContainer").jsGrid("sort", sortType[0], sortType[1]);
+            }
         });
 
         return loadData;

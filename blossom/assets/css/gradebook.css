@@ -583,7 +583,7 @@ td.checkbox-field .filter_checkbox {
     float: right;
     position: relative;
     left: -18px;
-    top: 2px;
+    top: 0px;
 }
 .sort-name,
 .sort-total {
@@ -608,7 +608,7 @@ td.checkbox-field .filter_checkbox {
     background: #fff;
     width: 46px;
     border: 1px solid silver;
-    top: -2px;
+    top: 0px;
     left: -1px;
 }
 .sort-name-desc:before  {
@@ -631,7 +631,7 @@ td.checkbox-field .filter_checkbox {
     border: 1px solid silver;
     left: 44px;
     border-radius: 0 2px 2px 0;
-    top: -40px;
+    top: -38px;
 }
 .sort-name:after,
 .sort-total:after {
