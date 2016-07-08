@@ -52,6 +52,7 @@ class RestfulApi extends Controller
             case "Assignment":
                 $req = new AssignmentsRequest(ActionType::GET, null, false);
                 $response = $roots->assignments($req);
+
                 $return =array();
                 $i=0;
                 $assignments = array();
@@ -59,8 +60,8 @@ class RestfulApi extends Controller
                 {
                     $file = new \stdClass();
 
-                    $file->id = $item->assignment_id;
-                    $file->name=$item->name;
+                    $file->id = $item['assignment_id'];
+                    $file->name=$item['name'];
                     $assignments[] = $file;
 
                     $i++;
