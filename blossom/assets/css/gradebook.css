@@ -775,6 +775,9 @@ td.checkbox-field .filter_checkbox {
 .histogramGroup {
     margin-top: 7px;
 }
+.histogramGroup .btn {
+    padding: 9px !important;
+}
 .empty {
     height: 30px;
 ::-webkit-scrollbar-track{
