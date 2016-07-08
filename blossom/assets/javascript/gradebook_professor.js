@@ -1982,7 +1982,6 @@ function histogram(data){
     boxPlotChart(dataBoxPlot);
     var maxPoint =(typeof histogramData.maxPoint != 'undefined') ? histogramData.maxPoint : 100,
         checked = '';
-    console.log(maxPoint);
     $(".histogram-range-slider").slider({
         min: 0,
         max: maxPoint,
