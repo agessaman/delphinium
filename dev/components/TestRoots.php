@@ -73,7 +73,7 @@ class TestRoots extends ComponentBase
         $this->dbHelper = new DbHelper();
 //        $this->refreshCache();
 //        $this->test();
-        $this->testBasicModulesRequest();
+//        $this->testBasicModulesRequest();
 //        $this->testGettingModuleStates();
 //        $this->testBuildTree();
 //        $this->testDeleteTag();
@@ -116,6 +116,8 @@ class TestRoots extends ComponentBase
 //        $this->testSubmitQuiz();
 //        $this->getQuizSubmissionQuestions();
 //        $this->getModuleTree();
+//        $this->testPostSubmission();
+        $this->testCreateAssignment();
     }
 
     private function testBasicModulesRequest()
@@ -812,6 +814,48 @@ class TestRoots extends ComponentBase
         echo json_encode($data);
         return $data;
     }
+
+    public function testCreateAssignment()
+    {
+        $name = "izo";
+        $due_at = new DateTime('now');
+//        $due_at = $datetime->format(DateTime::ISO8601);
+        $points_possible = 40;
+
+        $assignment = new Assignment();
+        $assignment->name = $name;
+        $assignment->points_possible = $points_possible;
+        $assignment->due_at = $due_at;
+
+        $req = new AssignmentsRequest(ActionType::POST, null, null, $assignment);
+
+        $roots = new Roots();
+        $res = $roots->assignments($req);
+        return json_encode($res);
+    }
+
+    public function testPostSubmission()
+    {
+        $studentIds = array(1604486);
+        $assignmentIds = array(2705518);
+        $multipleStudents = false;
+        $multipleAssignments = false;
+        $allStudents = false;
+        $allAssignments = false;
+
+        //can have the student Id param null if multipleUsers is set to false (we'll only get the current user's submissions)
+
+        $req = new SubmissionsRequest(ActionType::POST, $studentIds, $allStudents,
+            $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
+
+        //parameters
+        $params = array(
+            "submission[submission_type]"=>"online_text_entry");
+
+        $res = $this->roots->submissions($req, $params);
+        echo json_encode($res);
+        return $res;
+    }
     public function test()
     {
         if(!isset($_SESSION))
@@ -832,4 +876,5 @@ class TestRoots extends ComponentBase
         echo json_encode($userSubmissions);
         return;
     }
+
 }

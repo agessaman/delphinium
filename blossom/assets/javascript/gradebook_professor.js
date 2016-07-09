@@ -29,6 +29,9 @@ var count = 0;
 var promise = $.get("gradebook/getAllStudentSubmissions");
 promise.then(function (data1, textStatus, jqXHR) {
         submissions = data1;
+        histogram();
+        $('.Q123MinMax,.histogramGroup').find('.btn-group').find('.btn-info').removeClass('disabled');
+        $('.histogramRVS').removeClass('histogramRVS');
         var inputs = document.getElementsByClassName('checkboxMultiselect');
         for(var i = 0; i < inputs.length; i++) {
             inputs[i].disabled = false;
@@ -259,10 +262,8 @@ function addQuartileMinMaxLine(){
     $.each(Q123MinMax,function(k,lineData){
         if($('.Q123MinMax #'+k).is(':checked')){
             $('path#' + k).remove();
-            $('.cir'+k).remove();
             addQuartileMinMax(k,lineData);
         }else{
-            $('.cir'+k).remove();
             $('path#' + k).remove();
         }
     });
@@ -289,44 +290,28 @@ function addQuartileMinMax(id,data){
         .attr("id",id)
         .attr("class","greenLine")
         .attr("d", valueline(data))
-        .style("stroke", "#27b327");
-
-    g.selectAll("dot")
-        .data(data.filter(function (d, i) {
-            if (i === 0) {
-                return d;
-            }
-            if(data[i].date != data[i - 1].date)
-            {
-                return d;
-            }
-        }))
-        .enter().append("circle")
-        .attr("r", 2)
-        .attr("class", function (d)
-        {
-            return "cir cir"+id;
-        })
-        .attr("fill", "darkgreen")
-        .attr("cx", function (d) {
-            return x(Date.parse(d.date));
-        })
-        .attr("cy", function (d) {
-            return y(d.point);
-        })
+        .style("stroke", "#27b327")
         .on("mouseover", function (d) {
-            var date = new Date(d.date);
-            var day = date.getDate();
-            var monthIndex = date.getMonth();
-            var time = formatAMPM(date);
+            var getDate = x.invert(d3.mouse(this)[0]),
+                getPoint;
+            $.each(data,function(k,v){
+                if(typeof data[k+1] != 'undefined'){
+                    if(Date.parse(data[k].date) <= Date.parse(getDate) && Date.parse(data[k+1].date) >= Date.parse(getDate)){
+                        getPoint = v.point;
+                    }
+                }else if(Date.parse(data[k].date) <= Date.parse(getDate)){
+                    getPoint = v.point;
+                }
+            });
+            var date = new Date(getDate);
+            var day = getDate.getDate();
+            var monthIndex = getDate.getMonth();
+            var time = formatAMPM(getDate);
             var text = id.slice(2);
-            addTooltipProfessorGradebook(text + " " + roundToTwo(d.point) + " pts earned on " + monthNames[monthIndex] + " " + day + " @ " + time);
+            addTooltipProfessorGradebook(text + " " + roundToTwo(getPoint) + " pts earned on " + monthNames[monthIndex] + " " + day + " @ " + time);
         })
         .on("mouseout", function (d) {
-            if (id != "red")
-            {
-                removeTooltipProfessorGradebook();
-            }
+            removeTooltipProfessorGradebook();
         });
 }
 function getSubmissionsDays(){
@@ -1319,8 +1304,7 @@ function buildTable(data) {
             var td = $('.jsgrid-grid-header tr').eq(1).find('td');
             $('.jsgrid-search-button').hide();
             if($('#histogram svg').length == 0){
-                histogram({yP:students.length});
-                $('.histogramRVS').removeClass('histogramRVS');
+                // $('.histogramRVS').removeClass('histogramRVS');
                 /*if(submissions.length == 0){
                     $(".my-ui-slider")
                         .slider({disabled: true});
@@ -1332,7 +1316,7 @@ function buildTable(data) {
                         .slider({disabled: true});
                     $('.player,.histogram-player').addClass('disabled').prop('disabled',true);
                 }else{*/
-                    $('.Q123MinMax,.histogramGroup').find('.btn-group').find('.btn-info').removeClass('disabled');
+                    
                 // }
             }
             //$('.sort-name,.sort-total').removeClass('hide');
@@ -1851,11 +1835,16 @@ function getStudentsCount(intervals){
     });
     return retVal;
 }
+var timeHIst = [];
+function histogramChart(data) {
+    $("#histogram svg").remove();
+    $('#histogram').find('.x.axis').remove();
+    $('#histogram').find('.y.axis').remove();
+    $('#histogram').find('.bar').remove();
 
-function histogram(data){
     var margin = {top: 20, right: 20, bottom: 30, left: 40},
         width = 960 - margin.left - margin.right,
-        height = 500 - margin.top - margin.bottom;
+        height = 300 - margin.top - margin.bottom;
 
     var y = d3.scale.linear()
         .range([height, 0]);
@@ -1865,6 +1854,12 @@ function histogram(data){
         .orient("left")
         .ticks(10, "d");
 
+    var x = d3.scale.ordinal()
+        .rangeRoundBands([0, width], .01);
+    var xAxis = d3.svg.axis()
+        .scale(x)
+        .orient("bottom");
+    
     var svg = d3.select("#histogram").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
@@ -1878,40 +1873,63 @@ function histogram(data){
         .attr("y", 6)
         .attr("dy", ".71em")
         .style("text-anchor", "end")
-        .text("Frequency");
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    y.domain([0, data.yP]);
-    svg.select(".y.axis").call(yAxis);
 
-    function addxBar(data){
-        $('#histogram').find('.x.axis').remove();
-        $('#histogram').find('.bar').remove();
-
-        svg.append("g")
-        .attr("class", "x axis histogramXA")
-        .attr("transform", "translate(0," + height + ")")
-        var x = d3.scale.ordinal()
-            .rangeRoundBands([0, width], 0.01);
-        var xAxis = d3.svg.axis()
-            .scale(x)
-            .orient("bottom");
-
-        x.domain(data.xPUserC.xPoints.map(function(d) { return d; }));
-        
-        svg.select('.x.axis').call(xAxis);
-
-        data.xPUserC.usersCount.forEach(function(d, id){
-            svg.append("rect")
-            .attr("class", "bar")
-            .attr("y", y(d))
-            .attr("height", height - y(d))
-            .attr("x", x(data.xPUserC.xPoints[id])+(x.rangeBand()/2))
-            .attr("width", x.rangeBand())
-            .attr('fill','#4da7e8')
-            .attr("y", y(d))
-            .attr("height", height - y(d));
-        });
+    svg.append("g")
+    .attr("class", "x axis histogramXA")
+    .attr("transform", "translate(0," + height + ")");
+    var slices = [],
+        histData = [],
+        counts = data.xPUserC.usersCount,
+        xPoints = data.xPUserC.xPoints;
+    for(var i = 0; i < counts.length;i++){
+        histData.push({count:counts[i],xPoint:xPoints[i]});
     }
+    for (var i = 0; i < histData.length; i++) {
+        slices.push(histData.slice(0, i+1));
+    }
+    $.each(timeHIst,function(k,v){
+        clearTimeout(v);
+    });
+    slices.forEach(function(slice, index){
+        var time = setTimeout(function(){
+        addxBar(slice,height,x,y,xAxis,yAxis);
+        }, index * 300);
+        timeHIst.push(time);
+    });
+}
+function addxBar(data,height,x,y,xAxis,yAxis){
+    var svg = d3.select("#histogram svg");
+    x.domain(data.map(function(d) { return d.xPoint; }));
+    y.domain([0, d3.max(data, function(d) { return d.count; })]);
+
+    svg.select('.x.axis').transition().duration(300).call(xAxis);
+    svg.select(".y.axis").transition().duration(300).call(yAxis);
+
+    var bars = svg.selectAll(".bar").data(data, function(d) { return d.xPoint; });
+    bars.exit()
+    .transition()
+    .duration(300)
+    .attr("y", y(0))
+    .attr("height", height - y(0))
+    .style('fill-opacity', 1e-6)
+    .remove();
+
+  bars.enter().append("rect")
+    .attr("class", "bar")
+    .attr("y", y(0))
+    .attr("height", height - y(0))
+    .attr("transform", "translate(40,20)");
+
+  // the "UPDATE" set:
+  bars.transition().duration(300).attr("x", function(d) { return x(d.xPoint)+(x.rangeBand()/2); })
+    .attr("width", x.rangeBand())
+    .attr("y", function(d) { return y(d.count); })
+    .attr("height", function(d) { return height - y(d.count); });
+}
+
+function histogram(){
     pointHistDate = 0;
     pointHistDateAll = 0;
     function intervalHistIts() {
@@ -1950,7 +1968,7 @@ function histogram(data){
         if(checkedV == 'hGrade'){
             var histogramData = getHistogramDataByGrades();
         }
-        addxBar({xPUserC:histogramData});
+        histogramChart({xPUserC:histogramData});
         var boxPlotData = getBoxPlotData(histogramData);
         PrintBoxPlot(boxPlotData);
     }
@@ -1987,7 +2005,7 @@ function histogram(data){
     $('.histogram-date .ui-slider-pip-last').find('.ui-slider-label').text(parseDayMonth(endDateTo));
     var histogramData = getHistogramDataByPoints();
     var dataBoxPlot = getBoxPlotData(histogramData);
-    addxBar({xPUserC:histogramData});
+    histogramChart({xPUserC:histogramData});
     boxPlotChart(dataBoxPlot);
     var maxPoint =(typeof histogramData.maxPoint != 'undefined') ? histogramData.maxPoint : 100,
         checked = '';
@@ -2007,7 +2025,7 @@ function histogram(data){
                 var histogramData = getHistogramDataByMilestones(startEnd);
             }
             var boxPlotData = getBoxPlotData(histogramData);
-            addxBar({xPUserC:histogramData});
+            histogramChart({xPUserC:histogramData});
             PrintBoxPlot(boxPlotData);
         }
     }).slider('float', {

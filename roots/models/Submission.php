@@ -37,6 +37,7 @@ class Submission
     public $submission_comments;
     public $submission_type;
     public $submitted_at;
+    public $graded_at;
     public $url;
     public $user_id;
     public $grader_id;

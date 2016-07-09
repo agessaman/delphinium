@@ -288,8 +288,9 @@ class Experience extends ComponentBase {
                     $mileClearance->milestone_id = $mile->id;
                     $mileClearance->name = $mile->name;
                     $mileClearance->cleared = 1;
-                    $mileClearance->cleared_at = $submission['submitted_at'];
-                    $mileClearance->bonusPenalty = $this->calculateBonusOrPenaltyNew($mile->points, new DateTime($submission['submitted_at']), $endDateUTC, true,
+                    $clearedAtDate = isset($submission['submitted_at'])?$submission['submitted_at']:$submission['graded_at'];
+                    $mileClearance->cleared_at = $clearedAtDate;
+                    $mileClearance->bonusPenalty = $this->calculateBonusOrPenaltyNew($mile->points, new DateTime($clearedAtDate), $endDateUTC, true,
                         $ptsPerSecond, $stDateUTC, $bonusSeconds, $bonusPerSecond, $penaltySeconds, $penaltyPerSecond);
                     $mileClearance->points = $mile->points;
                     $mileClearance->due_at = $this->calculateMilestoneDueDateNew($mile->points, $ptsPerSecond, $stDateUTC);
@@ -422,10 +423,11 @@ class Experience extends ComponentBase {
 
         $localMilestones = $milestonesDesc;
 
-        //order submissions by date
         usort($this->submissions, function($a, $b) {
-            $ad = new DateTime($a['submitted_at']);
-            $bd = new DateTime($b['submitted_at']);
+            $aDate = isset($a['submitted_at'])?$a['submitted_at']:$a['graded_at'];
+            $bDate = isset($b['submitted_at'])?$b['submitted_at']:$b['graded_at'];
+            $ad = new DateTime($aDate);
+            $bd = new DateTime($bDate);
 
             if ($ad == $bd) {
                 return 0;
@@ -433,6 +435,8 @@ class Experience extends ComponentBase {
 
             return $ad > $bd ? 1 : -1;
         });
+
+
         $milestoneInfo = array();
         $carryingScore = 0;
         if(count($this->submissions)>0)
@@ -448,8 +452,12 @@ class Experience extends ComponentBase {
                         $mileClearance->milestone_id = $mile->id;
                         $mileClearance->name = $mile->name;
                         $mileClearance->cleared = 1;
+
+                        $clearedAtDate = isset($submission['submitted_at'])?$submission['submitted_at']:$submission['graded_at'];
+                        $mileClearance->cleared_at = $clearedAtDate;
+
                         $mileClearance->cleared_at = $submission['submitted_at'];
-                        $mileClearance->bonusPenalty = $this->calculateBonusOrPenalty($mile->points, new DateTime($submission['submitted_at']), $endDateUTC, true);
+                        $mileClearance->bonusPenalty = $this->calculateBonusOrPenalty($mile->points, new DateTime($clearedAtDate), $endDateUTC, true);
                         $mileClearance->points = $mile->points;
                         $mileClearance->due_at = $this->calculateMilestoneDueDate($mile->points);
                         $milestoneInfo[] = $mileClearance;
@@ -568,7 +576,7 @@ class Experience extends ComponentBase {
             return $submissions;
         }
         catch (\Exception $e)
-		{
+        {
             trace_log($e);
             return [];
         }
