@@ -259,10 +259,8 @@ function addQuartileMinMaxLine(){
     $.each(Q123MinMax,function(k,lineData){
         if($('.Q123MinMax #'+k).is(':checked')){
             $('path#' + k).remove();
-            $('.cir'+k).remove();
             addQuartileMinMax(k,lineData);
         }else{
-            $('.cir'+k).remove();
             $('path#' + k).remove();
         }
     });
@@ -289,44 +287,28 @@ function addQuartileMinMax(id,data){
         .attr("id",id)
         .attr("class","greenLine")
         .attr("d", valueline(data))
-        .style("stroke", "#27b327");
-
-    g.selectAll("dot")
-        .data(data.filter(function (d, i) {
-            if (i === 0) {
-                return d;
-            }
-            if(data[i].date != data[i - 1].date)
-            {
-                return d;
-            }
-        }))
-        .enter().append("circle")
-        .attr("r", 2)
-        .attr("class", function (d)
-        {
-            return "cir cir"+id;
-        })
-        .attr("fill", "darkgreen")
-        .attr("cx", function (d) {
-            return x(Date.parse(d.date));
-        })
-        .attr("cy", function (d) {
-            return y(d.point);
-        })
+        .style("stroke", "#27b327")
         .on("mouseover", function (d) {
-            var date = new Date(d.date);
-            var day = date.getDate();
-            var monthIndex = date.getMonth();
-            var time = formatAMPM(date);
+            var getDate = x.invert(d3.mouse(this)[0]),
+                getPoint;
+            $.each(data,function(k,v){
+                if(typeof data[k+1] != 'undefined'){
+                    if(Date.parse(data[k].date) <= Date.parse(getDate) && Date.parse(data[k+1].date) >= Date.parse(getDate)){
+                        getPoint = v.point;
+                    }
+                }else if(Date.parse(data[k].date) <= Date.parse(getDate)){
+                    getPoint = v.point;
+                }
+            });
+            var date = new Date(getDate);
+            var day = getDate.getDate();
+            var monthIndex = getDate.getMonth();
+            var time = formatAMPM(getDate);
             var text = id.slice(2);
-            addTooltipProfessorGradebook(text + " " + roundToTwo(d.point) + " pts earned on " + monthNames[monthIndex] + " " + day + " @ " + time);
+            addTooltipProfessorGradebook(text + " " + roundToTwo(getPoint) + " pts earned on " + monthNames[monthIndex] + " " + day + " @ " + time);
         })
         .on("mouseout", function (d) {
-            if (id != "red")
-            {
-                removeTooltipProfessorGradebook();
-            }
+            removeTooltipProfessorGradebook();
         });
 }
 function getSubmissionsDays(){
