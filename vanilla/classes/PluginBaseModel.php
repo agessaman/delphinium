@@ -5,7 +5,7 @@ use System\Classes\UpdateManager;
 use System\Classes\PluginManager;
 use Exception;
 use File;
-use RainLab\Builder\Classes\PluginYamlModel;
+use Delphinium\Vanilla\Classes\PluginYamlModel;
 use RainLab\Builder\Classes\IconList;
 use RainLab\Builder\Classes\PluginCode;
 use RainLab\Builder\Classes\LocalizationModel;

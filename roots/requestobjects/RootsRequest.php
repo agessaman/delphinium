@@ -29,7 +29,7 @@ use Delphinium\Roots\Enums\Lms;
 abstract class RootsRequest
 {
     private $actionType;
-    private $lms;
+    protected $lms;
     
     function getActionType() {
         return $this->actionType;
