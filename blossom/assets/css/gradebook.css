@@ -809,3 +809,6 @@ th.details {
 th.details {
     padding-left: 10px !important;
 }
+.bar{
+    fill: steelblue;
+}
