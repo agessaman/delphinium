@@ -164,7 +164,6 @@ class GuzzleHelper
             'Content-Length: ' . strlen($data_string),
             'Authorization: Bearer '.$token
         ));
-
         $result = curl_exec($ch);
         curl_close($ch);
         return $result;
@@ -206,6 +205,7 @@ class GuzzleHelper
     public static function constructUrl($urlPieces, $urlArgs = null)
     {
         $urlStr = "";
+        $urlParamsStr = "";
         for($i = 0;$i<=count($urlPieces)-1;$i++)
         {
 //            $urlStr.= $urlPieces[$i]."/";

@@ -30,7 +30,7 @@ class InvalidRequestException extends \Exception
      *
      * @param string $action The action that was being performed
      * @param string $reason The reason the action failed
-     * @param int $code optionl- The error code
+     * @param int $code option- The error code
      */
     public function __construct($action, $reason, $code=null) {
         $this->setAction($action);

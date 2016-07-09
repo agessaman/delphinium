@@ -112,7 +112,6 @@ class Gradebook extends ComponentBase {
                 {
                     session_start();
                 }
-                // $_SESSION['userID'] = 1230622;
 
                 $bonusPenalties = $this->getBonusPenalties();
 
@@ -450,7 +449,6 @@ class Gradebook extends ComponentBase {
             $this->roots = new Roots();
         }
         $result = $this->roots->submissions($req);
-// echo json_encode($result);
 
         // $res = $this->orderSubmissionsByDate($result);
         $res = $this->orderSubmissionsByUsersAndDate($result);
@@ -467,7 +465,7 @@ class Gradebook extends ComponentBase {
         $student = new \stdClass();
         $studentItems = array();
         foreach ($res as $submission) {
-            if (!isset($submission['submitted_at'])) {//skip items that have no submission date
+            if (!isset($submission['submitted_at'])&&!isset($submission['graded_at'])) {//skip items that have no submission date
                 continue;
             }
 
@@ -481,7 +479,7 @@ class Gradebook extends ComponentBase {
             $item = new \stdClass();
 
             $item->points = $userId === 0 ? $submission['score'] : $carryingScore;
-            $item->date = $submission['submitted_at'];
+            $item->date = isset($submission['submitted_at'])?$submission['submitted_at']:$submission['graded_at'];
 
             if ($userId === 0 || $userId === $submission['user_id']) {//first loop or looping through same user
 
@@ -747,10 +745,14 @@ class Gradebook extends ComponentBase {
             $this->roots = new Roots();
         }
         $userSubmissions = $this->roots->submissions($req);
+
         //sort submissions by date
+
         usort($userSubmissions, function($a, $b) {
-            $ad = new DateTime($a['submitted_at']);
-            $bd = new DateTime($b['submitted_at']);
+            $aDate = isset($a['submitted_at'])?$a['submitted_at']:$a['graded_at'];
+            $bDate = isset($b['submitted_at'])?$b['submitted_at']:$b['graded_at'];
+            $ad = new DateTime($aDate);
+            $bd = new DateTime($bDate);
 
             if ($ad == $bd) {
                 return 0;
@@ -775,7 +777,6 @@ class Gradebook extends ComponentBase {
 
 // echo "ended cleared milestones at ". json_encode(new \DateTime('now'))."--";
 
-        // echo json_encode($userMilestoneInfo);return;
         $userObj = new \stdClass();
         $userObj->id = $user['user']['user_id'];
         $userObj->name = $user['user']['name'];
@@ -792,7 +793,6 @@ class Gradebook extends ComponentBase {
         $obj = new \stdClass();
         $obj->bonus = 0;
         $obj->penalties = 0;
-
         foreach ($userMilestoneInfo as $item) {
             if (($item->cleared)) {
                 if ($item->bonusPenalty > 0) {
@@ -974,32 +974,15 @@ class Gradebook extends ComponentBase {
 
 
     private function orderSubmissionsByUsersAndDate($arr) {
-        $sorted = $this->array_orderby($arr, 'user_id', SORT_ASC, 'submitted_at', SORT_ASC);
-
-        return $sorted;
-    }
-
-    function array_orderby($arr, $paramOne, $sortOne, $paramTwo, $sortTwo) {
-        $args = func_get_args();
-        $data = array_shift($args);
-        foreach ($args as $n => $field) {
-            if (is_string($field)) {
-                $tmp = array();
-                foreach ($data as $key => $row)
-                    $tmp[$key] = $row[$field];
-                $args[$n] = $tmp;
-            }
+        $sort = array();
+        foreach($arr as $k=>$v) {
+            $sort['user_id'][$k] = $v['user_id'];
+            $sort['submitted_at'][$k] = isset($v['submitted_at'])?$v['submitted_at']:$v['graded_at'];
         }
-        $args[] = &$data;
-        call_user_func_array('array_multisort', $args);
-        return array_pop($args);
-    }
+        # sort by event_type desc and then title asc
+        array_multisort($sort['user_id'], SORT_ASC, $sort['submitted_at'], SORT_ASC,$arr);
 
-    function comp($submissionA, $submissionB) {
-        if ($submissionA['user_id'] == $submissionB['user_id']) {
-            return $submissionA['submitted_at']->getTimestamp() - $submissionB['submitted_at']->getTimestamp();
-        }
-        return ($submissionA['user_id'] - $submissionB['user_id']);
+        return $arr;
     }
 
     public function matchSubmissionsAndUsers($users, $scores) {
