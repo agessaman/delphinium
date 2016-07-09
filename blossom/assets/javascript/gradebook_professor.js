@@ -28,6 +28,7 @@ var count = 0;
 //GET DATA FOR THE TOP CHART
 var promise = $.get("gradebook/getAllStudentSubmissions");
 promise.then(function (data1, textStatus, jqXHR) {
+    console.log(1111111111);
         submissions = data1;
         histogram();
         $('.Q123MinMax,.histogramGroup').find('.btn-group').find('.btn-info').removeClass('disabled');
@@ -705,7 +706,8 @@ function checkedBox(id,slideDays)
             });
             var parsedData = parseDates(newData);
             addLine(parsedData, "steelblue", masterArr[0].id);
-        }else{
+        } else 
+        {
             var masterItems = masterArr[0].items;
             var show_student_line = false;
             var maxPoint = masterItems[masterItems.length-1].points;
@@ -1527,7 +1529,7 @@ function callStudentsMilestoneInfo(studentsArr)
     }
 
     //send a last request with the remaining IDS
-    if(idsArr.length>0)
+    if(idsArr.length > 0)
     {
         $.get("gradebook/getSetOfUsersMilestoneInfo",{experienceInstanceId:experienceInstanceId, userIds:(idsArr)},function(data,status,xhr)
         {

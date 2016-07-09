@@ -1,8 +1,18 @@
 <script>
+    var bonus = {{bonus}};
+    var penalties = {{penalties}};
     var gradingScheme = {{grading_scheme|raw}};
+    var chartData = {{chartData | raw}};
+    var submissions = {{submissions | raw}};
+    var numMilestones = {{numMilestones}};
+    var students = {{users | raw}};
+    var experienceInstanceId = {{experienceInstanceId}};
+    var gradingScheme = {{grading_scheme|raw}};
+    var endDate = {{ endDate | raw}};
+    var today = {{today}};
 </script>
 <!-- STUDENT'S INTERFACE
- 	Bonus/penalties-->
+    Bonus/penalties-->
 <div class="control-tabs primary-tabs m-t-1" data-control="tab">
     <ul class="nav nav-tabs grade-tabs">
         <li><a>Progress</a></li>
@@ -12,6 +22,120 @@
     <div class="tab-content">
         <!-- Progress -->
         <div class="tab-pane">
+            <div id="topContainer">
+                <div class="graphContainer">
+                    <!-- <div class="container"> -->
+                        <div class="spinnerDiv" style="width:100%;height:400px;">
+                            <div style="width:60px;height:60px;position: absolute;top: 50%; left: 50%;transform: translate(-50%,-50%);">
+                                <i class="fa fa-spinner fa-pulse margin-bottom" style="color:#337AB7;"></i>
+                            </div>
+                        </div>
+                        <h3 class="title-graph">Timeline</h3>
+                        <div id="chart"  style="width:800px;height:400px;opacity:0.5;"></div>
+                        <div  id="topRight" style="opacity:0.5">
+                            <div class="cont">
+                                <div class="Q123MinMax container btn-group" role="group" aria-label="...">
+                                    <div class="btn-group" data-toggle="buttons">
+                                        <label class="btn btn-info disabled">
+                                            <input type="checkbox" class="btn btn-info" id="avMin" >Min</input>
+                                        </label>
+                                    </div>
+                                    <div class="btn-group" data-toggle="buttons">
+                                        <label class="btn btn-info disabled">
+                                            <input type="checkbox" class="btn btn-info" id="avQ1" >Q1</input>
+                                        </label>
+                                    </div>
+                                    <div class="btn-group" data-toggle="buttons">
+                                        <label class="btn btn-info disabled">
+                                            <input type="checkbox" class="btn btn-info" id="avMedian" >Median</input>
+                                        </label>
+                                    </div>
+                                    <div class="btn-group" data-toggle="buttons">
+                                        <label class="btn btn-info disabled">
+                                            <input type="checkbox" class="btn btn-info" id="avMean" >Mean</input>
+                                        </label>
+                                    </div>
+                                    <div class="btn-group" data-toggle="buttons">
+                                        <label class="btn btn-info disabled">
+                                            <input type="checkbox" class="btn btn-info" id="avQ3" >Q3</input>
+                                        </label>
+                                    </div>
+                                    <div class="btn-group" data-toggle="buttons">
+                                        <label class="btn btn-info disabled">
+                                            <input type="checkbox" class="btn btn-info" id="avMax" >Max</input>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="left-val">
+                                    <div class="labelSelectAll btn-group" data-toggle="buttons">
+                                        <label class="nameLabel btn btn-info active">
+                                            <input disabled type="checkbox" class="deselectAll checkboxmultiselect btn btn-info" value="0">Select all</input>
+                                        </label>
+                                    </div>
+                                    <div class="cont-sorting">
+                                        <div class="sort-name"><i class="fa fa-sort-alpha-asc"></i></div>
+                                        <div class="sort-total"><i class="fa fa-sort-numeric-asc"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <!-- </div> -->
+                </div>
+
+                <div class="range-blocks container-fluid col-md-12 m-b-5">
+                    <div class="row">
+                        <div class="date-slider-container col-md-6 m-t-2 col-sm-4">
+                            <span class="date">Date</span>
+                            <div class="col-md-1 col-sm-1">
+                                <button type="button" class="btn btn-primary btn-xs player"><i class="fa fa-play"></i></button>
+                            </div>
+                            <div class="col-md-10 col-sm-9">
+                                <div class="my-ui-slider"></div>
+                            </div>
+                        </div>
+                        <div class="range-slider-container col-sm-3 col-md-6 m-t-2">
+                            <span class="rg">Range</span>
+                            <div class="col-md-9 range-slider"></div>
+                        </div>
+                    </div>
+                </div>
+                <h3 class="title-graph counts histogramRVS">Counts</h3>
+                <div id='histogram'></div>
+                <div id='boxPlot'></div>
+                <div class="container-fluid m-t-2">
+                    <div class="histogramGroup container btn-group col-md-3 histogramRVS" role="group">
+                    <div class="btn-group">
+                        <label class="btn btn-info active disabled">
+                            <input type="radio" name='histogram' checked class="btn btn-info hide histRadio" id="hPoint" />Points
+                        </label>
+                    </div>
+                    <div class="btn-group">
+                        <label class="btn btn-info disabled">
+                            <input type="radio" name='histogram' class="btn btn-info hide histRadio" id="hMilestone" />Milestones
+                        </label>
+                    </div>
+                    <div class="btn-group">
+                        <label class="btn btn-info disabled">
+                            <input type="radio" name='histogram' class="btn btn-info hide histRadio" id="hGrade" />Grades
+                        </label>
+                    </div>
+                    </div>
+                    <div class="histogram-date-slider-container col-md-5 m-t-2 col-sm-5 histogramRVS">
+                        <span class="date">Date</span>
+                        <div class="col-md-1 col-sm-1">
+                            <button type="button" class="btn btn-primary btn-xs histogram-player"><i class="fa fa-play"></i></button>
+                        </div>
+                        <div class="col-md-10 col-sm-9">
+                            <div class="histogram-date"></div>
+                        </div>
+                    </div>
+                    <div class="range-slider-container col-sm-3 col-md-4 m-t-2 histogramRVS">
+                        <span class="rg">Range</span>
+                        <div class="col-md-9 histogram-range-slider"></div>
+                    </div>
+                </div>
+                <div class="empty"></div>
+            </div>
         </div>
         <!-- Grades -->
         <div class="tab-pane">
@@ -57,8 +181,4 @@
         </div>
     </div>
 </div>
-<script type="text/javascript">
-    var bonus = {{bonus}};
-    var penalties = {{penalties}};
-</script>
 <!-- <script type="text/javascript" src="plugins/delphinium/blossom/assets/javascript/boxplot_d3.js"></script> -->
