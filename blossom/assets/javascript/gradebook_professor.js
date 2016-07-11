@@ -1306,7 +1306,6 @@ function buildTable(data) {
             var td = $('.jsgrid-grid-header tr').eq(1).find('td');
             $('.jsgrid-search-button').hide();
             if($('#histogram svg').length == 0){
-                // $('.histogramRVS').removeClass('histogramRVS');
                 /*if(submissions.length == 0){
                     $(".my-ui-slider")
                         .slider({disabled: true});
@@ -1897,7 +1896,7 @@ function histogramChart(data) {
     slices.forEach(function(slice, index){
         var time = setTimeout(function(){
         addxBar(slice,height,x,y,xAxis,yAxis);
-        }, index * 300);
+        }, index * 200);
         timeHIst.push(time);
     });
 }
@@ -1906,13 +1905,13 @@ function addxBar(data,height,x,y,xAxis,yAxis){
     x.domain(data.map(function(d) { return d.xPoint; }));
     y.domain([0, d3.max(data, function(d) { return d.count; })]);
 
-    svg.select('.x.axis').transition().duration(300).call(xAxis);
-    svg.select(".y.axis").transition().duration(300).call(yAxis);
+    svg.select('.x.axis').transition().duration(200).call(xAxis);
+    svg.select(".y.axis").transition().duration(200).call(yAxis);
 
     var bars = svg.selectAll(".bar").data(data, function(d) { return d.xPoint; });
     bars.exit()
     .transition()
-    .duration(300)
+    .duration(200)
     .attr("y", y(0))
     .attr("height", height - y(0))
     .style('fill-opacity', 1e-6)
@@ -1925,7 +1924,7 @@ function addxBar(data,height,x,y,xAxis,yAxis){
     .attr("transform", "translate(40,20)");
 
   // the "UPDATE" set:
-  bars.transition().duration(300).attr("x", function(d) { return x(d.xPoint)+(x.rangeBand()/2); })
+  bars.transition().duration(200).attr("x", function(d) { return x(d.xPoint)+(x.rangeBand()/2); })
     .attr("width", x.rangeBand())
     .attr("y", function(d) { return y(d.count); })
     .attr("height", function(d) { return height - y(d.count); });
