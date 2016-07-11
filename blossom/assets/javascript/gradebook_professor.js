@@ -1971,7 +1971,7 @@ function histogram(){
         }
         histogramChart({xPUserC:histogramData});
         var boxPlotData = getBoxPlotData(histogramData);
-        PrintBoxPlot(boxPlotData);
+        boxPlotChart(boxPlotData);
     }
 
     $(document).on('click','.histogram-player', function() {
@@ -2027,7 +2027,7 @@ function histogram(){
             }
             var boxPlotData = getBoxPlotData(histogramData);
             histogramChart({xPUserC:histogramData});
-            PrintBoxPlot(boxPlotData);
+            boxPlotChart(boxPlotData);
         }
     }).slider('float', {
         labels: true
@@ -2068,22 +2068,17 @@ function getQ1Q3MedianForBoxPlot(arr,del){
 }
 
 function boxPlotChart(data){
+    $('#boxPlot svg').remove();
     var h = 80,
-      w = 960;
+        w = 960;
 
-  var margin = {
-    'top': 20,
-    'bottom': 20,
-    'left': 20,
-    'right': 30 
-  }
-  var svg = d3.select("#boxPlot").append("svg")
-    .attr("height", h)
-    .attr("width", w);
-
+    var margin = {'top': 20,'bottom': 20,'left': 20,'right': 30};
+    var svg = d3.select("#boxPlot").append("svg")
+        .attr("height", h)
+        .attr("width", w);
 
     xScale = d3.scale.linear()
-    .domain([0,100])
+    .domain([0,data[0].max])
     .range([
       margin.left,
       w - margin.right
@@ -2106,6 +2101,7 @@ function boxPlotChart(data){
     .tickSubdivide(true);
 
     svg.append("g")
+    .transition().duration(200)
     .attr("transform", "translate(0,65)")
     .attr("id", "xAxisG")
     .call(xAxis);
@@ -2121,74 +2117,82 @@ function boxPlotChart(data){
     .attr("cx", function(d) {return xScale(d.median)})
     .attr("cy", function(d) {return yScale(d.day)})
     .style("fill", "none");
-    PrintBoxPlot(data);
 
-}
-
-function PrintBoxPlot(data){
-    var svg = d3.select("#boxPlot svg");
-    d3.selectAll('g.box').remove();
     svg.selectAll("g.box")
     .data(data)
     .enter()
     .append("g")
     .attr("class", "box")
     .attr("transform", function(d){
-      return "translate(" + xScale(d.median) + "," + 
+        return "translate(" + xScale(d.median) + "," + 
         yScale(d.day) + ")"
     })
     .each(function(d,i){
       
-      d3.select(this)
-        .append("line")
-        .attr("class", "range")
-        .attr("x1", xScale(d.max) - xScale(d.median))
-        .attr("x2", xScale(d.min) - xScale(d.median))
-        .attr("y1", 0)
-        .attr("y2", 0)
-        .style("stroke", "black")
-        .style("stroke-width", "4px");
+        d3.select(this)
+            .append("line")
+            .attr("class", "range")
+            .attr("y1", 0)
+            .attr("y2", 0)
+            .attr("x1", xScale(d.max) - xScale(d.median))
+            .attr("x2", xScale(d.min) - xScale(d.median))
+            .style("stroke", "black")
+            .style("stroke-width", "4px")
+             .attr("transform", "translate("+(-(xScale(d.max) - xScale(d.median)))+",0)")
+            .transition().duration(1000)
+            .attr("transform", "translate(0,0)");
 
-      d3.select(this)
-        .append("line")
-        .attr("class", "max")
-        .attr("x1", xScale(d.max) - xScale(d.median))
-        .attr("x2", xScale(d.max) - xScale(d.median))
-        .attr("y1", -10)
-        .attr("y2", 10)
-        .style("stroke", "black")
-        .style("stroke-width", "4px");
+        d3.select(this)
+            .append("line")
+            .attr("class", "max")
+            .attr("x2", xScale(d.max) - xScale(d.median))
+            .attr("x1", xScale(d.max) - xScale(d.median))
+            .attr("y1", -10)
+            .attr("y2", 10)
+            .style("stroke", "black")
+            .style("stroke-width", "4px")
+            .attr("transform", "translate("+(-(xScale(d.max) - xScale(d.median)))+",0)")
+            .transition().duration(1000)
+            .attr("transform", "translate(0,0)");
 
-      d3.select(this)
-        .append("line")
-        .attr("class", "min")
-        .attr("x1", xScale(d.min) - xScale(d.median))
-        .attr("x2", xScale(d.min) - xScale(d.median))
-        .attr("y1", -10)
-        .attr("y2", 10)
-        .style("stroke", "black")
-        .style("stroke-width", "4px");        
+        d3.select(this)
+            .append("line")
+            .attr("class", "min")
+            .attr("y1", -10)
+            .attr("y2", 10)
+            .attr("x1", xScale(d.min) - xScale(d.median))
+            .attr("x2", xScale(d.min) - xScale(d.median))
+            .style("stroke", "black")
+            .style("stroke-width", "4px")
+            .attr("transform", "translate("+(-(xScale(d.max) - xScale(d.median)))+",0)")
+            .transition().duration(1000)
+            .attr("transform", "translate(0,0)");
 
-      d3.select(this)
-        .append("rect")
-        .attr("class", "range")
-        .attr("x", xScale(d.q1) - xScale(d.median))
-        .attr("y", -10)
-        .attr("height", 20)
-        .attr("width", xScale(d.q3) - xScale(d.q1))
-        .style("fill", "white")
-        .style("stroke", "black")
-        .style("stroke-width", "2px");
+        d3.select(this)
+            .append("rect")
+            .attr("class", "range")
+            .attr("y", -10)
+            .attr("x", xScale(d.q1) - xScale(d.median))
+            .attr("height", 20)
+            .style("fill", "white")
+            .style("stroke", "black")
+            .style("stroke-width", "2px")
+            .attr("width", xScale(d.q3) - xScale(d.q1))
+            .attr("transform", "translate("+(-(xScale(d.max) - xScale(d.median)))+",0)")
+            .transition().duration(1000)
+            .attr("transform", "translate(0,0)");
 
-      d3.select(this)
-        .append("line")
-        .attr("x1", 0)
-        .attr("x2", 0)
-        .attr("y1", -10)
-        .attr("y2", 10)
-        .style("stroke", "darkgray")
-        .style("stroke-width", "4px");
-        
+        d3.select(this)
+            .append("line")
+            .attr("x1", 0)
+            .attr("x2", 0)
+            .attr("y1", -10)
+            .attr("y2", 10)
+            .style("stroke", "darkgray")
+            .style("stroke-width", "4px")
+            .attr("transform", "translate("+(-(xScale(d.max) - xScale(d.median)))+",0)")
+            .transition().duration(1000)
+            .attr("transform", "translate(0,0)");     
     })
 }
 
