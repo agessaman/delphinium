@@ -1820,6 +1820,10 @@ function getStudentsCount(intervals){
         submitionsDays = getSubmissionsDays(),
         endDate = Date.parse(dateRange[pointHistDate]);
     $.each(intervals,function(k,v){
+        if(v == 0){
+            retVal.push(students.length);
+            return;
+        }
         var userPoint = [];
         $.each(submitionsDays,function(subK,subV){
             if((Date.parse(subK) <= endDate || subK <= endDate) || pointHistDateAll == 0){
@@ -1832,7 +1836,9 @@ function getStudentsCount(intervals){
                 });
             }
         });
-        retVal.push(userPoint.length);
+        if(intervals[k] != 0){
+            retVal.push(userPoint.length);
+        }
     });
     return retVal;
 }
