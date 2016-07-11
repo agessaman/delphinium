@@ -813,10 +813,9 @@ th.details {
     fill: steelblue;
 }
 .title-graph {
-    margin: 55px 0 -13px 15px;
+    margin: 55px 15px 15px 15px;
     text-align: left !important;
 }
-.counts {
+/*.counts {
     margin-left: 177px !important;
-    margin-bottom: -4px !important;
-}
+}*/
