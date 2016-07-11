@@ -97,7 +97,6 @@ class Gradebook extends ComponentBase {
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/ui/jquery-ui-slider-pips.js");
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/nouislider.min.js");
-            $this->addJs("/plugins/delphinium/blossom/assets/javascript/gradebook_student.js");
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/js/tab.js");
             $this->page['experienceInstanceId'] = $this->property('experienceInstance');
             $userRoles = $_SESSION['roles'];
@@ -108,6 +107,7 @@ class Gradebook extends ComponentBase {
 
             }
             if (stristr($userRoles, 'Learner')) {
+                $this->addJs("/plugins/delphinium/blossom/assets/javascript/gradebook_student.js");
                 if (!isset($_SESSION))
                 {
                     session_start();
@@ -714,7 +714,7 @@ class Gradebook extends ComponentBase {
             }));
             $filteredUsers = array_merge($filteredUsers,$res);
         }
-        $masterArr=array();
+        $masterArr = array();
         $potentisal_array = array();
         foreach($filteredUsers as $user)
         {

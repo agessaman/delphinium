@@ -26,14 +26,98 @@ function Student()
 
 Student.prototype = {
 
+    options: {},
+
     __init: function () 
     {
         this.domFunctions();
         this.get();
+        //this.promise();
+        this._options();
+    },
+
+    _options: function() {
+
+        this.options.windowData = '';
+        Object.freeze(this.options);
+
     },
 
     get: function() {
 
+    },
+
+    promise: function() {
+        var promise = $.get("gradebook/getAllStudentSubmissions");
+        promise.then(function (data1, textStatus, jqXHR) {
+            submissions = data1;
+            var inputs = document.getElementsByClassName('checkboxMultiselect');
+            for(var i = 0; i < inputs.length; i++) {
+                inputs[i].disabled = false;
+            }
+            d3.select("#chart").style("opacity","1");
+        })
+        .fail(function (data2) {
+            console.log("Unable to retrieve student submissions");
+        });
+        this.callStudentsMilestoneInfo(students);
+    },
+
+    callStudentsMilestoneInfo: function (studentsArr) {
+        var self = this;
+        d3.select("#gridContainer").style("display","block");
+        var idsArr =[];
+        for(var i = 0; i <= studentsArr.length - 1; i++)
+        {
+            var currentStudent = studentsArr[i];
+            idsArr.push(currentStudent.user_id);
+        }
+
+        if(idsArr.length > 0)
+        {
+            $.each(idsArr,function (d, i)
+            {
+               var num = parseInt(d);
+               self.checkedBox(num);
+            });
+        }
+    },
+
+    checkedBox: function (id, slideDays)
+    {
+        var masterArr = submissions.filter(function (d) {
+            return d.id === id;
+        }),
+            min_max = getCHartDragPoints(),
+            dragDate = getChartDate();
+        if (masterArr.length > 0)
+        {
+            if(slideDays){
+                var masterItems = masterArr[0].items,
+                    newData = [];
+                $.each(masterItems,function(k,v){
+                    if(v.points >= min_max[0] && v.points <= min_max[1]) {
+                        if(Date.parse(v.date) <= parseInt(dragDate) || v.date <= parseInt(dragDate)){
+                            newData.push(v);
+                        }
+                    }
+                });
+                var parsedData = parseDates(newData);
+                addLine(parsedData, "steelblue", masterArr[0].id);
+            } else {
+                var masterItems = masterArr[0].items;
+                var show_student_line = false;
+                var maxPoint = masterItems[masterItems.length-1].points;
+                var maxDate = masterItems[masterItems.length-1].date;
+                if(maxPoint >= min_max[0] && maxPoint <= min_max[1]) {
+                    if(Date.parse(maxDate) <= parseInt(dragDate) || maxDate <= parseInt(dragDate)){
+                        show_student_line = true;
+                    }
+                }
+                var parsedData = (show_student_line) ? parseDates(masterItems) : parseDates([]);
+                addLine(parsedData, "steelblue", masterArr[0].id);
+            }
+        }
     },
 
     domFunctions: function () 
@@ -46,7 +130,7 @@ Student.prototype = {
             }
         });
 
-        $(document).ready(function(){
+        $(document).ready(function () {
             div = d3.select("body").append("div")
                 .attr("class", "tooltip")
                 .style("opacity", 0);
