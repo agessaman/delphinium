@@ -80,7 +80,7 @@ class Gradebook extends ComponentBase {
 
     public function onRender() {
         //try{
-
+            
             $this->roots = new Roots();
             $standards = $this->roots->getGradingStandards();
             $grading_scheme = $standards[0]->grading_scheme;
@@ -107,16 +107,32 @@ class Gradebook extends ComponentBase {
 
             }
             if (stristr($userRoles, 'Learner')) {
-                $this->addJs("/plugins/delphinium/blossom/assets/javascript/gradebook_student.js");
+
                 if (!isset($_SESSION))
                 {
                     session_start();
                 }
+                $this->addJs("/plugins/delphinium/blossom/assets/javascript/gradebook_student.js");
+                $aggregateSubmissionScores = $this->aggregateSubmissionScores();
+                $users = $this->roots->getStudentsInCourse();
+                $userMasterArr= array();
+                $courseEnd = $this->roots->getCourse()->end_at;
+                foreach($users as $userCourse)
+                {
+                    $userMasterArr[] = $userCourse->user;
+                }
+                $this->page['users'] = json_encode($userMasterArr);
+                $this->users = $userMasterArr;
 
                 $bonusPenalties = $this->getBonusPenalties();
 
                 $this->page['bonus'] = $bonusPenalties === 0 ? 0 : $bonusPenalties->bonus;
                 $this->page['penalties'] = $bonusPenalties === 0 ? 0 : $bonusPenalties->penalties;
+                $this->page['chartData'] = json_encode($this->getRedLineData());
+                $this->page['submissions'] = json_encode($aggregateSubmissionScores);
+                $this->page['endDate'] = json_encode($courseEnd);
+                $experience = new ExperienceComponent();
+                $this->page['today'] = $experience->getRedLinePoints($this->property('experienceInstance'));
 
                 $exp = new ExperienceComponent();
                 $pts = $exp->getUserPoints();
@@ -236,7 +252,7 @@ class Gradebook extends ComponentBase {
 
         $aggregateSubmissionScores = $this->aggregateSubmissionScores();
         $users = $this->roots->getStudentsInCourse();
-        $userMasterArr= array();
+        $userMasterArr = array();
         $courseEnd = $this->roots->getCourse()->end_at;
         foreach($users as $userCourse)
         {
@@ -246,7 +262,7 @@ class Gradebook extends ComponentBase {
         $this->users = $userMasterArr;
         $this->page['submissions'] = json_encode($aggregateSubmissionScores);
 
-        $this->page['courseDate'] = json_encode($courseEnd);
+        //$this->page['courseDate'] = json_encode($courseEnd);
 
         //comment these two lines
         // $submissionData = $this->matchSubmissionsAndUsers($users, $aggregateSubmissionScores);

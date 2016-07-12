@@ -308,7 +308,7 @@ function addQuartileMinMax(id,data){
             var monthIndex = getDate.getMonth();
             var time = formatAMPM(getDate);
             var text = id.slice(2);
-            addTooltipProfessorGradebook(text + " " + roundToTwo(getPoint) + " pts earned on " + monthNames[monthIndex] + " " + day + " @ " + time);
+            addTooltipProfessorGradebook(text + " " + roundToTwo(getPoint) + " pts");
         })
         .on("mouseout", function (d) {
             removeTooltipProfessorGradebook();
@@ -326,7 +326,7 @@ function getSubmissionsDays(){
                 if(itemVDate >= Date.parse(dateRange[dK]) && itemVDate <= Date.parse(dateRange[dK+1]) && typeof dateRange[dK+1] != 'undefined'){
                     pushUserVal[v.id] = itemV;
                     usersOldValue[v.id] = itemV;
-                }else if(itemVDate >= Date.parse(dateRange[dK]) && typeof dateRange[dK+1] == 'undefined'){
+                } else if(itemVDate >= Date.parse(dateRange[dK]) && typeof dateRange[dK+1] == 'undefined'){
                     pushUserVal[v.id] = itemV;
                     usersOldValue[v.id] = itemV;
                 }
@@ -547,6 +547,7 @@ $(document).on("change", '.deselectAll',  function () {
         if (allSelected)
         {
             checkedBox(num);
+            console.log(num);
             selectedStudents.push(num);
         }
         else
@@ -687,6 +688,10 @@ function uncheckedBox(id)
 function checkedBox(id,slideDays)
 {
     var masterArr = submissions.filter(function (d) {
+        /*console.log(d.id);
+        console.log('///////////');*/
+        //console.log(id);
+        /*console.log(11111111111);*/
         return d.id === id;
     }),
         min_max = getCHartDragPoints(),
@@ -1112,9 +1117,9 @@ function buildTable(data) {
                 check.closest('.nouislider').css({
                     'left': $(this).offset().left-(148-(($(this).outerWidth())/2))+'px'
                 });
-                if(check.is(':visible')){
+                if (check.is(':visible')) {
                     check.closest('.nouislider').hide();
-                }else{
+                } else {
                     check.closest('.nouislider').show();
                 }
             }
