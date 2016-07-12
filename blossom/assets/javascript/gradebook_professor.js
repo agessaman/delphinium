@@ -1753,9 +1753,16 @@ function getHistogramDataByPoints(startEnd){
         return b-a;
     });
     var end = (endArr[0]>=100) ? endArr[0] : 100;
+    if(end%100 != 0){
+        end = end + (100 - end%100);
+    }
+
     for(var i=0;i<=parseInt(end);i+=step){
         if(startEnd){
             if(i >= startEnd[0] && i<= startEnd[1]){
+                intervals.push(i);
+            }
+            if(i >= startEnd[0] && startEnd[0] == startEnd[1] && startEnd[0] != 0){
                 intervals.push(i);
             }
         }else{
@@ -1765,11 +1772,14 @@ function getHistogramDataByPoints(startEnd){
     if(intervals[intervals.length-1] < endArr[0] && !startEnd){
         intervals.push(intervals[intervals.length-1] + 100);
     }else if(startEnd){
-        if(intervals[intervals.length-1] < startEnd[1]){
+        if(intervals[intervals.length-1] <= startEnd[1]){
             intervals.push(intervals[intervals.length-1] + 100);
         }
-        if(intervals[0] > startEnd[0]){
+        if(intervals[0] >= startEnd[0] && startEnd[0] > 99){
             intervals.unshift(intervals[0] - 100);
+        }
+        if(intervals[0] >= startEnd[0] && startEnd[0] <= 99){
+            intervals.unshift(0);
         }
     }
     var retVal = getStudentsCount(intervals);
@@ -1782,11 +1792,18 @@ function getHistogramDataByMilestones(startEnd){
         users = [],
         endPoint = chartData[chartData.length-1].points;
     var end = (endPoint >= 100) ? endPoint : 100;
-
+    if(end%100 != 0){
+        end = end + (100 - end%100);
+    }
     for(var i=0;i<=parseInt(end);i+=step){
         if(startEnd){
             if(i >= startEnd[0] && i<= startEnd[1]){
                 intervals.push(i);
+            }
+            if(i >= startEnd[0] && startEnd[0] == startEnd[1] && startEnd[0] != 0){
+                if($.inArray(i,intervals) == -1){
+                    intervals.push(i);
+                }
             }
         }else{
             intervals.push(i);
@@ -1795,13 +1812,14 @@ function getHistogramDataByMilestones(startEnd){
     if(intervals[intervals.length-1] < endPoint && !startEnd){
         intervals.push(intervals[intervals.length-1] + 100);
     }else if(startEnd){
-        if(intervals[intervals.length-1] < startEnd[1]){
+        if(intervals[intervals.length-1] <= startEnd[1]){
             intervals.push(intervals[intervals.length-1] + 100);
         }
-        if(intervals[0] > startEnd[0]){
+        if(intervals[0] > startEnd[0] && startEnd[0] != startEnd[1]){
             intervals.unshift(intervals[0] - 100);
         }
     }
+    
     var retVal = getStudentsCount(intervals);
     return {usersCount:retVal,xPoints:intervals,maxPoint:endPoint};
 }
@@ -2029,7 +2047,7 @@ function histogram(){
     histogramChart({xPUserC:histogramData});
     boxPlotChart(dataBoxPlot);
     var maxPoint =(typeof histogramData.maxPoint != 'undefined') ? histogramData.maxPoint : 100,
-        checked = '';
+        checked = 'hPoint';
     $(".histogram-range-slider").slider({
         min: 0,
         max: maxPoint,
@@ -2208,7 +2226,7 @@ function boxPlotChart(data){
 function changeBoxPlotData(data){
     $('#boxPlot svg #xAxisG').remove();
     xScale = d3.scale.linear()
-    .domain([data.xScaleStart,data.xScaleEnd+data.xScaleStart])
+    .domain([data.xScaleStart,data.xScaleEnd])
     .range([20,930]);
 
     xAxis = d3.svg.axis()
@@ -2223,24 +2241,33 @@ function changeBoxPlotData(data){
     .attr("transform", "translate(0,65)")
     .attr("id", "xAxisG")
     .call(xAxis);
+     
+    d3.select('#boxPlot svg .tweets')
+    .transition().duration(300)
+    .attr("cx", xScale(data.median))
+    .attr("cy", yScale(data.day));
+
+    d3.select('#boxPlot svg .box')
+    .transition().duration(300)
+    .attr("transform", "translate(" + xScale(data.median) + "," + yScale(data.day) + ")");
 
     d3.select('#boxPlot svg .max-med')
-    .transition().duration(500)
+    .transition().duration(300)
     .attr("x1", xScale(data.max) - xScale(data.median))
     .attr("x2", xScale(data.min) - xScale(data.median));
 
     d3.select('#boxPlot svg .max')
-    .transition().duration(500)
+    .transition().duration(300)
     .attr("x2", xScale(data.max) - xScale(data.median))
     .attr("x1", xScale(data.max) - xScale(data.median));
 
     d3.select('#boxPlot svg .min')
-    .transition().duration(500)
+    .transition().duration(300)
     .attr("x1", xScale(data.min) - xScale(data.median))
     .attr("x2", xScale(data.min) - xScale(data.median));
 
     d3.select('#boxPlot svg .q1-median')
-    .transition().duration(500)
+    .transition().duration(300)
     .attr("x", xScale(data.q1) - xScale(data.median))
     .attr("width", xScale(data.q3) - xScale(data.q1));
 }
@@ -2260,10 +2287,19 @@ function getBoxPlotData(data){
     points.sort(function(a,b){
         return a-b;
     });
-    var min = points[0],
-        max = points[points.length-1],
-        median = getQ1Q3MedianForBoxPlot(points,0.5),
-        q1 = getQ1Q3MedianForBoxPlot(points,1/3),
-        q3 = getQ1Q3MedianForBoxPlot(points,0.75);
+    if(points.length == 0 || points.length == 1){
+        var median = (typeof points[0] != 'undefined') ? points[0] : xScaleStart;
+        var q1 = median;
+        var q3 = median;
+        var min = median;
+        var max = median;
+    }
+    if(points.length > 1){
+        var median = getQ1Q3MedianForBoxPlot(points,0.5),
+            q1 = getQ1Q3MedianForBoxPlot(points,1/3),
+            q3 = getQ1Q3MedianForBoxPlot(points,0.75),
+            min = points[0],
+            max = points[points.length-1];
+    }
     return {day:1,min:min,max:max,median:median,q1:q1,q3:q3,xScaleEnd:xScaleEnd,xScaleStart:xScaleStart};
 }
