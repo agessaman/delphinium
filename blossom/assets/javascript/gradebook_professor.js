@@ -332,12 +332,12 @@ function getSubmissionsDays(){
                 }
             });
             if(pushUserVal.length == 0 && dK == 0){
-                pushUserVal[v.id] = {points:0,date:Date.parse(dateRange[dK]),id:v.id};
+                pushUserVal[v.id] = {points:0,date:Date.parse(dateRange[dK])};
                 usersOldValue[v.id] = {points:0,date:Date.parse(dateRange[dK])};
             }else if(pushUserVal.length == 0 && dK > 0){
                 pushUserVal[v.id] = usersOldValue[v.id];
-                pushUserVal[v.id].id = v.id;
             }
+            pushUserVal[v.id].id = v.id;
             pushVal.push(pushUserVal[v.id]);
         });
         submissionsDays[dV] = pushVal;
@@ -1821,29 +1821,40 @@ function getHistogramDataByGrades(){
 
 function getStudentsCount(intervals){
     var retVal = [],
-        submitionsDays = getSubmissionsDays(),
-        endDate = Date.parse(dateRange[pointHistDate]);
-    $.each(intervals,function(k,v){
-        if(v == 0){
-            retVal.push(students.length);
-            return;
-        }
-        var userPoint = [];
-        $.each(submitionsDays,function(subK,subV){
-            if((Date.parse(subK) <= endDate || subK <= endDate) || pointHistDateAll == 0){
-                $.each(subV,function(itemsK,item){
-                    var id = $.inArray(item.id,userPoint);
-                    if(intervals[k] <= item.points && intervals[k+1] >= item.points && id == -1 && typeof intervals[k+1] != 'undefined'){
-                        userPoint.push(item.id);
-                        return;
-                    }
-                });
-            }
-        });
-        if(intervals[k] != 0){
-            retVal.push(userPoint.length);
+        submissionsDays = getSubmissionsDays(),
+        endDate = Date.parse(dateRange[pointHistDate]),
+        userPoint = [],
+        studentsPoint = [],
+        allInInterval = 0;
+    $.each(submissionsDays,function(subK,subV){
+        if((Date.parse(subK) <= endDate || subK <= endDate) || pointHistDateAll == 0){
+            $.each(subV,function(itemsK,item){
+                userPoint[item.id] = [item];
+            });
         }
     });
+    $.each(userPoint,function(uK,uV){
+        if(typeof uV == 'object'){
+            studentsPoint.push(uV[0]);
+        }
+    });
+    $.each(intervals,function(k,v){
+        var intervalCount = 0;
+        $.each(studentsPoint,function(sK,sV){
+            if(intervals[k] <= sV.points && intervals[k+1] >= sV.points && typeof intervals[k+1] != 'undefined'){
+                intervalCount++;
+                allInInterval++;
+            }
+        });
+        retVal.push(intervalCount);
+    });
+    if(intervals[0] == 0){
+        if(retVal[0] == 0){
+            retVal[0] = students.length - allInInterval; 
+        }else{
+            retVal[0] = students.length;
+        }
+    }
     return retVal;
 }
 var timeHIst = [];
@@ -1906,7 +1917,7 @@ function histogramChart(data) {
     slices.forEach(function(slice, index){
         var time = setTimeout(function(){
         addxBar(slice,height,x,y,xAxis,yAxis);
-        }, index * 200);
+        }, index * 50);
         timeHIst.push(time);
     });
 }
@@ -1915,13 +1926,13 @@ function addxBar(data,height,x,y,xAxis,yAxis){
     x.domain(data.map(function(d) { return d.xPoint; }));
     y.domain([0, d3.max(data, function(d) { return d.count; })]);
 
-    svg.select('.x.axis').transition().duration(200).call(xAxis);
-    svg.select(".y.axis").transition().duration(200).call(yAxis);
+    svg.select('.x.axis').transition().duration(50).call(xAxis);
+    svg.select(".y.axis").transition().duration(50).call(yAxis);
 
     var bars = svg.selectAll(".bar").data(data, function(d) { return d.xPoint; });
     bars.exit()
     .transition()
-    .duration(200)
+    .duration(50)
     .attr("y", y(0))
     .attr("height", height - y(0))
     .style('fill-opacity', 1e-6)
@@ -1934,7 +1945,7 @@ function addxBar(data,height,x,y,xAxis,yAxis){
     .attr("transform", "translate(40,20)");
 
   // the "UPDATE" set:
-  bars.transition().duration(200).attr("x", function(d) { return x(d.xPoint)+(x.rangeBand()/2); })
+  bars.transition().duration(50).attr("x", function(d) { return x(d.xPoint)+(x.rangeBand()/2); })
     .attr("width", x.rangeBand())
     .attr("y", function(d) { return y(d.count); })
     .attr("height", function(d) { return height - y(d.count); });
@@ -2149,7 +2160,7 @@ function boxPlotChart(data){
             .style("stroke", "black")
             .style("stroke-width", "4px")
              .attr("transform", "translate("+(-(xScale(d.max) - xScale(d.median)))+",0)")
-            .transition().duration(1000)
+            .transition().duration(500)
             .attr("transform", "translate(0,0)");
 
         d3.select(this)
@@ -2162,7 +2173,7 @@ function boxPlotChart(data){
             .style("stroke", "black")
             .style("stroke-width", "4px")
             .attr("transform", "translate("+(-(xScale(d.max) - xScale(d.median)))+",0)")
-            .transition().duration(1000)
+            .transition().duration(500)
             .attr("transform", "translate(0,0)");
 
         d3.select(this)
@@ -2175,7 +2186,7 @@ function boxPlotChart(data){
             .style("stroke", "black")
             .style("stroke-width", "4px")
             .attr("transform", "translate("+(-(xScale(d.max) - xScale(d.median)))+",0)")
-            .transition().duration(1000)
+            .transition().duration(500)
             .attr("transform", "translate(0,0)");
 
         d3.select(this)
@@ -2189,7 +2200,7 @@ function boxPlotChart(data){
             .style("stroke-width", "2px")
             .attr("width", xScale(d.q3) - xScale(d.q1))
             .attr("transform", "translate("+(-(xScale(d.max) - xScale(d.median)))+",0)")
-            .transition().duration(1000)
+            .transition().duration(500)
             .attr("transform", "translate(0,0)");
 
         d3.select(this)
@@ -2201,7 +2212,7 @@ function boxPlotChart(data){
             .style("stroke", "darkgray")
             .style("stroke-width", "4px")
             .attr("transform", "translate("+(-(xScale(d.max) - xScale(d.median)))+",0)")
-            .transition().duration(1000)
+            .transition().duration(500)
             .attr("transform", "translate(0,0)");     
     })
 }
