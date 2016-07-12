@@ -816,6 +816,9 @@ th.details {
     margin: 55px 15px 15px 15px;
     text-align: left !important;
 }
+.user {
+    stroke: #024b88;
+}
 /*.counts {
     margin-left: 177px !important;
 }*/

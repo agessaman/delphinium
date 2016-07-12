@@ -137,6 +137,7 @@ class Gradebook extends ComponentBase {
                 $exp = new ExperienceComponent();
                 $pts = $exp->getUserPoints();
                 $this->page['totalPts'] = $pts;
+                $this->page['user'] = $_SESSION['userID'];
 
                 //get letter grade
                 if (!is_null($this->property('experienceInstance'))) {

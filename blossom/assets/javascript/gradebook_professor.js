@@ -308,7 +308,7 @@ function addQuartileMinMax(id,data){
             var monthIndex = getDate.getMonth();
             var time = formatAMPM(getDate);
             var text = id.slice(2);
-            addTooltipProfessorGradebook(text + " " + roundToTwo(getPoint) + " pts");
+            addTooltipProfessorGradebook(text + " - " + roundToTwo(getPoint) + " pts");
         })
         .on("mouseout", function (d) {
             removeTooltipProfessorGradebook();
@@ -687,10 +687,6 @@ function uncheckedBox(id)
 function checkedBox(id,slideDays)
 {
     var masterArr = submissions.filter(function (d) {
-        /*console.log(d.id);
-        console.log('///////////');*/
-        //console.log(id);
-        /*console.log(11111111111);*/
         return d.id === id;
     }),
         min_max = getCHartDragPoints(),
@@ -1579,7 +1575,7 @@ function showStudentDetails(studentSummaryData)
 }
 
 function roundToTwo(num) {
-    return +(Math.round(num + "e+2")  + "e-2");
+    return Math.round(num);
 }
 
 function chartDragPoints(days) {
@@ -1619,11 +1615,11 @@ var dFrom = d3.min(data, function(d){return d.date}),
 var endDateTo = (endDate < dTo) ? endDate : rDTo;
 labels = [];
 dateRange = [];
-for(var i = dFrom; i<=endDateTo; i+=86400000){
+for(var i = dFrom; i <= endDateTo; i += 86400000){
     labels.push(parseDayMonth(i));
     dateRange.push(new Date(i));
 }
-if(endDate>dTo){
+if(endDate > dTo){
     labels.push(parseDayMonth(endDateTo));
     dateRange.push(new Date(endDateTo));
 }
@@ -1659,7 +1655,7 @@ function intervalIts() {
         $('.my-ui-slider').find('.ui-slider-handle').css('left',left).find('span').text(val);
         $('.ui-slider-pip').removeClass('ui-slider-pip-selected').eq(pointDate).addClass('ui-slider-pip-selected');
         chartDateRange(true);
-    }else{
+    } else {
         $('button.player').find('i').removeClass('fa-pause').addClass('fa-play');
         pointDate = -1;
         clearInterval(speed);
@@ -1883,7 +1879,7 @@ function histogramChart(data) {
     $('#histogram').find('.bar').remove();
 
     var margin = {top: 20, right: 20, bottom: 30, left: 40},
-        width = 960 - margin.left - margin.right,
+        width = 1020 - margin.left - margin.right,
         height = 300 - margin.top - margin.bottom;
 
     var y = d3.scale.linear()
@@ -2098,7 +2094,7 @@ function getQ1Q3MedianForBoxPlot(arr,del){
 function boxPlotChart(data){
     $('#boxPlot svg').remove();
     var h = 80,
-        w = 960;
+        w = 1020;
 
     var margin = {'top': 20,'bottom': 20,'left': 20,'right': 30};
     var svg = d3.select("#boxPlot").append("svg")
