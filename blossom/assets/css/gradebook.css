@@ -232,7 +232,7 @@ a:hover
     text-align:center;
 }
 .multiselect {
-    max-width: 300px;
+    max-width: 180px;
     height: 363px;
     border: solid 1px #c0c0c0;
     overflow: auto;
