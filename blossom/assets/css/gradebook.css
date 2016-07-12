@@ -348,7 +348,7 @@ a:hover
     height: 40px;
     position: relative;
     top: 5px;
-    left: 397px;
+    left: 357px;
 }
 .left-val{
     float:left;
@@ -699,7 +699,7 @@ td.checkbox-field .filter_checkbox {
 .Q123MinMax {
     width: 409px;
     margin-top: 17px;
-    margin-left: 34px;
+    margin-left: 74px;
     float: left;
     clear: both;
 }
@@ -820,6 +820,3 @@ th.details {
 .user {
     stroke: #024b88;
 }
-/*.counts {
-    margin-left: 177px !important;
-}*/
