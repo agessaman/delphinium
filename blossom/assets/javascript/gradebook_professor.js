@@ -1926,31 +1926,20 @@ function histogramChart(data) {
     for(var i = 0; i < counts.length;i++){
         histData.push({count:counts[i],xPoint:xPoints[i]});
     }
-    for (var i = 0; i < histData.length; i++) {
-        slices.push(histData.slice(0, i+1));
-    }
-    $.each(timeHIst,function(k,v){
-        clearTimeout(v);
-    });
-    slices.forEach(function(slice, index){
-        var time = setTimeout(function(){
-        addxBar(slice,height,x,y,xAxis,yAxis);
-        }, index * 50);
-        timeHIst.push(time);
-    });
+    addxBar(histData,height,x,y,xAxis,yAxis);
 }
 function addxBar(data,height,x,y,xAxis,yAxis){
     var svg = d3.select("#histogram svg");
     x.domain(data.map(function(d) { return d.xPoint; }));
     y.domain([0, d3.max(data, function(d) { return d.count; })]);
 
-    svg.select('.x.axis').transition().duration(50).call(xAxis);
-    svg.select(".y.axis").transition().duration(50).call(yAxis);
+    svg.select('.x.axis').transition().duration(300).call(xAxis);
+    svg.select(".y.axis").transition().duration(300).call(yAxis);
 
     var bars = svg.selectAll(".bar").data(data, function(d) { return d.xPoint; });
     bars.exit()
     .transition()
-    .duration(50)
+    .duration(20)
     .attr("y", y(0))
     .attr("height", height - y(0))
     .style('fill-opacity', 1e-6)
@@ -1962,7 +1951,8 @@ function addxBar(data,height,x,y,xAxis,yAxis){
     .attr("height", height - y(0))
     .attr("transform", "translate(40,20)");
 
-    bars.transition().duration(50).attr("x", function(d) { return x(d.xPoint)+(x.rangeBand()/2); })
+    bars.transition().duration(300)
+    .attr("x", function(d) { return x(d.xPoint)+(x.rangeBand()/2); })
     .attr("width", x.rangeBand())
     .attr("y", function(d) { return y(d.count); })
     .attr("height", function(d) { return height - y(d.count); });
@@ -2167,7 +2157,7 @@ function boxPlotChart(data){
         .style("stroke", "black")
         .style("stroke-width", "4px")
         .attr("transform", "translate(0,-50)")
-        .transition().duration(500)
+        .transition().duration(200)
         .attr("transform", "translate(0,0)");
 
     svg.selectAll("g.box")
@@ -2180,7 +2170,7 @@ function boxPlotChart(data){
         .style("stroke", "black")
         .style("stroke-width", "4px")
         .attr("transform", "translate(0,-50)")
-        .transition().duration(500)
+        .transition().duration(200)
         .attr("transform", "translate(0,0)");
 
     svg.selectAll("g.box")
@@ -2193,7 +2183,7 @@ function boxPlotChart(data){
         .style("stroke", "black")
         .style("stroke-width", "4px")
         .attr("transform", "translate(0,-50)")
-        .transition().duration(500)
+        .transition().duration(200)
         .attr("transform", "translate(0,0)");
 
     svg.selectAll("g.box")
@@ -2207,7 +2197,7 @@ function boxPlotChart(data){
         .style("stroke-width", "2px")
         .attr("width", xScale(data.q3) - xScale(data.q1))
         .attr("transform", "translate(0,-50)")
-        .transition().duration(500)
+        .transition().duration(200)
         .attr("transform", "translate(0,0)");
 
     svg.selectAll("g.box")
@@ -2219,7 +2209,7 @@ function boxPlotChart(data){
         .style("stroke", "darkgray")
         .style("stroke-width", "4px")
         .attr("transform", "translate(0,-50)")
-        .transition().duration(500)
+        .transition().duration(200)
         .attr("transform", "translate(0,0)");
 }
 
@@ -2243,31 +2233,31 @@ function changeBoxPlotData(data){
     .call(xAxis);
      
     d3.select('#boxPlot svg .tweets')
-    .transition().duration(300)
+    .transition().duration(200)
     .attr("cx", xScale(data.median))
     .attr("cy", yScale(data.day));
 
     d3.select('#boxPlot svg .box')
-    .transition().duration(300)
+    .transition().duration(200)
     .attr("transform", "translate(" + xScale(data.median) + "," + yScale(data.day) + ")");
 
     d3.select('#boxPlot svg .max-med')
-    .transition().duration(300)
+    .transition().duration(200)
     .attr("x1", xScale(data.max) - xScale(data.median))
     .attr("x2", xScale(data.min) - xScale(data.median));
 
     d3.select('#boxPlot svg .max')
-    .transition().duration(300)
+    .transition().duration(200)
     .attr("x2", xScale(data.max) - xScale(data.median))
     .attr("x1", xScale(data.max) - xScale(data.median));
 
     d3.select('#boxPlot svg .min')
-    .transition().duration(300)
+    .transition().duration(200)
     .attr("x1", xScale(data.min) - xScale(data.median))
     .attr("x2", xScale(data.min) - xScale(data.median));
 
     d3.select('#boxPlot svg .q1-median')
-    .transition().duration(300)
+    .transition().duration(200)
     .attr("x", xScale(data.q1) - xScale(data.median))
     .attr("width", xScale(data.q3) - xScale(data.q1));
 }
