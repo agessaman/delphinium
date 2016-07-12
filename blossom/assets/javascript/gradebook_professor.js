@@ -547,7 +547,6 @@ $(document).on("change", '.deselectAll',  function () {
         if (allSelected)
         {
             checkedBox(num);
-            console.log(num);
             selectedStudents.push(num);
         }
         else
@@ -1849,13 +1848,14 @@ function getStudentsCount(intervals){
         retVal.push(intervalCount);
     });
     if(intervals[0] == 0){
+        studentsPoint.unshift({points:0});
         if(retVal[0] == 0){
             retVal[0] = students.length - allInInterval; 
         }else{
             retVal[0] = students.length;
         }
     }
-    return retVal;
+    return {counts:retVal,allPoints:studentsPoint};
 }
 var timeHIst = [];
 function histogramChart(data) {
@@ -1903,7 +1903,7 @@ function histogramChart(data) {
     .attr("transform", "translate(0," + height + ")");
     var slices = [],
         histData = [],
-        counts = data.xPUserC.usersCount,
+        counts = data.xPUserC.usersCount.counts,
         xPoints = data.xPUserC.xPoints;
     for(var i = 0; i < counts.length;i++){
         histData.push({count:counts[i],xPoint:xPoints[i]});
@@ -1938,14 +1938,13 @@ function addxBar(data,height,x,y,xAxis,yAxis){
     .style('fill-opacity', 1e-6)
     .remove();
 
-  bars.enter().append("rect")
+    bars.enter().append("rect")
     .attr("class", "bar")
     .attr("y", y(0))
     .attr("height", height - y(0))
     .attr("transform", "translate(40,20)");
 
-  // the "UPDATE" set:
-  bars.transition().duration(50).attr("x", function(d) { return x(d.xPoint)+(x.rangeBand()/2); })
+    bars.transition().duration(50).attr("x", function(d) { return x(d.xPoint)+(x.rangeBand()/2); })
     .attr("width", x.rangeBand())
     .attr("y", function(d) { return y(d.count); })
     .attr("height", function(d) { return height - y(d.count); });
@@ -2048,7 +2047,7 @@ function histogram(){
             }
             var boxPlotData = getBoxPlotData(histogramData);
             histogramChart({xPUserC:histogramData});
-            boxPlotChart(boxPlotData);
+            changeBoxPlotData(boxPlotData);
         }
     }).slider('float', {
         labels: true
@@ -2099,7 +2098,7 @@ function boxPlotChart(data){
         .attr("width", w);
 
     xScale = d3.scale.linear()
-    .domain([0,data[0].max])
+    .domain([0,data.xScaleEnd])
     .range([
       margin.left,
       w - margin.right
@@ -2107,8 +2106,8 @@ function boxPlotChart(data){
 
     yScale = d3.scale.linear()
     .domain([
-      Number(d3.max(data, function(d){ return d.day })) + 1,
-      Number(d3.min(data, function(d){ return d.day })) - 1
+      Number(data.day) + 1,
+      Number(data.day) - 1
     ])    
     .range([
       h - margin.bottom,
@@ -2126,111 +2125,145 @@ function boxPlotChart(data){
     .attr("transform", "translate(0,65)")
     .attr("id", "xAxisG")
     .call(xAxis);
-    var days = data.map(function(d){ return Number(d.day)});
+    var days = Number(data.day);
 
 
-    svg.selectAll("circle.median")
-    .data(data)
-    .enter()
-    .append("circle")
+    svg.append("circle")
     .attr("class", "tweets")
     .attr("r", 5)
-    .attr("cx", function(d) {return xScale(d.median)})
-    .attr("cy", function(d) {return yScale(d.day)})
+    .attr("cx", xScale(data.median))
+    .attr("cy", yScale(data.day))
     .style("fill", "none");
 
-    svg.selectAll("g.box")
-    .data(data)
-    .enter()
-    .append("g")
+    svg.append("g")
     .attr("class", "box")
-    .attr("transform", function(d){
-        return "translate(" + xScale(d.median) + "," + 
-        yScale(d.day) + ")"
-    })
-    .each(function(d,i){
+    .attr("transform", "translate(" + xScale(data.median) + "," + yScale(data.day) + ")");
       
-        d3.select(this)
-            .append("line")
-            .attr("class", "range")
-            .attr("y1", 0)
-            .attr("y2", 0)
-            .attr("x1", xScale(d.max) - xScale(d.median))
-            .attr("x2", xScale(d.min) - xScale(d.median))
-            .style("stroke", "black")
-            .style("stroke-width", "4px")
-             .attr("transform", "translate("+(-(xScale(d.max) - xScale(d.median)))+",0)")
-            .transition().duration(500)
-            .attr("transform", "translate(0,0)");
+    svg.selectAll("g.box")
+        .append("line")
+        .attr("class", "range max-med")
+        .attr("y1", 0)
+        .attr("y2", 0)
+        .attr("x1", xScale(data.max) - xScale(data.median))
+        .attr("x2", xScale(data.min) - xScale(data.median))
+        .style("stroke", "black")
+        .style("stroke-width", "4px")
+        .attr("transform", "translate(0,-50)")
+        .transition().duration(500)
+        .attr("transform", "translate(0,0)");
 
-        d3.select(this)
-            .append("line")
-            .attr("class", "max")
-            .attr("x2", xScale(d.max) - xScale(d.median))
-            .attr("x1", xScale(d.max) - xScale(d.median))
-            .attr("y1", -10)
-            .attr("y2", 10)
-            .style("stroke", "black")
-            .style("stroke-width", "4px")
-            .attr("transform", "translate("+(-(xScale(d.max) - xScale(d.median)))+",0)")
-            .transition().duration(500)
-            .attr("transform", "translate(0,0)");
+    svg.selectAll("g.box")
+        .append("line")
+        .attr("class", "max")
+        .attr("x2", xScale(data.max) - xScale(data.median))
+        .attr("x1", xScale(data.max) - xScale(data.median))
+        .attr("y1", -10)
+        .attr("y2", 10)
+        .style("stroke", "black")
+        .style("stroke-width", "4px")
+        .attr("transform", "translate(0,-50)")
+        .transition().duration(500)
+        .attr("transform", "translate(0,0)");
 
-        d3.select(this)
-            .append("line")
-            .attr("class", "min")
-            .attr("y1", -10)
-            .attr("y2", 10)
-            .attr("x1", xScale(d.min) - xScale(d.median))
-            .attr("x2", xScale(d.min) - xScale(d.median))
-            .style("stroke", "black")
-            .style("stroke-width", "4px")
-            .attr("transform", "translate("+(-(xScale(d.max) - xScale(d.median)))+",0)")
-            .transition().duration(500)
-            .attr("transform", "translate(0,0)");
+    svg.selectAll("g.box")
+        .append("line")
+        .attr("class", "min")
+        .attr("y1", -10)
+        .attr("y2", 10)
+        .attr("x1", xScale(data.min) - xScale(data.median))
+        .attr("x2", xScale(data.min) - xScale(data.median))
+        .style("stroke", "black")
+        .style("stroke-width", "4px")
+        .attr("transform", "translate(0,-50)")
+        .transition().duration(500)
+        .attr("transform", "translate(0,0)");
 
-        d3.select(this)
-            .append("rect")
-            .attr("class", "range")
-            .attr("y", -10)
-            .attr("x", xScale(d.q1) - xScale(d.median))
-            .attr("height", 20)
-            .style("fill", "white")
-            .style("stroke", "black")
-            .style("stroke-width", "2px")
-            .attr("width", xScale(d.q3) - xScale(d.q1))
-            .attr("transform", "translate("+(-(xScale(d.max) - xScale(d.median)))+",0)")
-            .transition().duration(500)
-            .attr("transform", "translate(0,0)");
+    svg.selectAll("g.box")
+        .append("rect")
+        .attr("class", "range q1-median")
+        .attr("y", -10)
+        .attr("x", xScale(data.q1) - xScale(data.median))
+        .attr("height", 20)
+        .style("fill", "white")
+        .style("stroke", "black")
+        .style("stroke-width", "2px")
+        .attr("width", xScale(data.q3) - xScale(data.q1))
+        .attr("transform", "translate(0,-50)")
+        .transition().duration(500)
+        .attr("transform", "translate(0,0)");
 
-        d3.select(this)
-            .append("line")
-            .attr("x1", 0)
-            .attr("x2", 0)
-            .attr("y1", -10)
-            .attr("y2", 10)
-            .style("stroke", "darkgray")
-            .style("stroke-width", "4px")
-            .attr("transform", "translate("+(-(xScale(d.max) - xScale(d.median)))+",0)")
-            .transition().duration(500)
-            .attr("transform", "translate(0,0)");     
-    })
+    svg.selectAll("g.box")
+        .append("line")
+        .attr("x1", 0)
+        .attr("x2", 0)
+        .attr("y1", -10)
+        .attr("y2", 10)
+        .style("stroke", "darkgray")
+        .style("stroke-width", "4px")
+        .attr("transform", "translate(0,-50)")
+        .transition().duration(500)
+        .attr("transform", "translate(0,0)");
+}
+
+function changeBoxPlotData(data){
+    $('#boxPlot svg #xAxisG').remove();
+    xScale = d3.scale.linear()
+    .domain([data.xScaleStart,data.xScaleEnd+data.xScaleStart])
+    .range([20,930]);
+
+    xAxis = d3.svg.axis()
+    .scale(xScale)
+    .orient("bottom")
+    .ticks(10)
+    .tickSize(-5)
+    .tickSubdivide(true);
+
+    d3.select("#boxPlot svg")
+    .append("g")
+    .attr("transform", "translate(0,65)")
+    .attr("id", "xAxisG")
+    .call(xAxis);
+
+    d3.select('#boxPlot svg .max-med')
+    .transition().duration(500)
+    .attr("x1", xScale(data.max) - xScale(data.median))
+    .attr("x2", xScale(data.min) - xScale(data.median));
+
+    d3.select('#boxPlot svg .max')
+    .transition().duration(500)
+    .attr("x2", xScale(data.max) - xScale(data.median))
+    .attr("x1", xScale(data.max) - xScale(data.median));
+
+    d3.select('#boxPlot svg .min')
+    .transition().duration(500)
+    .attr("x1", xScale(data.min) - xScale(data.median))
+    .attr("x2", xScale(data.min) - xScale(data.median));
+
+    d3.select('#boxPlot svg .q1-median')
+    .transition().duration(500)
+    .attr("x", xScale(data.q1) - xScale(data.median))
+    .attr("width", xScale(data.q3) - xScale(data.q1));
 }
 
 function getBoxPlotData(data){
-    var allPoints = [];
-    $.each(data.usersCount,function(k,v){
-        if($.inArray(v,allPoints) == -1){
-            allPoints.push(v);
+    var allPoints = data.usersCount.allPoints,
+        xScaleEnd = data.xPoints[data.xPoints.length-1],
+        xScaleStart = data.xPoints[0],
+        points = [];
+    $.each(allPoints,function(k,v){
+        if(v.points >= xScaleStart && v.points <= xScaleEnd){
+            if($.inArray(v.points,points) == -1){
+                points.push(v.points);
+            }
         }
     });
-    allPoints.sort(function(a,b){
+    points.sort(function(a,b){
         return a-b;
     });
-    var min = allPoints[0],
-        max = allPoints[allPoints.length-1],
-        median = getQ1Q3MedianForBoxPlot(allPoints,0.5),
-        q1 = getQ1Q3MedianForBoxPlot(allPoints,1/3),
-        q3 = getQ1Q3MedianForBoxPlot(allPoints,0.75);
-    return [{day:1,min:min,max:max,median:median,q1:q1,q3:q3}];
+    var min = points[0],
+        max = points[points.length-1],
+        median = getQ1Q3MedianForBoxPlot(points,0.5),
+        q1 = getQ1Q3MedianForBoxPlot(points,1/3),
+        q3 = getQ1Q3MedianForBoxPlot(points,0.75);
+    return {day:1,min:min,max:max,median:median,q1:q1,q3:q3,xScaleEnd:xScaleEnd,xScaleStart:xScaleStart};
 }
