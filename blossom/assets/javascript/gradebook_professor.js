@@ -1870,18 +1870,13 @@ function getStudentsCount(intervals){
         if(retVal[0] == 0){
             retVal[0] = students.length - allInInterval; 
         }else{
-            retVal[0] = students.length;
+            retVal[0] = 2 * retVal[0] + (students.length - allInInterval);
         }
     }
     return {counts:retVal,allPoints:studentsPoint};
 }
-var timeHIst = [];
-function histogramChart(data) {
-    $("#histogram svg").remove();
-    $('#histogram').find('.x.axis').remove();
-    $('#histogram').find('.y.axis').remove();
-    $('#histogram').find('.bar').remove();
 
+function histogramChart(data,slideDays) {
     var margin = {top: 20, right: 20, bottom: 30, left: 40},
         width = 960 - margin.left - margin.right,
         height = 300 - margin.top - margin.bottom;
@@ -1899,8 +1894,12 @@ function histogramChart(data) {
     var xAxis = d3.svg.axis()
         .scale(x)
         .orient("bottom");
-    
-    var svg = d3.select("#histogram").append("svg")
+    if(!slideDays){
+        $("#histogram svg").remove();
+        $('#histogram').find('.x.axis').remove();
+        $('#histogram').find('.y.axis').remove();
+        $('#histogram').find('.bar').remove();
+        var svg = d3.select("#histogram").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
@@ -1919,8 +1918,8 @@ function histogramChart(data) {
     svg.append("g")
     .attr("class", "x axis histogramXA")
     .attr("transform", "translate(0," + height + ")");
-    var slices = [],
-        histData = [],
+    }
+    var histData = [],
         counts = data.xPUserC.usersCount.counts,
         xPoints = data.xPUserC.xPoints;
     for(var i = 0; i < counts.length;i++){
@@ -1970,7 +1969,7 @@ function histogram(){
             var left = point[0].style.left;
             var index = point.find('.ui-slider-label').attr('data-value');
             var val = labels[index];
-            addBarToHistogram();
+            addBarToHistogram(true);
             $('.histogram-date').find('.ui-slider-handle').css('left',left).find('span').text(val);
             $('.histogram-date').find('.ui-slider-pip').removeClass('ui-slider-pip-selected').eq(pointHistDate).addClass('ui-slider-pip-selected');
         }else{
@@ -1982,7 +1981,7 @@ function histogram(){
         pointHistDate++;
     }
 
-    function addBarToHistogram(){
+    function addBarToHistogram(animateDays){
         var checkedV = $('.histRadio:checked').attr('id'),
             start = $('.histogram-range-slider').find('.ui-slider-handle').eq(0).find('span').text(),
             end = $('.histogram-range-slider').find('.ui-slider-handle').eq(1).find('span').text();
@@ -1997,9 +1996,13 @@ function histogram(){
         if(checkedV == 'hGrade'){
             var histogramData = getHistogramDataByGrades();
         }
-        histogramChart({xPUserC:histogramData});
+        if(animateDays){
+            histogramChart({xPUserC:histogramData},animateDays);
+        }else{
+            histogramChart({xPUserC:histogramData});
+        }
         var boxPlotData = getBoxPlotData(histogramData);
-        boxPlotChart(boxPlotData);
+        changeBoxPlotData(boxPlotData);
     }
 
     $(document).on('click','.histogram-player', function() {
@@ -2025,7 +2028,7 @@ function histogram(){
           pointHistDate = 0;
           pointHistDateAll = 0;
         }
-        addBarToHistogram();
+        addBarToHistogram(true);
     }).slider('float', {
         labels: labels
     });
@@ -2128,13 +2131,7 @@ function boxPlotChart(data){
     .tickSize(-5)
     .tickSubdivide(true);
 
-    svg.append("g")
-    .transition().duration(200)
-    .attr("transform", "translate(0,65)")
-    .attr("id", "xAxisG")
-    .call(xAxis);
     var days = Number(data.day);
-
 
     svg.append("circle")
     .attr("class", "tweets")
@@ -2225,12 +2222,6 @@ function changeBoxPlotData(data){
     .ticks(10)
     .tickSize(-5)
     .tickSubdivide(true);
-
-    d3.select("#boxPlot svg")
-    .append("g")
-    .attr("transform", "translate(0,65)")
-    .attr("id", "xAxisG")
-    .call(xAxis);
      
     d3.select('#boxPlot svg .tweets')
     .transition().duration(200)
