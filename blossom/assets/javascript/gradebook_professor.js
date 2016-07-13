@@ -1781,10 +1781,8 @@ function getHistogramDataByPoints(){
 }
 
 function getHistogramDataByMilestones(){
-    var instructorStep = jQuery.parseJSON(getStorage('histogramStep'));
     var intervals = [];
-        step = instructorStep[instructorId],
-        users = [],
+        step = 100,
         endPoint = chartData[chartData.length-1].points;
 
     for(var i=0;i<=endPoint;i+=step){
@@ -2038,15 +2036,15 @@ function histogram(){
     $(document).on('change','.histRadio',function(){
         $('.histRadio').closest('label').removeClass('active');
         $(this).closest('label').addClass('active');
-        if($(this).attr('id') == 'hGrade'){
-            $(".histogram-range-slider")
-            .slider({disabled: true});
-        }else{
+        if($(this).attr('id') == 'hPoint'){
             $(".histogram-range-slider")
             .slider({disabled: false});
-            clearLoop = false,
-            checked = $(this).attr('id');
+        }else{
+            $(".histogram-range-slider")
+            .slider({disabled: true});
         }
+        clearLoop = false,
+        checked = $(this).attr('id');
         addBarToHistogram();
     });
 }
@@ -2065,7 +2063,19 @@ function boxPlotChart(data){
     var margin = {'top': 20,'bottom': 20,'left': 20,'right': 30};
     var svg = d3.select("#boxPlot").append("svg")
         .attr("height", h)
-        .attr("width", w);
+        .attr("width", w)
+        .on('mouseover',function(){
+            var dataTooltip = 'Min '+ $(this).find('.min').attr('data-point') + '</br>' + 
+                'Q1 ' + $(this).find('.q1-q3').attr('data-point-q1') + '</br>' +
+                'Median ' + $(this).find('.median').attr('data-point') + '</br>' +
+                'Mean ' + $(this).find('.mean').attr('data-point') + '</br>' +
+                'Q3 ' + $(this).find('.q1-q3').attr('data-point-q3') + '</br>' +
+                'Max ' + $(this).find('.max').attr('data-point');
+            addTooltipProfessorGradebook(dataTooltip);
+        })
+        .on('mouseout',function(){
+            removeTooltipProfessorGradebook();
+        });
 
     xScale = d3.scale.linear()
     .domain([0,data.xScaleEnd])
@@ -2126,13 +2136,6 @@ function boxPlotChart(data){
         .attr("data-point",data.max)
         .style("stroke", "black")
         .style("stroke-width", "4px")
-        .on('mouseover',function(){
-            data = $(this).attr('data-point');
-            addTooltipProfessorGradebook('Max - ' + data);
-        })
-        .on('mouseout',function(){
-            removeTooltipProfessorGradebook();
-        })
         .attr("transform", "translate(0,-50)")
         .transition().duration(200)
         .attr("transform", "translate(0,0)");
@@ -2147,55 +2150,6 @@ function boxPlotChart(data){
         .attr("x2", xScale(data.min) - xScale(data.median))
         .style("stroke", "black")
         .style("stroke-width", "4px")
-        .on('mouseover',function(){
-            data = $(this).attr('data-point');
-            addTooltipProfessorGradebook('Min - ' + data);
-        })
-        .on('mouseout',function(){
-            removeTooltipProfessorGradebook();
-        })
-        .attr("transform", "translate(0,-50)")
-        .transition().duration(200)
-        .attr("transform", "translate(0,0)");
-
-    svg.selectAll("g.box")
-        .append("line")
-        .attr("class", "q1")
-        .attr("data-point",data.q1)
-        .attr("y1", -11)
-        .attr("y2", 11)
-        .attr("x1", xScale(data.q1) - xScale(data.median))
-        .attr("x2", xScale(data.q1) - xScale(data.median))
-        .style("stroke", "black")
-        .style("stroke-width", "4px")
-        .on('mouseover',function(){
-            data = $(this).attr('data-point');
-            addTooltipProfessorGradebook('Q1 - ' + data);
-        })
-        .on('mouseout',function(){
-            removeTooltipProfessorGradebook();
-        })
-        .attr("transform", "translate(0,-50)")
-        .transition().duration(200)
-        .attr("transform", "translate(0,0)");
-
-    svg.selectAll("g.box")
-        .append("line")
-        .attr("class", "q3")
-        .attr("data-point",data.q3)
-        .attr("y1", -11)
-        .attr("y2", 11)
-        .attr("x1", xScale(data.q3) - xScale(data.median))
-        .attr("x2", xScale(data.q3) - xScale(data.median))
-        .style("stroke", "black")
-        .style("stroke-width", "4px")
-        .on('mouseover',function(){
-            data = $(this).attr('data-point');
-            addTooltipProfessorGradebook('Q3 - ' + data);
-        })
-        .on('mouseout',function(){
-            removeTooltipProfessorGradebook();
-        })
         .attr("transform", "translate(0,-50)")
         .transition().duration(200)
         .attr("transform", "translate(0,0)");
@@ -2206,6 +2160,8 @@ function boxPlotChart(data){
         .attr("y", -10)
         .attr("x", xScale(data.q1) - xScale(data.median))
         .attr("height", 20)
+        .attr("data-point-q1",data.q1)
+        .attr("data-point-q3",data.q3)
         .style("fill", "white")
         .style("stroke", "black")
         .style("stroke-width", "2px")
@@ -2225,13 +2181,6 @@ function boxPlotChart(data){
         .style("stroke", "darkgray")
         .style("stroke-width", "4px")
         .attr("transform", "translate(0,-50)")
-        .on('mouseover',function(){
-            data = $(this).attr('data-point');
-            addTooltipProfessorGradebook('Median - ' + data);
-        })
-        .on('mouseout',function(){
-            removeTooltipProfessorGradebook();
-        })
         .transition().duration(200)
         .attr("transform", "translate(0,0)");
 
@@ -2241,14 +2190,7 @@ function boxPlotChart(data){
     .attr("cx", xScale(data.mean))
     .attr("cy", "40")
     .attr("data-point",data.mean)
-    .style("fill", "darkgray")
-    .on('mouseover',function(){
-        data = $(this).attr('data-point');
-        addTooltipProfessorGradebook('Mean - ' + data);
-    })
-    .on('mouseout',function(){
-        removeTooltipProfessorGradebook();
-    });
+    .style("fill", "darkgray");
 }
 
 function changeBoxPlotData(data){
@@ -2291,21 +2233,11 @@ function changeBoxPlotData(data){
     .attr("x2", xScale(data.min) - xScale(data.median));
 
     d3.select('#boxPlot svg .q1-q3')
+    .attr("data-point-q1",data.q1)
+    .attr("data-point-q3",data.q3)
     .transition().duration(200)
     .attr("x", xScale(data.q1) - xScale(data.median))
     .attr("width", xScale(data.q3) - xScale(data.q1));
-    
-    d3.select('#boxPlot svg .q1')
-    .attr("data-point",data.q1)
-    .transition().duration(200)
-    .attr("x1", xScale(data.q1) - xScale(data.median))
-    .attr("x2", xScale(data.q1) - xScale(data.median));    
-
-    d3.select('#boxPlot svg .q3')
-    .attr("data-point",data.q3)
-    .transition().duration(200)
-    .attr("x1", xScale(data.q3) - xScale(data.median))
-    .attr("x2", xScale(data.q3) - xScale(data.median));
 
     d3.select('#boxPlot svg .median')
     .attr("data-point",data.median);

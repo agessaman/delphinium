@@ -820,3 +820,9 @@ th.details {
 .user {
     stroke: #024b88;
 }
+#assignments-container table tr td {
+    padding: 10px;
+}
+#assignments-container table tr td:nth-child(2) {
+    text-align: right;
+}
