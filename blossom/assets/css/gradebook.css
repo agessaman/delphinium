@@ -830,6 +830,7 @@ th.details {
     margin-right: 90px;*/
 }
 .user-line {
-    stroke: #024b88 !important;
-    opacity: 0.7;
+    stroke: orange !important;
+    opacity: 2;
+    stroke-width: 5 !important;
 }
