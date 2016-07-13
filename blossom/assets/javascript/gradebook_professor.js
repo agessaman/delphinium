@@ -29,6 +29,24 @@ var count = 0;
 var promise = $.get("gradebook/getAllStudentSubmissions");
 promise.then(function (data1, textStatus, jqXHR) {
         submissions = data1;
+        var getStep = getStorage('histogramStep');
+        var stepSlider;
+
+        if(getStep != null){
+            getStep = jQuery.parseJSON(getStep);
+            if(getStep[instructorId]){
+                stepSlider = getStep[instructorId];
+            }else{
+                stepSlider = 100;
+                stepSlider[instructorId] = 100;
+                setStorage('histogramStep',JSON.stringify(stepSlider));
+            }
+        }else{
+            var stD = {};
+            stD[instructorId] = 100;
+            stepSlider = 100;
+            setStorage('histogramStep',JSON.stringify(stD));
+        }
         histogram();
         $('.Q123MinMax,.histogramGroup').find('.btn-group').find('.btn-info').removeClass('disabled');
         $('.histogramRVS').removeClass('histogramRVS');
@@ -1988,26 +2006,10 @@ function histogram(){
     var dataBoxPlot = getBoxPlotData(histogramData);
     histogramChart({xPUserC:histogramData});
     boxPlotChart(dataBoxPlot);
+    var instructorStep = jQuery.parseJSON(getStorage('histogramStep'));
     var maxPoint =(typeof histogramData.maxPoint != 'undefined') ? histogramData.maxPoint : 100,
-        checked = 'hPoint';
-    var getStep = getStorage('histogramStep');
-    var stepSlider;
-
-    if(getStep != null){
-        getStep = jQuery.parseJSON(getStep);
-        if(getStep[instructorId]){
-            stepSlider = getStep[instructorId];
-        }else{
-            stepSlider = 100;
-            stepSlider[instructorId] = 100;
-            setStorage('histogramStep',JSON.stringify(stepSlider));
-        }
-    }else{
-        var stD = {};
-        stD[instructorId] = 100;
-        stepSlider = 100;
-        setStorage('histogramStep',JSON.stringify(stD));
-    }
+        checked = 'hPoint',
+        stepSlider = instructorStep[instructorId];
 
     $(".histogram-range-slider").slider({
         min: 100,
