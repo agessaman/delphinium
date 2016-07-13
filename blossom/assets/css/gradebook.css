@@ -820,3 +820,7 @@ th.details {
 .user {
     stroke: #024b88;
 }
+.chart {
+/*    float: none !important;
+    margin-right: 90px;*/
+}
