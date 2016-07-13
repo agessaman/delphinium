@@ -30,6 +30,7 @@ Student.prototype = {
     submissions:[],
     pointDate: 0,
     user: user,
+    monthNames: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
 
     __init: function () 
     {
@@ -53,12 +54,12 @@ Student.prototype = {
                 console.log(data);
             }
         });*/
-        var monthNames = [
+        /*var monthNames = [
             "Jan", "Feb", "Mar",
             "Apr", "May", "Jun", "Jul",
             "Aug", "Sep", "Oct",
             "Nov", "Dec"
-        ];
+        ];*/
         ////////////////////////////////////////////////////////
         self.margin = {top: 30, right: 20, bottom: 30, left: 50};
         self.width = 800 - self.margin.left - self.margin.right;
@@ -92,12 +93,12 @@ Student.prototype = {
         //Milestone data
         var yArr = [];
         // Get the data
-        data = self.parseDates(chartData);
+        self.data = self.parseDates(chartData);
         // Scale the range of the data
-        self.x.domain(d3.extent(data, function (d) {
+        self.x.domain(d3.extent(self.data, function (d) {
             return d.date;
         }));
-        self.y.domain([0, d3.max(data, function (d) {
+        self.y.domain([0, d3.max(self.data, function (d) {
             return d.points;
         })]);
 
@@ -120,7 +121,7 @@ Student.prototype = {
         });
         self.addMilestonesLine(yArr);
         // add the red line chart
-        self.addLine(data, "red", "red");
+        self.addLine(self.data, "red", "red");
         // add circles for each milestone
         self.addRedLineDots();
         //add a vertical rect denoting today
@@ -149,7 +150,7 @@ Student.prototype = {
                 self.removeTooltipProfessorGradebook();
             });
 
-            var rMax = d3.max(data, function (d) {return d.points;});
+            var rMax = d3.max(self.data, function (d) {return d.points;});
             $(".range-slider").slider({
                 min: 0,
                 max: rMax,
@@ -164,7 +165,7 @@ Student.prototype = {
 
             var dTo = new Date();
             var endDate = Date.parse(self.options.endDate);
-            self.dFrom = d3.min(data, function(d){return d.date}),
+            self.dFrom = d3.min(self.data, function(d){return d.date}),
             self.rDTo = Date.parse(dTo),
             self.speed;
             var endDateTo = (endDate < dTo) ? endDate : self.rDTo;
@@ -276,13 +277,14 @@ Student.prototype = {
         var promise = $.get("gradebook/getAllStudentSubmissions");
         promise.then(function (data1, textStatus, jqXHR) {
             self.submissions = data1;
-            $('.Q123MinMax,.histogramGroup').find('.btn-group').find('.btn-info').removeClass('disabled');
+            $('.Q123MinMax, .histogramGroup').find('.btn-group').find('.btn-info').removeClass('disabled');
             $('.histogramRVS').removeClass('histogramRVS');
             self.callStudentsMilestoneInfo(students);
             var inputs = document.getElementsByClassName('checkboxMultiselect');
             for(var i = 0; i < inputs.length; i++) {
                 inputs[i].disabled = false;
             }
+            d3.select('.spinnerDiv').style("display","none");
             d3.select("#chart").style("opacity","1");
             d3.select("#topRight").style("opacity","1");
         })
@@ -304,26 +306,25 @@ Student.prototype = {
         }
         if(idsArr.length > 0)
         {
-            $.each(studentsArr,function (d, i)
+            $.each(studentsArr, function (a, b)
             {
-               var num = parseInt(i.user_id);
-               self.checkedBox(num);
+                if (parseInt(b.user_id) === self.user) {
+                   var num = parseInt(b.user_id);
+                   self.checkedBox(num);
+                }
             });
         }
         $(document).on("change", '.deselectAll',  function () {
-            $.each(studentsArr,function (d, i)
+            var th = $(this);
+            $.each(studentsArr, function (d, i)
             {
-                if ($(this).closest('label').hasClass('active')) {
-                    self.uncheckedBox(i.user_id);
-                    var index = selectedStudents.indexOf(num);
-                    selectedStudents.splice(index, 1);
-                } else {
+                if (!th.closest('label').hasClass('active')) {
+                    var num = parseInt(i.user_id);
                     self.checkedBox(num);
-                    selectedStudents.push(num);
-                    d3.select("#pathred").remove();
-                    d3.select(".cirred").remove();
-                    self.addLine(data, "red", "red");
-                    self.addRedLineDots();
+                } else {
+                    if (parseInt(i.user_id) != self.user) {
+                        self.uncheckedBox(i.user_id);
+                    }
                 }
             });
 
@@ -332,7 +333,6 @@ Student.prototype = {
 
     addLine: function (data, strokeColor, id)
     {
-        //console.log(data);
         var self = this;
         if($("#path" + id).length > 0){
             return false;
@@ -358,16 +358,20 @@ Student.prototype = {
             text = filteredData[0].name;
         }
     // Add the valueline path.
-        if (id === self.user) {
+/*        if (id === self.user) {
             strokeColor = '#024b88';
-        }
+        }*/
         self.g.append("path")
             .attr("id", "path" + id)
             .attr("class", function (d)
             {
                 if (id != "red")
                 {
-                    return "bluePath line";
+                    if (id == self.user) {
+                        return "bluePath line user-line";
+                    } else {
+                        return "bluePath line";
+                    }
                 }
                 else
                 {
@@ -418,7 +422,7 @@ Student.prototype = {
                     var day = date.getDate();
                     var monthIndex = date.getMonth();
                     var time = self.formatAMPM(date);
-                    self.addTooltipProfessorGradebook(text +" -- "+self.roundToTwo(d.points) + " pts earned on " + monthNames[monthIndex] + " " + day + " @ " + time);
+                    self.addTooltipProfessorGradebook(text +" -- "+self.roundToTwo(d.points) + " pts earned on " + self.monthNames[monthIndex] + " " + day + " @ " + time);
                 }
             })
             .on("mouseout", function (d) {
@@ -455,13 +459,17 @@ Student.prototype = {
     {
         var self = this;
         var masterArr = self.submissions.filter(function (d) {
-            return d.id === id;
+            if (slideDays && !$('.nameLabel').hasClass('active')) {
+                return d.id === self.user;
+            } else {
+                return d.id === id;
+            }
         }),
             min_max = self.getCHartDragPoints(),
             dragDate = self.getChartDate();
         if (masterArr.length > 0)
         {
-            if(slideDays) {
+            if (slideDays) {
                 var masterItems = masterArr[0].items,
                     newData = [];
                 $.each(masterItems, function(k,v) {
@@ -520,11 +528,11 @@ Student.prototype = {
     {
         var self = this;
         self.g.selectAll("dot")
-            .data(data.filter(function (d, i) {
+            .data(self.data.filter(function (d, i) {
                 if (i === 0) {
                     return d;
                 }
-                if (data[i].points != data[i - 1].points)
+                if (self.data[i].points != self.data[i - 1].points)
                 {
                     return d;
                 }
@@ -785,7 +793,7 @@ Student.prototype = {
                 var monthIndex = getDate.getMonth();
                 var time = self.formatAMPM(getDate);
                 var text = id.slice(2);
-                self.addTooltipProfessorGradebook(text + " " + roundToTwo(getPoint) + " pts earned on " + monthNames[monthIndex] + " " + day + " @ " + time);
+                self.addTooltipProfessorGradebook(text + " " + self.roundToTwo(getPoint) + " pts earned on " + self.monthNames[monthIndex] + " " + day + " @ " + time);
             })
             .on("mouseout", function (d) {
                 self.removeTooltipProfessorGradebook();
@@ -811,22 +819,20 @@ Student.prototype = {
     parseTimestamp: function(UNIX_timestamp)
     {
         var date = new Date(UNIX_timestamp);
-        var monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         var day = date.getDate();
         var monthIndex = date.getMonth();
         var year = date.getFullYear();
 
         var time = this.formatAMPM(date);
-        return monthNames[monthIndex] + " " + day + " @ " + time;
+        return this.monthNames[monthIndex] + " " + day + " @ " + time;
     },
 
     parseDayMonth: function(UNIX_timestamp) {
         var date = new Date(UNIX_timestamp);
-        var monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         var day = date.getDate();
         var monthIndex = date.getMonth();
 
-        return monthNames[monthIndex] + " " + day;
+        return this.monthNames[monthIndex] + " " + day;
     },
 
     parseDates: function(data)

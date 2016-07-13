@@ -825,4 +825,11 @@ th.details {
 }
 #assignments-container table tr td:nth-child(2) {
     text-align: right;
+.chart {
+/*    float: none !important;
+    margin-right: 90px;*/
+}
+.user-line {
+    stroke: #024b88 !important;
+    opacity: 0.7;
 }
