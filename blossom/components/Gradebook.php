@@ -101,6 +101,7 @@ class Gradebook extends ComponentBase {
             $this->page['experienceInstanceId'] = $this->property('experienceInstance');
             $userRoles = $_SESSION['roles'];
             $this->page['userRoles'] = $userRoles;
+            $this->page['user'] = $_SESSION['userID'];
             if (!is_null($this->property('experienceInstance'))) {
                 $instance = ExperienceModel::find($this->property('experienceInstance'));
                 $maxExperiencePts = $instance->total_points;
@@ -137,7 +138,6 @@ class Gradebook extends ComponentBase {
                 $exp = new ExperienceComponent();
                 $pts = $exp->getUserPoints();
                 $this->page['totalPts'] = $pts;
-                $this->page['user'] = $_SESSION['userID'];
 
                 //get letter grade
                 if (!is_null($this->property('experienceInstance'))) {
