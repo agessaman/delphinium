@@ -422,7 +422,7 @@ Student.prototype = {
                     var day = date.getDate();
                     var monthIndex = date.getMonth();
                     var time = self.formatAMPM(date);
-                    self.addTooltipProfessorGradebook(text +" -- "+self.roundToTwo(d.points) + " pts earned on " + self.monthNames[monthIndex] + " " + day + " @ " + time);
+                    self.addTooltipProfessorGradebook(text +" -- "+self.roundToTwo(d.points) + " - pts");
                 }
             })
             .on("mouseout", function (d) {
