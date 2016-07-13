@@ -1,5 +1,6 @@
 <script>
     var bonus = {{bonus}};
+    var user = {{user | raw}};
     var penalties = {{penalties}};
     var gradingScheme = {{grading_scheme|raw}};
     var chartData = {{chartData | raw}};
@@ -93,41 +94,6 @@
                             <span class="rg">Range</span>
                             <div class="col-md-9 range-slider"></div>
                         </div>
-                    </div>
-                </div>
-                <h3 class="title-graph counts histogramRVS">Counts</h3>
-                <div id='histogram'></div>
-                <div id='boxPlot'></div>
-                <div class="container-fluid m-t-2">
-                    <div class="histogramGroup container btn-group col-md-3 histogramRVS" role="group">
-                    <div class="btn-group">
-                        <label class="btn btn-info active disabled">
-                            <input type="radio" name='histogram' checked class="btn btn-info hide histRadio" id="hPoint" />Points
-                        </label>
-                    </div>
-                    <div class="btn-group">
-                        <label class="btn btn-info disabled">
-                            <input type="radio" name='histogram' class="btn btn-info hide histRadio" id="hMilestone" />Milestones
-                        </label>
-                    </div>
-                    <div class="btn-group">
-                        <label class="btn btn-info disabled">
-                            <input type="radio" name='histogram' class="btn btn-info hide histRadio" id="hGrade" />Grades
-                        </label>
-                    </div>
-                    </div>
-                    <div class="histogram-date-slider-container col-md-5 m-t-2 col-sm-5 histogramRVS">
-                        <span class="date">Date</span>
-                        <div class="col-md-1 col-sm-1">
-                            <button type="button" class="btn btn-primary btn-xs histogram-player"><i class="fa fa-play"></i></button>
-                        </div>
-                        <div class="col-md-10 col-sm-9">
-                            <div class="histogram-date"></div>
-                        </div>
-                    </div>
-                    <div class="range-slider-container col-sm-3 col-md-4 m-t-2 histogramRVS">
-                        <span class="rg">Range</span>
-                        <div class="col-md-9 histogram-range-slider"></div>
                     </div>
                 </div>
                 <div class="empty"></div>

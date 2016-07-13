@@ -208,7 +208,8 @@ a:hover
 #chart{
     display: inline-block;
     float:left;
-    margin-left: 9px;
+    /*margin-left: 9px;*/
+    margin-left: 41px;
 }
 #chart path {
     stroke: steelblue;
@@ -231,7 +232,7 @@ a:hover
     text-align:center;
 }
 .multiselect {
-    max-width: 300px;
+    max-width: 190px;
     height: 363px;
     border: solid 1px #c0c0c0;
     overflow: auto;
@@ -347,7 +348,7 @@ a:hover
     height: 40px;
     position: relative;
     top: 5px;
-    left: 366px;
+    left: 357px;
 }
 .left-val{
     float:left;
@@ -698,7 +699,7 @@ td.checkbox-field .filter_checkbox {
 .Q123MinMax {
     width: 409px;
     margin-top: 17px;
-    margin-left: 34px;
+    margin-left: 74px;
     float: left;
     clear: both;
 }
@@ -816,6 +817,6 @@ th.details {
     margin: 55px 15px 15px 15px;
     text-align: left !important;
 }
-/*.counts {
-    margin-left: 177px !important;
-}*/
+.user {
+    stroke: #024b88;
+}

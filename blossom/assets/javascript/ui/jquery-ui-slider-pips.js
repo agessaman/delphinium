@@ -100,7 +100,11 @@
                     $pips
                         .filter(".ui-slider-pip-" + this.classLabel(value) )
                         .addClass("ui-slider-pip-selected");
-                        chartDateRange();
+                        if (typeof StudentClass != "undefined") {
+                            StudentClass.chartDateRange();
+                        } else {
+                            chartDateRange();
+                        }
 
                     if ( slider.options.range ) {
 
@@ -130,7 +134,11 @@
                         $pips
                             .filter(".ui-slider-pip-" + this.classLabel(values[i]) )
                             .addClass("ui-slider-pip-selected-" + ( i + 1 ) );
-                            chartDateRange();
+                            if (typeof StudentClass != "undefined") {
+                                StudentClass.chartDateRange();
+                            } else {
+                                chartDateRange();
+                            }
                     }
 
                     if ( slider.options.range ) {

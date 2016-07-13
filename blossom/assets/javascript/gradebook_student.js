@@ -18,6 +18,7 @@
  * You can modify personal copy of source-code but cannot distribute modifications
  * You may not distribute any version of this software, modified or otherwise
  */
+
 function Student() 
 {
     this.__init.call(this);
@@ -27,6 +28,8 @@ Student.prototype = {
 
     options: {},
     submissions:[],
+    pointDate: 0,
+    user: user,
 
     __init: function () 
     {
@@ -37,7 +40,6 @@ Student.prototype = {
 
     _options: function() 
     {
-        this.options.pointDate = '';
         this.options.endDate = endDate;
         Object.freeze(this.options);
     },
@@ -123,7 +125,7 @@ Student.prototype = {
         self.addRedLineDots();
         //add a vertical rect denoting today
         var todayDate = new Date();
-        todayDate = (Date.parse(self.options.endDate) > Date.parse(todayDate) || submissions.length == 0) ? todayDate : new Date(self.options.endDate);
+        todayDate = (Date.parse(self.options.endDate) > Date.parse(todayDate) || self.submissions.length == 0) ? todayDate : new Date(self.options.endDate);
         var parsed = Date.parse(todayDate);
         self.g.append("svg:rect")
             .attr("x", function (d) {
@@ -161,18 +163,18 @@ Student.prototype = {
             });
 
             var dTo = new Date();
-            var endDate = Date.parse(endDate);
-            var dFrom = d3.min(data, function(d){return d.date}),
-                rDTo = Date.parse(dTo),
-                speed;
-            var endDateTo = (endDate < dTo) ? endDate : rDTo;
+            var endDate = Date.parse(self.options.endDate);
+            self.dFrom = d3.min(data, function(d){return d.date}),
+            self.rDTo = Date.parse(dTo),
+            self.speed;
+            var endDateTo = (endDate < dTo) ? endDate : self.rDTo;
             labels = [];
             dateRange = [];
-            for(var i = dFrom; i<=endDateTo; i+=86400000){
+            for(var i = self.dFrom; i <= endDateTo; i += 86400000){
                 labels.push(self.parseDayMonth(i));
                 dateRange.push(new Date(i));
             }
-            if(endDate>dTo){
+            if(endDate > dTo){
                 labels.push(self.parseDayMonth(endDateTo));
                 dateRange.push(new Date(endDateTo));
             }
@@ -192,7 +194,7 @@ Student.prototype = {
                 labels: labels
             });
 
-            $('.my-ui-slider .ui-slider-pip-first').find('.ui-slider-label').text(self.parseDayMonth(dFrom));
+            $('.my-ui-slider .ui-slider-pip-first').find('.ui-slider-label').text(self.parseDayMonth(self.dFrom));
             $('.my-ui-slider .ui-slider-pip-last').find('.ui-slider-label').text(self.parseDayMonth(endDateTo));
         $(document).on('click','.Q123MinMax .btn-group',function(){
             if(!$(this).find('label').hasClass('disabled')){
@@ -202,12 +204,14 @@ Student.prototype = {
 
         $(document).on('click','.player', function() {
             var i = $(this).find('i');
-            if(i.hasClass('fa-play')){ 
-                speed = setInterval(intervalIts,500);
+            if (i.hasClass('fa-play')) {
+                self.speed = setInterval(function(){
+                    self.intervalIts();
+                },500);
                 i.removeClass('fa-play').addClass('fa-pause');
-            } else { 
+            } else {
                 i.removeClass('fa-pause').addClass('fa-play');
-                clearInterval(speed);
+                clearInterval(self.speed);
             }
         });
 
@@ -261,10 +265,6 @@ Student.prototype = {
 
     },
 
-/*    get: function() {
-
-    },*/
-
     getChartDate: function() {
         var index = $('.ui-slider-pip-selected').find('.ui-slider-label').attr('data-value');
         return Date.parse(dateRange[index]);
@@ -275,17 +275,21 @@ Student.prototype = {
         var self = this;
         var promise = $.get("gradebook/getAllStudentSubmissions");
         promise.then(function (data1, textStatus, jqXHR) {
-            submissions = data1;
+            self.submissions = data1;
+            $('.Q123MinMax,.histogramGroup').find('.btn-group').find('.btn-info').removeClass('disabled');
+            $('.histogramRVS').removeClass('histogramRVS');
             self.callStudentsMilestoneInfo(students);
             var inputs = document.getElementsByClassName('checkboxMultiselect');
             for(var i = 0; i < inputs.length; i++) {
                 inputs[i].disabled = false;
             }
             d3.select("#chart").style("opacity","1");
+            d3.select("#topRight").style("opacity","1");
         })
         .fail(function (data2) {
             console.log("Unable to retrieve student submissions");
         });
+
     },
 
     callStudentsMilestoneInfo: function (studentsArr) 
@@ -298,19 +302,37 @@ Student.prototype = {
             var currentStudent = studentsArr[i];
             idsArr.push(currentStudent.user_id);
         }
-
         if(idsArr.length > 0)
         {
-            $.each(idsArr,function (d, i)
+            $.each(studentsArr,function (d, i)
             {
-               var num = parseInt(d);
+               var num = parseInt(i.user_id);
                self.checkedBox(num);
             });
         }
+        $(document).on("change", '.deselectAll',  function () {
+            $.each(studentsArr,function (d, i)
+            {
+                if ($(this).closest('label').hasClass('active')) {
+                    self.uncheckedBox(i.user_id);
+                    var index = selectedStudents.indexOf(num);
+                    selectedStudents.splice(index, 1);
+                } else {
+                    self.checkedBox(num);
+                    selectedStudents.push(num);
+                    d3.select("#pathred").remove();
+                    d3.select(".cirred").remove();
+                    self.addLine(data, "red", "red");
+                    self.addRedLineDots();
+                }
+            });
+
+        });
     },
 
     addLine: function (data, strokeColor, id)
     {
+        //console.log(data);
         var self = this;
         if($("#path" + id).length > 0){
             return false;
@@ -336,6 +358,9 @@ Student.prototype = {
             text = filteredData[0].name;
         }
     // Add the valueline path.
+        if (id === self.user) {
+            strokeColor = '#024b88';
+        }
         self.g.append("path")
             .attr("id", "path" + id)
             .attr("class", function (d)
@@ -368,7 +393,7 @@ Student.prototype = {
                 if (i === 0) {
                     return d;
                 }
-                if((id != "red")&&(data[i].date != data[i - 1].date))
+                if((id != "red") && (data[i].date != data[i - 1].date))
                 {
                     return d;
                 }
@@ -429,15 +454,14 @@ Student.prototype = {
     checkedBox: function (id, slideDays)
     {
         var self = this;
-        var masterArr = submissions.filter(function (d) {
+        var masterArr = self.submissions.filter(function (d) {
             return d.id === id;
         }),
             min_max = self.getCHartDragPoints(),
             dragDate = self.getChartDate();
-        console.log(masterArr);
         if (masterArr.length > 0)
         {
-            if(slideDays){
+            if(slideDays) {
                 var masterItems = masterArr[0].items,
                     newData = [];
                 $.each(masterItems, function(k,v) {
@@ -453,9 +477,8 @@ Student.prototype = {
                 var masterItems = masterArr[0].items;
                 var show_student_line = false;
                 var maxPoint = masterItems[masterItems.length-1].points;
-                if(maxPoint >= min_max[0] && maxPoint <= min_max[1]) {
-                    console.log(11111);
                 var maxDate = masterItems[masterItems.length-1].date;
+                if(maxPoint >= min_max[0] && maxPoint <= min_max[1]) {
                     if(Date.parse(maxDate) <= parseInt(dragDate) || maxDate <= parseInt(dragDate)){
                         show_student_line = true;
                     }
@@ -466,23 +489,31 @@ Student.prototype = {
         }
     },
 
+    chartDateRange: function(days) {
+        var date = this.getChartDate();
+        var orangeLine = this.x(date);
+        $('.todayLine').attr('x',orangeLine);
+        this.chartDragPoints(days);
+    },
+
     intervalIts: function() {
+        var self = this;
         var points = $('.my-ui-slider').children('span').not('.ui-slider-handle');
         var count = points.length;
-        if(count > pointDate){
-            var point = points.eq(pointDate); 
+        if(count > self.pointDate){
+            var point = points.eq(self.pointDate); 
             var left = point[0].style.left;
             var index = point.find('.ui-slider-label').attr('data-value');
             var val = labels[index];
             $('.my-ui-slider').find('.ui-slider-handle').css('left',left).find('span').text(val);
-            $('.ui-slider-pip').removeClass('ui-slider-pip-selected').eq(pointDate).addClass('ui-slider-pip-selected');
-            this.chartDateRange(true);
-        }else{
+            $('.ui-slider-pip').removeClass('ui-slider-pip-selected').eq(self.pointDate).addClass('ui-slider-pip-selected');
+            self.chartDateRange(true);
+        } else {
             $('button.player').find('i').removeClass('fa-pause').addClass('fa-play');
-            pointDate = -1;
-            clearInterval(speed);
+            self.pointDate = -1;
+            clearInterval(self.speed);
         }
-        pointDate++;
+        self.pointDate++;
     },
 
     addRedLineDots: function()
@@ -640,11 +671,12 @@ Student.prototype = {
 
     getSubmissionsDays: function()
     {
+        var self = this;
         var submissionsDays = {},
             usersOldValue = [];
         $.each(dateRange, function(dK,dV){
             var pushVal = [];
-            $.each(submissions, function(k,v){
+            $.each(self.submissions, function(k,v){
                 var pushUserVal = [];
                 $.each(v.items,function(itemK,itemV){
                     var itemVDate = (typeof itemV.date == 'number') ? itemV.date : Date.parse(itemV.date);
@@ -717,7 +749,7 @@ Student.prototype = {
         var self = this;
         var endDate = self.getChartDate(),
             newDate = [];
-        data.unshift({date: new Date(dFrom),point: 0});
+        data.unshift({date: new Date(self.dFrom),point: 0});
         $.each(data,function(k,d){
             if(Date.parse(d.date) <= endDate){
                 newDate.push(d);
@@ -761,7 +793,8 @@ Student.prototype = {
     },
 
     roundToTwo: function(num) {
-        return +(Math.round(num + "e+2")  + "e-2");
+        //return +(Math.round(num + "e+2")  + "e-2");
+        return +(Math.round(num));
     },
 
     formatAMPM: function(date) {
@@ -815,18 +848,11 @@ Student.prototype = {
     chartDragPoints: function (days) {
         var self = this;
         self.addQuartileMinMaxLine();
-        $.each($('input.single:checked'), function(k,input){
-            var id = parseInt($(input).val());
+        $.each(students, function(k,input){
+            var id = parseInt(input.user_id);
             self.uncheckedBox(id);
             (days) ? self.checkedBox(id,true) : self.checkedBox(id,false);
         });
-    },
-
-    chartDateRange: function(days) {
-        var date = this.getChartDate();
-        var orangeLine = this.x(date);
-        $('.todayLine').attr('x',orangeLine);
-        this.chartDragPoints(days);
     },
 
     getCHartDragPoints: function() {
