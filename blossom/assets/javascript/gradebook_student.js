@@ -358,16 +358,20 @@ Student.prototype = {
             text = filteredData[0].name;
         }
     // Add the valueline path.
-        if (id === self.user) {
+/*        if (id === self.user) {
             strokeColor = '#024b88';
-        }
+        }*/
         self.g.append("path")
             .attr("id", "path" + id)
             .attr("class", function (d)
             {
                 if (id != "red")
                 {
-                    return "bluePath line";
+                    if (id == self.user) {
+                        return "bluePath line user-line";
+                    } else {
+                        return "bluePath line";
+                    }
                 }
                 else
                 {

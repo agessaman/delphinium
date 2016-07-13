@@ -824,3 +824,7 @@ th.details {
 /*    float: none !important;
     margin-right: 90px;*/
 }
+.user-line {
+    stroke: #024b88 !important;
+    opacity: 0.7;
+}
