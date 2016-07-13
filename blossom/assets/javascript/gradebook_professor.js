@@ -1737,83 +1737,44 @@ $(document).on('click','.Q123MinMax .btn-group',function(){
 $(document).on('click', '.jsgrid-header-row th',  function() {
     sortType[0] = $(this).index();
 });
-function getHistogramDataByPoints(startEnd){
+function getHistogramDataByPoints(){
+    var instructorStep = jQuery.parseJSON(getStorage('histogramStep'));
     var endArr = [],
         intervals = [],
-        step = 100,
+        step = instructorStep[instructorId],
         users = [];
     $.each(submissions,function(k,v){
         endArr.push(v.items[v.items.length-1].points);
     });
+
     endArr.sort(function(a,b){
         return b-a;
     });
-    var end = (endArr[0]>=100) ? endArr[0] : 100;
-    if(end%100 != 0){
-        end = end + (100 - end%100);
+
+    for(var i=0;i<=endArr[0];i+=step){
+        intervals.push(i);
     }
 
-    for(var i=0;i<=parseInt(end);i+=step){
-        if(startEnd){
-            if(i >= startEnd[0] && i<= startEnd[1]){
-                intervals.push(i);
-            }
-            if(i >= startEnd[0] && startEnd[0] == startEnd[1] && startEnd[0] != 0){
-                intervals.push(i);
-            }
-        }else{
-            intervals.push(i);
-        }
-    }
-    if(intervals[intervals.length-1] < endArr[0] && !startEnd){
-        intervals.push(intervals[intervals.length-1] + 100);
-    }else if(startEnd){
-        if(intervals[intervals.length-1] <= startEnd[1]){
-            intervals.push(intervals[intervals.length-1] + 100);
-        }
-        if(intervals[0] >= startEnd[0] && startEnd[0] > 99){
-            intervals.unshift(intervals[0] - 100);
-        }
-        if(intervals[0] >= startEnd[0] && startEnd[0] <= 99){
-            intervals.unshift(0);
-        }
+    if(intervals[intervals.length-1] < endArr[0]){
+        intervals.push(intervals[intervals.length-1]+step);
     }
     var retVal = getStudentsCount(intervals);
     return {usersCount:retVal,xPoints:intervals,maxPoint:endArr[0]};
 }
 
-function getHistogramDataByMilestones(startEnd){
+function getHistogramDataByMilestones(){
+    var instructorStep = jQuery.parseJSON(getStorage('histogramStep'));
     var intervals = [];
-        step = 100,
+        step = instructorStep[instructorId],
         users = [],
         endPoint = chartData[chartData.length-1].points;
-    var end = (endPoint >= 100) ? endPoint : 100;
-    if(end%100 != 0){
-        end = end + (100 - end%100);
+
+    for(var i=0;i<=endPoint;i+=step){
+        intervals.push(i);
     }
-    for(var i=0;i<=parseInt(end);i+=step){
-        if(startEnd){
-            if(i >= startEnd[0] && i<= startEnd[1]){
-                intervals.push(i);
-            }
-            if(i >= startEnd[0] && startEnd[0] == startEnd[1] && startEnd[0] != 0){
-                if($.inArray(i,intervals) == -1){
-                    intervals.push(i);
-                }
-            }
-        }else{
-            intervals.push(i);
-        }
-    }
-    if(intervals[intervals.length-1] < endPoint && !startEnd){
-        intervals.push(intervals[intervals.length-1] + 100);
-    }else if(startEnd){
-        if(intervals[intervals.length-1] <= startEnd[1]){
-            intervals.push(intervals[intervals.length-1] + 100);
-        }
-        if(intervals[0] > startEnd[0] && startEnd[0] != startEnd[1]){
-            intervals.unshift(intervals[0] - 100);
-        }
+
+    if(intervals[intervals.length-1] < endPoint){
+        intervals.push(intervals[intervals.length-1]+step);
     }
     
     var retVal = getStudentsCount(intervals);
@@ -1863,11 +1824,7 @@ function getStudentsCount(intervals){
     });
     if(intervals[0] == 0){
         studentsPoint.unshift({points:0});
-        if(retVal[0] == 0){
-            retVal[0] = students.length - allInInterval; 
-        }else{
-            retVal[0] = 2 * retVal[0] + (students.length - allInInterval);
-        }
+        retVal[0] = (students.length - allInInterval) + retVal[0];
     }
     return {counts:retVal,allPoints:studentsPoint};
 }
@@ -1978,16 +1935,12 @@ function histogram(){
     }
 
     function addBarToHistogram(animateDays){
-        var checkedV = $('.histRadio:checked').attr('id'),
-            start = $('.histogram-range-slider').find('.ui-slider-handle').eq(0).find('span').text(),
-            end = $('.histogram-range-slider').find('.ui-slider-handle').eq(1).find('span').text();
+        var checkedV = $('.histRadio:checked').attr('id');
         if(checkedV == 'hPoint'){
-            var startEnd = [start,end];
-            var histogramData = getHistogramDataByPoints(startEnd);
+            var histogramData = getHistogramDataByPoints();
         }
         if(checkedV == 'hMilestone'){
-            var startEnd = [start,end];
-            var histogramData = getHistogramDataByMilestones(startEnd);
+            var histogramData = getHistogramDataByMilestones();
         }
         if(checkedV == 'hGrade'){
             var histogramData = getHistogramDataByGrades();
@@ -2037,20 +1990,41 @@ function histogram(){
     boxPlotChart(dataBoxPlot);
     var maxPoint =(typeof histogramData.maxPoint != 'undefined') ? histogramData.maxPoint : 100,
         checked = 'hPoint';
+    var getStep = getStorage('histogramStep');
+    var stepSlider;
+
+    if(getStep != null){
+        getStep = jQuery.parseJSON(getStep);
+        if(getStep[instructorId]){
+            stepSlider = getStep[instructorId];
+        }else{
+            stepSlider = 100;
+            stepSlider[instructorId] = 100;
+            setStorage('histogramStep',JSON.stringify(stepSlider));
+        }
+    }else{
+        var stD = {};
+        stD[instructorId] = 100;
+        stepSlider = 100;
+        setStorage('histogramStep',JSON.stringify(stD));
+    }
+
     $(".histogram-range-slider").slider({
-        min: 0,
-        max: maxPoint,
-        values: [0,maxPoint],
-        step: 1,
-        range: true
+        min: 100,
+        max: 100000,
+        value: stepSlider,
+        step: 100,
     }).slider("pips")
     .on("slidechange", function(e,d) {
-        var startEnd = d.values;
+        var step = d.value;
+        instructorsStep = jQuery.parseJSON(getStorage('histogramStep'));
+        instructorsStep[instructorId] = step;
+        setStorage('histogramStep',JSON.stringify(instructorsStep));
         if(clearLoop){
             if(checked == 'hPoint'){
-                var histogramData = getHistogramDataByPoints(startEnd);
+                var histogramData = getHistogramDataByPoints();
             }else{
-                var histogramData = getHistogramDataByMilestones(startEnd);
+                var histogramData = getHistogramDataByMilestones();
             }
             var boxPlotData = getBoxPlotData(histogramData);
             histogramChart({xPUserC:histogramData});
@@ -2066,23 +2040,10 @@ function histogram(){
             $(".histogram-range-slider")
             .slider({disabled: true});
         }else{
+            $(".histogram-range-slider")
+            .slider({disabled: false});
             clearLoop = false,
             checked = $(this).attr('id');
-            if($(this).attr('id') == 'hMilestone'){
-                var maxVal = yArr[yArr.length-1].points;
-            }else{
-                var maxVal = maxPoint;
-            }
-            $(".histogram-range-slider")
-            .slider({
-                disabled: false,
-                min: 0,
-                max: maxVal,
-                values: [0,maxVal]
-            });
-
-            $('.histogram-range-slider .ui-slider-pip-first').find('.ui-slider-label').text(0);
-            $('.histogram-range-slider .ui-slider-pip-last').find('.ui-slider-label').text(maxVal);
         }
         addBarToHistogram();
     });
