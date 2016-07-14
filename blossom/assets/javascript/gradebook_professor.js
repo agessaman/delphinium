@@ -37,46 +37,17 @@ promise.then(function (data1, textStatus, jqXHR) {
             if(getStep[instructorId]){
                 stepSlider = getStep[instructorId];
             }else{
-                stepSlider = 10;
-                stepSlider[instructorId] = 10;
+                stepSlider = 100;
+                stepSlider[instructorId] = 100;
                 setStorage('histogramStep',JSON.stringify(stepSlider));
             }
         }else{
             var stD = {};
-            stD[instructorId] = 10;
-            stepSlider = 10;
+            stD[instructorId] = 100;
+            stepSlider = 100;
             setStorage('histogramStep',JSON.stringify(stD));
         }
         histogram();
-        
-        d3.select('#boxplot .histogram-box')
-        .on('mouseover',function(){
-            var dataTooltip = 'Min - '+ $(this).closest('svg').find('.min').attr('data-point') + ' pts' + '</br>' + 
-                'Q1 - ' + $(this).closest('svg').find('.q1-q3').attr('data-point-q1') + ' pts' + '</br>' +
-                'Median - ' + $(this).closest('svg').find('.median').attr('data-point') + ' pts' + '</br>' +
-                'Mean - ' + $(this).closest('svg').find('.mean').attr('data-point') + ' pts' + '</br>' +
-                'Q3 - ' + $(this).closest('svg').find('.q1-q3').attr('data-point-q3') + ' pts' + '</br>' +
-                'Max - ' + $(this).closest('svg').find('.max').attr('data-point') + ' pts';
-            addTooltipProfessorGradebook(dataTooltip);
-        })
-        .on('mouseout',function(){
-            removeTooltipProfessorGradebook();
-        });
-
-        d3.select('#boxplot .mean')
-        .on('mouseover',function(){
-            var dataTooltip = 'Min - '+ $(this).closest('svg').find('.min').attr('data-point') + ' pts' + '</br>' + 
-                'Q1 - ' + $(this).closest('svg').find('.q1-q3').attr('data-point-q1') + ' pts' + '</br>' +
-                'Median - ' + $(this).closest('svg').find('.median').attr('data-point') + ' pts' + '</br>' +
-                'Mean - ' + $(this).closest('svg').find('.mean').attr('data-point') + ' pts' + '</br>' +
-                'Q3 - ' + $(this).closest('svg').find('.q1-q3').attr('data-point-q3') + ' pts' + '</br>' +
-                'Max - ' + $(this).closest('svg').find('.max').attr('data-point') + ' pts';
-            addTooltipProfessorGradebook(dataTooltip);
-        })
-        .on('mouseout',function(){
-            removeTooltipProfessorGradebook();
-        });
-
         $('.Q123MinMax,.histogramGroup').find('.btn-group').find('.btn-info').removeClass('disabled');
         $('.histogramRVS').removeClass('histogramRVS');
         var inputs = document.getElementsByClassName('checkboxMultiselect');
@@ -1352,6 +1323,22 @@ function buildTable(data) {
         onDataLoaded: function(args) {
             var td = $('.jsgrid-grid-header tr').eq(1).find('td');
             $('.jsgrid-search-button').hide();
+            if($('#histogram svg').length == 0){
+                /*if(submissions.length == 0){
+                    $(".my-ui-slider")
+                        .slider({disabled: true});
+                    $(".range-slider")
+                        .slider({disabled: true});
+                    $(".histogram-range-slider")
+                        .slider({disabled: true});
+                    $(".histogram-date")
+                        .slider({disabled: true});
+                    $('.player,.histogram-player').addClass('disabled').prop('disabled',true);
+                }else{*/
+                    
+                // }
+            }
+            //$('.sort-name,.sort-total').removeClass('hide');
             td.eq(td.length-2).html('<a data-toggle="modal" style="outline:none;" href="#content-confirmation"><i class="fa fa-cog table_set"></i></a>').css('text-align','center');
             if($('.filter_checkbox').length == 0){
                 var sections = get_checkboxes('sections'),
@@ -1561,12 +1548,12 @@ function callStudentsMilestoneInfo(studentsArr)
     //send a last request with the remaining IDS
     if(idsArr.length > 0)
     {
-        tableData = $.get("gradebook/getSetOfUsersMilestoneInfo",{experienceInstanceId:experienceInstanceId, userIds:(idsArr)});
-        tableData.then(function (data, status, xhr) {
+        $.get("gradebook/getSetOfUsersMilestoneInfo",{experienceInstanceId:experienceInstanceId, userIds:(idsArr)},function(data,status,xhr)
+        {
             d3.select(".bottomSpinnerDiv").style("display","none");
             d3.select(".spinnerDiv").style("display","none");
             d3.select("#topRight").style("opacity","1");
-            windowData = data;
+            windowData = jQuery.parseJSON(xhr.responseText);
             buildTable(windowData);
             var checkboxes = d3.selectAll(".single");
             checkboxes[0].forEach(function (d, i)
@@ -1575,7 +1562,8 @@ function callStudentsMilestoneInfo(studentsArr)
                var num = parseInt(d.value);
                checkedBox(num);
             });
-        })
+
+        });
     }
 }
 
@@ -1769,32 +1757,11 @@ $(document).on('click','.Q123MinMax .btn-group',function(){
 $(document).on('click', '.jsgrid-header-row th',  function() {
     sortType[0] = $(this).index();
 });
-function LogSlider(options) {
-   options = options || {};
-   this.minpos = options.minpos || 10;
-   this.maxpos = options.maxpos || 100;
-   this.minlval = Math.log(options.minval || 10);
-   this.maxlval = Math.log(options.maxval || 100000);
-
-   this.scale = (this.maxlval - this.minlval) / (this.maxpos - this.minpos);
-}
-
-LogSlider.prototype = {
-   value: function(position) {
-      return Math.exp((position - this.minpos) * this.scale + this.minlval);
-   },
-   position: function(value) {
-      return this.minpos + (Math.log(value) - this.minlval) / this.scale;
-   }
-};
-
-createPoint = new LogSlider();
 function getHistogramDataByPoints(){
     var instructorStep = jQuery.parseJSON(getStorage('histogramStep'));
-    var stepInstructor = parseInt(createPoint.value(instructorStep[instructorId]));
     var endArr = [],
         intervals = [],
-        step = stepInstructor,
+        step = instructorStep[instructorId],
         users = [];
     $.each(submissions,function(k,v){
         endArr.push(v.items[v.items.length-1].points);
@@ -1816,16 +1783,9 @@ function getHistogramDataByPoints(){
 }
 
 function getHistogramDataByMilestones(){
-    var intervals = [],
-        endPoint = chartData[chartData.length-1].points,
-        step;
-    if(endPoint <= 500) step = 50;
-    if(endPoint > 500 && endPoint <= 1000) step = 100;
-    if(endPoint > 1000 && endPoint <= 6000) step = 500;
-    if(endPoint > 6000 && endPoint <= 10000) step = 1000;
-    if(endPoint > 10000 && endPoint <= 20000) step = 2000;
-    if(endPoint > 20000 && endPoint <= 60000) step = 5000;
-    if(endPoint > 600000 && endPoint <= 100000) step = 10000;
+    var intervals = [];
+        step = 100,
+        endPoint = chartData[chartData.length-1].points;
 
     for(var i=0;i<=endPoint;i+=step){
         intervals.push(i);
@@ -1847,44 +1807,8 @@ function getHistogramDataByGrades(){
     intervals.sort(function(a,b){
         return a-b;
     });
-    var retVal = getStudentsCountGrades(intervals);
+    var retVal = getStudentsCount(intervals);
     return {usersCount:retVal,xPoints:intervals};
-}
-
-function getStudentsCountGrades(intervals) {
-    var retVal = [],
-        submissionsDays = getSubmissionsDays(),
-        endDate = Date.parse(dateRange[pointHistDate]),
-        userPoint = [],
-        studentsPoint = [],
-        allInInterval = 0;
-    $.each(submissionsDays,function(subK,subV){
-        if((Date.parse(subK) <= endDate || subK <= endDate) || pointHistDateAll == 0){
-            $.each(subV,function(itemsK,item){
-                userPoint[item.id] = [item];
-            });
-        }
-    });
-    $.each(userPoint,function(uK,uV){
-        if(typeof uV == 'object'){
-            studentsPoint.push(uV[0]);
-        }
-    });
-    $.each(intervals,function(k,v){
-        var intervalCount = 0;
-        $.each(studentsPoint,function(sK,sV){
-            if(intervals[k] <= sV.points && intervals[k+1] >= sV.points && typeof intervals[k+1] != 'undefined'){
-                intervalCount++;
-                allInInterval++;
-            }
-        });
-        retVal.push(intervalCount);
-    });
-    if(intervals[0] == 0){
-        studentsPoint.unshift({points:0});
-        retVal[0] = (students.length - allInInterval) + retVal[0];
-    }
-    return {counts:retVal,allPoints:studentsPoint};
 }
 
 function getStudentsCount(intervals){
@@ -2088,9 +2012,10 @@ function histogram(){
         stepSlider = instructorStep[instructorId];
 
     $(".histogram-range-slider").slider({
-        min: 10,
-        max: 100,
-        value: stepSlider
+        min: 100,
+        max: 100000,
+        value: stepSlider,
+        step: 100,
     }).slider("pips")
     .on("slidechange", function(e,d) {
         var step = d.value;
@@ -2098,13 +2023,17 @@ function histogram(){
         instructorsStep[instructorId] = step;
         setStorage('histogramStep',JSON.stringify(instructorsStep));
         if(clearLoop){
-            var histogramData = getHistogramDataByPoints();
+            if(checked == 'hPoint'){
+                var histogramData = getHistogramDataByPoints();
+            }else{
+                var histogramData = getHistogramDataByMilestones();
+            }
             var boxPlotData = getBoxPlotData(histogramData);
             histogramChart({xPUserC:histogramData});
             changeBoxPlotData(boxPlotData);
         }
     }).slider('float', {
-        labels: false
+        labels: true
     });
     $(document).on('change','.histRadio',function(){
         $('.histRadio').closest('label').removeClass('active');
@@ -2136,7 +2065,19 @@ function boxPlotChart(data){
     var margin = {'top': 20,'bottom': 20,'left': 20,'right': 30};
     var svg = d3.select("#boxPlot").append("svg")
         .attr("height", h)
-        .attr("width", w);
+        .attr("width", w)
+        .on('mouseover',function(){
+            var dataTooltip = 'Min '+ $(this).find('.min').attr('data-point') + '</br>' + 
+                'Q1 ' + $(this).find('.q1-q3').attr('data-point-q1') + '</br>' +
+                'Median ' + $(this).find('.median').attr('data-point') + '</br>' +
+                'Mean ' + $(this).find('.mean').attr('data-point') + '</br>' +
+                'Q3 ' + $(this).find('.q1-q3').attr('data-point-q3') + '</br>' +
+                'Max ' + $(this).find('.max').attr('data-point');
+            addTooltipProfessorGradebook(dataTooltip);
+        })
+        .on('mouseout',function(){
+            removeTooltipProfessorGradebook();
+        });
 
     xScale = d3.scale.linear()
     .domain([0,data.xScaleEnd])
@@ -2171,7 +2112,7 @@ function boxPlotChart(data){
     .style("fill", "none");
 
     svg.append("g")
-    .attr("class", "box histogram-box")
+    .attr("class", "box")
     .attr("transform", "translate(" + xScale(data.median) + "," + yScale(data.day) + ")");
       
     svg.selectAll("g.box")
@@ -2337,12 +2278,9 @@ function getBoxPlotData(data){
             q1 = getQ1Q3MedianForBoxPlot(points,1/3),
             q3 = getQ1Q3MedianForBoxPlot(points,0.75),
             min = points[0],
-            max = points[points.length-1];
-        if(points[0] == 0){
-            points.shift();
-        }
-        var mean = (points.reduce(function(a, b){return a+b;}))/points.length;
-            mean = Number.isInteger(mean) ? mean : Math.round(mean);
+            max = points[points.length-1],
+            mean = (points.reduce(function(a, b){return a+b;}))/points.length;
+        mean = Number.isInteger(mean) ? mean : mean.toFixed(2);
     }
     return {day:1,min:min,max:max,median:median,q1:q1,q3:q3,mean:mean,xScaleEnd:xScaleEnd,xScaleStart:xScaleStart};
 }
