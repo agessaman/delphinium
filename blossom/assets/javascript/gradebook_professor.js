@@ -1580,6 +1580,7 @@ function callStudentsMilestoneInfo(studentsArr)
 
 function showStudentDetails(studentSummaryData)
 {
+    console.log(studentSummaryData);
     d3.select("#gradebook").style("display", "none");
     d3.select("#spinner").style("display","block");
     //top table
@@ -1597,10 +1598,11 @@ function showStudentDetails(studentSummaryData)
     var promise = $.get("getStudentGradebookData",{studentId:userId});
     promise.then(function (data, textStatus, jqXHR) {
             d3.select("#spinner").style("display","none");
-            makeTables(data);
             d3.select("#gradebook").style("display", "block");
+            makeTables(data);
         })
         .fail(function (data2) {
+            
         });
 }
 

@@ -18,7 +18,16 @@
   ~ You can modify personal copy of source-code but cannot distribute modifications
   ~ You may not distribute any version of this software, modified or otherwise
   -->
-
+<script type="text/javascript">
+  var chartData = {{chartData | raw}};
+  var chartData = {{chartData | raw}};
+  var numMilestones = {{numMilestones}};
+  var submissions = {{submissions | raw}};
+  var students = {{users | raw}};
+  var experienceInstanceId = {{experienceInstanceId}};
+  var today = {{today}};
+  var endDate = {{ endDate | raw}};
+</script>
 {%if ('Instructor' in userRoles or 'TeachingAssistant' in userRoles)%}
 {% partial __SELF__ ~ "::instructor" %}
 {% else %}
