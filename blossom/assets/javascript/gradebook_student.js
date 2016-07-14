@@ -796,7 +796,7 @@ Student.prototype = {
                 var monthIndex = getDate.getMonth();
                 var time = self.formatAMPM(getDate);
                 var text = id.slice(2);
-                self.addTooltipProfessorGradebook(text + " " + self.roundToTwo(getPoint) + " pts");
+                self.addTooltipProfessorGradebook(text + " - " + self.roundToTwo(getPoint) + " pts");
             })
             .on("mouseout", function (d) {
                 self.removeTooltipProfessorGradebook();
