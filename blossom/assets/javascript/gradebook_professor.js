@@ -361,6 +361,7 @@ function addQuartileMinMax(id,data){
             removeTooltipProfessorGradebook();
         });
 }
+
 function getSubmissionsDays(){
     var submissionsDays = {},
         usersOldValue = [];
@@ -1580,7 +1581,6 @@ function callStudentsMilestoneInfo(studentsArr)
 
 function showStudentDetails(studentSummaryData)
 {
-    console.log(studentSummaryData);
     d3.select("#gradebook").style("display", "none");
     d3.select("#spinner").style("display","block");
     //top table
@@ -2346,3 +2346,21 @@ function getBoxPlotData(data){
     }
     return {day:1,min:min,max:max,median:median,q1:q1,q3:q3,mean:mean,xScaleEnd:xScaleEnd,xScaleStart:xScaleStart};
 }
+
+div = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+d3.select("#iGradeTooltip").on("mouseover", function (d) {
+    var str = "<table class='table table-condensed table-gradingScheme'><thead> <tr> <th>Points</th> <th>Letter Grade</th></tr> </thead> <tbody> ";
+    for(var i=0;i<=gradingScheme.length-1;i++)
+    {
+        var item = gradingScheme[i];
+
+        str+="<tr><td>"+item.value+"</td> <td>"+item.name+"</td> </tr>";
+    }
+    str+="</tbody> </table>";
+    addTooltipProfessorGradebook(str, event);
+})
+.on("mouseout", function (d) {
+    removeTooltipProfessorGradebook();
+});

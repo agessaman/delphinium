@@ -1277,7 +1277,8 @@ $req = curl_exec($curl);*/
     {
         return $this->simpleGet("analytics/assignments");
     }
-    public function getAnalyticsStudentAssignmentData($userId=null)
+    
+    public function getAnalyticsStudentAssignmentData($userId = null)
     {//GET /api/v1/courses/:course_id/analytics/users/:student_id/assignments
         if(!isset($_SESSION))
         {
