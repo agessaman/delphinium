@@ -839,3 +839,6 @@ th.details {
     width: 50px !important;
     left: 14% !important;
 }
+.dashboard-container div {
+    border: 1px solid #e0e0e0;
+}
