@@ -835,3 +835,7 @@ th.details {
     opacity: 2;
     stroke-width: 5 !important;
 }
+.histogram-range-slider .ui-slider-handle .ui-slider-tip {
+    width: 50px !important;
+    left: 14% !important;
+}
