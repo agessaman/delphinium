@@ -1811,8 +1811,6 @@ function getHistogramDataByGrades(){
     return {usersCount:retVal,xPoints:intervals};
 }
 
-<<<<<<< HEAD
-=======
 function getStudentsCountGrades(intervals) {
     var retVal = [],
         submissionsDays = getSubmissionsDays(),
@@ -1846,7 +1844,6 @@ function getStudentsCountGrades(intervals) {
     return {counts:retVal,allPoints:studentsPoint};
 }
 
->>>>>>> 0bcb04fcfd195f6dbb4a72b624d95f8a450fcd10
 function getStudentsCount(intervals){
     var retVal = [],
         submissionsDays = getSubmissionsDays(),
