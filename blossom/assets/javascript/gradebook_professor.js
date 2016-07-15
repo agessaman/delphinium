@@ -1939,7 +1939,6 @@ function getStudentsCount(intervals){
     });
     if(intervals[0] == 0){
         studentsPoint.unshift({points:0});
-        retVal[0] = (students.length - allInInterval) + retVal[0];
     }
     return {counts:retVal,allPoints:studentsPoint};
 }
@@ -2121,7 +2120,12 @@ function histogram(){
     var instructorStep = jQuery.parseJSON(getStorage('histogramStep'));
     var maxPoint =(typeof histogramData.maxPoint != 'undefined') ? histogramData.maxPoint : 100,
         checked = 'hPoint',
-        stepSlider = instructorStep[instructorId];
+        stepSlider = instructorStep[instructorId],
+        intervalLabels = [];
+
+    for(var i=10;i<=100;i++){
+        intervalLabels.push(parseInt(createPoint.value(i)));
+    }
 
     $(".histogram-range-slider").slider({
         min: 10,
@@ -2133,6 +2137,7 @@ function histogram(){
         instructorsStep = jQuery.parseJSON(getStorage('histogramStep'));
         instructorsStep[instructorId] = step;
         setStorage('histogramStep',JSON.stringify(instructorsStep));
+         $(".histogram-range-slider").find('.ui-slider-handle').find('.ui-slider-tip').text(parseInt(createPoint.value(step)));
         if(clearLoop){
             var histogramData = getHistogramDataByPoints();
             var boxPlotData = getBoxPlotData(histogramData);
@@ -2140,8 +2145,9 @@ function histogram(){
             changeBoxPlotData(boxPlotData);
         }
     }).slider('float', {
-        labels: false
+        labels: intervalLabels
     });
+    $(".histogram-range-slider").find('.ui-slider-pip').last().find('.ui-slider-label').text(100000);
     $(document).on('change','.histRadio',function(){
         $('.histRadio').closest('label').removeClass('active');
         $(this).closest('label').addClass('active');
