@@ -825,6 +825,7 @@ th.details {
 }
 #assignments-container table tr td:nth-child(2) {
     text-align: right;
+}
 .chart {
 /*    float: none !important;
     margin-right: 90px;*/

@@ -48,12 +48,6 @@ Student.prototype = {
     domFunctions: function () 
     {
         var self = this;
-/*        $.ajax({
-            url: 'gradebook/getStudentSubmission',
-            success: function (data) {
-                console.log(data);
-            }
-        });*/
         /*var monthNames = [
             "Jan", "Feb", "Mar",
             "Apr", "May", "Jun", "Jul",
@@ -352,24 +346,25 @@ Student.prototype = {
             var match = parseInt(d.user_id) === parseInt(id)
             return match;
         });
+
         var text = "User Id: " + id;
         if (filteredData.length > 0)
         {
             text = filteredData[0].name;
         }
     // Add the valueline path.
-/*        if (id === self.user) {
-            strokeColor = '#024b88';
-        }*/
         self.g.append("path")
             .attr("id", "path" + id)
             .attr("class", function (d)
             {
                 if (id != "red")
                 {
-                    if (id == self.user) {
+                    if (id == self.user) 
+                    {
                         return "bluePath line user-line";
-                    } else {
+                    }
+                    else
+                    {
                         return "bluePath line";
                     }
                 }
@@ -383,7 +378,11 @@ Student.prototype = {
             .on("mouseover", function (d) {
                 if (id != "red")
                 {
-                    self.addTooltipProfessorGradebook(text);
+                    if (id === self.user) {
+                        console.log(id);
+                        console.log(self.user);
+                        //self.addTooltipProfessorGradebook(text);
+                    }
                 }
             })
             .on("mouseout", function (d) {
@@ -422,7 +421,11 @@ Student.prototype = {
                     var day = date.getDate();
                     var monthIndex = date.getMonth();
                     var time = self.formatAMPM(date);
-                    self.addTooltipProfessorGradebook(text +" -- "+self.roundToTwo(d.points) + " - pts");
+                    if(id === self.user ) {
+                        self.addTooltipProfessorGradebook(text + " -- "+self.roundToTwo(d.points) + " - pts");
+                    } else {
+                        self.addTooltipProfessorGradebook(self.roundToTwo(d.points) + " - pts");
+                    }
                 }
             })
             .on("mouseout", function (d) {
@@ -793,7 +796,7 @@ Student.prototype = {
                 var monthIndex = getDate.getMonth();
                 var time = self.formatAMPM(getDate);
                 var text = id.slice(2);
-                self.addTooltipProfessorGradebook(text + " " + self.roundToTwo(getPoint) + " pts earned on " + self.monthNames[monthIndex] + " " + day + " @ " + time);
+                self.addTooltipProfessorGradebook(text + " - " + self.roundToTwo(getPoint) + " pts");
             })
             .on("mouseout", function (d) {
                 self.removeTooltipProfessorGradebook();

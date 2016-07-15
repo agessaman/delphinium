@@ -125,15 +125,13 @@ class GuzzleHelper
     public static function getAsset($url)
     {
         $client = new Client(['verify' => false]);
-         try {
-
-        $response = $client->get($url);
-
-        $data = json_decode($response->getBody());
-        return $data;
-         } catch (\GuzzleHttp\Exception\ClientException $e) {
+        try {
+            $response = $client->get($url);
+            $data = json_decode($response->getBody());
+            return $data;
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
              return [];
-         }
+        }
     }
     public static function postData($url)
     {
