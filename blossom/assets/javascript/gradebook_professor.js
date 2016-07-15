@@ -77,7 +77,7 @@ promise.then(function (data1, textStatus, jqXHR) {
             removeTooltipProfessorGradebook();
         });
 
-        $('.Q123MinMax,.histogramGroup').find('.btn-group').find('.btn-info').removeClass('disabled');
+        $('.Q123MinMax,.histogramGroup').find('.btn-group').find('.btn-info').not('.hGrade').removeClass('disabled');
         $('.histogramRVS').removeClass('histogramRVS');
         var inputs = document.getElementsByClassName('checkboxMultiselect');
         for(var i = 0; i < inputs.length; i++) {
@@ -1565,6 +1565,7 @@ function callStudentsMilestoneInfo(studentsArr)
             d3.select(".bottomSpinnerDiv").style("display","none");
             d3.select(".spinnerDiv").style("display","none");
             d3.select("#topRight").style("opacity","1");
+            $("#hGrade").removeAttr('data-disabled').prop('disabled',false).closest('label').removeClass('disabled');
             windowData = data;
             buildTable(windowData);
             var checkboxes = d3.selectAll(".single");
@@ -1853,20 +1854,13 @@ function getHistogramDataByGrades(){
 
 function getStudentsCountGrades(intervals) {
     var retVal = [],
-        submissionsDays = getSubmissionsDays(),
-        userPoint = [],
+        gradesData = windowData,
         studentsPoint = [],
         allInInterval = 0;
-    $.each(submissionsDays,function(subK,subV){
-        $.each(subV,function(itemsK,item){
-            userPoint[item.id] = [item];
-        });
+    $.each(gradesData,function(k,studentInfo){
+        studentsPoint.push({points:parseFloat(studentInfo.total.toFixed(2))});
     });
-    $.each(userPoint,function(uK,uV){
-        if(typeof uV == 'object'){
-            studentsPoint.push(uV[0]);
-        }
-    });
+
     $.each(intervals,function(k,v){
         var intervalCount = 0;
         $.each(studentsPoint,function(sK,sV){
