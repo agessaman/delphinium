@@ -760,32 +760,56 @@ class CanvasHelper
         $urlArgs[]= "assignments";
         $params=[];
 
-        foreach($request->getAssignment()->attributes as $key => $value) {
-            if ($value)
-            {
-                if(($key==="due_at"||$key==="unlock_at"||$key=="lock_at"))
-                {
-                    $params[] = "assignment[{$key}]={$value->format(DateTime::ISO8601)}";
-                    continue;
-                }
-                if($key==="points_possible")
-                {
-                    $params[] = "assignment[{$key}]=".floatval($value);
-                    continue;
-                }
-                $params[] = "assignment[{$key}]={$value}";
-            }
-        }
-
-        $params[] = "assignment[published]=true";
-
+//        foreach($request->getAssignment()->attributes as $key => $value) {
+//            if ($value)
+//            {
+//                if(($key==="due_at"||$key==="unlock_at"||$key=="lock_at"))
+//                {
+////                    $params[] = "assignment[{$key}]={$value->format(DateTime::ISO8601)}";
+//                    continue;
+//                }
+//                if($key==="points_possible")
+//                {
+//                    $params[] = "assignment[{$key}]=".floatval($value);
+//                    continue;
+//                }
+//                $params[] = "assignment[{$key}]={$value}";
+//            }
+//        }
+        $name = $request->getAssignment()->name;
+        $obj = new \stdClass();
+        $obj->name = $name;
+        $obj->published = true;
+        $params = array('assignment'=>($obj));
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
-        echo $url;
+//        echo $url;
 //        $response = GuzzleHelper::makeRequest($request, $url);
+//        echo json_encode($response);
+//        echo "--";
+//        echo json_encode($params);return;
         $response = GuzzleHelper::postDataWithParamsCurl($url, $params, $token, $action = 'POST');
+
+        echo json_encode($response);return;
+        $this->processSingleAssignment($response);
         return $response;
     }
 
+    public function postAssignmentGroup(AssignmentGroupsRequest $request, AssignmentGroup $group)
+    {///api/v1/courses/:course_id/assignment_groups
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+        $courseId = $_SESSION['courseID'];
+        $urlPieces= $this->initUrl();
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $urlArgs = array();
+        $urlPieces[] = 'assignment_groups';
+        $params=['name'=>$group->name];
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+        $response = GuzzleHelper::postDataWithParamsCurl($url, $params, $token, $action = 'POST');
+        return $this->processCanvasAssignmentGroupsData($response, $courseId, true);
+
+    }
     public function updateAssignment(AssignmentsRequest $request)
     {
         $urlPieces= $this->initUrl();
@@ -884,6 +908,7 @@ class CanvasHelper
         $response = GuzzleHelper::postData($url);
         return $response;
     }
+
     public function uploadFile(File $file)
     {
         $urlPieces= $this->initUrl();
@@ -1188,9 +1213,11 @@ class CanvasHelper
         $assignmentId = intval($request->getAssignmentIds()[0]);
         $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}/assignments/{$assignmentId}/submissions";
 
+//        $submission = array("submission"=>$params);
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
 //        $response = GuzzleHelper::makeRequest($request, $url, false,$token);
         GuzzleHelper::postDataWithParamsCurl($url, $params, $token);
+//        GuzzleHelper::postDataWithParamsCurl($url, $submission, $token);
     }
 
     /*
@@ -1783,7 +1810,7 @@ class CanvasHelper
 
     private function processSingleAssignmentGroup($row, $courseId)
     {
-        $assignmentGroup = AssignmentGroup::firstOrNew(array('assignment_group_id' => $row->id));
+        $assignmentGroup = AssignmentGroup::firstOrNew(array('name' => $row->name,'course_id'=>$courseId));
         $assignmentGroup->assignment_group_id = $row->id;
         $assignmentGroup->name = $row->name;
         $assignmentGroup->position = $row->position;

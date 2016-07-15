@@ -150,6 +150,8 @@ class GuzzleHelper
     public static function postDataWithParamsCurl($url, $params, $token, $action = 'POST')
     {
         $data_string = json_encode($params);
+
+        echo $data_string;
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_POST,true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $action);
@@ -161,8 +163,10 @@ class GuzzleHelper
             'Authorization: Bearer '.$token
         ));
         $result = curl_exec($ch);
+        echo json_encode($result);
+
         curl_close($ch);
-        return $result;
+        return json_decode($result);
     }
 
     public static function postMultipartRequest($params, $file, $upload_url)

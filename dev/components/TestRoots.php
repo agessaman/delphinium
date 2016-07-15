@@ -25,6 +25,7 @@ namespace Delphinium\Dev\Components;
 use Delphinium\Roots\UpdatableObjects\Module;
 use Delphinium\Roots\UpdatableObjects\ModuleItem;
 use Delphinium\Roots\Models\Assignment;
+use Delphinium\Roots\Models\AssignmentGroup;
 use Delphinium\Roots\Models\ModuleItem as DbModuleItem;
 use Delphinium\Roots\Models\Quizquestion;
 use Delphinium\Roots\Roots;
@@ -89,10 +90,10 @@ class TestRoots extends ComponentBase
 //
 //        $this->testingGettingAssignments();
 //        $this->testGettingSingleAssignment();
-
+//        $this->testCreateAssignment();
 //        $this->testAssignmentGroups();
 //        $this->testSingleAssignmentGroup();
-//
+//        $this->testCreateAssignmentGroup();
 //        $this->testGettingSingleSubmissionSingleUserSingleAssignment();
 //        $this->testGettingAllSubmissionForSingleAssignment();
 //        $this->testGettingMultipleSubmissionsForSingleStudent();
@@ -116,8 +117,7 @@ class TestRoots extends ComponentBase
 //        $this->testSubmitQuiz();
 //        $this->getQuizSubmissionQuestions();
 //        $this->getModuleTree();
-//        $this->testPostSubmission();
-        $this->testCreateAssignment();
+        $this->testPostSubmission();
     }
 
     private function testBasicModulesRequest()
@@ -817,7 +817,7 @@ class TestRoots extends ComponentBase
 
     public function testCreateAssignment()
     {
-        $name = "izo";
+        $name = "NEW ASSIGNMENT";
         $due_at = new DateTime('now');
 //        $due_at = $datetime->format(DateTime::ISO8601);
         $points_possible = 40;
@@ -831,13 +831,14 @@ class TestRoots extends ComponentBase
 
         $roots = new Roots();
         $res = $roots->assignments($req);
-        return json_encode($res);
+        echo json_encode($res);
+        return $res;
     }
 
     public function testPostSubmission()
     {
         $studentIds = array(1604486);
-        $assignmentIds = array(2705518);
+        $assignmentIds = array(2710395);
         $multipleStudents = false;
         $multipleAssignments = false;
         $allStudents = false;
@@ -850,7 +851,9 @@ class TestRoots extends ComponentBase
 
         //parameters
         $params = array(
-            "submission[submission_type]"=>"online_text_entry");
+            "submission[submission_type]"=>"online_url",
+//            "submission[body]"=>"Present",
+            "submission[url]"=>"http://www.google.com");
 
         $res = $this->roots->submissions($req, $params);
         echo json_encode($res);
@@ -877,4 +880,23 @@ class TestRoots extends ComponentBase
         return;
     }
 
+    public function testCreateAssignmentGroup()
+    {
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+        $courseId = $_SESSION['courseID'];
+        $assignmentGrp = new AssignmentGroup();
+        $assignmentGrp->name = "Attendance";
+        $assignmentGrp->course_id = $courseId;
+
+        $include_assignments = false;
+        $assignmentGpId = null;
+        $fresh_data = false;
+        $req = new AssignmentGroupsRequest(ActionType::POST, $include_assignments, $assignmentGpId, $fresh_data);
+
+        $res = $this->roots->assignmentGroups($req, $assignmentGrp);
+
+        echo json_encode($res);
+    }
 }

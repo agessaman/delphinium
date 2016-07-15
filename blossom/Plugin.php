@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
  *
@@ -19,29 +20,23 @@
  * You can modify personal copy of source-code but cannot distribute modifications
  * You may not distribute any version of this software, modified or otherwise
  */
-
 namespace Delphinium\Blossom;
 
 use System\Classes\PluginBase;
 use Backend;
 use Event;
-
 use Backend\Classes\FormWidgetBase;
 use Delphinium\Blossom\FormWidgets\ColorPicker;
+
 //use Backend\formwidgets\ColorPicker;
 //use Backend\widgets\form\Form;// checkbox & radio ?
-
 /**
  * Blossom Plugin Information File
  */
 class Plugin extends PluginBase
 {
-    public $require = [
-        'Delphinium.Greenhouse',
-        'Delphinium.Dev',
-        'Delphinium.Roots',
-        'Delphinium.Xylum'
-    ];
+    public $require = array('Delphinium.Greenhouse', 'Delphinium.Dev', 'Delphinium.Roots', 'Delphinium.Xylum');
+
     /**
      * Returns information about this plugin.
      *
@@ -49,94 +44,76 @@ class Plugin extends PluginBase
      */
     public function pluginDetails()
     {
-        return [
-            'name'        => 'Blossom',
-            'description' => 'Plug-in used to develop views for displaying grade information',
-            'author'      => 'Jacob Reid',
-            'icon'        => 'icon-asterisk'
-        ];
+        return array('name' => 'Blossom', 'description' => 'Plug-in used to develop views for displaying grade information', 'author' => 'Jacob Reid', 'icon' => 'icon-asterisk');
     }
 
     public function registerComponents()
     {
-        return [
-            '\Delphinium\Blossom\Components\Grade' => 'grade',
-            '\Delphinium\Blossom\Components\Bonus' => 'bonus',
-            '\Delphinium\Blossom\Components\Experience' => 'experience',
-            '\Delphinium\Blossom\Components\Leaderboard' => 'leaderboard',
-            '\Delphinium\Blossom\Components\Competencies' => 'competencies',
-            '\Delphinium\Blossom\Components\StudentsGraph' => 'studentsgraph',
-            '\Delphinium\Blossom\Components\Timer' => 'timer',
-            '\Delphinium\Blossom\Components\Progress' => 'progress',
-            '\Delphinium\Blossom\Components\Gradebook' => 'gradebook',
-            '\Delphinium\Blossom\Components\EasterEggs' => 'eastereggs',
-            '\Delphinium\Blossom\Components\Stats' => 'stats'
-        ];
+        return array('\\Delphinium\\Blossom\\Components\\Grade' => 'grade',
+            '\\Delphinium\\Blossom\\Components\\Bonus' => 'bonus',
+            '\\Delphinium\\Blossom\\Components\\Experience' => 'experience',
+            '\\Delphinium\\Blossom\\Components\\Leaderboard' => 'leaderboard',
+            '\\Delphinium\\Blossom\\Components\\Competencies' => 'competencies',
+            '\\Delphinium\\Blossom\\Components\\StudentsGraph' => 'studentsgraph',
+            '\\Delphinium\\Blossom\\Components\\Timer' => 'timer',
+            '\\Delphinium\\Blossom\\Components\\Progress' => 'progress',
+            '\\Delphinium\\Blossom\\Components\\Gradebook' => 'gradebook',
+            '\\Delphinium\\Blossom\\Components\\EasterEggs' => 'eastereggs',
+            '\\Delphinium\\Blossom\\Components\\Stats' => 'stats',
+            '\\Delphinium\\Blossom\\Components\\Attendance' => 'attendance');
     }
-	
+
     public function registerFormWidgets()
     {
-        return[
-            'Delphinium\Blossom\FormWidgets\ColorPicker' => [
-                'label' => 'Color picker',
-                'code' => 'colorpicker'
-            ]
-        ];
+        return array('Delphinium\\Blossom\\FormWidgets\\ColorPicker' => array('label' => 'Color picker', 'code' => 'colorpicker'));
     }
-	
-	public function boot()
+
+    public function boot()
     {
-    	Event::listen('backend.menu.extendItems', function($manager){
-
-            $manager->addSideMenuItems('Delphinium.Greenhouse', 'greenhouse', [
-                'Bonus' => [
-					'label' => 'Bonus',
-					'icon' => 'icon-heart',
-					'owner' => 'Delphinium.Greenhouse',
-					'url' => Backend::url('delphinium/blossom/bonus'),
-                    'group'       => 'Blossom',
-				],
-
-                'Competencies' => [
+        Event::listen('backend.menu.extendItems', function ($manager) {
+            $manager->addSideMenuItems('Delphinium.Greenhouse', 'greenhouse', array(
+                'Bonus' => array(
+                    'label' => 'Bonus',
+                    'icon' => 'icon-heart',
+                    'owner' => 'Delphinium.Greenhouse',
+                    'url' => Backend::url('delphinium/blossom/bonus'),
+                    'group' => 'Blossom'),
+                'Competencies' => array(
                     'label' => 'Competencies',
                     'icon' => 'icon-sliders',
                     'owner' => 'Delphinium.Greenhouse',
                     'url' => Backend::url('delphinium/blossom/competencies'),
-                    'group'       => 'Blossom',
-                ],
-
-                'Experience' => [
+                    'group' => 'Blossom'),
+                'Experience' => array(
                     'label' => 'Experience',
                     'icon' => 'icon-shield',
                     'owner' => 'Delphinium.Greenhouse',
                     'url' => Backend::url('delphinium/blossom/experience'),
-                    'group'       => 'Blossom',
-                ],
-
-                'Leaderboard' => [
+                    'group' => 'Blossom'),
+                'Leaderboard' => array(
                     'label' => 'Leaderboard',
                     'icon' => 'icon-sitemap',
                     'owner' => 'Delphinium.Greenhouse',
                     'url' => Backend::url('delphinium/blossom/leaderboard'),
-                    'group'       => 'Blossom',
-                ],
-
-                'Easter Eggs' => [
+                    'group' => 'Blossom'),
+                'Easter Eggs' => array(
                     'label' => 'Easter Eggs',
                     'icon' => 'icon-lemon-o',
                     'owner' => 'Delphinium.Greenhouse',
                     'url' => Backend::url('delphinium/blossom/eastereggs'),
-                    'group' =>'Blossom',
-                ],
-                'Stats' => [
+                    'group' => 'Blossom'),
+                'Stats' => array(
                     'label' => 'Stats',
                     'icon' => 'icon-bar-chart',
                     'owner' => 'Delphinium.Greenhouse',
                     'url' => Backend::url('delphinium/blossom/stats'),
-                    'group'       => 'Blossom',
-                ]
-            ]);
-            
+                    'group' => 'Blossom'),
+                'Attendance' => array(
+                    'label' => 'Attendance',
+                    'icon' => 'oc-icon-check-square-o',
+                    'owner' => 'Delphinium.Greenhouse',
+                    'url' => \Backend::url('delphinium/blossom/attendance'),
+                    'group' => 'Blossom')));
         });
     }
 }
