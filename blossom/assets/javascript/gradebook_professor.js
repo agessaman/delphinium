@@ -1854,16 +1854,13 @@ function getHistogramDataByGrades(){
 function getStudentsCountGrades(intervals) {
     var retVal = [],
         submissionsDays = getSubmissionsDays(),
-        endDate = Date.parse(dateRange[pointHistDate]),
         userPoint = [],
         studentsPoint = [],
         allInInterval = 0;
     $.each(submissionsDays,function(subK,subV){
-        if((Date.parse(subK) <= endDate || subK <= endDate) || pointHistDateAll == 0){
-            $.each(subV,function(itemsK,item){
-                userPoint[item.id] = [item];
-            });
-        }
+        $.each(subV,function(itemsK,item){
+            userPoint[item.id] = [item];
+        });
     });
     $.each(userPoint,function(uK,uV){
         if(typeof uV == 'object'){
@@ -1952,20 +1949,21 @@ function histogramChart(data,slideDays) {
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    svg.append("g")
-        .attr("class", "y axis")
-        .append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", 6)
-        .attr("dy", ".71em")
-        .style("text-anchor", "end")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        svg.append("g")
+            .attr("class", "y axis")
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", ".71em")
+            .style("text-anchor", "end")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
-    svg.append("g")
-    .attr("class", "x axis histogramXA")
-    .attr("transform", "translate(0," + height + ")");
+        svg.append("g")
+        .attr("class", "x axis histogramXA")
+        .attr("transform", "translate(0," + height + ")");
     }
+
     var histData = [],
         counts = data.xPUserC.usersCount.counts,
         xPoints = data.xPUserC.xPoints;
@@ -2002,6 +2000,20 @@ function addxBar(data,height,x,y,xAxis,yAxis){
     .attr("width", x.rangeBand())
     .attr("y", function(d) { return y(d.count); })
     .attr("height", function(d) { return height - y(d.count); });
+
+    if($('.histRadio:checked').attr('id') != 'hGrade'){
+        svg.append("svg:rect")
+        .attr("x",520)
+        .attr("y",21)
+        .attr("height",height)
+        .attr("width",0.5)
+        .attr("stroke-width", 1.5)
+        .attr("stroke","red")
+        .attr("class", "hist-today-line");
+    }else{
+        $('.hist-today-line').remove();
+    }
+    
 }
 
 function histogram(){
@@ -2109,13 +2121,17 @@ function histogram(){
     $(document).on('change','.histRadio',function(){
         $('.histRadio').closest('label').removeClass('active');
         $(this).closest('label').addClass('active');
-        if($(this).attr('id') == 'hPoint'){
-            $(".histogram-range-slider")
-            .slider({disabled: false});
+        if($(this).attr('id') == 'hGrade'){
+            $(".histogram-range-slider").slider({disabled: true});
+            $(".histogram-date").slider({disabled: true});
+            $('.histogram-player').prop('disabled',true).find('i').removeClass('fa-pause').addClass('fa-play');
+            clearInterval(speed);
         }else{
-            $(".histogram-range-slider")
-            .slider({disabled: true});
+            $(".histogram-date").slider({disabled: false});
+            $('.histogram-player').prop('disabled',false);
+            ($(this).attr('id') == 'hPoint') ? $(".histogram-range-slider").slider({disabled: false}) : $(".histogram-range-slider").slider({disabled: true});
         }
+        
         clearLoop = false,
         checked = $(this).attr('id');
         addBarToHistogram();
