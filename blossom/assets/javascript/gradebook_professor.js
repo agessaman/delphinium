@@ -299,15 +299,29 @@ function addMilestonesLine(yArr){
 // Add median, min, max, Q1 and Q3 lines
 function addQuartileMinMaxLine(){
     var Q123MinMax = {
-        avQ1: getQ1Q2Q3(1/4),
-        avMedian: getQ1Q2Q3(2/4),
-        avQ3: getQ1Q2Q3(3/4),
-        avMin: getMin(),
-        avMax: getMax(),
-        avMean: getMean()
-    };
-    $.each(Q123MinMax,function(k,lineData){
+        avQ1: 1/4,
+        avMedian: 2/4,
+        avQ3: 3/4,
+        avMin: 1,
+        avMax: 1,
+        avMean: 1
+        },
+        lineData;
+
+    $.each(Q123MinMax,function(k,v){
         if($('.Q123MinMax #'+k).is(':checked')){
+            if(k == 'avQ1' || k == 'avQ3' || k == 'avMedian'){
+                lineData = getQ1Q2Q3(v);
+            }
+            if(k == 'avMin'){
+                lineData = getMin();
+            }
+            if(k == 'avMax'){
+                lineData = getMax();
+            }
+            if(k == 'avMean'){
+                lineData = getMean();
+            }
             $('path#' + k).remove();
             addQuartileMinMax(k,lineData);
         }else{
@@ -363,7 +377,13 @@ function addQuartileMinMax(id,data){
 }
 function getSubmissionsDays(){
     var submissionsDays = {},
-        usersOldValue = [];
+        usersOldValue = [],
+        allStudents = [],
+        usersId;
+
+    $.each($('#students-checkbox input.single'),function(k,v){
+        allStudents.push(parseInt($(v).val()));
+    });
     $.each(dateRange, function(dK,dV){
         var pushVal = [];
         $.each(submissions, function(k,v){
@@ -388,6 +408,17 @@ function getSubmissionsDays(){
             pushVal.push(pushUserVal[v.id]);
         });
         submissionsDays[dV] = pushVal;
+        $.each(submissionsDays,function(k,v){
+            usersId = [];
+            $.each(v,function(vK,d){
+                usersId.push(d.id);
+            });
+            $.each(allStudents,function(sK,sId){
+                if($.inArray(sId,usersId) == -1){
+                    pushVal.push({id:sId,points:0,date:k});
+                }
+            });
+        });
     });
     return submissionsDays;
 }
@@ -1581,7 +1612,6 @@ function callStudentsMilestoneInfo(studentsArr)
 
 function showStudentDetails(studentSummaryData)
 {
-    console.log(studentSummaryData);
     d3.select("#gradebook").style("display", "none");
     d3.select("#spinner").style("display","block");
     //top table
@@ -2326,9 +2356,7 @@ function getBoxPlotData(data){
         points = [];
     $.each(allPoints,function(k,v){
         if(v.points >= xScaleStart && v.points <= xScaleEnd){
-            if($.inArray(v.points,points) == -1){
-                points.push(v.points);
-            }
+            points.push(v.points);
         }
     });
     points.sort(function(a,b){
@@ -2348,9 +2376,6 @@ function getBoxPlotData(data){
             q3 = getQ1Q3MedianForBoxPlot(points,0.75),
             min = points[0],
             max = points[points.length-1];
-        if(points[0] == 0){
-            points.shift();
-        }
         var mean = (points.reduce(function(a, b){return a+b;}))/points.length;
             mean = Number.isInteger(mean) ? mean : Math.round(mean);
     }

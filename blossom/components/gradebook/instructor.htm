@@ -46,7 +46,7 @@
                         <div id="chart"  style="width:800px;height:400px;opacity:0.5;"></div>
                         <div  id="topRight" style="opacity:0.5">
                             <div class="cont">
-                                <div class="multiselect" >
+                                <div class="multiselect" id="students-checkbox">
                                     {% for item in users %}
                                     <label class="nameLabel"><input class="single checkboxMultiselect" disabled  type="checkbox" value='{{item.user_id}}'>{{item.name}}</label>
                                     {% endfor %}
