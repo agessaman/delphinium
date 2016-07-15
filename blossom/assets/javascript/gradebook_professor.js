@@ -1811,6 +1811,42 @@ function getHistogramDataByGrades(){
     return {usersCount:retVal,xPoints:intervals};
 }
 
+<<<<<<< HEAD
+=======
+function getStudentsCountGrades(intervals) {
+    var retVal = [],
+        submissionsDays = getSubmissionsDays(),
+        userPoint = [],
+        studentsPoint = [],
+        allInInterval = 0;
+    $.each(submissionsDays,function(subK,subV){
+        $.each(subV,function(itemsK,item){
+            userPoint[item.id] = [item];
+        });
+    });
+    $.each(userPoint,function(uK,uV){
+        if(typeof uV == 'object'){
+            studentsPoint.push(uV[0]);
+        }
+    });
+    $.each(intervals,function(k,v){
+        var intervalCount = 0;
+        $.each(studentsPoint,function(sK,sV){
+            if(intervals[k] <= sV.points && intervals[k+1] >= sV.points && typeof intervals[k+1] != 'undefined'){
+                intervalCount++;
+                allInInterval++;
+            }
+        });
+        retVal.push(intervalCount);
+    });
+    if(intervals[0] == 0){
+        studentsPoint.unshift({points:0});
+        retVal[0] = (students.length - allInInterval) + retVal[0];
+    }
+    return {counts:retVal,allPoints:studentsPoint};
+}
+
+>>>>>>> 0bcb04fcfd195f6dbb4a72b624d95f8a450fcd10
 function getStudentsCount(intervals){
     var retVal = [],
         submissionsDays = getSubmissionsDays(),
@@ -1876,20 +1912,21 @@ function histogramChart(data,slideDays) {
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    svg.append("g")
-        .attr("class", "y axis")
-        .append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", 6)
-        .attr("dy", ".71em")
-        .style("text-anchor", "end")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        svg.append("g")
+            .attr("class", "y axis")
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", ".71em")
+            .style("text-anchor", "end")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
-    svg.append("g")
-    .attr("class", "x axis histogramXA")
-    .attr("transform", "translate(0," + height + ")");
+        svg.append("g")
+        .attr("class", "x axis histogramXA")
+        .attr("transform", "translate(0," + height + ")");
     }
+
     var histData = [],
         counts = data.xPUserC.usersCount.counts,
         xPoints = data.xPUserC.xPoints;
@@ -1926,6 +1963,20 @@ function addxBar(data,height,x,y,xAxis,yAxis){
     .attr("width", x.rangeBand())
     .attr("y", function(d) { return y(d.count); })
     .attr("height", function(d) { return height - y(d.count); });
+
+    if($('.histRadio:checked').attr('id') != 'hGrade'){
+        svg.append("svg:rect")
+        .attr("x",520)
+        .attr("y",21)
+        .attr("height",height)
+        .attr("width",0.5)
+        .attr("stroke-width", 1.5)
+        .attr("stroke","red")
+        .attr("class", "hist-today-line");
+    }else{
+        $('.hist-today-line').remove();
+    }
+    
 }
 
 function histogram(){
@@ -2038,13 +2089,17 @@ function histogram(){
     $(document).on('change','.histRadio',function(){
         $('.histRadio').closest('label').removeClass('active');
         $(this).closest('label').addClass('active');
-        if($(this).attr('id') == 'hPoint'){
-            $(".histogram-range-slider")
-            .slider({disabled: false});
+        if($(this).attr('id') == 'hGrade'){
+            $(".histogram-range-slider").slider({disabled: true});
+            $(".histogram-date").slider({disabled: true});
+            $('.histogram-player').prop('disabled',true).find('i').removeClass('fa-pause').addClass('fa-play');
+            clearInterval(speed);
         }else{
-            $(".histogram-range-slider")
-            .slider({disabled: true});
+            $(".histogram-date").slider({disabled: false});
+            $('.histogram-player').prop('disabled',false);
+            ($(this).attr('id') == 'hPoint') ? $(".histogram-range-slider").slider({disabled: false}) : $(".histogram-range-slider").slider({disabled: true});
         }
+        
         clearLoop = false,
         checked = $(this).attr('id');
         addBarToHistogram();
