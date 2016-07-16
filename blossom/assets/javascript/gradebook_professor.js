@@ -1986,7 +1986,7 @@ function getStudentsCount(intervals){
 
 function histogramChart(data,slideDays) {
     var margin = {top: 20, right: 20, bottom: 30, left: 40},
-        width = 1020 - margin.left - margin.right,
+        width = 1020,
         height = 300 - margin.top - margin.bottom;
 
     var y = d3.scale.linear()
@@ -2396,10 +2396,9 @@ function boxPlotChart(data){
 }
 
 function changeBoxPlotData(data){
-    $('#boxPlot svg #xAxisG').remove();
     xScale = d3.scale.linear()
     .domain([data.xScaleStart,data.xScaleEnd])
-    .range([20,930]);
+    .range([20,990]);
 
     xAxis = d3.svg.axis()
     .scale(xScale)
