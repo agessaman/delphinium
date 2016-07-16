@@ -614,7 +614,8 @@ function addLine(data, strokeColor, id)
     }
 
 }
-///////////////////////////////////////////////////////////////////////
+////////////////////////////////////
+////////////////////////////////////
 $(document).on("change", '.deselectAll',  function () {
     allSelected = !allSelected;
     var checkboxes = d3.selectAll(".single");
@@ -634,14 +635,13 @@ $(document).on("change", '.deselectAll',  function () {
             selectedStudents.splice(index, 1);
         }
     });
-    if (allSelected)
+    /*if (allSelected)
     {
-
         d3.select("#pathred").remove();
         d3.select(".cirred").remove();
         addLine(data, "red", "red");
         addRedLineDots();
-    }
+    }*/
 
 })
 var selectedStudents = [];
@@ -1151,6 +1151,23 @@ function buildTable(data) {
             loadData.push(data_row);
         });
 
+        function average(arguments) {
+            var sum = 0;
+
+            for (var i = 0; i < arguments[i]; i++ ) sum += Math.round(arguments[i]);
+
+            return sum == 0 ? sum : sum / arguments.length;
+        }
+
+        $('.dashboard-container p').each(function(a,b) {
+            var unique = columns_data[$(b).attr('class')];
+            var num = unique.filter(function(item, i, ar){ return ar.indexOf(item) === i; });
+            var num = num.filter(function(item, i, ar){ return ar.indexOf(item) != 0; });
+            console.log(num);
+            var avg = average(num);
+            $(b).append(Math.round(avg));
+        });
+
         $.each(table_range, function(a,b) {
             var min_val = Math.min.apply(null, columns_data[b.column]);
             var max_val = Math.max.apply(null, columns_data[b.column]);
@@ -1599,6 +1616,29 @@ function callStudentsMilestoneInfo(studentsArr)
             $("#hGrade").removeAttr('data-disabled').prop('disabled',false).closest('label').removeClass('disabled');
             windowData = data;
             buildTable(windowData);
+            $('.jsgrid-header-row th').eq(11).append('<a id="aGradeHover" style="color:#337AB7 !important;font-size:20px;margin: 0 0 0 7px;"><i id="iGradeTooltip" class="fa fa-question-circle"></i></a>');
+            div = d3.select("body").append("div")
+                .attr("class", "tooltip")
+                .style("opacity", 0);
+            d3.select("#iGradeTooltip").on("mouseover", function (d) {
+                var str = "<table class='table table-condensed table-gradingScheme'><thead> <tr> <th>Points</th> <th>Letter Grade</th></tr> </thead> <tbody> ";
+                for(var i=0;i<=gradingScheme.length-1;i++)
+                {
+                    var item = gradingScheme[i];
+
+                    str+="<tr><td>"+item.value+"</td> <td>"+item.name+"</td> </tr>";
+                }
+                str+="</tbody> </table>";
+                div.transition()
+                    .duration(200)
+                    .style("opacity", .9);
+                div.html(str)
+                    .style("left", (d3.event.pageX - 230) + "px")
+                    .style("top", (d3.event.pageY) + "px");
+            })
+            .on("mouseout", function (d) {
+                removeTooltipProfessorGradebook();
+            });
             var checkboxes = d3.selectAll(".single");
             checkboxes[0].forEach(function (d, i)
             {
@@ -2380,3 +2420,21 @@ function getBoxPlotData(data){
     }
     return {day:1,min:min,max:max,median:median,q1:q1,q3:q3,mean:mean,xScaleEnd:xScaleEnd,xScaleStart:xScaleStart};
 }
+
+div = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+d3.select("#iGradeTooltip").on("mouseover", function (d) {
+    var str = "<table class='table table-condensed table-gradingScheme'><thead> <tr> <th>Points</th> <th>Letter Grade</th></tr> </thead> <tbody> ";
+    for(var i=0;i<=gradingScheme.length-1;i++)
+    {
+        var item = gradingScheme[i];
+
+        str+="<tr><td>"+item.value+"</td> <td>"+item.name+"</td> </tr>";
+    }
+    str+="</tbody> </table>";
+    addTooltipProfessorGradebook(str, event);
+})
+.on("mouseout", function (d) {
+    removeTooltipProfessorGradebook();
+});
