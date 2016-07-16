@@ -1866,7 +1866,11 @@ function getHistogramDataByPoints(){
     var endArr = [],
         intervals = [],
         step = stepInstructor,
-        users = [];
+        users = [],
+        inputStep = $('.like-interval-inp').val();
+
+    step = (inputStep.length == 0) ? step : parseInt(inputStep);
+
     $.each(submissions,function(k,v){
         endArr.push(v.items[v.items.length-1].points);
     });
@@ -2158,7 +2162,9 @@ function histogram(){
         instructorsStep = jQuery.parseJSON(getStorage('histogramStep'));
         instructorsStep[instructorId] = step;
         setStorage('histogramStep',JSON.stringify(instructorsStep));
-         $(".histogram-range-slider").find('.ui-slider-handle').find('.ui-slider-tip').text(parseInt(createPoint.value(step)));
+        $('.like-interval-inp').val('');
+        $(".histogram-range-slider").find('.ui-slider-handle').find('.ui-slider-tip').text(parseInt(createPoint.value(step)));
+        
         if(clearLoop){
             var histogramData = getHistogramDataByPoints();
             var boxPlotData = getBoxPlotData(histogramData);
@@ -2176,11 +2182,18 @@ function histogram(){
             $(".histogram-range-slider").slider({disabled: true});
             $(".histogram-date").slider({disabled: true});
             $('.histogram-player').prop('disabled',true).find('i').removeClass('fa-pause').addClass('fa-play');
+            $('.like-interval-inp').attr('disabled',true);
             clearInterval(speed);
         }else{
             $(".histogram-date").slider({disabled: false});
             $('.histogram-player').prop('disabled',false);
-            ($(this).attr('id') == 'hPoint') ? $(".histogram-range-slider").slider({disabled: false}) : $(".histogram-range-slider").slider({disabled: true});
+            if($(this).attr('id') == 'hPoint'){
+                $(".histogram-range-slider").slider({disabled: false});
+                $('.like-interval-inp').attr('disabled',false);
+            }else{
+                $(".histogram-range-slider").slider({disabled: true});
+                $('.like-interval-inp').attr('disabled',true);
+            }
         }
         
         clearLoop = false,
@@ -2200,6 +2213,12 @@ function histogram(){
         }
     });
     $(document).on('mouseout','#histogram .bar',function(){ removeTooltipProfessorGradebook(); });
+
+    $(document).on('keyup','.like-interval-inp',function(e){
+        if(e.keyCode == 13){
+            addBarToHistogram();
+        }
+    });
 }
 
 function intervalHistIts() {
