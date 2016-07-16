@@ -842,3 +842,7 @@ th.details {
 .dashboard-container div {
     border: 1px solid #e0e0e0;
 }
+.histogram-range-slider .ui-slider-pip-first,
+.histogram-range-slider .ui-slider-pip-last {
+    color: #FF7A00 !important;
+}
