@@ -839,10 +839,38 @@ th.details {
     width: 50px !important;
     left: 14% !important;
 }
-.dashboard-container div {
-    border: 1px solid #e0e0e0;
-}
 .histogram-range-slider .ui-slider-pip-first,
 .histogram-range-slider .ui-slider-pip-last {
     color: #FF7A00 !important;
+    text-align: center;
+    padding-top: 11px;
+}
+.dcontent {
+    width: 14.28%;
+    position: relative;
+    min-height: 1px;
+    padding-left: 15px;
+    padding-right: 15px;
+    float: left;
+}
+.dcontent div {
+    border: 1px solid #e0e0e0;
+    text-align: center;
+    padding-top: 11px;
+}
+.dcontent span {
+    color: #617f9e;
+}
+.dcontent p {
+    margin: 0 0 10px;
+    font-size: 22px;
+    position: relative;
+    top: 8px;
+    left: 9px;
+    color: #aaa;
+}
+.dcontent i {
+    margin: -35px 0px 19px -82px;
+    font-size: 40px;
+    color: #e0e0e0;
 }

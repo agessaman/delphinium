@@ -25,6 +25,15 @@ document.tabdata = '';
 var windowData = '';
 var sortType = [];
 var count = 0;
+var str = jQuery.parseJSON(getStorage('ListSetup'));
+var itm = $('.dashboard-container .dcontent');
+$.each(itm, function (a,b) {
+    $.each(str, function(c,d) {
+        if (!d.show) {
+            $('.dashboard-container #' + c).hide();
+        }
+    });
+});
 //GET DATA FOR THE TOP CHART
 var promise = $.get("gradebook/getAllStudentSubmissions");
 promise.then(function (data1, textStatus, jqXHR) {
@@ -1151,21 +1160,27 @@ function buildTable(data) {
             loadData.push(data_row);
         });
 
-        function average(arguments) {
-            var sum = 0;
-
-            for (var i = 0; i < arguments[i]; i++ ) sum += Math.round(arguments[i]);
-
-            return sum == 0 ? sum : sum / arguments.length;
+        Array.prototype.avg = function () {
+            var sum = 0, j = 0; 
+           for (var i = 0; i < this.length, isFinite(this[i]); i++) { 
+                  sum += parseFloat(this[i]); ++j; 
+            } 
+           return j ? sum / j : 0; 
         }
 
-        $('.dashboard-container p').each(function(a,b) {
-            var unique = columns_data[$(b).attr('class')];
+        $('.dashboard-container p').each(function(a, b) {
+            /*var unique = columns_data[$(b).attr('class')];
             var num = unique.filter(function(item, i, ar){ return ar.indexOf(item) === i; });
             var num = num.filter(function(item, i, ar){ return ar.indexOf(item) != 0; });
-            console.log(num);
-            var avg = average(num);
-            $(b).append(Math.round(avg));
+            var avg = num.avg();
+            $(b).append(Math.round(avg));*/
+            var num = columns_data[$(b).attr('class')];
+            var ok = 0;
+            $.each(num, function(c, d) {
+                ok += parseInt(d);
+            });
+            $(b).append(Math.round(ok / num.length));
+
         });
 
         $.each(table_range, function(a,b) {
@@ -1559,6 +1574,18 @@ function hide_or_show(args) {
         } else {
             check_uncheck[a] = true;
         }
+
+        var str = jQuery.parseJSON(JSON.stringify(args));
+        var itm = $('.dashboard-container .dcontent');
+        $.each(itm, function (a,b) {
+            $.each(str, function(c,d) {
+                if (!d.show) {
+                    $('.dashboard-container #' + c).hide();
+                } else {
+                    $('.dashboard-container #' + c).show();
+                }
+            });
+        });
 
     });
     $('.jsgrid-table tr').each(function(a, b){
