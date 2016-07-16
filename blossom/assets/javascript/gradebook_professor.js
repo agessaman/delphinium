@@ -37,14 +37,14 @@ promise.then(function (data1, textStatus, jqXHR) {
             if(getStep[instructorId]){
                 stepSlider = getStep[instructorId];
             }else{
-                stepSlider = 10;
-                stepSlider[instructorId] = 10;
+                stepSlider = 100;
+                stepSlider[instructorId] = 100;
                 setStorage('histogramStep',JSON.stringify(stepSlider));
             }
         }else{
             var stD = {};
-            stD[instructorId] = 10;
-            stepSlider = 10;
+            stD[instructorId] = 100;
+            stepSlider = 100;
             setStorage('histogramStep',JSON.stringify(stD));
         }
         histogram();
@@ -1848,23 +1848,14 @@ function getHistogramDataByPoints(){
 
 function getHistogramDataByMilestones(){
     var intervals = [],
-        endPoint = chartData[chartData.length-1].points,
-        step;
-    if(endPoint <= 500) step = 50;
-    if(endPoint > 500 && endPoint <= 1000) step = 100;
-    if(endPoint > 1000 && endPoint <= 6000) step = 500;
-    if(endPoint > 6000 && endPoint <= 10000) step = 1000;
-    if(endPoint > 10000 && endPoint <= 20000) step = 2000;
-    if(endPoint > 20000 && endPoint <= 60000) step = 5000;
-    if(endPoint > 600000 && endPoint <= 100000) step = 10000;
-
-    for(var i=0;i<=endPoint;i+=step){
-        intervals.push(i);
-    }
-
-    if(intervals[intervals.length-1] < endPoint){
-        intervals.push(intervals[intervals.length-1]+step);
-    }
+        endPoint = chartData[chartData.length-1].points;
+    
+    $.each(yArr,function(k,v){
+        if($.inArray(v.points,intervals) == -1){
+            intervals.push(v.points);
+        }
+    });
+    intervals.unshift(0);
     
     var retVal = getStudentsCount(intervals);
     return {usersCount:retVal,xPoints:intervals,maxPoint:endPoint};
@@ -2039,50 +2030,10 @@ function addxBar(data,height,x,y,xAxis,yAxis){
     
 }
 
+pointHistDate = 0;
+pointHistDateAll = 0;
+
 function histogram(){
-    pointHistDate = 0;
-    pointHistDateAll = 0;
-    function intervalHistIts() {
-        var points = $('.histogram-date').children('span').not('.ui-slider-handle');
-        var count = points.length;
-        if(count > pointHistDate){
-            pointHistDateAll = 1;
-            var point = points.eq(pointHistDate); 
-            var left = point[0].style.left;
-            var index = point.find('.ui-slider-label').attr('data-value');
-            var val = labels[index];
-            addBarToHistogram(true);
-            $('.histogram-date').find('.ui-slider-handle').css('left',left).find('span').text(val);
-            $('.histogram-date').find('.ui-slider-pip').removeClass('ui-slider-pip-selected').eq(pointHistDate).addClass('ui-slider-pip-selected');
-        }else{
-            $('button.histogram-player').find('i').removeClass('fa-pause').addClass('fa-play');
-            pointHistDate = -1;
-            pointHistDateAll = 0;
-            clearInterval(speed);
-        }
-        pointHistDate++;
-    }
-
-    function addBarToHistogram(animateDays){
-        var checkedV = $('.histRadio:checked').attr('id');
-        if(checkedV == 'hPoint'){
-            var histogramData = getHistogramDataByPoints();
-        }
-        if(checkedV == 'hMilestone'){
-            var histogramData = getHistogramDataByMilestones();
-        }
-        if(checkedV == 'hGrade'){
-            var histogramData = getHistogramDataByGrades();
-        }
-        if(animateDays){
-            histogramChart({xPUserC:histogramData},animateDays);
-        }else{
-            histogramChart({xPUserC:histogramData});
-        }
-        var boxPlotData = getBoxPlotData(histogramData);
-        changeBoxPlotData(boxPlotData);
-    }
-
     $(document).on('click','.histogram-player', function() {
         var i = $(this).find('i');
         if(i.hasClass('fa-play')){ 
@@ -2166,6 +2117,48 @@ function histogram(){
         checked = $(this).attr('id');
         addBarToHistogram();
     });
+}
+
+function intervalHistIts() {
+    var points = $('.histogram-date').children('span').not('.ui-slider-handle');
+    var count = points.length;
+    if(count > pointHistDate){
+        pointHistDateAll = 1;
+        var point = points.eq(pointHistDate); 
+        var left = point[0].style.left;
+        var index = point.find('.ui-slider-label').attr('data-value');
+        var val = labels[index];
+        addBarToHistogram(true);
+        $('.histogram-date').find('.ui-slider-handle').css('left',left).find('span').text(val);
+        $('.histogram-date').find('.ui-slider-pip').removeClass('ui-slider-pip-selected').eq(pointHistDate).addClass('ui-slider-pip-selected');
+    }else{
+        $('button.histogram-player').find('i').removeClass('fa-pause').addClass('fa-play');
+        pointHistDate = -1;
+        pointHistDateAll = 0;
+        clearInterval(speed);
+    }
+    pointHistDate++;
+}
+
+function addBarToHistogram(animateDays){
+    var checkedV = $('.histRadio:checked').attr('id'),
+        histogramData;
+    if(checkedV == 'hPoint'){
+        histogramData = getHistogramDataByPoints();
+    }
+    if(checkedV == 'hMilestone'){
+        histogramData = getHistogramDataByMilestones();
+    }
+    if(checkedV == 'hGrade'){
+        histogramData = getHistogramDataByGrades();
+    }
+    if(animateDays){
+        histogramChart({xPUserC:histogramData},animateDays);
+    }else{
+        histogramChart({xPUserC:histogramData});
+    }
+    var boxPlotData = getBoxPlotData(histogramData);
+    changeBoxPlotData(boxPlotData);
 }
 
 function getQ1Q3MedianForBoxPlot(arr,del){
