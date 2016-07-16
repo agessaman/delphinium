@@ -1888,7 +1888,8 @@ function getHistogramDataByPoints(){
 
 function getHistogramDataByMilestones(){
     var intervals = [],
-        endPoint = chartData[chartData.length-1].points;
+        endPoint = chartData[chartData.length-1].points,
+        retVal;
     
     $.each(yArr,function(k,v){
         if($.inArray(v.points,intervals) == -1){
@@ -1897,8 +1898,10 @@ function getHistogramDataByMilestones(){
     });
     intervals.unshift(0);
     
-    var retVal = getStudentsCount(intervals);
-    return {usersCount:retVal,xPoints:intervals,maxPoint:endPoint};
+    retVal = getStudentsCount(intervals);
+    var intervalId = Math.ceil(intervals.length/2);
+    redLineX = intervals[intervalId];
+    return {usersCount:retVal,xPoints:intervals,maxPoint:endPoint,redLine:redLineX};
 }
 
 function getHistogramDataByGrades(){
@@ -2020,14 +2023,20 @@ function histogramChart(data,slideDays) {
 
     var histData = [],
         counts = data.xPUserC.usersCount.counts,
-        xPoints = data.xPUserC.xPoints;
+        xPoints = data.xPUserC.xPoints,
+        redX = 520;
     for(var i = 0; i < counts.length;i++){
         histData.push({count:counts[i],xPoint:xPoints[i]});
     }
+    if($('.histRadio:checked').attr('id') == 'hMilestone'){
+        redX = data.xPUserC.redLine;
+    }
+    histData.redX = redX;
     addxBar(histData,height,x,y,xAxis,yAxis);
 }
 function addxBar(data,height,x,y,xAxis,yAxis){
-    var svg = d3.select("#histogram svg");
+    var svg = d3.select("#histogram svg"),
+        redX = data.redX;
     x.domain(data.map(function(d) { return d.xPoint; }));
     y.domain([0, d3.max(data, function(d) { return d.count; })]);
 
@@ -2056,9 +2065,12 @@ function addxBar(data,height,x,y,xAxis,yAxis){
     .attr("height", function(d) { return height - y(d.count); });
 
     if($('.histRadio:checked').attr('id') != 'hGrade'){
+        if($('.histRadio:checked').attr('id') == 'hMilestone'){
+            redX = $('#histogram .tick:contains('+data.redX+')').attr('transform').split(/[()]/)[1].split(',')[0];
+        }
         svg.append("svg:rect")
-        .attr("x",520)
-        .attr("y",21)
+        .attr("x",redX)
+        .attr("y",20)
         .attr("height",height)
         .attr("width",0.5)
         .attr("stroke-width", 1.5)
