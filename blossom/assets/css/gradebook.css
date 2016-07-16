@@ -849,8 +849,8 @@ th.details {
     width: 14.28%;
     position: relative;
     min-height: 1px;
-    padding-left: 15px;
-    padding-right: 15px;
+    padding-left: 0px;
+    padding-right: 9px;
     float: left;
 }
 .dcontent div {
