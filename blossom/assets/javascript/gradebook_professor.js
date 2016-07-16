@@ -2066,7 +2066,7 @@ function addxBar(data,height,x,y,xAxis,yAxis){
 
     if($('.histRadio:checked').attr('id') != 'hGrade'){
         if($('.histRadio:checked').attr('id') == 'hMilestone'){
-            redX = $('#histogram .tick:contains('+data.redX+')').attr('transform').split(/[()]/)[1].split(',')[0];
+            redX = parseFloat($('#histogram .tick:contains('+data.redX+')').attr('transform').split(/[()]/)[1].split(',')[0]) + 40;
         }
         svg.append("svg:rect")
         .attr("x",redX)
