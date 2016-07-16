@@ -1905,15 +1905,18 @@ function getHistogramDataByMilestones(){
 }
 
 function getHistogramDataByGrades(){
-    var intervals = [];
+    var intervals = [],
+        schemeName = [];
+
     $.each(gradingScheme,function(k,v){
         intervals.push(v.value);
+        schemeName.push(v.name);
     });
     intervals.sort(function(a,b){
         return a-b;
     });
     var retVal = getStudentsCountGrades(intervals);
-    return {usersCount:retVal,xPoints:intervals};
+    return {usersCount:retVal,xPoints:intervals,schemeName:schemeName};
 }
 
 function getStudentsCountGrades(intervals) {
@@ -2024,9 +2027,17 @@ function histogramChart(data,slideDays) {
     var histData = [],
         counts = data.xPUserC.usersCount.counts,
         xPoints = data.xPUserC.xPoints,
-        redX = 520;
-    for(var i = 0; i < counts.length;i++){
-        histData.push({count:counts[i],xPoint:xPoints[i]});
+        redX = 520,
+        name;
+
+    if($('.histRadio:checked').attr('id') == 'hGrade'){
+        for(var i = 0; i < counts.length;i++){
+            histData.push({count:counts[i],xPoint:xPoints[i],name:data.xPUserC.schemeName[i]});
+        }
+    }else{
+        for(var i = 0; i < counts.length;i++){
+            histData.push({count:counts[i],xPoint:xPoints[i]});
+        }
     }
     if($('.histRadio:checked').attr('id') == 'hMilestone'){
         redX = data.xPUserC.redLine;
@@ -2058,13 +2069,13 @@ function addxBar(data,height,x,y,xAxis,yAxis){
     .attr("height", height - y(0))
     .attr("transform", "translate(40,20)");
 
-    bars.transition().duration(300)
-    .attr("x", function(d) { return x(d.xPoint)+(x.rangeBand()/2); })
-    .attr("width", x.rangeBand())
-    .attr("y", function(d) { return y(d.count); })
-    .attr("height", function(d) { return height - y(d.count); });
-
     if($('.histRadio:checked').attr('id') != 'hGrade'){
+        bars.transition().duration(300)
+        .attr("x", function(d) { return x(d.xPoint)+(x.rangeBand()/2); })
+        .attr("width", x.rangeBand())
+        .attr("y", function(d) { return y(d.count); })
+        .attr("height", function(d) { return height - y(d.count); });
+
         if($('.histRadio:checked').attr('id') == 'hMilestone'){
             redX = parseFloat($('#histogram .tick:contains('+data.redX+')').attr('transform').split(/[()]/)[1].split(',')[0]) + 40;
         }
@@ -2077,6 +2088,12 @@ function addxBar(data,height,x,y,xAxis,yAxis){
         .attr("stroke","red")
         .attr("class", "hist-today-line");
     }else{
+        bars.transition().duration(300)
+        .attr("x", function(d) { return x(d.xPoint)+(x.rangeBand()/2); })
+        .attr("width", x.rangeBand())
+        .attr("y", function(d) { return y(d.count); })
+        .attr("height", function(d) { return height - y(d.count); })
+        .attr('data-scheme', function(d) { return d.name; });
         $('.hist-today-line').remove();
     }
     
@@ -2124,7 +2141,8 @@ function histogram(){
     var maxPoint =(typeof histogramData.maxPoint != 'undefined') ? histogramData.maxPoint : 100,
         checked = 'hPoint',
         stepSlider = instructorStep[instructorId],
-        intervalLabels = [];
+        intervalLabels = [],
+        tooltipText;
 
     for(var i=10;i<=100;i++){
         intervalLabels.push(parseInt(createPoint.value(i)));
@@ -2169,6 +2187,19 @@ function histogram(){
         checked = $(this).attr('id');
         addBarToHistogram();
     });
+
+    $(document).on('mouseover','#histogram .bar',function(event){
+        if($('.histRadio:checked').attr('id') == 'hGrade'){
+            tooltipText = $(this).attr('data-scheme');
+            div.transition()
+            .duration(200)
+            .style("opacity", .9);
+            div.html(tooltipText)
+            .style("left", (event.pageX) + "px")
+            .style("top", (event.pageY - 28) + "px");
+        }
+    });
+    $(document).on('mouseout','#histogram .bar',function(){ removeTooltipProfessorGradebook(); });
 }
 
 function intervalHistIts() {
