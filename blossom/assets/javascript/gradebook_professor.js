@@ -1949,6 +1949,7 @@ function getHistogramDataByGrades(){
         intervals.push(v.value);
         schemeName.push(v.name);
     });
+    schemeName.reverse();
     intervals.sort(function(a,b){
         return a-b;
     });
