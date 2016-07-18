@@ -26,14 +26,17 @@ var windowData = '';
 var sortType = [];
 var count = 0;
 var str = jQuery.parseJSON(getStorage('ListSetup'));
-var itm = $('.dashboard-container .dcontent');
-$.each(itm, function (a,b) {
-    $.each(str, function(c,d) {
-        if (!d.show) {
-            $('.dashboard-container #' + c).hide();
-        }
+if (str != undefined) {
+    var itm = $('.dashboard-container .dcontent');
+    $.each(itm, function (a,b) {
+        $.each(str, function(c,d) {
+            if (!d.show) {
+                $('.dashboard-container #' + c).hide();
+            }
+        });
     });
-});
+    
+}
 //GET DATA FOR THE TOP CHART
 var promise = $.get("gradebook/getAllStudentSubmissions");
 promise.then(function (data1, textStatus, jqXHR) {
@@ -1495,13 +1498,13 @@ function buildTable(data) {
                 show: true,
             },
             7:{
-                column:'probable_penalty',
-                column_title:'Prob<span class="one_point"></span> Penalty',
+                column:'possible_bonus',
+                column_title:'Poss<span class="one_point"></span> Bonus',
                 show: true,
             },
             8:{
-                column:'possible_bonus',
-                column_title:'Poss<span class="one_point"></span> Bonus',
+                column:'probable_penalty',
+                column_title:'Prob<span class="one_point"></span> Penalty',
                 show: true,
             },
             9:{
@@ -1594,6 +1597,7 @@ function hide_or_show(args) {
                 $('.jsgrid-table').find('tr').eq(a).children('th, td').eq(c).show();
             } else {
                 $('.jsgrid-table').find('tr').eq(a).children('th, td').eq(c).hide();
+                console.log($('.jsgrid-table').find('tr').eq(a).children('th, td').eq(c).hide());
             }
         });
     });
