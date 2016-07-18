@@ -542,6 +542,23 @@ class DbHelper
         }
     }
 
+    public function qualityAssuranceAssignmentGroups($courseId, $currentAssignmentGroupsIds)
+    {
+        $groups = AssignmentGroup::where('course_id','=',$courseId)->select('assignment_group_id')->get();
+        $fromDBArr = array();
+        foreach($groups as $grp)
+        {
+            $fromDBArr[] = $grp['assignment_group_id'];
+        }
+
+        $toBeDeleted =array_diff($fromDBArr,$currentAssignmentGroupsIds);
+
+        foreach($toBeDeleted as $groupId)
+        {//TODO: verify cascading delete
+            Module::AssignmentGroup('course_id','=',$courseId)->where('assignment_group_id','=',  intval($groupId))->delete();
+        }
+    }
+    
     public function specificModuleQualityAssurance($courseId, $module_id, $allModuleItems)
     {
         $newIds = [];
