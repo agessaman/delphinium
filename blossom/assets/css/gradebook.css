@@ -763,7 +763,7 @@ th.details {
 }
 #boxPlot {
     height: 80px;
-    margin-left: 40px;
+    margin-left: 25px;
 }
 #boxPlot svg {
   border: none;
@@ -842,14 +842,12 @@ th.details {
 .histogram-range-slider .ui-slider-pip-first,
 .histogram-range-slider .ui-slider-pip-last {
     color: #FF7A00 !important;
-<<<<<<< HEAD
 }
 .color-grey {
     color: grey;
 }
 .like-interval {
     margin-top: -7px;
-=======
     text-align: center;
     padding-top: 11px;
 }
@@ -894,5 +892,4 @@ th.details {
 .cont h3{
     margin-top: 40px;
     margin-left: 15px;
->>>>>>> d4b2c8185cb6b903236b3861aa3186c3ea9c1212
 }
