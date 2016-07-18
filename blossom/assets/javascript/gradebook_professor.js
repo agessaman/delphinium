@@ -1600,7 +1600,6 @@ function hide_or_show(args) {
                 $('.jsgrid-table').find('tr').eq(a).children('th, td').eq(c).show();
             } else {
                 $('.jsgrid-table').find('tr').eq(a).children('th, td').eq(c).hide();
-                console.log($('.jsgrid-table').find('tr').eq(a).children('th, td').eq(c).hide());
             }
         });
     });
@@ -2065,7 +2064,7 @@ function histogramChart(data,slideDays) {
     var histData = [],
         counts = data.xPUserC.usersCount.counts,
         xPoints = data.xPUserC.xPoints,
-        redX = 520,
+        redX = 0,
         name;
 
     if($('.histRadio:checked').attr('id') == 'hGrade'){
@@ -2122,7 +2121,9 @@ function addxBar(data,height,x,y,xAxis,yAxis){
         .attr("height", function(d) { return height - y(d.count); });
 
         if($('.histRadio:checked').attr('id') == 'hMilestone'){
-            redX = parseFloat($('#histogram .tick:contains('+data.redX+')').attr('transform').split(/[()]/)[1].split(',')[0]) + 40;
+            redX = parseFloat($('#histogram .tick:contains('+data.redX+')').attr('transform').split(/[()]/)[1].split(',')[0]);
+        }else{
+            redX = histTodayLinePixel();
         }
         svg.append("svg:rect")
         .attr("x",redX)
@@ -2147,6 +2148,15 @@ function addxBar(data,height,x,y,xAxis,yAxis){
         $('.hist-today-line').remove();
     }
     
+}
+
+function histTodayLinePixel(){
+    var start = parseFloat($('.histogramXA .tick').first().attr('transform').split(/[()]/)[1].split(',')[0]),
+        end = parseFloat($('.histogramXA .tick').last().attr('transform').split(/[()]/)[1].split(',')[0]),
+        point = 0;
+
+    point = ($('.histogramXA .tick').length > 2) ? end/2 + start : 560;
+    return point;
 }
 
 pointHistDate = 0;
