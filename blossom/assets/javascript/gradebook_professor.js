@@ -25,6 +25,9 @@ document.tabdata = '';
 var windowData = '';
 var sortType = [];
 var count = 0;
+var hRects = [];
+var histXectWidth = '';
+var stepHistogram = '';
 //GET DATA FOR THE TOP CHART
 var promise = $.get("gradebook/getAllStudentSubmissions");
 promise.then(function (data1, textStatus, jqXHR) {
@@ -1870,7 +1873,7 @@ function getHistogramDataByPoints(){
         inputStep = $('.like-interval-inp').val();
 
     step = (inputStep.length == 0) ? step : parseInt(inputStep);
-
+    stepHistogram = step;
     $.each(submissions,function(k,v){
         endArr.push(v.items[v.items.length-1].points);
     });
@@ -2072,10 +2075,17 @@ function addxBar(data,height,x,y,xAxis,yAxis){
     .attr("y", y(0))
     .attr("height", height - y(0))
     .attr("transform", "translate(40,20)");
-
+    
+    histXectWidth = x.rangeBand();
+    
     if($('.histRadio:checked').attr('id') != 'hGrade'){
         bars.transition().duration(300)
-        .attr("x", function(d) { return x(d.xPoint)+(x.rangeBand()/2); })
+        .attr("x", function(d) { 
+            if(d.count > 0){
+                hRects.push(x(d.xPoint)+(x.rangeBand()+20));
+            }
+            return x(d.xPoint)+(x.rangeBand()/2); 
+        })
         .attr("width", x.rangeBand())
         .attr("y", function(d) { return y(d.count); })
         .attr("height", function(d) { return height - y(d.count); });
@@ -2093,7 +2103,12 @@ function addxBar(data,height,x,y,xAxis,yAxis){
         .attr("class", "hist-today-line");
     }else{
         bars.transition().duration(300)
-        .attr("x", function(d) { return x(d.xPoint)+(x.rangeBand()/2); })
+        .attr("x", function(d) { 
+            if(d.count > 0){
+                hRects.push(x(d.xPoint)+(x.rangeBand())+20);
+            }
+            return x(d.xPoint)+(x.rangeBand()/2); 
+        })
         .attr("width", x.rangeBand())
         .attr("y", function(d) { return y(d.count); })
         .attr("height", function(d) { return height - y(d.count); })
@@ -2179,6 +2194,7 @@ function histogram(){
         $('.histRadio').closest('label').removeClass('active');
         $(this).closest('label').addClass('active');
         if($(this).attr('id') == 'hGrade'){
+            $('.r-name').addClass('color-grey');
             $(".histogram-range-slider").slider({disabled: true});
             $(".histogram-date").slider({disabled: true});
             $('.histogram-player').prop('disabled',true).find('i').removeClass('fa-pause').addClass('fa-play');
@@ -2188,9 +2204,12 @@ function histogram(){
             $(".histogram-date").slider({disabled: false});
             $('.histogram-player').prop('disabled',false);
             if($(this).attr('id') == 'hPoint'){
+                $('.r-name').removeClass('color-grey');
                 $(".histogram-range-slider").slider({disabled: false});
                 $('.like-interval-inp').attr('disabled',false);
             }else{
+                $('.range-slider-container').find('.r-name').addClass('color-grey');
+                $('.histogram-date-slider-container').find('.r-name').removeClass('color-grey');
                 $(".histogram-range-slider").slider({disabled: true});
                 $('.like-interval-inp').attr('disabled',true);
             }
@@ -2273,17 +2292,16 @@ function boxPlotChart(data){
     $('#boxPlot svg').remove();
     var h = 80,
         w = 1020;
-
-    var margin = {'top': 20,'bottom': 20,'left': 20,'right': 30};
+    var margin = {'top': 20,'bottom': 20,'left': 20,'right': 20};
     var svg = d3.select("#boxPlot").append("svg")
         .attr("height", h)
-        .attr("width", w);
+        .attr("width", w+60);
 
     xScale = d3.scale.linear()
     .domain([0,data.xScaleEnd])
     .range([
-      margin.left,
-      w - margin.right
+      0,
+      1040
     ]);
 
     yScale = d3.scale.linear()
@@ -2314,14 +2332,14 @@ function boxPlotChart(data){
     svg.append("g")
     .attr("class", "box histogram-box")
     .attr("transform", "translate(" + xScale(data.median) + "," + yScale(data.day) + ")");
-      
+
     svg.selectAll("g.box")
         .append("line")
         .attr("class", "range max-med")
         .attr("y1", 0)
         .attr("y2", 0)
-        .attr("x1", xScale(data.max) - xScale(data.median))
-        .attr("x2", xScale(data.min) - xScale(data.median))
+        .attr("x1", hRects[hRects.length-1] + maxMinPixel(data.max,stepHistogram,histXectWidth) - histXectWidth/2)
+        .attr("x2", hRects[0] - histXectWidth/2 - xScale(data.median))
         .style("stroke", "black")
         .style("stroke-width", "4px")
         .attr("transform", "translate(0,-50)")
@@ -2331,8 +2349,8 @@ function boxPlotChart(data){
     svg.selectAll("g.box")
         .append("line")
         .attr("class", "max")
-        .attr("x2", xScale(data.max) - xScale(data.median))
-        .attr("x1", xScale(data.max) - xScale(data.median))
+        .attr("x2", hRects[hRects.length-1] + maxMinPixel(data.max,stepHistogram,histXectWidth) - histXectWidth/2)
+        .attr("x1", hRects[hRects.length-1] + maxMinPixel(data.max,stepHistogram,histXectWidth) - histXectWidth/2)
         .attr("y1", -10)
         .attr("y2", 10)
         .attr("data-point",data.max)
@@ -2348,8 +2366,8 @@ function boxPlotChart(data){
         .attr("data-point",data.min)
         .attr("y1", -10)
         .attr("y2", 10)
-        .attr("x1", xScale(data.min) - xScale(data.median))
-        .attr("x2", xScale(data.min) - xScale(data.median))
+        .attr("x1", xScale(data.min) + maxMinPixel(data.min,stepHistogram,histXectWidth) + hRects[0] - histXectWidth/2)
+        .attr("x2", xScale(data.min) + maxMinPixel(data.min,stepHistogram,histXectWidth) + hRects[0] - histXectWidth/2)
         .style("stroke", "black")
         .style("stroke-width", "4px")
         .attr("transform", "translate(0,-50)")
@@ -2360,7 +2378,7 @@ function boxPlotChart(data){
         .append("rect")
         .attr("class", "range q1-q3")
         .attr("y", -10)
-        .attr("x", xScale(data.q1) - xScale(data.median))
+        .attr("x", xScale(data.q1) - xScale(data.median) + hRects[0])
         .attr("height", 20)
         .attr("data-point-q1",data.q1)
         .attr("data-point-q3",data.q3)
@@ -2384,21 +2402,71 @@ function boxPlotChart(data){
         .style("stroke-width", "4px")
         .attr("transform", "translate(0,-50)")
         .transition().duration(200)
-        .attr("transform", "translate(0,0)");
+        .attr("transform", "translate("+(hRects[0] - histXectWidth/2)+",0)");
 
     svg.append("circle")
     .attr("class", "mean")
     .attr("r", 5)
-    .attr("cx", xScale(data.mean))
+    .attr("cx", xScale(data.mean) - meanPixel(data.mean,histXectWidth) + hRects[0] - histXectWidth/2)
     .attr("cy", "40")
     .attr("data-point",data.mean)
     .style("fill", "darkgray");
+    hRects = [];
+}
+
+function maxMinPixel(data,step,width){
+    if(data == 0) return 0;
+    var count = 0,
+        percent = 0,
+        pixel = 0;
+
+    if(hRects.length == 1){
+        percent = (data * 100) / step;
+        pixel = (width * percent) / 100;
+        return pixel;       
+    }
+    
+    if($('.histRadio:checked').attr('id') != 'hPoint'){
+        var ticks = $('.histogramXA .tick');
+        $.each(ticks,function(k,tick){
+            if(data >= parseInt(ticks.eq(k).text()) && data <= parseInt(ticks.eq(k+1).text()) ){
+                step = parseInt(ticks.eq(k+1).text()) - parseInt(ticks.eq(k).text());
+                return false;
+            }
+        });
+    }
+
+    count = (data > step) ? data % step : step % data;
+    percent = (count * 100) / step;
+    pixel = (width * percent) / 100;
+    return pixel;
+}
+
+function meanPixel(data,width){
+    if(data == 0) return 0;
+    var count = 0,
+        percent = 0,
+        pixel = 0,
+        step;
+
+    var ticks = $('.histogramXA .tick');
+    $.each(ticks,function(k,tick){
+        if(data >= parseInt(ticks.eq(k).text()) && data <= parseInt(ticks.eq(k+1).text()) ){
+            step = parseInt(ticks.eq(k+1).text()) - parseInt(ticks.eq(k).text());
+            return false;
+        }
+    });
+
+    count = (data > step) ? data % step : step % data;
+    percent = (count * 100) / step;
+    pixel = (width * percent) / 100;
+    return pixel;
 }
 
 function changeBoxPlotData(data){
     xScale = d3.scale.linear()
     .domain([data.xScaleStart,data.xScaleEnd])
-    .range([20,990]);
+    .range([0,1040]);
 
     xAxis = d3.svg.axis()
     .scale(xScale)
@@ -2406,7 +2474,7 @@ function changeBoxPlotData(data){
     .ticks(10)
     .tickSize(-5)
     .tickSubdivide(true);
-     
+
     d3.select('#boxPlot svg .tweets')
     .transition().duration(200)
     .attr("cx", xScale(data.median))
@@ -2418,35 +2486,38 @@ function changeBoxPlotData(data){
 
     d3.select('#boxPlot svg .max-med')
     .transition().duration(200)
-    .attr("x1", xScale(data.max) - xScale(data.median))
-    .attr("x2", xScale(data.min) - xScale(data.median));
+    .attr("x1", hRects[hRects.length-1] + maxMinPixel(data.max,stepHistogram,histXectWidth) - histXectWidth/2)
+    .attr("x2", hRects[0] - histXectWidth/2 - xScale(data.median));
 
     d3.select('#boxPlot svg .max')
     .attr("data-point",data.max)
     .transition().duration(200)
-    .attr("x2", xScale(data.max) - xScale(data.median))
-    .attr("x1", xScale(data.max) - xScale(data.median));
+    .attr("x2", hRects[hRects.length-1] + maxMinPixel(data.max,stepHistogram,histXectWidth) - histXectWidth/2)
+    .attr("x1", hRects[hRects.length-1] + maxMinPixel(data.max,stepHistogram,histXectWidth) - histXectWidth/2);
 
     d3.select('#boxPlot svg .min')
     .attr("data-point",data.min)
     .transition().duration(200)
-    .attr("x1", xScale(data.min) - xScale(data.median))
-    .attr("x2", xScale(data.min) - xScale(data.median));
+    .attr("x1", xScale(data.min) + maxMinPixel(data.min,stepHistogram,histXectWidth) + hRects[0] - histXectWidth/2)
+    .attr("x2", xScale(data.min) + maxMinPixel(data.min,stepHistogram,histXectWidth) + hRects[0] - histXectWidth/2);
 
     d3.select('#boxPlot svg .q1-q3')
     .attr("data-point-q1",data.q1)
     .attr("data-point-q3",data.q3)
     .transition().duration(200)
-    .attr("x", xScale(data.q1) - xScale(data.median))
+    .attr("x", xScale(data.q1) - xScale(data.median) - hRects[0])
     .attr("width", xScale(data.q3) - xScale(data.q1));
 
     d3.select('#boxPlot svg .median')
-    .attr("data-point",data.median);
+    .attr("data-point",data.median)
+    .transition().duration(200)
+    .attr("transform", "translate("+(hRects[0] - histXectWidth/2)+",0)");
 
     d3.select('#boxPlot svg .mean')
     .attr("data-point",data.mean)
     .transition().duration(200)
-    .attr("cx",xScale(data.mean));
+    .attr("cx", xScale(data.mean) - meanPixel(data.mean,histXectWidth) + hRects[0] - histXectWidth/2);
+    hRects = [];
 }
 
 function getBoxPlotData(data){

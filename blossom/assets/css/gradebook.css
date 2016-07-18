@@ -846,3 +846,9 @@ th.details {
 .histogram-range-slider .ui-slider-pip-last {
     color: #FF7A00 !important;
 }
+.color-grey {
+    color: grey;
+}
+.like-interval {
+    margin-top: -7px;
+}
