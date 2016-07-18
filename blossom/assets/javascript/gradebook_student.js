@@ -48,13 +48,6 @@ Student.prototype = {
     domFunctions: function () 
     {
         var self = this;
-        /*var monthNames = [
-            "Jan", "Feb", "Mar",
-            "Apr", "May", "Jun", "Jul",
-            "Aug", "Sep", "Oct",
-            "Nov", "Dec"
-        ];*/
-        ////////////////////////////////////////////////////////
         self.margin = {top: 30, right: 20, bottom: 30, left: 50};
         self.width = 800 - self.margin.left - self.margin.right;
         self.height = 400 - self.margin.top - self.margin.bottom;
