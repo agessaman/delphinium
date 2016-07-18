@@ -2131,7 +2131,8 @@ function addxBar(data,height,x,y,xAxis,yAxis){
         .attr("width",0.5)
         .attr("stroke-width", 1.5)
         .attr("stroke","red")
-        .attr("class", "hist-today-line");
+        .attr("class", "hist-today-line")
+        .attr('data-point',getMiddlePoint());
     }else{
         bars.transition().duration(300)
         .attr("x", function(d) { 
@@ -2147,6 +2148,11 @@ function addxBar(data,height,x,y,xAxis,yAxis){
         $('.hist-today-line').remove();
     }
     
+}
+
+function getMiddlePoint(){
+    var end = parseInt($('.histogramXA').find('.tick').last().text());
+    return parseInt(end / 2);
 }
 
 pointHistDate = 0;
@@ -2269,6 +2275,21 @@ function histogram(){
             addBarToHistogram();
         }
     });
+
+    $(document).on('mouseover','#histogram .hist-today-line',function(event){
+        var index = $('.histogram-date').find('.ui-slider-pip-selected').index() - 1;
+        var time = labels[index];
+        var dayDate = parseTimestamp(time);
+        tooltipText = $(this).attr('data-point') + ' points due ' + dayDate;
+        div.transition()
+        .duration(200)
+        .style("opacity", .9);
+        div.html(tooltipText)
+        .style("left", (event.pageX) + "px")
+        .style("top", (event.pageY - 28) + "px");
+    });
+    $(document).on('mouseout','#histogram .hist-today-line',function(){ removeTooltipProfessorGradebook(); });
+
 }
 
 function intervalHistIts() {
