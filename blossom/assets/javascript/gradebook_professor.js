@@ -2280,9 +2280,11 @@ function intervalHistIts() {
         var index = point.find('.ui-slider-label').attr('data-value');
         var val = labels[index];
         addBarToHistogram(true);
+        $('.like-interval-inp').attr('disabled',true);
         $('.histogram-date').find('.ui-slider-handle').css('left',left).find('span').text(val);
         $('.histogram-date').find('.ui-slider-pip').removeClass('ui-slider-pip-selected').eq(pointHistDate).addClass('ui-slider-pip-selected');
     }else{
+        $('.like-interval-inp').attr('disabled',false);
         $('button.histogram-player').find('i').removeClass('fa-pause').addClass('fa-play');
         pointHistDate = -1;
         pointHistDateAll = 0;
