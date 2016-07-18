@@ -31,7 +31,7 @@ class {{studly_name}} extends ComponentBase
     public function componentDetails()
     {
         return [
-            'name'        => '{{name}} Component',
+            'name'        => '{{name}}',
             'description' => 'No description provided yet...'
         ];
     }
@@ -128,7 +128,7 @@ class {{studly_name}} extends ComponentBase
                 $this->addCss('/modules/system/assets/ui/storm.css', 'core');
                 $this->addJs('/modules/system/assets/ui/js/flashmessage.js', 'core');
                 $this->addCss('/modules/system/assets/ui/storm.less', 'core');
-                $this->addJs('/plugins/{{lower_author}}/{{lower_plugin}}/assets/{{lower_model}}_instructor.js');
+                $this->addJs('/plugins/{{lower_author}}/{{lower_plugin}}/assets/js/{{lower_model}}_instructor.js');
                 $formController = new MyController();
                 $formController->create('frontend');
 

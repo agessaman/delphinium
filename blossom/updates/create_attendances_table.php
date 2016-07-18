@@ -21,28 +21,32 @@
  */
 
 namespace Delphinium\Blossom\Updates;
+
 use Schema;
 use October\Rain\Database\Updates\Migration;
-class CreateCompetenciesTable extends Migration
+
+class CreateAttendancesTable extends Migration
 {
-    //http://octobercms.com/docs/database/structure
+
     public function up()
     {
-		if ( !Schema::hasTable('delphinium_blossom_competencies') )
-		{
-			Schema::create('delphinium_blossom_competencies', function($table)
-			{
-				$table->engine = 'InnoDB';
-				$table->increments('id');
-				$table->string('Name');
-				$table->boolean('Animate');//tinyInt switch 0~1 true false
-				$table->string('Size');//Small,Medium,Large radio btns
-				$table->timestamps();
-			});
-		}
-	}
+        if ( !Schema::hasTable('delphinium_blossom_attendances') )
+        {
+            Schema::create('delphinium_blossom_attendances', function($table)
+            {
+                $table->engine = 'InnoDB';
+                $table->increments('id');
+                $table->string('name');
+                $table->boolean('animate');
+                $table->integer('size');
+                $table->timestamps();
+            });
+        }
+    }
+
     public function down()
     {
-		Schema::dropIfExists('delphinium_blossom_competencies');
+        Schema::dropIfExists('delphinium_blossom_attendances');
     }
+
 }

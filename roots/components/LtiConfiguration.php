@@ -41,25 +41,25 @@ class LtiConfiguration extends ComponentBase
                     break;
                 case 'basic-lti-launch-request':
                 default:
-                    try {
-                        $this->doBltiHandshake();
-                    } catch (\Delphinium\Roots\Exceptions\InvalidRequestException $e) {
-                        return \Response::make($this->controller->run('error'), 500);
-                    } catch (NonLtiException $e) {
-                        if ($e->getCode() == 584) {
-                            return \Response::make($this->controller->run('nonlti'), 500);
-                        } else {
-                            echo json_encode($e->getMessage());
-                            return;
-                        }
-                    } catch (\GuzzleHttp\Exception\ClientException $e) {
-                        return;
-                    } catch (\Exception $e) {
-                        if ($e->getMessage() == 'Invalid LMS') {
-                            return \Response::make($this->controller->run('nonlti'), 500);
-                        }
-                        return \Response::make($this->controller->run('error'), 500);
-                    }
+                    // try {
+                    $this->doBltiHandshake();
+                // } catch (\Delphinium\Roots\Exceptions\InvalidRequestException $e) {
+                // return \Response::make($this->controller->run('error'), 500);
+                // } catch (NonLtiException $e) {
+                // if ($e->getCode() == 584) {
+                // return \Response::make($this->controller->run('nonlti'), 500);
+                // } else {
+                // echo json_encode($e->getMessage());
+                // return;
+                // }
+                // } catch (\GuzzleHttp\Exception\ClientException $e) {
+                // return;
+                // } catch (\Exception $e) {
+                // if ($e->getMessage() == 'Invalid LMS') {
+                // return \Response::make($this->controller->run('nonlti'), 500);
+                // }
+                // return \Response::make($this->controller->run('error'), 500);
+                // }
             }
         } else {
             $this->returnXML();
@@ -182,36 +182,58 @@ class LtiConfiguration extends ComponentBase
 
         //check to see if user is an Instructor
         $rolesStr = \Input::get('roles');
+
+
         $secret = $instanceFromDB['SharedSecret'];
         $clientId = $instanceFromDB['DeveloperId'];
 
         //Check to see if the lti handshake passes
         $context = new Blti($secret, false, false);
-
+        $courseId = $_SESSION['courseID'];
 
         if ($context->valid) { // query DB to see if user has token, if yes, go to LTI.
 
-            $userCheck = $dbHelper->getCourseApprover($_SESSION['courseID']);
+            //parameters needed to request for the token
+            //TODO: take this redirectUri out into some parameter somewhere...
+            $baseUrlWithSlash = rtrim($_SESSION['baseUrl'], '/') . '/';
+            $domainWithSlash = rtrim($_SESSION['domain'], '/') . '/';
+
+            //get the role of the current user
+            $roleId = $dbHelper->getRole($rolesStr)->id;
+            $lti = $this->property('ltiInstance');
+
+            $data = array('lti'=>intval($lti),'role'=>intval($roleId));
+            $query = http_build_query($data);
+
+            $redirectUri = urlencode("{$baseUrlWithSlash}saveUserInfo?$query");
+            $url = "https://{$domainWithSlash}login/oauth2/auth?client_id={$clientId}&response_type=code&redirect_uri={$redirectUri}";
+
+            $userCheck = $dbHelper->getCourseApprover($courseId);
             if (!$userCheck) { //if no user is found, redirect to canvas permission page
                 if (stristr($rolesStr, $approverRole)) {
-                    //As per my discussion with Jared, we will use the instructor's token only. This is the token that will be stored in the DB
-                    //and the one that will be used to make all requests. We will NOT store student's tokens.
-                    //TODO: take this redirectUri out into some parameter somewhere...
-
-                    $baseUrlWithSlash = rtrim($_SESSION['baseUrl'], '/') . '/';
-                    $domainWithSlash = rtrim($_SESSION['domain'], '/') . '/';
-
-                    $redirectUri = "{$baseUrlWithSlash}saveUserInfo?lti={$this->property('ltiInstance')}";
-                    $url = "https://{$domainWithSlash}login/oauth2/auth?client_id={$clientId}&response_type=code&redirect_uri={$redirectUri}";
-
+                    //We need both the instructor token as well as the student token, but the instructor must approve the course first
+                    //otherwise privileged roots functions won't work
                     $this->redirect($url);
                 } else {
                     echo("A(n) {$approverRole} must authorize this course. Please contact your instructor.");
                     return;
                 }
-            } else {
+            } else {//the course has been approved. Check to see if we have the student token
+                $pos = strpos($rolesStr, 'Learner');
+                if ($pos !== false) {
 
-                //set the professor's token
+                    $student = $dbHelper->getUserInCourse($courseId, $_SESSION['userID']);
+                    if(!$student||(!$student->encrypted_token))
+                    {
+                        $this->redirect($url);
+                    }
+                    else
+                    {//set the student token in session
+                        $_SESSION['studentToken'] = $student->encrypted_token;
+                    }
+                }
+
+                //set the professor's token & search for the student token
                 $courseId = $_SESSION['courseID'];
                 $_SESSION['userToken'] = $userCheck->encrypted_token;
                 //get the timezone
