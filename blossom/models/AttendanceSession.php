@@ -19,6 +19,8 @@ class AttendanceSession extends Model
         'assignment_id' => 'required',
         'start_at'=> 'required',
         'duration_minutes'=> 'required',
+        'percentage_fifteen'=> 'required',
+        'percentage_thirty'=> 'required',
         'code'=> 'required'
     ];
 

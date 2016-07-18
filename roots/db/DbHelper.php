@@ -675,6 +675,7 @@ class DbHelper
         return $users;
     }
 
+
     public function getCondensedUsersInCourseWithRole($courseId, $role_name)
     {
         $role = $this->getRole($role_name);
@@ -716,6 +717,11 @@ class DbHelper
         return Role::where('role_name','=',$role_name)->first();
     }
 
+    public function getRoleById($role_id)
+    {
+
+        return Role::where('id','=',$role_id)->first();
+    }
     public function deleteInvalidApproverToken($courseId)
     {
         $role = Role::where('role_name','=','Approver')->first();

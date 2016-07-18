@@ -138,9 +138,7 @@ class Roots
                         $canvas = new CanvasHelper(DataType::SUBMISSIONS);
                         $result = $canvas->processSubmissionsRequest($request);
                         break;
-
                 }
-
                 return $result;
             case(ActionType::POST):
                 if(is_null($params))
@@ -149,6 +147,14 @@ class Roots
                 }
                 $canvas = new CanvasHelper(DataType::SUBMISSIONS);
                 $result = $canvas->postSubmission($request, $params);
+                return $result;
+            case(ActionType::PUT):
+                if(is_null($params))
+                {
+                    throw new InvalidRequestException("put submission", "no parameters in submission");
+                }
+                $canvas = new CanvasHelper(DataType::SUBMISSIONS);
+                $result = $canvas->putSubmission($request, $params);
                 return $result;
             default :
                 throw new InvalidActionException($request->getActionType(), get_class($request));

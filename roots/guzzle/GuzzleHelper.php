@@ -58,9 +58,11 @@ class GuzzleHelper
                 break;
             case ActionType::PUT:
                 $response = $client->put($url);
+                return json_decode($response->getBody());
                 break;
             case ActionType::POST:
                 $response = $client->post($url);
+                return json_decode($response->getBody());
                 break;
             default:
                 $response = GuzzleHelper::getAsset($url);//$client->get($url);
@@ -147,11 +149,9 @@ class GuzzleHelper
         return json_decode($response->getBody());
     }
 
-    public static function postDataWithParamsCurl($url, $params, $token, $action = 'POST')
+    public static function postOrPutWithCurl($url, $params, $token, $action = 'POST')
     {
         $data_string = json_encode($params);
-
-        echo $data_string;
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_POST,true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $action);
@@ -163,8 +163,6 @@ class GuzzleHelper
             'Authorization: Bearer '.$token
         ));
         $result = curl_exec($ch);
-        echo json_encode($result);
-
         curl_close($ch);
         return json_decode($result);
     }

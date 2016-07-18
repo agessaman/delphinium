@@ -99,10 +99,22 @@ You may not distribute any version of this software, modified or otherwise
 
 
                             <!--Points the assignment will be worth-->
-                            <div class="form-group  text-field span-left is-required " data-field-name="title" id="Form-field-AttendanceSession-points-group">
+                            <div class="form-group  text-field span-left is-required " data-field-name="points" id="Form-field-AttendanceSession-points-group">
                                 <label for="Form-field-AttendanceSession-points">Points:</label>
                                 <!-- Text -->
-                                <input type="text" name="AttendanceSession[points]" id="Form-field-AttendanceSession-points" value="" placeholder="Enter the points this attendance will be worth" class="form-control" autocomplete="off" maxlength="255">
+                                <input type="text" name="AttendanceSession[points]" id="Form-field-AttendanceSession-points" value="" placeholder="Enter the points this attendance will be worth"
+                                       class="form-control" autocomplete="off" required maxlength="255">
+                            </div>
+
+                            <div class="form-group  text-field span-right is-required " data-field-name="fifteen" id="Form-field-AttendanceSession-fifteen-group">
+                                <label for="Form-field-AttendanceSession-fifteen">Percentage of points after 15 minutes:</label>
+                                <input type="number" min="1" max="100" name="AttendanceSession[fifteen]" id="Form-field-AttendanceSession-fifteen" value="50"
+                                       class="form-control" autocomplete="off" required maxlength="255">%
+                            </div>
+                            <div class="form-group  text-field span-left is-required " data-field-name="thirty" id="Form-field-AttendanceSession-thirty-group">
+                                <label for="Form-field-AttendanceSession-thirty">Percentage of points after 30 minutes:</label>
+                                <input type="number" min="1" max="100" name="AttendanceSession[thirty]" id="Form-field-AttendanceSession-thirty" value="50"
+                                       class="form-control" autocomplete="off" required maxlength="255">%
                             </div>
 
                             <div class="form-buttons">

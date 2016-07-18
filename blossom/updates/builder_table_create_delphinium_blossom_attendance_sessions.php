@@ -16,6 +16,8 @@ class BuilderTableCreateDelphiniumBlossomAttendanceSessions extends Migration
             $table->string('title', 255);
             $table->dateTime('start_at');
             $table->integer('duration_minutes')->unsigned();
+            $table->integer('percentage_fifteen')->unsigned();
+            $table->integer('percentage_thirty')->unsigned();
             $table->string('code', 255);
         });
     }

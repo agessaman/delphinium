@@ -238,7 +238,6 @@ class Attendance extends ComponentBase
     {
         $roots = new Roots();
         $data = post('AttendanceSession');
-
         //create the assignment for this attendance
         if (!isset($_SESSION)) {
             session_start();
@@ -248,12 +247,14 @@ class Attendance extends ComponentBase
         $assignmentGrp = $this->getAssignmentGroup($courseId);
 
         /**ASSIGNMENT**/
-
         $assignment = new Assignment();
         $assignment->name = $data['title'];
         $assignment->points_possible = $data['points'];
+        $assignment->description = "Attendance";
         $assignment->assignment_group_id = $assignmentGrp->assignment_group_id;
         $assignment->course_id = $courseId;
+        $assignment->published = true;
+        $assignment->submission_types = ["online_text_entry"];
 
         $date = new \DateTime('now');
         $intervalString = "PT{$data['duration_minutes']}M";
@@ -262,31 +263,41 @@ class Attendance extends ComponentBase
         $assignment->due_at = $date;
 
         $req = new AssignmentsRequest(ActionType::POST, null, null, $assignment);
+        $createdAssignment = $roots->assignments($req);
 
-//        $assignment = $roots->assignments($req);
-//
-//        echo json_encode($assignment);
+
         //create the session with the assignment id, code, etc.
         $session = new Sessions();
         $session->course_id = $courseId;
-        $session->assignment_id = 2710395;//TODO replace this with the dynamically generated assignment id
+        $session->assignment_id = $createdAssignment->assignment_id;
         $session->title = $data['title'];
         $session->start_at = new \DateTime('now');
         $session->duration_minutes = $data['duration_minutes'];
+        $session->percentage_fifteen = $data['fifteen'];
+        $session->percentage_thirty = $data['thirty'];
         $session->code = $this->generateCode();
         $session->save();
 
-//        $response = new \std
         return ['message'=>"Session successfully created",'success'=>1];
-        //display the code
     }
 
     private function getAssignmentGroup($courseId)
     {
+        $assignmentGrp = null;
+        $include_assignments = false;
+        $fresh_data = true;
+        $assignmentGpId = null;
+        $req = new AssignmentGroupsRequest(ActionType::GET, $include_assignments, $assignmentGpId, $fresh_data);
+
         $roots = new Roots();
-        $assignmentGrp = AssignmentGroup::where(['course_id' => $courseId,
-            'name' => 'Attendance',
-        ])->first();
+        $groups = $roots->assignmentGroups($req);
+        foreach($groups as $group)
+        {
+            if($group->name == "Attendance")
+            {
+                $assignmentGrp = $group;
+            }
+        }
         if(!$assignmentGrp)
         {
             $assignmentGrp = new AssignmentGroup();
@@ -338,26 +349,63 @@ class Attendance extends ComponentBase
         {
             session_start();
         }
+
+        $roots = new Roots();
+        //first we have to make a submission, then we have to grade it.
         $userId = $_SESSION['userID'];
         $studentIds = array($userId);
-        $assignmentIds = array(2710395);//TODO: replace this with the automatically generated assignment id
+        $assignmentIds = array($session->assignment_id);
         $multipleStudents = false;
         $multipleAssignments = false;
         $allStudents = false;
         $allAssignments = false;
 
+        $params[] = "submission[submission_type]=online_text_entry";//TODO: get the type of assignment based on the type of assignment created
+        $params[] = "submission[body]=Present";
+
         $req = new SubmissionsRequest(ActionType::POST, $studentIds, $allStudents,
             $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
 
-        //parameters
-        $params = array(
-            "submission[submission_type]"=>"online_text_entry",
-            "submission[body]"=>"Present");
 
+        $res = $roots->submissions($req, $params);
+
+
+        //compare the started_at date of the assignment and 'now'
+        $n = new \DateTime('now');
+        $now = strtotime($n->format('c'));
+        $s = new \DateTime($session->start_at);
+        $start_at =strtotime($s->format('c'));
+        $minutes = ($now-$start_at)/60;
+        $points = 40;//TODO: get the points from the newly created assignment;
+        $grade = $points;
+
+        switch ($minutes)
+        {
+            case $minutes>=30:
+                $grade = $points*($session->percentage_thirty/100);
+                break;
+            case $minutes>=15:
+                $grade = $points*($session->percentage_fifteen/100);
+                break;
+            default:
+
+        }
+
+        $newreq = new SubmissionsRequest(ActionType::PUT, $studentIds, $allStudents,
+            $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
+
+        $params[] = "submission[posted_grade]={$grade}";
         $roots = new Roots();
-//        $res = $roots->submissions($req, $params);
+        $res = $roots->submissions($newreq, $params);
 //        return $res;
-        return ['message'=>"Your attendance has been recorded",'success'=>1];
+        if($res&&isset($res->score))
+        {
+            return ['message'=>"Your attendance has been recorded",'success'=>1];
+        }
+        else
+        {
+            return ['message'=>"An error has occurred. Please inform your instructor.",'success'=>01];
+        }
 
     }
 

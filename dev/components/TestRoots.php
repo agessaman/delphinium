@@ -91,7 +91,7 @@ class TestRoots extends ComponentBase
 //        $this->testingGettingAssignments();
 //        $this->testGettingSingleAssignment();
 //        $this->testCreateAssignment();
-//        $this->testAssignmentGroups();
+        $this->testAssignmentGroups();
 //        $this->testSingleAssignmentGroup();
 //        $this->testCreateAssignmentGroup();
 //        $this->testGettingSingleSubmissionSingleUserSingleAssignment();
@@ -117,7 +117,8 @@ class TestRoots extends ComponentBase
 //        $this->testSubmitQuiz();
 //        $this->getQuizSubmissionQuestions();
 //        $this->getModuleTree();
-        $this->testPostSubmission();
+//        $this->testPostSubmission();
+//        $this->testPutSubmission();
     }
 
     private function testBasicModulesRequest()
@@ -337,7 +338,7 @@ class TestRoots extends ComponentBase
 
     private function testAssignmentGroups()
     {
-        $include_assignments = true;
+        $include_assignments = false;
         $fresh_data = true;
         $assignmentGpId = null;
         $req = new AssignmentGroupsRequest(ActionType::GET, $include_assignments, $assignmentGpId, $fresh_data);
@@ -568,10 +569,12 @@ class TestRoots extends ComponentBase
     {
         $date = new DateTime("now");
         $assignment = new Assignment();
-        $assignment->name = "my new name";
+        $assignment->name = "New from ROOTS";
         $assignment->description = "This assignment was created from backend";
         $assignment->points_possible = 30;
         $assignment->due_at = $date;
+        $assignment->published = true;
+        $assignment->submission_types = ["online_text_entry"];
 
         $req = new AssignmentsRequest(ActionType::POST, null, null, $assignment);
 
@@ -835,10 +838,12 @@ class TestRoots extends ComponentBase
         return $res;
     }
 
+
+    //Only works with a student token!!!!
     public function testPostSubmission()
     {
         $studentIds = array(1604486);
-        $assignmentIds = array(2710395);
+        $assignmentIds = array(2712291);
         $multipleStudents = false;
         $multipleAssignments = false;
         $allStudents = false;
@@ -849,11 +854,31 @@ class TestRoots extends ComponentBase
         $req = new SubmissionsRequest(ActionType::POST, $studentIds, $allStudents,
             $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
 
-        //parameters
-        $params = array(
-            "submission[submission_type]"=>"online_url",
-//            "submission[body]"=>"Present",
-            "submission[url]"=>"http://www.google.com");
+        $params[] = "submission[submission_type]=online_text_entry";
+        $params[] = "submission[body]=Present";
+
+
+        $res = $this->roots->submissions($req, $params);
+        echo json_encode($res);
+        return $res;
+    }
+
+    public function testPutSubmission()
+    {
+
+        $studentIds = array(1604486);
+        $assignmentIds = array(2712293);
+        $multipleStudents = false;
+        $multipleAssignments = false;
+        $allStudents = false;
+        $allAssignments = false;
+
+        //can have the student Id param null if multipleUsers is set to false (we'll only get the current user's submissions)
+
+        $req = new SubmissionsRequest(ActionType::PUT, $studentIds, $allStudents,
+            $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
+
+        $params[] = "submission[posted_grade]=40";
 
         $res = $this->roots->submissions($req, $params);
         echo json_encode($res);
