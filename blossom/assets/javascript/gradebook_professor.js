@@ -1653,9 +1653,9 @@ function callStudentsMilestoneInfo(studentsArr)
             $('.jsgrid-grid-body .jsgrid-table tr').each(function(a,b) {
                 var userPnt = parseInt($(b).find('td').eq(4).text());
                 var green = userPnt - statsObj.redLine;
-                if (green > 100) {
+                if (green >= 0) {
                     $(b).find('td i').addClass('green');
-                } else if(green < 100 && green > 0) {
+                } else if(green >= (-100)) {
                     $(b).find('td i').addClass('yellow');
                 } else {
                     $(b).find('td i').addClass('red');
