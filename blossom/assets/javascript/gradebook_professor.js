@@ -1942,7 +1942,7 @@ function getHistogramDataByMilestones(){
     }else{
         $.each(intervals,function(k,v){
             if(v >= middle){
-                redLineX = middle;
+                redLineX = v;
                 return false;
             }
         });
@@ -2094,7 +2094,10 @@ function histogramChart(data,slideDays) {
 }
 function addxBar(data,height,x,y,xAxis,yAxis){
     var svg = d3.select("#histogram svg"),
-        redX = data.redX;
+        redX = data.redX,
+        allBars = [],
+        xVal = 0,
+        tranformX = 0;
     x.domain(data.map(function(d) { return d.xPoint; }));
     y.domain([0, d3.max(data, function(d) { return d.count; })]);
 
@@ -2124,16 +2127,20 @@ function addxBar(data,height,x,y,xAxis,yAxis){
             if(d.count > 0){
                 hRects.push(x(d.xPoint)+(x.rangeBand()+20));
             }
-            return x(d.xPoint)+(x.rangeBand()/2); 
+            xVal = x(d.xPoint)+(x.rangeBand()/2);
+            allBars.push(xVal);
+            return xVal; 
         })
         .attr("width", x.rangeBand())
         .attr("y", function(d) { return y(d.count); })
         .attr("height", function(d) { return height - y(d.count); });
 
         if($('.histRadio:checked').attr('id') == 'hMilestone'){
-            redX = parseFloat($('.histogramXA .tick:contains('+data.redX+')').attr('transform').split(/[()]/)[1].split(',')[0]);
-            redX += 18 + x.rangeBand();
+            tranformX = 40;
+            redXPos = $('.histogramXA .tick:contains('+data.redX+')').index() - 1;
+            redX = allBars[redXPos] + x.rangeBand();
         }
+
         svg.append("svg:rect")
         .attr("x",redX)
         .attr("y",20)
@@ -2142,6 +2149,7 @@ function addxBar(data,height,x,y,xAxis,yAxis){
         .attr("stroke-width", 1.5)
         .attr("stroke","red")
         .attr("class", "hist-today-line")
+        .attr('transform','translate('+tranformX+',0)')
         .attr('data-point',getMiddlePoint());
     }else{
         bars.transition().duration(300)
