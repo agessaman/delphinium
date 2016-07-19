@@ -1936,8 +1936,17 @@ function getHistogramDataByMilestones(){
     intervals.unshift(0);
     
     retVal = getStudentsCount(intervals);
-    var intervalId = Math.ceil(intervals.length/2);
-    redLineX = intervals[intervalId];
+    var middle = intervals[intervals.length-1] / 2;
+    if($.inArray(middle,intervals) > -1){
+        redLineX = middle;
+    }else{
+        $.each(intervals,function(k,v){
+            if(v >= middle){
+                redLineX = middle;
+                return false;
+            }
+        });
+    }
     return {usersCount:retVal,xPoints:intervals,maxPoint:endPoint,redLine:redLineX};
 }
 
@@ -2065,7 +2074,7 @@ function histogramChart(data,slideDays) {
     var histData = [],
         counts = data.xPUserC.usersCount.counts,
         xPoints = data.xPUserC.xPoints,
-        redX = 540,
+        redX = 550,
         name;
 
     if($('.histRadio:checked').attr('id') == 'hGrade'){
@@ -2122,7 +2131,8 @@ function addxBar(data,height,x,y,xAxis,yAxis){
         .attr("height", function(d) { return height - y(d.count); });
 
         if($('.histRadio:checked').attr('id') == 'hMilestone'){
-            redX = parseFloat($('#histogram .tick:contains('+data.redX+')').attr('transform').split(/[()]/)[1].split(',')[0]);
+            redX = parseFloat($('.histogramXA .tick:contains('+data.redX+')').attr('transform').split(/[()]/)[1].split(',')[0]);
+            redX += 18 + x.rangeBand();
         }
         svg.append("svg:rect")
         .attr("x",redX)
@@ -2235,7 +2245,7 @@ function histogram(){
             $(".histogram-range-slider").slider({disabled: true});
             $(".histogram-date").slider({disabled: true});
             $('.histogram-player').prop('disabled',true).find('i').removeClass('fa-pause').addClass('fa-play');
-            $('.like-interval-inp').attr('disabled',true);
+            $('.like-interval-inp').attr('disabled',true).addClass('color-grey');
             clearInterval(speed);
         }else{
             $(".histogram-date").slider({disabled: false});
@@ -2243,12 +2253,12 @@ function histogram(){
             if($(this).attr('id') == 'hPoint'){
                 $('.r-name').removeClass('color-grey');
                 $(".histogram-range-slider").slider({disabled: false});
-                $('.like-interval-inp').attr('disabled',false);
+                $('.like-interval-inp').attr('disabled',false).removeClass('color-grey');
             }else{
                 $('.range-slider-container').find('.r-name').addClass('color-grey');
                 $('.histogram-date-slider-container').find('.r-name').removeClass('color-grey');
                 $(".histogram-range-slider").slider({disabled: true});
-                $('.like-interval-inp').attr('disabled',true);
+                $('.like-interval-inp').attr('disabled',true).addClass('color-grey');
             }
         }
         
@@ -2302,11 +2312,11 @@ function intervalHistIts() {
         var index = point.find('.ui-slider-label').attr('data-value');
         var val = labels[index];
         addBarToHistogram(true);
-        $('.like-interval-inp').attr('disabled',true);
+        $('.like-interval-inp').attr('disabled',true).addClass('color-grey');
         $('.histogram-date').find('.ui-slider-handle').css('left',left).find('span').text(val);
         $('.histogram-date').find('.ui-slider-pip').removeClass('ui-slider-pip-selected').eq(pointHistDate).addClass('ui-slider-pip-selected');
     }else{
-        $('.like-interval-inp').attr('disabled',false);
+        $('.like-interval-inp').attr('disabled',false).removeClass('color-grey');
         $('button.histogram-player').find('i').removeClass('fa-pause').addClass('fa-play');
         pointHistDate = -1;
         pointHistDateAll = 0;
