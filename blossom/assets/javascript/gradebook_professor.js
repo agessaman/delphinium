@@ -1649,6 +1649,19 @@ function callStudentsMilestoneInfo(studentsArr)
             $("#hGrade").removeAttr('data-disabled').prop('disabled',false).closest('label').removeClass('disabled');
             windowData = data;
             buildTable(windowData);
+            var statsObj = expInst;
+            $('.jsgrid-grid-body .jsgrid-table tr').each(function(a,b) {
+                var userPnt = parseInt($(b).find('td').eq(4).text());
+                var green = userPnt - statsObj.redLine;
+                if (green > 100) {
+                    $(b).find('td i').addClass('green');
+                } else if(green < 100 && green > 0) {
+                    $(b).find('td i').addClass('yellow');
+                } else {
+                    $(b).find('td i').addClass('red');
+                }
+            });
+
             $('.jsgrid-header-row th').eq(11).append('<a id="aGradeHover" style="color:#337AB7 !important;font-size:20px;margin: 0 0 0 7px;"><i id="iGradeTooltip" class="fa fa-question-circle"></i></a>');
             div = d3.select("body").append("div")
                 .attr("class", "tooltip")
@@ -2630,13 +2643,13 @@ div = d3.select("body").append("div")
     .style("opacity", 0);
 d3.select("#iGradeTooltip").on("mouseover", function (d) {
     var str = "<table class='table table-condensed table-gradingScheme'><thead> <tr> <th>Points</th> <th>Letter Grade</th></tr> </thead> <tbody> ";
-    for(var i=0;i<=gradingScheme.length-1;i++)
+    for(var i = 0; i <= gradingScheme.length - 1; i++)
     {
         var item = gradingScheme[i];
 
-        str+="<tr><td>"+item.value+"</td> <td>"+item.name+"</td> </tr>";
+        str += "<tr><td>" + item.value + "</td> <td>" + item.name + "</td> </tr>";
     }
-    str+="</tbody> </table>";
+    str += "</tbody></table>";
     addTooltipProfessorGradebook(str, event);
 })
 .on("mouseout", function (d) {

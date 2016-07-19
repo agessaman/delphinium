@@ -80,11 +80,10 @@ class Gradebook extends ComponentBase {
 
     public function onRender() {
         //try{
-            
             $this->roots = new Roots();
             $standards = $this->roots->getGradingStandards();
             $grading_scheme = $standards[0]->grading_scheme;
-
+            $expInst = $this->property('experienceInstance');
             $this->addCss("/plugins/delphinium/blossom/assets/css/jsgrid.css");
             $this->addCss("/plugins/delphinium/blossom/assets/css/storm.css");
             $this->addCss("/plugins/delphinium/blossom/assets/css/nouislider.min.css");
@@ -98,12 +97,12 @@ class Gradebook extends ComponentBase {
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/ui/jquery-ui-slider-pips.js");
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/nouislider.min.js");
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/js/tab.js");
-            $this->page['experienceInstanceId'] = $this->property('experienceInstance');
+            $this->page['experienceInstanceId'] = $expInst;
             $userRoles = $_SESSION['roles'];
             $this->page['userRoles'] = $userRoles;
             $this->page['user'] = $_SESSION['userID'];
-            if (!is_null($this->property('experienceInstance'))) {
-                $instance = ExperienceModel::find($this->property('experienceInstance'));
+            if (!is_null($expInst)) {
+                $instance = ExperienceModel::find($expInst);
                 $maxExperiencePts = $instance->total_points;
 
             }
@@ -133,15 +132,15 @@ class Gradebook extends ComponentBase {
                 $this->page['submissions'] = json_encode($aggregateSubmissionScores);
                 $this->page['endDate'] = json_encode($courseEnd);
                 $experience = new ExperienceComponent();
-                $this->page['today'] = $experience->getRedLinePoints($this->property('experienceInstance'));
+                $this->page['today'] = $experience->getRedLinePoints($expInst);
 
                 $exp = new ExperienceComponent();
                 $pts = $exp->getUserPoints();
                 $this->page['totalPts'] = $pts;
 
                 //get letter grade
-                if (!is_null($this->property('experienceInstance'))) {
-                    $instance = ExperienceModel::find($this->property('experienceInstance'));
+                if (!is_null($expInst)) {
+                    $instance = ExperienceModel::find($expInst);
                     $maxExperiencePts = $instance->total_points;
 
                     $grade = new GradeComponent();
@@ -152,13 +151,15 @@ class Gradebook extends ComponentBase {
                 }
                 $this->addJs("/plugins/delphinium/blossom/assets/javascript/boxplot_d3.js");
             } else if ((stristr($userRoles, 'Instructor')) || (stristr($userRoles, 'TeachingAssistant'))) {
+                $stats = new StatsComponent();
+                $this->page['expInst'] = json_encode($stats->getStudentsStats($expInst));
                 $this->getProfessorData();
-                //$this->addCss("/plugins/delphinium/blossom/assets/css/light-js-table-sorter.css");
+                $this->addJs("/plugins/delphinium/blossom/assets/javascript/jsgrid.min.js");
                 $this->addCss("/plugins/delphinium/blossom/assets/css/jsgrid-theme.css");
                 $this->addJs("/plugins/delphinium/blossom/assets/javascript/gradebook_professor.js");
-                $this->addJs("/plugins/delphinium/blossom/assets/javascript/jsgrid.min.js");
                 $this->addJs("/plugins/delphinium/blossom/assets/javascript/boxplot_d3.js");
-
+                //$this->addCss("/plugins/delphinium/blossom/assets/css/light-js-table-sorter.css");
+                
             }
 
             //modify grading scheme for display to users
