@@ -1916,6 +1916,14 @@ function getHistogramDataByPoints(){
         inputStep = $('.like-interval-inp').val();
 
     step = (inputStep.length == 0) ? step : parseInt(inputStep);
+    if(inputStep > 100000){
+        step = 100000;
+        $('.like-interval-inp').val(100000);
+    }
+    if(inputStep < 0){
+        step = 10;
+        $('.like-interval-inp').val(10);   
+    }
     stepHistogram = step;
     $.each(submissions,function(k,v){
         endArr.push(v.items[v.items.length-1].points);
@@ -2230,6 +2238,7 @@ function histogram(){
         stepSlider = instructorStep[instructorId],
         intervalLabels = [],
         tooltipText;
+    $('.like-interval-inp').val(parseInt(createPoint.value(stepSlider)));
 
     for(var i=10;i<=100;i++){
         intervalLabels.push(parseInt(createPoint.value(i)));
@@ -2245,7 +2254,7 @@ function histogram(){
         instructorsStep = jQuery.parseJSON(getStorage('histogramStep'));
         instructorsStep[instructorId] = step;
         setStorage('histogramStep',JSON.stringify(instructorsStep));
-        $('.like-interval-inp').val('');
+        $('.like-interval-inp').val(parseInt(createPoint.value(step)));
         $(".histogram-range-slider").find('.ui-slider-handle').find('.ui-slider-tip').text(parseInt(createPoint.value(step)));
         
         if(clearLoop){
