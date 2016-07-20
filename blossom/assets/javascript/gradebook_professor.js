@@ -1547,8 +1547,6 @@ function buildTable(data) {
     hide_or_show(columns);
 
     $('#content-confirmation .modal-footer button').eq(0).click(function() {
-<<<<<<< HEAD
-=======
         var statsObj = expInst;
         $('.jsgrid-grid-body .jsgrid-table tr').each(function(a,b) {
             var userPnt = parseInt($(b).find('td').eq(4).text());
@@ -1570,8 +1568,6 @@ function buildTable(data) {
                 //$('.subtraction').next('<span>Please type only numbers</span>');
             }
         });
-
->>>>>>> 88cc5f03b68c515e04ecb62761692e93c13d409a
         $('#content-confirmation input[type=checkbox]').each(function(a,b) {
             var key = $(b).val();
             if ($(b).is(':checked')) {

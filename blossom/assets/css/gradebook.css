@@ -908,8 +908,7 @@ th.details {
     background:#7bfb8a !important;
 }
 .yellow {
-<<<<<<< HEAD
-    color:yellow;
+    background:#f8fb7b !important;
 }
 #content-configuration .modal-body a {
     text-align: center !important;
@@ -919,7 +918,6 @@ th.details {
     max-width: 100%;
     height: 250px;
     max-height: 250px;
-=======
     background:#f8fb7b !important;
 }
 .lh {
@@ -927,5 +925,4 @@ th.details {
 }
 .subtraction {
     border-radius: none !important;
->>>>>>> 88cc5f03b68c515e04ecb62761692e93c13d409a
 }
