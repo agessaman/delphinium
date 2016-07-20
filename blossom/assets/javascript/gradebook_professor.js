@@ -650,13 +650,6 @@ $(document).on("change", '.deselectAll',  function () {
             selectedStudents.splice(index, 1);
         }
     });
-    /*if (allSelected)
-    {
-        d3.select("#pathred").remove();
-        d3.select(".cirred").remove();
-        addLine(data, "red", "red");
-        addRedLineDots();
-    }*/
 
 })
 var selectedStudents = [];
@@ -1175,11 +1168,6 @@ function buildTable(data) {
         }
 
         $('.dashboard-container p').each(function(a, b) {
-            /*var unique = columns_data[$(b).attr('class')];
-            var num = unique.filter(function(item, i, ar){ return ar.indexOf(item) === i; });
-            var num = num.filter(function(item, i, ar){ return ar.indexOf(item) != 0; });
-            var avg = num.avg();
-            $(b).append(Math.round(avg));*/
             var num = columns_data[$(b).attr('class')];
             var ok = 0;
             $.each(num, function(c, d) {
@@ -1393,7 +1381,7 @@ function buildTable(data) {
     });
 
     $("#gridContainer").jsGrid({
-        height: "760px",
+        height: "564px",
         width: "100%",
         filtering: true,
         sorting: true,
