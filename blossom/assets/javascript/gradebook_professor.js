@@ -1557,16 +1557,14 @@ function buildTable(data) {
 
     $('#content-email .modal-footer button').eq(0).click(function(e){
         var subject = $('#email-subject').val().trim(),
-            message = $('#email-message').val().trim();
-            ids = JSON.stringify([33,18]);
-
-        if(subject.length > 255 || message.length == 0){
+            body = $('#email-message').val().trim(),
+            recipients = [33,18],
+            context_code = 'account_'+instructorId;
+        if(subject.length > 255 || body.length == 0){
             e.preventDefault();
             e.stopPropagation();
         }else{
-            $.post('gradebook/sendEmailInCourse',{id:ids,subject:subject,message:message},function(data){
-                console.log(data);
-            });
+            $.post('conversations',{subject:subject,body:body,recipients:recipients,authenticity_token:userToken,context_code:context_code,group_conversation:true});
         }
     });
 
