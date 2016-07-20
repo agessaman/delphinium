@@ -1381,7 +1381,7 @@ function buildTable(data) {
     });
 
     $("#gridContainer").jsGrid({
-        height: "510px",
+        height: "500px",
         width: "100%",
         filtering: true,
         sorting: true,
