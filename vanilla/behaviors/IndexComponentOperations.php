@@ -100,7 +100,7 @@ class IndexComponentOperations extends IndexOperationsBehaviorBase
         $this->modifyFiles();
 //        $this->octoberUp( $vars['author'].".".$vars['plugin']);
         $this->octoberUp( $vars['author'].".".$vars['plugin']);
-        return;
+        return "adf ";
     }
 
     public function onUpdateComponentList()

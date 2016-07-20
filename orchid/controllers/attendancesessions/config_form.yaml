@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Attendance Session
+
+# Model Form Field configuration
+form: $/delphinium/orchid/models/attendancesession/fields.yaml
+
+# Model Class name
+modelClass: Delphinium\Orchid\Models\AttendanceSession
+
+# Default redirect location
+defaultRedirect: delphinium/orchid/attendancesessions
+
+# Create page
+create:
+    title: Create Attendance Session
+    redirect: delphinium/orchid/attendancesessions/update/:id
+    redirectClose: delphinium/orchid/attendancesessions
+
+# Update page
+update:
+    title: Edit Attendance Session
+    redirect: delphinium/orchid/attendancesessions
+    redirectClose: delphinium/orchid/attendancesessions
+
+# Preview page
+preview:
+    title: Preview Attendance Session

@@ -1,18 +1,18 @@
 <?php
-namespace {{studly_author}}\{{studly_plugin}}\Models;
+namespace Delphinium\Orchid\Models;
 
 use Model;
 
 /**
- * {{name}} Model
+ * Attendance Model
  */
-class {{studly_name}} extends Model
+class Attendance extends Model
 {
 
     /**
      * @var string The database table used by the model.
      */
-    public $table = '{{lower_author}}_{{lower_plugin}}_{{snake_plural_name}}';
+    public $table = 'delphinium_orchid_attendances';
 
     /**
      * @var array Guarded fields
@@ -22,7 +22,7 @@ class {{studly_name}} extends Model
     /**
      * @var array Fillable fields
      */
-    protected $fillable = ['name','animate','size','custom_css];
+    protected $fillable = ['name','animate','size', 'custom_css'];
 
     /**
      * @var array Relations
