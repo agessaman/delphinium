@@ -6,25 +6,25 @@
 name: Attendance
 
 # Model Form Field configuration
-form: $/delphinium/blossom/models/attendance/fields.yaml
+form: $/delphinium/orchid/models/attendance/fields.yaml
 
 # Model Class name
-modelClass: Delphinium\Blossom\Models\Attendance
+modelClass: Delphinium\Orchid\Models\Attendance
 
 # Default redirect location
-defaultRedirect: delphinium/blossom/attendance
+defaultRedirect: delphinium/orchid/attendance
 
 # Create page
 create:
     title: Create Attendance
-    redirect: delphinium/blossom/attendance/update/:id
-    redirectClose: delphinium/blossom/attendance
+    redirect: delphinium/orchid/attendance/update/:id
+    redirectClose: delphinium/orchid/attendance
 
 # Update page
 update:
     title: Edit Attendance
-    redirect: delphinium/blossom/attendance
-    redirectClose: delphinium/blossom/attendance
+    redirect: delphinium/orchid/attendance
+    redirectClose: delphinium/orchid/attendance
 
 # Preview page
 preview:

@@ -44,7 +44,7 @@ class Plugin extends PluginBase
      */
     public function pluginDetails()
     {
-        return array('name' => 'Blossom', 'description' => 'Plug-in used to develop views for displaying grade information', 'author' => 'Jacob Reid', 'icon' => 'icon-asterisk');
+        return array('name' => 'Blossom', 'description' => 'Plug-in used to develop views for displaying grade information', 'author' => 'Project Delphinium', 'icon' => 'icon-asterisk');
     }
 
     public function registerComponents()
@@ -59,8 +59,7 @@ class Plugin extends PluginBase
             '\\Delphinium\\Blossom\\Components\\Progress' => 'progress',
             '\\Delphinium\\Blossom\\Components\\Gradebook' => 'gradebook',
             '\\Delphinium\\Blossom\\Components\\EasterEggs' => 'eastereggs',
-            '\\Delphinium\\Blossom\\Components\\Stats' => 'stats',
-            '\\Delphinium\\Blossom\\Components\\Attendance' => 'attendance');
+            '\\Delphinium\\Blossom\\Components\\Stats' => 'stats');
     }
 
     public function registerFormWidgets()
@@ -107,12 +106,6 @@ class Plugin extends PluginBase
                     'icon' => 'icon-bar-chart',
                     'owner' => 'Delphinium.Greenhouse',
                     'url' => Backend::url('delphinium/blossom/stats'),
-                    'group' => 'Blossom'),
-                'Attendance' => array(
-                    'label' => 'Attendance',
-                    'icon' => 'oc-icon-check-square-o',
-                    'owner' => 'Delphinium.Greenhouse',
-                    'url' => \Backend::url('delphinium/blossom/attendance'),
                     'group' => 'Blossom')));
         });
     }

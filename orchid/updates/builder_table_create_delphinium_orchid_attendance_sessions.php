@@ -1,13 +1,13 @@
-<?php namespace Delphinium\Blossom\Updates;
+<?php namespace Delphinium\Orchid\Updates;
 
 use Schema;
 use October\Rain\Database\Updates\Migration;
 
-class BuilderTableCreateDelphiniumBlossomAttendanceSessions extends Migration
+class BuilderTableCreateDelphiniumOrchidAttendanceSessions extends Migration
 {
     public function up()
     {
-        Schema::create('delphinium_blossom_attendance_sessions', function($table)
+        Schema::create('delphinium_orchid_attendance_sessions', function($table)
         {
             $table->engine = 'InnoDB';
             $table->increments('id')->unsigned();
@@ -24,6 +24,6 @@ class BuilderTableCreateDelphiniumBlossomAttendanceSessions extends Migration
     
     public function down()
     {
-        Schema::dropIfExists('delphinium_blossom_attendance_sessions');
+        Schema::dropIfExists('delphinium_orchid_attendance_sessions');
     }
 }

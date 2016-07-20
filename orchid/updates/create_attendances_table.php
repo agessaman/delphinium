@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
  *
@@ -20,42 +19,35 @@
  * You can modify personal copy of source-code but cannot distribute modifications
  * You may not distribute any version of this software, modified or otherwise
  */
-namespace Delphinium\Blossom\Controllers;
 
-use Delphinium\Blossom\Models\Attendance as MyModel;
-use BackendMenu;
-use Backend\Classes\Controller;
-use Flash;
-/**
- * Attendance Back-end Controller
- */
-class Attendance extends Controller
+namespace Delphinium\Orchid\Updates;
+
+use Schema;
+use October\Rain\Database\Updates\Migration;
+
+class CreateAttendancesTable extends Migration
 {
-    public $implement = array('Backend.Behaviors.FormController', 'Backend.Behaviors.ListController');
-    public $formConfig = 'config_form.yaml';
-    public $listConfig = 'config_list.yaml';
-    public function __construct()
+
+    public function up()
     {
-        parent::__construct();
-        BackendMenu::setContext('Delphinium.Greenhouse', 'greenhouse', 'greenhouse');
-    }
-    /**
-     * Delete checked instances.
-     * called from /controllers/list_toolbar.htm Remove button
-     */
-    public function index_onDelete()
-    {
-        if (($checkedIds = post('checked')) && is_array($checkedIds) && count($checkedIds)) {
-            foreach ($checkedIds as $id) {
-                if (!($obj = MyModel::find($id))) {
-                    continue;
-                }
-                $obj->delete();
-            }
-            Flash::success('Successfully deleted');
-        } else {
-            Flash::error('An error occurred when trying to delete the selected item');
+        if ( !Schema::hasTable('delphinium_orchid_attendances') )
+        {
+            Schema::create('delphinium_orchid_attendances', function($table)
+            {
+                $table->engine = 'InnoDB';
+                $table->increments('id');
+                $table->string('name');
+                $table->boolean('animate');
+                $table->integer('size');
+                $table->longText('custom_css');
+                $table->timestamps();
+            });
         }
-        return $this->listRefresh();
     }
+
+    public function down()
+    {
+        Schema::dropIfExists('delphinium_orchid_attendances');
+    }
+
 }

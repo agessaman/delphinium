@@ -1,6 +1,6 @@
 <?php Block::put('breadcrumb') ?>
     <ul>
-        <li><a href="<?= Backend::url('delphinium/blossom/attendancesessions') ?>">Attendance Sessions</a></li>
+        <li><a href="<?= Backend::url('delphinium/orchid/attendance') ?>">Attendance</a></li>
         <li><?= e($this->pageTitle) ?></li>
     </ul>
 <?php Block::endPut() ?>
@@ -14,6 +14,6 @@
 <?php else: ?>
 
     <p class="flash-message static error"><?= e($this->fatalError) ?></p>
-    <p><a href="<?= Backend::url('delphinium/blossom/attendancesessions') ?>" class="btn btn-default">Return to attendance sessions list</a></p>
+    <p><a href="<?= Backend::url('delphinium/orchid/attendance') ?>" class="btn btn-default">Return to attendance list</a></p>
 
 <?php endif ?>

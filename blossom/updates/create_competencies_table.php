@@ -43,6 +43,8 @@ class CreateCompetenciesTable extends Migration
 	}
     public function down()
     {
-		Schema::dropIfExists('delphinium_blossom_competencies');
+		if ( Schema::hasTable('delphinium_blossom_competencies') ) {
+			Schema::dropIfExists('delphinium_blossom_competencies');
+		}
     }
 }

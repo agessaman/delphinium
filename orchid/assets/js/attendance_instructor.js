@@ -15,6 +15,7 @@ $(document).ready(function() {
 
 function completed(data)
 {
+    $('#new-session-modal').modal('hide');
     var text= (data!==null) ? data['message'] :"The record has been successfully saved";
     var classStr = data['success']===1?'success':'error';
     $.oc.flashMsg({
@@ -23,7 +24,6 @@ function completed(data)
         'interval': 3
     });
     //location.reload();
-    $('#new-session-modal').modal('hide');
     history.go(0);
 }
 

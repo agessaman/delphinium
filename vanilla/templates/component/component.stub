@@ -25,6 +25,7 @@ use Cms\Classes\ComponentBase;
 class {{studly_name}} extends ComponentBase
 {
 
+    public ${lower_model}}recordId;
     /**
      * @return array An array of details to be shown in the CMS section of OctoberCMS
      */
@@ -102,6 +103,7 @@ class {{studly_name}} extends ComponentBase
             $this->page['config'] = json_encode($config);
             //Use the primary key of the record you want to update
             $this->page['recordId'] = $config->id;
+            $this->page->{{lower_model}}recordId) = $config->id;
             if (!isset($_SESSION)) {
                  session_start();
              }
@@ -117,6 +119,13 @@ class {{studly_name}} extends ComponentBase
             //ALSO, AN INSTRUCTIONS PAGE WITH THE NAME instructor.htm MUST BE ADDED TO YOUR CONTROLLER DIRECTORY, AFTER THE CONTROLLER IS CREATED
             //IN {{studly_author}}\{{studly_plugin}}\controllers\{{studly_name}}\_instructions.htm
 
+
+            //This will add the custom css, if any, that can be configured in the front-end of the component
+            if($config&&$config->custom_css)
+            {
+                $cssStr = $config->custom_css;
+                $this->page['custom_css'] = $cssStr;
+            }
             // include the backend form with instructions for instructor.htm
             if(stristr($roleStr, 'Instructor')||stristr($roleStr, 'TeachingAssistant'))
              {
@@ -210,13 +219,14 @@ class {{studly_name}} extends ComponentBase
     {
 
         $data = post('{{studly_model}}');//model name
-        $id = $this->page['{{lower_model}}recordId'];// convert string to integer
+        $id = $this->page->'{{lower_model}}recordId';// convert string to integer
         $config = $this->getInstance($data['name']);// retrieve existing record
 
         //update record with new data coming from POST
         $config->name = $data['name'];
         $config->animate = intval($data['animate']);
         $config->size = intval($data['size']);
+        $config->custom_css = $data['custom_css'];
 
         //TODO: must finish updating the rest of the fields in your table
         $config->save();// update original record

@@ -1,4 +1,4 @@
-<?php namespace Delphinium\Blossom\Models;
+<?php namespace Delphinium\Orchid\Models;
 
 use Model;
 
@@ -33,6 +33,6 @@ class AttendanceSession extends Model
     /**
      * @var string The database table used by the model.
      */
-    public $table = 'delphinium_blossom_attendance_sessions';
+    public $table = 'delphinium_orchid_attendance_sessions';
 
 }

@@ -30,18 +30,19 @@ You may not distribute any version of this software, modified or otherwise
 <div style="z-index:10;">
     <!-- component partial -->
     {% partial __SELF__~"::display" %}
+    <div class="attendanceCode">
+        <!-- display the code-->
+        {% if this.page.code %}
+            The code for this attendance session is: <div class="actualCode">{{ this.page.code }}</div>
+        {% else %}
+            There is no active attendance session.
+        {% endif %}
 
-    <!-- display the code-->
-    {% if this.page.code %}
-    <div class="attendanceCode">The code for this attendance session is: {{ this.page.code }}</div>
-    {% else %}
-    <div class="attendanceCode">There is no active attendance session.</div>
-    {% endif %}
-
-    <!-- Button trigger modal -->
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#new-session-modal">
-        New Session
-    </button>
+        <!-- Button trigger modal -->
+        <button id="newSession" type="button" class="btn btn-primary" data-toggle="modal" data-target="#new-session-modal">
+            New Session
+        </button>
+    </div>
 </div>
 
 <!-- Configuration modal with Front End Form and Instructions in tabs -->
@@ -64,7 +65,13 @@ You may not distribute any version of this software, modified or otherwise
                     <form role="form" id="updateForm"
                       data-request="{{ __SELF__ }}::onUpdate"
                       data-request-success="$el.hide();completed(data);">
-                        {{ attendanceform.update(attendancerecordId)|raw }}
+
+
+
+                        <span>{{ this.page.attendancerecordId }}</span>
+
+
+                        {{ attendanceform.update(this.page.attendancerecordId)|raw }}
                         {{ attendanceform.formRender()|raw }}
                       <div class="form-group">
                          <button class="btn btn-primary" type="submit" value="register">Update Component</button>
@@ -97,26 +104,26 @@ You may not distribute any version of this software, modified or otherwise
                               data-request-success="$el.hide();completed(data);">
                             {{ attendancesession.formRender()|raw }}
 
+                            <div class="form-widget form-elements layout">
+                                <!--Points the assignment will be worth-->
+                                <div class="form-group  text-field span-left is-required " data-field-name="points" id="Form-field-AttendanceSession-points-group">
+                                    <label for="Form-field-AttendanceSession-points">Points:</label>
+                                    <!-- Text -->
+                                    <input type="number"  name="AttendanceSession[points]" id="Form-field-AttendanceSession-points" value="" placeholder="Enter the points this attendance will be worth"
+                                           class="form-control" autocomplete="off" required maxlength="255">
+                                </div>
 
-                            <!--Points the assignment will be worth-->
-                            <div class="form-group  text-field span-left is-required " data-field-name="points" id="Form-field-AttendanceSession-points-group">
-                                <label for="Form-field-AttendanceSession-points">Points:</label>
-                                <!-- Text -->
-                                <input type="text" name="AttendanceSession[points]" id="Form-field-AttendanceSession-points" value="" placeholder="Enter the points this attendance will be worth"
-                                       class="form-control" autocomplete="off" required maxlength="255">
-                            </div>
-
-                            <div class="form-group  text-field span-right is-required " data-field-name="fifteen" id="Form-field-AttendanceSession-fifteen-group">
-                                <label for="Form-field-AttendanceSession-fifteen">Percentage of points after 15 minutes:</label>
-                                <input type="number" min="1" max="100" name="AttendanceSession[fifteen]" id="Form-field-AttendanceSession-fifteen" value="50"
-                                       class="form-control" autocomplete="off" required maxlength="255">%
-                            </div>
-                            <div class="form-group  text-field span-left is-required " data-field-name="thirty" id="Form-field-AttendanceSession-thirty-group">
-                                <label for="Form-field-AttendanceSession-thirty">Percentage of points after 30 minutes:</label>
-                                <input type="number" min="1" max="100" name="AttendanceSession[thirty]" id="Form-field-AttendanceSession-thirty" value="50"
-                                       class="form-control" autocomplete="off" required maxlength="255">%
-                            </div>
-
+                                <div class="form-group  text-field span-right is-required " data-field-name="fifteen" id="Form-field-AttendanceSession-fifteen-group">
+                                    <label for="Form-field-AttendanceSession-fifteen">Percentage of points after 15 minutes:</label>
+                                    <input type="number" min="1" max="100" name="AttendanceSession[fifteen]" id="Form-field-AttendanceSession-fifteen"
+                                           class="form-control" autocomplete="off" required maxlength="255" width="70px" placeholder="Example: 50">
+                                </div>
+                                <div class="form-group  text-field span-left is-required " data-field-name="thirty" id="Form-field-AttendanceSession-thirty-group">
+                                    <label for="Form-field-AttendanceSession-thirty">Percentage of points after 30 minutes:</label>
+                                    <input type="number" min="1" max="100" name="AttendanceSession[thirty]" id="Form-field-AttendanceSession-thirty"
+                                           class="form-control" autocomplete="off" required maxlength="255" width="70px" placeholder="Example: 20">
+                                </div>
+                        </div>
                             <div class="form-buttons">
                                 <div class="loading-indicator-container">
                                     <button class="btn btn-primary" type="submit" value="register">Create Session</button>
@@ -140,4 +147,6 @@ You may not distribute any version of this software, modified or otherwise
 	#Form-field-Attendance-id-group{display:none;}
 	#Form-field-Attendance-name-group{display:none;}
     #Form-field-AttendanceSession-points-group{margin-bottom:1em;}
+    .attendanceCode{width:252px;height:110px;color:gray;}
+    .actualCode{font-size:46px;text-align:center;height:70%;}
 </style>
