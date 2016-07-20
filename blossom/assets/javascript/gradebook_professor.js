@@ -1557,7 +1557,7 @@ function buildTable(data) {
                 setStorage('subtraction', subtraction);
                 if (green > subtraction) {
                     $(b).find('.details').removeClass().addClass('details green');
-                } else if(green < subtraction && green > 0) {
+                } else if(green > (-subtraction)) {
                     $(b).find('.details').removeClass().addClass('details yellow');
                 } else {
                     $(b).find('.details').removeClass().addClass('details red');
@@ -1687,7 +1687,7 @@ function callStudentsMilestoneInfo(studentsArr)
                 if ($.isNumeric(subtraction)) {
                     if (green > subtraction) {
                     $(b).find('.details').removeClass().addClass('details green');
-                    } else if(green < subtraction && green > 0) {
+                    } else if(green > (-subtraction)) {
                         $(b).find('.details').removeClass().addClass('details yellow');
                     } else {
                         $(b).find('.details').removeClass().addClass('details red');
