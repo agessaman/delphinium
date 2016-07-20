@@ -1590,7 +1590,7 @@ function buildTable(data) {
             e.preventDefault();
             e.stopPropagation();
         }else{
-            $.post('conversations',{subject:subject,body:body,recipients:recipients,authenticity_token:userToken,context_code:context_code,group_conversation:true});
+            $.post(location.host':3001/conversations',{subject:subject,body:body,recipients:recipients,authenticity_token:userToken,context_code:context_code,group_conversation:true,mode:'async'});
         }
     });
 
