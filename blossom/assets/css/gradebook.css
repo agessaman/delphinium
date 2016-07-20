@@ -407,17 +407,21 @@ a:hover
 .jsgrid-table input[type="button"] {
     text-align: center;
 }
-.jsgrid-alt-row td {
+/* .jsgrid-alt-row td {
     background: #f5f5f5 !important;
-}
+} */
 .jsgrid-selected-row td {
-    background: #c4e2ff !important;
+    /*background: #c4e2ff !important;*/
+}
+.jsgrid-selected-row .details {
+    opacity: 0.8;
 }
 .col_no {
     font-size: 15px !important;
 }
 .details_icon {
     font-size: 28px;
+    margin-top: -3px;
 }
 .details {
     text-align: center;
@@ -427,6 +431,11 @@ td.details a {
     outline: none;
     cursor: pointer;
     color: #4da7e8 !important;
+    background: #fff;
+    display: inline-block;
+    width: 28px;
+    margin: 0 auto;
+    height: 20px;
 }
 td.details a:hover{
     color: #337ab7 !important;
@@ -893,11 +902,17 @@ th.details {
     margin-left: 15px;
 }
 .red {
-    color: red;
+    background:#fb7b7b !important;
 }
 .green {
-    color:green;
+    background:#7bfb8a !important;
 }
 .yellow {
-    color:yellow;
+    background:#f8fb7b !important;
+}
+.lh {
+    line-height: 35px;
+}
+.subtraction {
+    border-radius: none !important;
 }

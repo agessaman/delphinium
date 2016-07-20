@@ -40,6 +40,10 @@ if (str != undefined) {
     });
     
 }
+var checkSub = getStorage('subtraction');
+if (checkSub == null) {
+    setStorage('subtraction', 100);
+}
 //GET DATA FOR THE TOP CHART
 var promise = $.get("gradebook/getAllStudentSubmissions");
 promise.then(function (data1, textStatus, jqXHR) {
@@ -47,7 +51,7 @@ promise.then(function (data1, textStatus, jqXHR) {
         var getStep = getStorage('histogramStep');
         var stepSlider;
 
-        if(getStep != null){
+        if(getStep != null) {
             getStep = jQuery.parseJSON(getStep);
             if(getStep[instructorId]){
                 stepSlider = getStep[instructorId];
@@ -1543,16 +1547,36 @@ function buildTable(data) {
     hide_or_show(columns);
 
     $('#content-confirmation .modal-footer button').eq(0).click(function() {
-
+        var statsObj = expInst;
+        $('.jsgrid-grid-body .jsgrid-table tr').each(function(a,b) {
+            var userPnt = parseInt($(b).find('td').eq(4).text());
+            var green = userPnt - statsObj.redLine;
+            var subtraction = parseInt($('.subtraction').val());
+            var def = getStorage('subtraction');
+            if ($.isNumeric(subtraction)) {
+                setStorage('subtraction', subtraction);
+                if (green > subtraction) {
+                    $(b).find('.details').removeClass().addClass('details green');
+                } else if(green < subtraction && green > 0) {
+                    $(b).find('.details').removeClass().addClass('details yellow');
+                } else {
+                    $(b).find('.details').removeClass().addClass('details red');
+                }
+                $('.subtraction').val(subtraction);
+            } else {
+                $('.subtraction').val(def);
+                //$('.subtraction').next('<span>Please type only numbers</span>');
+            }
+        });
 
         $('#content-confirmation input[type=checkbox]').each(function(a,b) {
-
             var key = $(b).val();
             if ($(b).is(':checked')) {
                 columns[key]['show'] = true;
             } else {
                 columns[key]['show'] = false;
             }
+
         });
         hide_or_show(columns);
         setStorage('ListSetup',JSON.stringify(columns));
@@ -1641,12 +1665,16 @@ function callStudentsMilestoneInfo(studentsArr)
             $('.jsgrid-grid-body .jsgrid-table tr').each(function(a,b) {
                 var userPnt = parseInt($(b).find('td').eq(4).text());
                 var green = userPnt - statsObj.redLine;
-                if (green >= 0) {
-                    $(b).find('td i').addClass('green');
-                } else if(green >= (-100)) {
-                    $(b).find('td i').addClass('yellow');
-                } else {
-                    $(b).find('td i').addClass('red');
+                var subtraction = getStorage('subtraction');
+                if ($.isNumeric(subtraction)) {
+                    if (green > subtraction) {
+                    $(b).find('.details').removeClass().addClass('details green');
+                    } else if(green < subtraction && green > 0) {
+                        $(b).find('.details').removeClass().addClass('details yellow');
+                    } else {
+                        $(b).find('.details').removeClass().addClass('details red');
+                    }
+                    $('.subtraction').val(subtraction);
                 }
             });
 
