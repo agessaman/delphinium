@@ -76,7 +76,9 @@ class LtiConfiguration extends ComponentBase
             ],
             'approver' => [
                 'title' => 'Approver',
-                'description' => 'The approver must have the right permissions to access the data needed for this component',
+                'description' => 'The approver must have the right permissions to access the data needed for this component. For account-related data, select \'Administrator\'.
+                For most course-related things, select \'Instructor\'. \'Students\' will only have access to their own data, and thus most Project Delphinium components will not
+                 work properly under this setting.',
                 'type' => 'dropdown',
                 'default' => 'Instructor',
             ],
@@ -169,21 +171,28 @@ class LtiConfiguration extends ComponentBase
         $_SESSION['domain'] = \Input::get('custom_canvas_api_domain');
         //get the roles
         $roleStr = \Input::get('roles');
-        if (stristr($roleStr, 'Learner') || stristr($roleStr, 'Instructor')) {
-            $_SESSION['roles'] = $roleStr;
-        } else {
+
+        if(stristr($roleStr, '/')){
             $parts = explode("lis/", $roleStr);
             if (count($parts) >= 2) {
-                $_SESSION['roles'] = ($parts[1]);
+                $allRoles = ("{$parts[0]},{$parts[1]}");
+                if (stristr($allRoles, $approverRole)) {
+                    //get the role of the current user (default to the approver role if the user has more than one role)
+                    $_SESSION['roles'] = $approverRole;
+                }
+                else
+                {
+                    $_SESSION['roles'] =$parts[0];
+                }
             }
         }
+        else
+        {
+            $_SESSION['roles'] = $roleStr;
+        }
+
         //TODO: make sure this parameter below works with all other LMSs
         $_SESSION['lms'] = \Input::get('tool_consumer_info_product_family_code');
-
-        //check to see if user is an Instructor
-        $rolesStr = \Input::get('roles');
-
-
         $secret = $instanceFromDB['SharedSecret'];
         $clientId = $instanceFromDB['DeveloperId'];
 
@@ -198,7 +207,9 @@ class LtiConfiguration extends ComponentBase
             $baseUrlWithSlash = rtrim($_SESSION['baseUrl'], '/') . '/';
             $domainWithSlash = rtrim($_SESSION['domain'], '/') . '/';
 
-            //get the role of the current user
+
+            //check to see if user is an Instructor
+            $rolesStr = $_SESSION['roles'];
             $roleId = $dbHelper->getRole($rolesStr)->id;
             $lti = $this->property('ltiInstance');
 
@@ -220,6 +231,7 @@ class LtiConfiguration extends ComponentBase
                 }
             } else {//the course has been approved. Check to see if we have the student token
                 $pos = strpos($rolesStr, 'Learner');
+
                 if ($pos !== false) {
 
                     $student = $dbHelper->getUserInCourse($courseId, $_SESSION['userID']);
