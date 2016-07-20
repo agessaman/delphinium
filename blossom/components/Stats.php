@@ -275,6 +275,11 @@ class Stats extends ComponentBase
         }
         return [];
     }
+    
+    public function getStudentsStats ($experienceInstanceId)
+    {
+        return $this->student($experienceInstanceId);
+    }
 
     private function student($experienceInstanceId)
     {
