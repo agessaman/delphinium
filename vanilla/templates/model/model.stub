@@ -22,7 +22,7 @@ class {{studly_name}} extends Model
     /**
      * @var array Fillable fields
      */
-    protected $fillable = ['name','animate','size'];
+    protected $fillable = ['name','animate','size','custom_css];
 
     /**
      * @var array Relations

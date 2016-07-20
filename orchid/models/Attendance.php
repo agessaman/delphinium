@@ -1,5 +1,5 @@
 <?php
-namespace Delphinium\Blossom\Models;
+namespace Delphinium\Orchid\Models;
 
 use Model;
 
@@ -12,7 +12,7 @@ class Attendance extends Model
     /**
      * @var string The database table used by the model.
      */
-    public $table = 'delphinium_blossom_attendances';
+    public $table = 'delphinium_orchid_attendances';
 
     /**
      * @var array Guarded fields
@@ -22,7 +22,7 @@ class Attendance extends Model
     /**
      * @var array Fillable fields
      */
-    protected $fillable = ['name','animate','size'];
+    protected $fillable = ['name','animate','size', 'custom_css'];
 
     /**
      * @var array Relations

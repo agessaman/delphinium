@@ -20,12 +20,12 @@
  * You can modify personal copy of source-code but cannot distribute modifications
  * You may not distribute any version of this software, modified or otherwise
  */
-namespace Delphinium\Blossom\Components;
+namespace Delphinium\Orchid\Components;
 
-use Delphinium\Blossom\Controllers\Attendance as MyController;
-use Delphinium\Blossom\Controllers\AttendanceSessions;
-use Delphinium\Blossom\Models\Attendance as MyModel;
-use Delphinium\Blossom\Models\AttendanceSession as Sessions;
+use Delphinium\Orchid\Controllers\Attendance as MyController;
+use Delphinium\Orchid\Controllers\AttendanceSessions;
+use Delphinium\Orchid\Models\Attendance as MyModel;
+use Delphinium\Orchid\Models\AttendanceSession as Sessions;
 use Delphinium\Roots\Models\AssignmentGroup;
 use Delphinium\Roots\Models\Assignment;
 use Delphinium\Roots\Requestobjects\AssignmentsRequest;
@@ -36,6 +36,7 @@ use Delphinium\Roots\Roots;
 use Cms\Classes\ComponentBase;
 class Attendance extends ComponentBase
 {
+    public $attendancerecordId;
     public $activeSession = false;
     /**
      * @return array An array of details to be shown in the CMS section of OctoberCMS
@@ -84,6 +85,7 @@ class Attendance extends ComponentBase
             $this->page['config'] = json_encode($config);
             //Use the primary key of the record you want to update
             $this->page['recordId'] = $config->id;
+            $this->page->attendancerecordId = $config->id;//this will be used as a parameter in the instructor view to load the appropriate instance of this component
             if (!isset($_SESSION)) {
                 session_start();
             }
@@ -93,16 +95,22 @@ class Attendance extends ComponentBase
             //THIS NEXT SECTION WILL PROVIDE TEACHERS WITH FRONT-EDITING CAPABILITIES OF THE BACKEND INSTANCES.
             //A CONTROLLER AND MODEL MUST EXIST FOR THE INSTANCES OF THIS COMPONENT SO THE BACKEND FORM CAN BE USED IN THE FRONT END FOR THE TEACHERS TO USE
             //ALSO, AN INSTRUCTIONS PAGE WITH THE NAME instructor.htm MUST BE ADDED TO YOUR CONTROLLER DIRECTORY, AFTER THE CONTROLLER IS CREATED
-            //IN Delphinium\Blossom\controllers\Attendance\_instructions.htm
+            //IN Delphinium\Orchid\controllers\Attendance\_instructions.htm
             // include the backend form with instructions for instructor.htm
 
+        //check if the compnent has custom css
+        if($config&&$config->custom_css)
+        {
+            $cssStr = $config->custom_css;
+            $this->page['custom_css'] = $cssStr;
+        }
         $this->addCss('/modules/system/assets/ui/storm.css', 'core');
         $this->addCss('/modules/system/assets/ui/storm.less', 'core');
         $this->addJs('/modules/system/assets/ui/js/flashmessage.js', 'core');
-        $this->addJs('/plugins/delphinium/blossom/assets/js/attendance_instructor.js');
+        $this->addJs('/plugins/delphinium/orchid/assets/js/attendance_instructor.js');
             if (stristr($roleStr, 'Instructor') || stristr($roleStr, 'TeachingAssistant'))
             {
-
+                $this->page['statsRecordId'] = $this->statsInstanceId;
                 $formController = new MyController();
                 $formController->create('frontend');
                 //Append the formController to the page
@@ -212,6 +220,7 @@ class Attendance extends ComponentBase
         $config->save();
         return $config;
     }
+
     /**
      * Ajax Handler for when teachers update the component from their view
      * @return string Json encoded instance of component
@@ -220,7 +229,7 @@ class Attendance extends ComponentBase
     {
         $data = post('Attendance');
         //model name
-        $id = $this->page['attendancerecordId'];
+        $id = $this->page->attendancerecordId;
         // convert string to integer
         $config = $this->getInstance($data['name']);
         // retrieve existing record
@@ -228,10 +237,11 @@ class Attendance extends ComponentBase
         $config->name = $data['name'];
         $config->animate = intval($data['animate']);
         $config->size = intval($data['size']);
+        $config->custom_css = $data['custom_css'];
         //TODO: must finish updating the rest of the fields in your table
         $config->save();
         // update original record
-        return json_encode($config);
+        return ['message'=>"Component settings have been updated",'success'=>1,'object'=>json_encode($config)];
     }
 
     public function onCreateSession()
@@ -317,8 +327,9 @@ class Attendance extends ComponentBase
 
     private function generateCode()
     {
-        $rootUrl= base_path();//(\Config::get('app.url', 'backend'));
-        $fullUrl = $str = str_replace('/', '\\', $rootUrl."/plugins/delphinium/blossom/assets/js/attendance_words.csv");
+        $rootUrl= base_path();
+
+        $fullUrl = $rootUrl."/plugins/delphinium/orchid/assets/js/attendance_words.csv";
         $row = 1;
         $codes=[];
         if (($handle = fopen($fullUrl, "r")) !== FALSE) {
@@ -350,7 +361,14 @@ class Attendance extends ComponentBase
             session_start();
         }
 
+        //get the assignment for this session, so we can get the points
+
+        $assignment_id = $session->assignment_id;
+        $req = new AssignmentsRequest(ActionType::GET, $assignment_id, false, null, false);
+
         $roots = new Roots();
+        $assignment = $roots->assignments($req);
+
         //first we have to make a submission, then we have to grade it.
         $userId = $_SESSION['userID'];
         $studentIds = array($userId);
@@ -376,7 +394,7 @@ class Attendance extends ComponentBase
         $s = new \DateTime($session->start_at);
         $start_at =strtotime($s->format('c'));
         $minutes = ($now-$start_at)/60;
-        $points = 40;//TODO: get the points from the newly created assignment;
+        $points = floatval($assignment->points_possible);
         $grade = $points;
 
         switch ($minutes)

@@ -3,16 +3,16 @@
 # ===================================
 
 # Model List Column configuration
-list: $/delphinium/blossom/models/attendancesession/columns.yaml
+list: $/delphinium/orchid/models/attendance/columns.yaml
 
 # Model Class name
-modelClass: Delphinium\Blossom\Models\AttendanceSession
+modelClass: Delphinium\Orchid\Models\Attendance
 
 # List Title
-title: Manage Attendance Sessions
+title: Manage Attendances
 
 # Link URL for each record
-recordUrl: delphinium/blossom/attendancesessions/update/:id
+recordUrl: delphinium/orchid/attendance/update/:id
 
 # Message to display if the list is empty
 noRecordsMessage: backend::lang.list.no_records
@@ -32,7 +32,7 @@ showSorting: true
 #     direction: desc
 
 # Display checkboxes next to each record
-# showCheckboxes: true
+showCheckboxes: true
 
 # Toolbar widget configuration
 toolbar:

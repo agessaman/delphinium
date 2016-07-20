@@ -89,9 +89,9 @@ class TestRoots extends ComponentBase
 //        $this->testAddingModuleItem();
 //
 //        $this->testingGettingAssignments();
-//        $this->testGettingSingleAssignment();
+        $this->testGettingSingleAssignment();
 //        $this->testCreateAssignment();
-        $this->testAssignmentGroups();
+//        $this->testAssignmentGroups();
 //        $this->testSingleAssignmentGroup();
 //        $this->testCreateAssignmentGroup();
 //        $this->testGettingSingleSubmissionSingleUserSingleAssignment();

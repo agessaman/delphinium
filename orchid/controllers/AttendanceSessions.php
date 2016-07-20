@@ -1,4 +1,4 @@
-<?php namespace Delphinium\Blossom\Controllers;
+<?php namespace Delphinium\Orchid\Controllers;
 
 use BackendMenu;
 use Backend\Classes\Controller;
