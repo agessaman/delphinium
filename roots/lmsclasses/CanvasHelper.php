@@ -2069,13 +2069,10 @@ $req = curl_exec($curl);*/
     public function sendEmailInCourse($id=array(),$subject,$body) 
     {
         $domain = $_SESSION['domain'];
-        $urlPieces[]= "https://{$domain}/api/v1/conversations/";
+        $urlPieces[]= "https://{$domain}/api/v1/conversations?recipients={$id}&subject={$subject}&body={$body}";
         $token = \Crypt::decrypt($_SESSION['userToken']);
         $urlArgs = array();
         $urlArgs[]="access_token={$token}";
-        $urlArgs[]='recipients={$id}';
-        $urlArgs[]='subject={$subject}';
-        $urlArgs[]='body={$body}';
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
 
         $response = GuzzleHelper::getAsset($url);
