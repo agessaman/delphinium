@@ -2118,19 +2118,4 @@ $req = curl_exec($curl);*/
         }
         return $return;
     }
-
-    public function sendEmailInCourse($id=array(),$subject,$body) 
-    {
-        $domain = $_SESSION['domain'];
-
-        $urlPieces[]= "https://{$domain}/api/v1/conversations";
-        $token = \Crypt::decrypt($_SESSION['userToken']);
-        $urlArgs = array();
-        $urlArgs[]="access_token={$token}";
-        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
-
-        $response = GuzzleHelper::getAsset($url);
-        return $response;
-    }
-
 }

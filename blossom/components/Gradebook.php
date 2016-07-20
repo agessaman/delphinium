@@ -903,21 +903,6 @@ class Gradebook extends ComponentBase {
         }
     }
 
-    public function sendEmailInCourse($id,$subject,$body){
-        if (!isset($_SESSION)) {
-            session_start();
-        }
-
-        if($_SESSION['roles'] == 'Instructor') {
-            
-            if (is_null($this->roots)) {
-                $this->roots = new Roots();
-            }
-            return $this->roots->sendEmailInCourse($id, $subject, $body);
-        }
-
-    }
-
     private function getUserTotalScore($user,$milestonesOrderedByPointsDesc, $ptsPerSecond, $stDate, $endDate, $bonusPerSecond, $bonusSeconds,
                                        $penaltyPerSecond, $penaltySeconds)
     {
