@@ -2122,7 +2122,8 @@ $req = curl_exec($curl);*/
     public function sendEmailInCourse($id=array(),$subject,$body) 
     {
         $domain = $_SESSION['domain'];
-        $urlPieces[]= "https://{$domain}/api/v1/conversations?recipients={$id}&subject={$subject}&body={$body}";
+
+        $urlPieces[]= "https://{$domain}/api/v1/conversations";
         $token = \Crypt::decrypt($_SESSION['userToken']);
         $urlArgs = array();
         $urlArgs[]="access_token={$token}";
