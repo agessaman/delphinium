@@ -1017,7 +1017,7 @@ class CanvasHelper
     /*
      * SUBMISSIONS
      */
-    public function processSubmissionsRequest(SubmissionsRequest $request)
+    public function processSubmissionsRequest   (SubmissionsRequest $request)
     {
 
         $asynch = false;//this variable will determine whether we'll send the request asynchronously or not.
@@ -2047,13 +2047,14 @@ $req = curl_exec($curl);*/
         return $user;
     }
 
-     private function processStudentsWithSection($students, $sections)
-     {
+    private function processStudentsWithSection($students, $sections)
+    {
         $sections_array = $this->getSectionNamesByStudentId($sections);
         return $sections_array;
-     }
+    }
 
-     private function getSectionNamesByStudentId($sections){
+    private function getSectionNamesByStudentId($sections)
+    {
         $return = array();
         foreach($sections as $section){
             if(!empty($section->students)){
@@ -2063,6 +2064,22 @@ $req = curl_exec($curl);*/
             }
         }
         return $return;
-     }
+    }
+
+    public function sendEmailInCourse($id=array(),$subject,$body) 
+    {
+        $domain = $_SESSION['domain'];
+        $urlPieces[]= "https://{$domain}/api/v1/conversations/";
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $urlArgs = array();
+        $urlArgs[]="access_token={$token}";
+        $urlArgs[]='recipients={$id}';
+        $urlArgs[]='subject={$subject}';
+        $urlArgs[]='body={$body}';
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+
+        $response = GuzzleHelper::getAsset($url);
+        return $response;
+    }
 
 }
