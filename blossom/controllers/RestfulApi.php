@@ -254,4 +254,14 @@ class RestfulApi extends Controller
         $data = $stats->getStatsData($instanceId);
         return json_encode($data);
     }
+
+    public function sendEmailInCourse()
+    {
+        $gradebook = new GradebookComponent();
+        $id = \Input::get('id');
+        $subject = \Input::get('subject');
+        $message = \Input::get('message');
+
+        return $gradebook->sendEmailInCourse($id, $subject, $message);
+    }
 }

@@ -1408,7 +1408,7 @@ function buildTable(data) {
         onDataLoaded: function(args) {
             var td = $('.jsgrid-grid-header tr').eq(1).find('td');
             $('.jsgrid-search-button').hide();
-            td.eq(td.length-2).html('<a data-toggle="modal" style="outline:none;" href="#content-confirmation"><i class="fa fa-cog table_set"></i></a>').css('text-align','center');
+            td.eq(td.length-2).html('<a data-toggle="modal" style="outline:none;" href="#content-configuration"><i class="fa fa-cog table_set"></i></a>').css('text-align','center');
             if($('.filter_checkbox').length == 0){
                 var sections = get_checkboxes('sections'),
                     grade = get_checkboxes('grade');
@@ -1543,10 +1543,7 @@ function buildTable(data) {
     hide_or_show(columns);
 
     $('#content-confirmation .modal-footer button').eq(0).click(function() {
-
-
         $('#content-confirmation input[type=checkbox]').each(function(a,b) {
-
             var key = $(b).val();
             if ($(b).is(':checked')) {
                 columns[key]['show'] = true;
@@ -1558,6 +1555,25 @@ function buildTable(data) {
         setStorage('ListSetup',JSON.stringify(columns));
     });
 
+    $('#content-email .modal-footer button').eq(0).click(function(e){
+        var subject = $('#email-subject').val().trim(),
+            message = $('#email-message').val().trim();
+            ids = JSON.stringify([33,18]);
+
+        if(subject.length > 255 || message.length == 0){
+            e.preventDefault();
+            e.stopPropagation();
+        }else{
+            $.post('gradebook/sendEmailInCourse',{id:ids,subject:subject,message:message},function(data){
+                console.log(data);
+            });
+        }
+    });
+
+    $('#content-email').on('hidden.bs.modal', function () {
+        $('#email-subject').val('');
+        $('#email-message').val('');
+    });
 }
 
 function hide_or_show(args) {
