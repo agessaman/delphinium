@@ -1957,18 +1957,7 @@ function getHistogramDataByMilestones(){
     intervals.unshift(0);
     
     retVal = getStudentsCount(intervals);
-    var middle = intervals[intervals.length-1] / 2;
-    if($.inArray(middle,intervals) > -1){
-        redLineX = middle;
-    }else{
-        $.each(intervals,function(k,v){
-            if(v >= middle){
-                redLineX = v;
-                return false;
-            }
-        });
-    }
-    return {usersCount:retVal,xPoints:intervals,maxPoint:endPoint,redLine:redLineX};
+    return {usersCount:retVal,xPoints:intervals,maxPoint:endPoint};
 }
 
 function getHistogramDataByGrades(){
@@ -2095,7 +2084,7 @@ function histogramChart(data,slideDays) {
     var histData = [],
         counts = data.xPUserC.usersCount.counts,
         xPoints = data.xPUserC.xPoints,
-        redX = 550,
+        redX,
         name;
 
     if($('.histRadio:checked').attr('id') == 'hGrade'){
@@ -2107,18 +2096,18 @@ function histogramChart(data,slideDays) {
             histData.push({count:counts[i],xPoint:xPoints[i]});
         }
     }
-    if($('.histRadio:checked').attr('id') == 'hMilestone'){
-        redX = data.xPUserC.redLine;
-    }
-    histData.redX = redX;
     addxBar(histData,height,x,y,xAxis,yAxis);
 }
 function addxBar(data,height,x,y,xAxis,yAxis){
+    $('.hist-today-line').remove();
     var svg = d3.select("#histogram svg"),
-        redX = data.redX,
-        allBars = [],
         xVal = 0,
-        tranformX = 0;
+        tranformX = 0,
+        todayPoint = getHistRedLinePoint(),
+        todayXPoint = 0,
+        allBars = [],
+        xVal = 0;
+
     x.domain(data.map(function(d) { return d.xPoint; }));
     y.domain([0, d3.max(data, function(d) { return d.count; })]);
 
@@ -2156,22 +2145,32 @@ function addxBar(data,height,x,y,xAxis,yAxis){
         .attr("y", function(d) { return y(d.count); })
         .attr("height", function(d) { return height - y(d.count); });
 
-        if($('.histRadio:checked').attr('id') == 'hMilestone'){
-            tranformX = 40;
-            redXPos = $('.histogramXA .tick:contains('+data.redX+')').index() - 1;
-            redX = allBars[redXPos] + x.rangeBand();
-        }
+        var wH = 1060 - histXectWidth;
+        var p = (data.length <= 3) ? 20 : 10;
+        var startPoint = parseFloat($('.histogramXA').find('.tick').first().attr('transform').split(['('])[1].split(',')[0]);
+        var endPoint =  parseFloat($('.histogramXA').find('.tick').last().attr('transform').split(['('])[1].split(',')[0]);
+        var maxPoint = data[data.length-1].xPoint;
+        var xPoint = startPoint + ((endPoint-startPoint) / maxPoint) * todayPoint;
 
+        if($('.histRadio:checked').attr('id') == 'hMilestone'){
+            var redXPos = $('.histogramXA .tick:contains('+todayPoint+')').index() - 1;
+            if(redXPos == -1){
+                redXPos = 0;
+                xPoint = x(0) + histXectWidth/2;
+            }else{
+                xPoint = allBars[redXPos] + histXectWidth;
+            }
+        }
         svg.append("svg:rect")
-        .attr("x",redX)
+        .attr("x",xPoint)
         .attr("y",20)
         .attr("height",height)
         .attr("width",0.5)
         .attr("stroke-width", 1.5)
         .attr("stroke","red")
         .attr("class", "hist-today-line")
-        .attr('transform','translate('+tranformX+',0)')
-        .attr('data-point',getMiddlePoint());
+        .attr('transform','translate(40,0)')
+        .attr('data-point',todayPoint);
     }else{
         bars.transition().duration(300)
         .attr("x", function(d) { 
@@ -2189,9 +2188,19 @@ function addxBar(data,height,x,y,xAxis,yAxis){
     
 }
 
-function getMiddlePoint(){
-    var end = parseInt($('.histogramXA').find('.tick').last().text());
-    return parseInt(end / 2);
+function getHistRedLinePoint(){
+    var index = $('.histogram-date .ui-slider-pip-selected').index()-1;
+    var date = new Date(dateRange[index]);
+    var point = 0;
+    date.setHours(23,59,59,999);
+    date = Date.parse(date);
+    $.each(chartData,function(k,v){
+        if(v.date <= date){
+            point = v.points;    
+        }
+        
+    });
+    return parseInt(point);
 }
 
 pointHistDate = 0;
