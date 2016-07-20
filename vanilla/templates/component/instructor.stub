@@ -52,7 +52,7 @@ You may not distribute any version of this software, modified or otherwise
                     <form role="form" id="updateForm"
                       data-request="{{ __SELF__ }}::onUpdate"
                       data-request-success="$el.hide();completed(data);">
-                        {{ {{lower_model}}form.update({{lower_model}}recordId)|raw }}
+                        {{ {{lower_model}}form.update(this.page.{{lower_model}}recordId)|raw }}
                         {{ {{lower_model}}form.formRender()|raw }}
                       <div class="form-group">
                          <button class="btn btn-primary" type="submit" value="register">Update Component</button>

@@ -28,18 +28,23 @@ class CreateCompetenciesTable extends Migration
     //http://octobercms.com/docs/database/structure
     public function up()
     {
-		Schema::create('delphinium_blossom_competencies', function($table)
+		if ( !Schema::hasTable('delphinium_blossom_competencies') )
 		{
-			$table->engine = 'InnoDB';
-			$table->increments('id');
-			$table->string('Name');
-			$table->boolean('Animate');//tinyInt switch 0~1 true false
-			$table->string('Size');//Small,Medium,Large radio btns
-			$table->timestamps();
-		});
-    }
+			Schema::create('delphinium_blossom_competencies', function($table)
+			{
+				$table->engine = 'InnoDB';
+				$table->increments('id');
+				$table->string('Name');
+				$table->boolean('Animate');//tinyInt switch 0~1 true false
+				$table->string('Size');//Small,Medium,Large radio btns
+				$table->timestamps();
+			});
+		}
+	}
     public function down()
     {
-		Schema::dropIfExists('delphinium_blossom_competencies');
+		if ( Schema::hasTable('delphinium_blossom_competencies') ) {
+			Schema::dropIfExists('delphinium_blossom_competencies');
+		}
     }
 }

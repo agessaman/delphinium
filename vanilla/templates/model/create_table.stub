@@ -39,6 +39,7 @@ class Create{{studly_plural_name}}Table extends Migration
                 $table->string('name');
                 $table->boolean('animate');
                 $table->integer('size');
+                $table->longText('custom_css');
                 $table->timestamps();
             });
         }

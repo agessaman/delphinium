@@ -1,0 +1,13 @@
+fields:
+    title:
+        label: 'Session Title'
+        oc.commentPosition: ''
+        span: auto
+        placeholder: 'Enter the title of this attendance session'
+        type: text
+    duration_minutes:
+        label: Duration
+        oc.commentPosition: ''
+        span: auto
+        placeholder: 'Enter the duration of this session in minutes'
+        type: number
