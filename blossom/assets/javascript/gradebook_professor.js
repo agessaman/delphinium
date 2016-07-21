@@ -2360,7 +2360,7 @@ function histogram(){
     $(document).on('mouseover','#histogram .hist-today-line',function(event){
         var index = $('.histogram-date').find('.ui-slider-pip-selected').index() - 1;
         var time = labels[index];
-        var dayDate = parseTimestamp(time);
+        var dayDate = parseDayMonth(time);
         tooltipText = $(this).attr('data-point') + ' points due ' + dayDate;
         div.transition()
         .duration(200)
