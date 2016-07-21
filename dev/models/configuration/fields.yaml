@@ -5,9 +5,14 @@ fields:
         comment: Enter the name for this dev configuration
 
     Token:
-        label: Token
+        label: Instructor Token
         span: auto
-        comment: Enter the token to be used for development
+        comment: Enter the instructor token to be used for development
+
+    student_token:
+        label: Student Token
+        span: auto
+        comment: Enter the student token to be used for development
 
     User_id:
         label: UserId

@@ -7,3 +7,6 @@
 1.0.3:
     - Modify dev table again
     - add_roles_column.php
+1.0.4:
+    - Add student token column
+    - add_student_token_column.php

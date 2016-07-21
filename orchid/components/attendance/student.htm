@@ -18,24 +18,41 @@ Non-commercial use only, you may not charge money for the software
 You can modify personal copy of source-code but cannot distribute modifications
 You may not distribute any version of this software, modified or otherwise
 -->
-{% partial __SELF__~"::display" %}
-{% if this.page.submitted %}
-    <div>Your attendance has been recorded.</div>
-{% elseif this.page.code %}
-    <form role="form" id="recordAttendance"
-          data-request="{{ __SELF__ }}::onRecordAttendance"
-          data-request-success="$el.hide();completed(data);">
-        <div class="form-group  text-field span-left is-required  " data-field-name="title" id="Form-field-AttendanceSession-title-group">
-            <label for="Form-field-AttendanceSession-code">Code</label>
-            <!-- Text -->
-            <input type="text" name="AttendanceSession[code]" id="Form-field-AttendanceSession-code" value="" placeholder="Enter the code for this attendance session" class="form-control" autocomplete="off" maxlength="255"></div>
 
-        <div class="form-buttons">
-            <div class="loading-indicator-container">
-                <button class="btn btn-primary" type="submit" value="register">Record attendance</button>
-            </div>
+<div class="studentAttendance">
+    {% partial __SELF__~"::display" %}
+    {% if this.page.submitted %}
+        <div>Your attendance has been recorded.</div>
+    {% elseif this.page.code %}
+        <div style="margin-bottom:30px;">
+            This attendance session is worth {{this.page.total_points}} points. If you record your attendance after 15 minutes, you'll only get <span>{{this.page.percentage_fifteen}}</span> points.
+            If you record it after 30 minutes, you'll only get <span>{{this.page.percentage_thirty}}</span> points.
+
+            <!--<div id="timer_div"><h1><time>00:00:00</time></h1></div>-->
         </div>
-    </form>
-{% else %}
-    <div>There are no active attendance sessions</div>
-{% endif %}
+        <form role="form" id="recordAttendance"
+              data-request="{{ __SELF__ }}::onRecordAttendance"
+              data-request-success="$el.hide();completed(data);">
+            <div class="form-widget form-elements layout">
+                <div class="form-group  text-field" data-field-name="title" id="Form-field-AttendanceSession-title-group">
+                    <label for="Form-field-AttendanceSession-code">Code</label>
+                    <!-- Text -->
+                    <input type="text" name="AttendanceSession[code]" id="Form-field-AttendanceSession-code" value="" placeholder="Enter the code for this attendance session" class="form-control" autocomplete="off" maxlength="255"></div>
+
+            </div>
+
+
+            <div class="form-buttons">
+                <div class="loading-indicator-container">
+                    <button class="btn btn-primary" type="submit" value="register">Record attendance</button>
+                </div>
+            </div>
+        </form>
+    {% else %}
+        <div>There aren't any active attendance sessions</div>
+    {% endif %}
+</div>
+
+<style>
+    .studentAttendance{width:500px;height:300px;}
+</style>
