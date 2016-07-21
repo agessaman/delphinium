@@ -42,6 +42,8 @@ class OAuthResponse extends Controller {
         $code = Input::get('code');
         $lti = Input::get('lti');
         $roleId = Input::get('role');
+        $response_type = Input::get('response_type');
+        $redirect_uri = Input::get('redirect_uri');
         if(is_null($code))//meaning, they cancelled rather than authorize the LTI app
         {
             echo "You have canceled authorizing this app. If you want to use this app, you must authorize it. Please reload this page.";
@@ -55,8 +57,12 @@ class OAuthResponse extends Controller {
 
         $opts = array('http' => array('method' => 'POST',));
         $context = stream_context_create($opts);
+        $grant_type = 'authorization_code';
+        $red_uri = "https://185.44.229.29/";
         $url = "https://{$_SESSION['domain']}/login/oauth2/token?client_id={$clientId}&client_secret={$developerSecret}&code={$code}";
         $userTokenJSON = file_get_contents($url, false, $context, -1, 40000);
+        //&grant_type={$grant_type}&redirect_uri={$red_uri}
+        //print_r($userTokenJSON);die();
         //$userTokenJSON = shell_exec('curl --data "client_id='.$clientId.'&client_secret='.$developerSecret.'&code='.$code.'" https://'.$_SESSION['domain'].'/login/oauth2/token');
 
         $userToken = json_decode($userTokenJSON);
@@ -111,6 +117,7 @@ class OAuthResponse extends Controller {
 
         echo "App has been approved. Please reload this page";
     }
+    //////////////////////////////////////////////////////////////////
 
     function redirect($url) {
         echo '<script type="text/javascript">';

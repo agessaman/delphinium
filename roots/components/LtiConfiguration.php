@@ -181,6 +181,7 @@ class LtiConfiguration extends ComponentBase
         $context = new Blti($secret, false, false);
         $courseId = $_SESSION['courseID'];
         if ($context->valid) { // query DB to see if user has token, if yes, go to LTI.
+            //print_r(1111111111111111);die();
             //parameters needed to request for the token
             //TODO: take this redirectUri out into some parameter somewhere...
             $baseUrlWithSlash = rtrim($_SESSION['baseUrl'], '/') . '/';
@@ -189,10 +190,13 @@ class LtiConfiguration extends ComponentBase
             $rolesStr = $_SESSION['roles'];
             $roleId = $dbHelper->getRole($rolesStr)->id;
             $lti = $this->property('ltiInstance');
-            $data = array('lti'=>intval($lti),'role'=>intval($roleId));
-            $query = http_build_query($data);
-            $redirectUri = urlencode("{$baseUrlWithSlash}saveUserInfo?$query");
+            //$data = array('role'=>intval($roleId),'lti'=>intval($lti));
+            $roleid = intval($roleId);
+            $lti = intval($lti);
+            //$query = http_build_query($data);
+            $redirectUri = urlencode($baseUrlWithSlash.'saveUserInfo?'.'role='.$roleid.'&'.'lti='.$lti);
             $url = "https://{$domainWithSlash}login/oauth2/auth?client_id={$clientId}&response_type=code&redirect_uri={$redirectUri}";
+            /*print_r($url);die();*/
             $userCheck = $dbHelper->getCourseApprover($courseId);
             if (!$userCheck) { //if no user is found, redirect to canvas permission page
                 if (stristr($rolesStr, $approverRole)) {

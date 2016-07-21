@@ -9,3 +9,4 @@ vendor/
 app/config/database.php
 install.php
 .idea/
+.gitignore
