@@ -1,0 +1,7 @@
+columns:
+    title:
+        label: 'Attendance Title'
+        type: text
+    duration_minutes:
+        label: 'Duration'
+        type: number
