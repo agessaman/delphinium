@@ -3,7 +3,11 @@
 # ===================================
 
 name: LTI Configuration
+<<<<<<< HEAD
 form: $/delphinium/roots/models/developer/fields.yaml
+=======
+form: ~/plugins/delphinium/roots/models/developer/fields.yaml
+>>>>>>> b2e80ac3a6c3869578b563140dcb761ad5044817
 modelClass: Delphinium\Roots\Models\Developer
 defaultRedirect: delphinium/roots/lticonfiguration
 

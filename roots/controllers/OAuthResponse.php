@@ -38,8 +38,10 @@ class OAuthResponse extends Controller {
         {
             session_start();
         }
-        $code = \Input::get('code');
-        $lti = \Input::get('lti');
+
+        $code = Input::get('code');
+        $lti = Input::get('lti');
+        $roleId = Input::get('role');
 
         if(is_null($code))//meaning, they cancelled rather than authorize the LTI app
         {

@@ -3,6 +3,10 @@
 # ===================================
 
 name: Greenhouse
+<<<<<<< HEAD
 form: $/delphinium/greenhouse/models/greenhouse/fields.yaml
+=======
+form: ~/plugins/delphinium/greenhouse/models/greenhouse/fields.yaml
+>>>>>>> b2e80ac3a6c3869578b563140dcb761ad5044817
 modelClass: Delphinium\Greenhouse\Models\Greenhouse
 defaultRedirect: delphinium/greenhouse/greenhouse

@@ -8,10 +8,6 @@ columns:
         label: Name
         searchable: true
 
-    Token:
-        label: Token
-        searchable: false
-        
     User_id:
         label: UserId
         searchable: true

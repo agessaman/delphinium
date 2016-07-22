@@ -3,7 +3,11 @@
 # ===================================
 
 name: Dev
+<<<<<<< HEAD
 form: $/delphinium/dev/models/configuration/fields.yaml
+=======
+form: ~/plugins/delphinium/dev/models/configuration/fields.yaml
+>>>>>>> b2e80ac3a6c3869578b563140dcb761ad5044817
 modelClass: Delphinium\Dev\Models\Configuration
 defaultRedirect: delphinium/dev/configuration
 
