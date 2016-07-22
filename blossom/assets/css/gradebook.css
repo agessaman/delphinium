@@ -416,10 +416,10 @@ a:hover
 .jsgrid-table input[type="button"] {
     text-align: center;
 }
-.jsgrid-alt-row td {
+/* .jsgrid-alt-row td {
     background: #f5f5f5 !important;
-}
-.jsgrid-selected-row td {
+} */
+.jsgrid-selected-row td:not(.details){
     background: #c4e2ff !important;
 }
 .col_no {
