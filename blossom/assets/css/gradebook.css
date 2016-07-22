@@ -55,6 +55,9 @@ f *
 .m-l-6 {
     margin-left: 60px;
 }
+.m-l-7 {
+    margin-left: 70px;
+}
 .m-l-12 {
     margin-left: 120px;
 }
@@ -796,7 +799,8 @@ th.details {
     margin-top: 7px;
 }
 .histogramGroup .btn {
-    padding: 9px !important;
+    padding: 8px !important;
+    font-size: 12px;
 }
 .empty {
     height: 30px;
@@ -906,4 +910,7 @@ th.details {
 }
 .yellow {
     color:yellow;
+}
+.like-interval-inp {
+    width: 70px;
 }
