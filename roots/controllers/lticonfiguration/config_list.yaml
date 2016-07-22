@@ -3,7 +3,7 @@
 # ===================================
 
 title: LTI Configurations
-list: $/delphinium/roots/models/developer/columns.yaml
+list: ~/plugins/delphinium/roots/models/developer/columns.yaml
 modelClass: Delphinium\Roots\Models\Developer
 recordUrl: delphinium/roots/lticonfiguration/update/:id
 noRecordsMessage: backend::lang.list.no_records

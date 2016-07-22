@@ -3,5 +3,5 @@
 # ===================================
 
 title: Greenhouse
-list: $/delphinium/greenhouse/models/greenhouse/columns.yaml
+list: ~/plugins/delphinium/greenhouse/models/greenhouse/columns.yaml
 modelClass: Delphinium\Greenhouse\Models\Greenhouse

@@ -3,7 +3,7 @@
 # ===================================
 
 name: Iris
-form: $/delphinium/iris/models/home/fields.yaml
+form: ~/plugins/delphinium/iris/models/home/fields.yaml
 modelClass: Delphinium\Iris\Models\Home
 defaultRedirect: delphinium/iris/home
 

@@ -166,8 +166,7 @@ class LtiConfiguration extends ComponentBase
     {
         $arr = array(
             "0" => "Instructor",
-            "1" => "Administrator",
-            "2" => "Student"
+            "1" => "Administrator"
         );
         return $arr;
     }
@@ -201,15 +200,36 @@ class LtiConfiguration extends ComponentBase
       // echo json_encode($_POST);return ;
 
         //get the roles
+
+        $possibleRoles = array('Learner','Instructor','TeachingAssistant','Administrator');
         $roleStr = \Input::get('roles');
-        if (stristr($roleStr, 'Learner') || stristr($roleStr, 'Instructor')) {
-            $_SESSION['roles'] = $roleStr;
-        } else {
-            $parts = explode("lis/", $roleStr);
-            if (count($parts) >= 2) {
-                $_SESSION['roles'] = ($parts[1]);
+        $userRolesArr = array();
+        foreach($possibleRoles as $role)
+        {
+            if(stristr($roleStr, $role))
+            {
+                $userRolesArr[] = $role;
             }
         }
+
+        $userRolesStr = implode(", ",$userRolesArr);
+        if(count($userRolesArr)>1)
+        {
+            if(stristr($userRolesStr, $approverRole))
+            {
+                $_SESSION['roles'] =$approverRole;//if the user has more than one role, default to the approver role
+            }
+            else
+            {
+                $_SESSION['roles'] =$userRolesArr[0];//if they have more than one role, but they don't include the approver role, default to
+                //the first role
+            }
+        }
+        else
+        {
+            $_SESSION['roles'] =$userRolesArr[0];
+        }
+
         //TODO: make sure this parameter below works with all other LMSs
         $_SESSION['lms'] = \Input::get('tool_consumer_info_product_family_code');
 
@@ -222,7 +242,26 @@ class LtiConfiguration extends ComponentBase
         $context = new Blti($secret, false, false);
 
         if ($context->valid) { // query DB to see if user has token, if yes, go to LTI.
-            $userCheck = $dbHelper->getCourseApprover($_SESSION['courseID']);
+
+            //parameters needed to request for the token
+            //TODO: take this redirectUri out into some parameter somewhere...
+            $baseUrlWithSlash = rtrim($_SESSION['baseUrl'], '/') . '/';
+            $domainWithSlash = rtrim($_SESSION['domain'], '/') . '/';
+
+
+            //check to see if user is an Instructor
+            $rolesStr = $_SESSION['roles'];
+
+            $roleId = $dbHelper->getRole($rolesStr)->id;
+            $lti = $this->property('ltiInstance');
+
+            $data = array('lti'=>intval($lti),'role'=>intval($roleId));
+            $query = http_build_query($data);
+
+            $redirectUri = urlencode("{$baseUrlWithSlash}saveUserInfo?$query");
+            $url = "https://{$domainWithSlash}login/oauth2/auth?client_id={$clientId}&response_type=code&redirect_uri={$redirectUri}";
+
+            $userCheck = $dbHelper->getCourseApprover($courseId);
             if (!$userCheck) { //if no user is found, redirect to canvas permission page
                 if (stristr($rolesStr, $approverRole)) {
                     //As per my discussion with Jared, we will use the instructor's token only. This is the token that will be stored in the DB
