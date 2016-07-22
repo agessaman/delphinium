@@ -137,8 +137,7 @@ class LtiConfiguration extends ComponentBase
     {
         $arr = array(
             "0" => "Instructor",
-            "1" => "Administrator",
-            "2" => "Student"
+            "1" => "Administrator"
         );
         return $arr;
     }
@@ -170,25 +169,34 @@ class LtiConfiguration extends ComponentBase
         $_SESSION['userID'] = \Input::get('custom_canvas_user_id');
         $_SESSION['domain'] = \Input::get('custom_canvas_api_domain');
         //get the roles
-        $roleStr = \Input::get('roles');
 
-        if(stristr($roleStr, '/')){
-            $parts = explode("lis/", $roleStr);
-            if (count($parts) >= 2) {
-                $allRoles = ("{$parts[0]},{$parts[1]}");
-                if (stristr($allRoles, $approverRole)) {
-                    //get the role of the current user (default to the approver role if the user has more than one role)
-                    $_SESSION['roles'] = $approverRole;
-                }
-                else
-                {
-                    $_SESSION['roles'] =$parts[0];
-                }
+        $possibleRoles = array('Learner','Instructor','TeachingAssistant','Administrator');
+        $roleStr = \Input::get('roles');
+        $userRolesArr = array();
+        foreach($possibleRoles as $role)
+        {
+            if(stristr($roleStr, $role))
+            {
+                $userRolesArr[] = $role;
+            }
+        }
+
+        $userRolesStr = implode(", ",$userRolesArr);
+        if(count($userRolesArr)>1)
+        {
+            if(stristr($userRolesStr, $approverRole))
+            {
+                $_SESSION['roles'] =$approverRole;//if the user has more than one role, default to the approver role
+            }
+            else
+            {
+                $_SESSION['roles'] =$userRolesArr[0];//if they have more than one role, but they don't include the approver role, default to
+                //the first role
             }
         }
         else
         {
-            $_SESSION['roles'] = $roleStr;
+            $_SESSION['roles'] =$userRolesArr[0];
         }
 
         //TODO: make sure this parameter below works with all other LMSs
@@ -210,6 +218,7 @@ class LtiConfiguration extends ComponentBase
 
             //check to see if user is an Instructor
             $rolesStr = $_SESSION['roles'];
+
             $roleId = $dbHelper->getRole($rolesStr)->id;
             $lti = $this->property('ltiInstance');
 
