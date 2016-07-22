@@ -22,6 +22,7 @@
 <script>
     var gradingScheme = {{grading_scheme|raw}};
     var instructorId = {{user}};
+    var expInst = {{ expInst|raw}};
 </script>
 
 {% set studentData = __SELF__.studentData %}
@@ -99,8 +100,8 @@
                 </div>
 
                 <div class="range-blocks container-fluid col-md-12 m-b-5">
-                    <div class="row">
-                        <div class="date-slider-container col-md-5 m-t-2 col-sm-4 m-l-4">
+                    <div class="row-fluid m-l-6">
+                        <div class="date-slider-container col-md-6 m-t-2 col-sm-4">
                             <span class="date">Date</span>
                             <div class="col-md-1 col-sm-1">
                                 <button type="button" class="btn btn-primary btn-xs player"><i class="fa fa-play"></i></button>
@@ -118,38 +119,40 @@
                 <h3 class="title-graph counts histogramRVS">Counts</h3>
                 <div id='histogram'></div>
                 <div id='boxPlot'></div>
-                <div class="container-fluid m-t-2">
-                    <div class="histogramGroup container btn-group col-md-3 histogramRVS" role="group">
-                    <div class="btn-group">
-                        <label class="btn btn-info active disabled">
-                            <input type="radio" name='histogram' checked class="btn btn-info hide histRadio" id="hPoint" />Points
-                        </label>
-                    </div>
-                    <div class="btn-group">
-                        <label class="btn btn-info disabled">
-                            <input type="radio" name='histogram' class="btn btn-info hide histRadio" id="hMilestone" />Milestones
-                        </label>
-                    </div>
-                    <div class="btn-group">
-                        <label class="btn btn-info disabled hGrade">
-                            <input type="radio" name='histogram' data-disable = "disabled" disabled class="btn btn-info hide histRadio" id="hGrade" />Grades
-                        </label>
-                    </div>
-                    </div>
-                    <div class="histogram-date-slider-container col-md-4 m-t-2 col-sm-4 histogramRVS">
-                        <span class="date r-name">Date</span>
-                        <div class="col-md-1 col-sm-1">
-                            <button type="button" class="btn btn-primary btn-xs histogram-player"><i class="fa fa-play"></i></button>
+                <div class="container-fluid m-t-2 m-b-2 col-md-12">
+                    <div class="row-fluid m-l-6">
+                        <div class="histogramGroup container btn-group col-md-3 histogramRVS" role="group">
+                        <div class="btn-group">
+                            <label class="btn btn-info active disabled">
+                                <input type="radio" name='histogram' checked class="btn btn-info hide histRadio" id="hPoint" />Points
+                            </label>
                         </div>
-                        <div class="col-md-9 col-sm-9">
-                            <div class="histogram-date"></div>
+                        <div class="btn-group">
+                            <label class="btn btn-info disabled">
+                                <input type="radio" name='histogram' class="btn btn-info hide histRadio" id="hMilestone" />Milestones
+                            </label>
                         </div>
-                    </div>
-                    <div class="range-slider-container col-sm-4 col-md-5 m-t-2 histogramRVS">
-                        <span class="rg r-name">Interval</span>
-                        <div class="col-md-7 histogram-range-slider"></div>
-                        <div class="like-interval col-md-3">
-                            <input type="number" min="10" max="100000" step="1" class="like-interval-inp">
+                        <div class="btn-group">
+                            <label class="btn btn-info disabled hGrade">
+                                <input type="radio" name='histogram' data-disable = "disabled" disabled class="btn btn-info hide histRadio" id="hGrade" />Grades
+                            </label>
+                        </div>
+                        </div>
+                        <div class="histogram-date-slider-container col-md-4 m-t-2 col-sm-4 histogramRVS">
+                            <span class="date r-name">Date</span>
+                            <div class="col-md-1 col-sm-1">
+                                <button type="button" class="btn btn-primary btn-xs histogram-player"><i class="fa fa-play"></i></button>
+                            </div>
+                            <div class="col-md-9 col-sm-9">
+                                <div class="histogram-date"></div>
+                            </div>
+                        </div>
+                        <div class="range-slider-container col-sm-4 col-md-5 m-t-2 histogramRVS">
+                            <span class="rg r-name">Interval</span>
+                            <div class="col-md-7 histogram-range-slider"></div>
+                            <div class="like-interval col-md-2">
+                                <input type="number" min="10" max="100000" step="1" class="like-interval-inp">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -189,7 +192,7 @@
                 </div>
                 <div class="dcontent" id="9">
                     <div>
-                        <span>Bonus and Penalties</span>
+                        <span>Total B/P</span>
                         <p class="total"></p>
                         <i class="fa fa-star-half-o" aria-hidden="true"></i>
                     </div>

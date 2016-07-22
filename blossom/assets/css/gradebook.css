@@ -49,6 +49,15 @@ f *
 .m-l-4 {
     margin-left: 40px; 
 }
+.m-l-5 {
+    margin-left: 50px;
+}
+.m-l-6 {
+    margin-left: 60px;
+}
+.m-l-7 {
+    margin-left: 70px;
+}
 .m-l-12 {
     margin-left: 120px;
 }
@@ -891,4 +900,19 @@ th.details {
 .cont h3{
     margin-top: 40px;
     margin-left: 15px;
+}
+.red {
+    color: red;
+}
+.green {
+    color:green;
+}
+.yellow {
+    color:yellow;
+}
+.like-interval-inp {
+    width: 70px;
+}
+.histogram-date-slider-container {
+    margin-left: -23px;
 }

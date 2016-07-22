@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Iri
+
+# Model Form Field configuration
+form: $/delphinium/blossom/models/iris/fields.yaml
+
+# Model Class name
+modelClass: Delphinium\Blossom\Models\Iris
+
+# Default redirect location
+defaultRedirect: delphinium/blossom/iris
+
+# Create page
+create:
+    title: Create Iri
+    redirect: delphinium/blossom/iris/update/:id
+    redirectClose: delphinium/blossom/iris
+
+# Update page
+update:
+    title: Edit Iri
+    redirect: delphinium/blossom/iris
+    redirectClose: delphinium/blossom/iris
+
+# Preview page
+preview:
+    title: Preview Iri
