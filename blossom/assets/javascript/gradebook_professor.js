@@ -650,13 +650,6 @@ $(document).on("change", '.deselectAll',  function () {
             selectedStudents.splice(index, 1);
         }
     });
-    /*if (allSelected)
-    {
-        d3.select("#pathred").remove();
-        d3.select(".cirred").remove();
-        addLine(data, "red", "red");
-        addRedLineDots();
-    }*/
 
 })
 var selectedStudents = [];
@@ -1175,11 +1168,6 @@ function buildTable(data) {
         }
 
         $('.dashboard-container p').each(function(a, b) {
-            /*var unique = columns_data[$(b).attr('class')];
-            var num = unique.filter(function(item, i, ar){ return ar.indexOf(item) === i; });
-            var num = num.filter(function(item, i, ar){ return ar.indexOf(item) != 0; });
-            var avg = num.avg();
-            $(b).append(Math.round(avg));*/
             var num = columns_data[$(b).attr('class')];
             var ok = 0;
             $.each(num, function(c, d) {
@@ -1393,7 +1381,7 @@ function buildTable(data) {
     });
 
     $("#gridContainer").jsGrid({
-        height: "760px",
+        height: "510px",
         width: "100%",
         filtering: true,
         sorting: true,
@@ -1649,6 +1637,19 @@ function callStudentsMilestoneInfo(studentsArr)
             $("#hGrade").removeAttr('data-disabled').prop('disabled',false).closest('label').removeClass('disabled');
             windowData = data;
             buildTable(windowData);
+            var statsObj = expInst;
+            $('.jsgrid-grid-body .jsgrid-table tr').each(function(a,b) {
+                var userPnt = parseInt($(b).find('td').eq(4).text());
+                var green = userPnt - statsObj.redLine;
+                if (green >= 0) {
+                    $(b).find('td i').addClass('green');
+                } else if(green >= (-100)) {
+                    $(b).find('td i').addClass('yellow');
+                } else {
+                    $(b).find('td i').addClass('red');
+                }
+            });
+
             $('.jsgrid-header-row th').eq(11).append('<a id="aGradeHover" style="color:#337AB7 !important;font-size:20px;margin: 0 0 0 7px;"><i id="iGradeTooltip" class="fa fa-question-circle"></i></a>');
             div = d3.select("body").append("div")
                 .attr("class", "tooltip")
@@ -1903,6 +1904,14 @@ function getHistogramDataByPoints(){
         inputStep = $('.like-interval-inp').val();
 
     step = (inputStep.length == 0) ? step : parseInt(inputStep);
+    if(inputStep > 100000){
+        step = 100000;
+        $('.like-interval-inp').val(100000);
+    }
+    if(inputStep < 0){
+        step = 10;
+        $('.like-interval-inp').val(10);   
+    }
     stepHistogram = step;
     $.each(submissions,function(k,v){
         endArr.push(v.items[v.items.length-1].points);
@@ -1936,18 +1945,7 @@ function getHistogramDataByMilestones(){
     intervals.unshift(0);
     
     retVal = getStudentsCount(intervals);
-    var middle = intervals[intervals.length-1] / 2;
-    if($.inArray(middle,intervals) > -1){
-        redLineX = middle;
-    }else{
-        $.each(intervals,function(k,v){
-            if(v >= middle){
-                redLineX = v;
-                return false;
-            }
-        });
-    }
-    return {usersCount:retVal,xPoints:intervals,maxPoint:endPoint,redLine:redLineX};
+    return {usersCount:retVal,xPoints:intervals,maxPoint:endPoint};
 }
 
 function getHistogramDataByGrades(){
@@ -2074,7 +2072,7 @@ function histogramChart(data,slideDays) {
     var histData = [],
         counts = data.xPUserC.usersCount.counts,
         xPoints = data.xPUserC.xPoints,
-        redX = 550,
+        redX,
         name;
 
     if($('.histRadio:checked').attr('id') == 'hGrade'){
@@ -2086,18 +2084,18 @@ function histogramChart(data,slideDays) {
             histData.push({count:counts[i],xPoint:xPoints[i]});
         }
     }
-    if($('.histRadio:checked').attr('id') == 'hMilestone'){
-        redX = data.xPUserC.redLine;
-    }
-    histData.redX = redX;
     addxBar(histData,height,x,y,xAxis,yAxis);
 }
 function addxBar(data,height,x,y,xAxis,yAxis){
+    $('.hist-today-line').remove();
     var svg = d3.select("#histogram svg"),
-        redX = data.redX,
-        allBars = [],
         xVal = 0,
-        tranformX = 0;
+        tranformX = 0,
+        todayPoint = getHistRedLinePoint(),
+        todayXPoint = 0,
+        allBars = [],
+        xVal = 0;
+
     x.domain(data.map(function(d) { return d.xPoint; }));
     y.domain([0, d3.max(data, function(d) { return d.count; })]);
 
@@ -2135,22 +2133,32 @@ function addxBar(data,height,x,y,xAxis,yAxis){
         .attr("y", function(d) { return y(d.count); })
         .attr("height", function(d) { return height - y(d.count); });
 
-        if($('.histRadio:checked').attr('id') == 'hMilestone'){
-            tranformX = 40;
-            redXPos = $('.histogramXA .tick:contains('+data.redX+')').index() - 1;
-            redX = allBars[redXPos] + x.rangeBand();
-        }
+        var wH = 1060 - histXectWidth;
+        var p = (data.length <= 3) ? 20 : 10;
+        var startPoint = parseFloat($('.histogramXA').find('.tick').first().attr('transform').split(['('])[1].split(',')[0]);
+        var endPoint =  parseFloat($('.histogramXA').find('.tick').last().attr('transform').split(['('])[1].split(',')[0]);
+        var maxPoint = data[data.length-1].xPoint;
+        var xPoint = startPoint + ((endPoint-startPoint) / maxPoint) * todayPoint;
 
+        if($('.histRadio:checked').attr('id') == 'hMilestone'){
+            var redXPos = $('.histogramXA .tick:contains('+todayPoint+')').index() - 1;
+            if(redXPos == -1){
+                redXPos = 0;
+                xPoint = x(0) + histXectWidth/2;
+            }else{
+                xPoint = allBars[redXPos] + histXectWidth;
+            }
+        }
         svg.append("svg:rect")
-        .attr("x",redX)
+        .attr("x",xPoint)
         .attr("y",20)
         .attr("height",height)
         .attr("width",0.5)
         .attr("stroke-width", 1.5)
         .attr("stroke","red")
         .attr("class", "hist-today-line")
-        .attr('transform','translate('+tranformX+',0)')
-        .attr('data-point',getMiddlePoint());
+        .attr('transform','translate(40,0)')
+        .attr('data-point',todayPoint);
     }else{
         bars.transition().duration(300)
         .attr("x", function(d) { 
@@ -2168,9 +2176,19 @@ function addxBar(data,height,x,y,xAxis,yAxis){
     
 }
 
-function getMiddlePoint(){
-    var end = parseInt($('.histogramXA').find('.tick').last().text());
-    return parseInt(end / 2);
+function getHistRedLinePoint(){
+    var index = $('.histogram-date .ui-slider-pip-selected').index()-1;
+    var date = new Date(dateRange[index]);
+    var point = 0;
+    date.setHours(23,59,59,999);
+    date = Date.parse(date);
+    $.each(chartData,function(k,v){
+        if(v.date <= date){
+            point = v.points;    
+        }
+        
+    });
+    return parseInt(point);
 }
 
 pointHistDate = 0;
@@ -2217,6 +2235,7 @@ function histogram(){
         stepSlider = instructorStep[instructorId],
         intervalLabels = [],
         tooltipText;
+    $('.like-interval-inp').val(parseInt(createPoint.value(stepSlider)));
 
     for(var i=10;i<=100;i++){
         intervalLabels.push(parseInt(createPoint.value(i)));
@@ -2232,7 +2251,7 @@ function histogram(){
         instructorsStep = jQuery.parseJSON(getStorage('histogramStep'));
         instructorsStep[instructorId] = step;
         setStorage('histogramStep',JSON.stringify(instructorsStep));
-        $('.like-interval-inp').val('');
+        $('.like-interval-inp').val(parseInt(createPoint.value(step)));
         $(".histogram-range-slider").find('.ui-slider-handle').find('.ui-slider-tip').text(parseInt(createPoint.value(step)));
         
         if(clearLoop){
@@ -2297,7 +2316,7 @@ function histogram(){
     $(document).on('mouseover','#histogram .hist-today-line',function(event){
         var index = $('.histogram-date').find('.ui-slider-pip-selected').index() - 1;
         var time = labels[index];
-        var dayDate = parseTimestamp(time);
+        var dayDate = parseDayMonth(time);
         tooltipText = $(this).attr('data-point') + ' points due ' + dayDate;
         div.transition()
         .duration(200)
@@ -2630,13 +2649,13 @@ div = d3.select("body").append("div")
     .style("opacity", 0);
 d3.select("#iGradeTooltip").on("mouseover", function (d) {
     var str = "<table class='table table-condensed table-gradingScheme'><thead> <tr> <th>Points</th> <th>Letter Grade</th></tr> </thead> <tbody> ";
-    for(var i=0;i<=gradingScheme.length-1;i++)
+    for(var i = 0; i <= gradingScheme.length - 1; i++)
     {
         var item = gradingScheme[i];
 
-        str+="<tr><td>"+item.value+"</td> <td>"+item.name+"</td> </tr>";
+        str += "<tr><td>" + item.value + "</td> <td>" + item.name + "</td> </tr>";
     }
-    str+="</tbody> </table>";
+    str += "</tbody></table>";
     addTooltipProfessorGradebook(str, event);
 })
 .on("mouseout", function (d) {

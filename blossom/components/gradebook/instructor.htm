@@ -22,6 +22,7 @@
 <script>
     var gradingScheme = {{grading_scheme|raw}};
     var instructorId = {{user}};
+    var expInst = {{ expInst|raw}};
 </script>
 
 {% set studentData = __SELF__.studentData %}
@@ -189,7 +190,7 @@
                 </div>
                 <div class="dcontent" id="9">
                     <div>
-                        <span>Bonus and Penalties</span>
+                        <span>Total B/P</span>
                         <p class="total"></p>
                         <i class="fa fa-star-half-o" aria-hidden="true"></i>
                     </div>

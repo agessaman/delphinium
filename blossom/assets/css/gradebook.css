@@ -892,3 +892,12 @@ th.details {
     margin-top: 40px;
     margin-left: 15px;
 }
+.red {
+    color: red;
+}
+.green {
+    color:green;
+}
+.yellow {
+    color:yellow;
+}
