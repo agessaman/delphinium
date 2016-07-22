@@ -427,6 +427,7 @@ a:hover
 }
 .details_icon {
     font-size: 28px;
+    margin-top: -3px;
 }
 .details {
     text-align: center;
@@ -436,6 +437,11 @@ td.details a {
     outline: none;
     cursor: pointer;
     color: #4da7e8 !important;
+    background: #fff;
+    display: inline-block;
+    width: 28px;
+    margin: 0 auto;
+    height: 20px;
 }
 td.details a:hover{
     color: #337ab7 !important;
