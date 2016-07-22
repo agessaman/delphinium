@@ -52,14 +52,14 @@ promise.then(function (data1, textStatus, jqXHR) {
             if(getStep[instructorId]){
                 stepSlider = getStep[instructorId];
             }else{
-                stepSlider = 100;
-                stepSlider[instructorId] = 100;
+                stepSlider = 33;
+                stepSlider[instructorId] = 33;
                 setStorage('histogramStep',JSON.stringify(stepSlider));
             }
         }else{
             var stD = {};
-            stD[instructorId] = 100;
-            stepSlider = 100;
+            stD[instructorId] = 33;
+            stepSlider = 33;
             setStorage('histogramStep',JSON.stringify(stD));
         }
         histogram();
@@ -2382,7 +2382,7 @@ function getQ1Q3MedianForBoxPlot(arr,del){
 function boxPlotChart(data){
     $('#boxPlot svg').remove();
     var h = 80,
-        w = 900;
+        w = 890;
     var margin = {'top': 20,'bottom': 20,'left': 20,'right': 20};
     var svg = d3.select("#boxPlot").append("svg")
         .attr("height", h)
