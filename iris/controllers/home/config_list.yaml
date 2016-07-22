@@ -3,15 +3,7 @@
 # ===================================
 
 title: Iris Sunburst Charts
-<<<<<<< HEAD
-<<<<<<< HEAD
-list: $/delphinium/iris/models/home/columns.yaml
-=======
 list: ~/plugins/delphinium/iris/models/home/columns.yaml
->>>>>>> b2e80ac3a6c3869578b563140dcb761ad5044817
-=======
-list: ~/plugins/delphinium/iris/models/home/columns.yaml
->>>>>>> 458e203e636a22db079d0e2b12c60aa91cba5e3b
 modelClass: Delphinium\Iris\Models\Home
 recordUrl: delphinium/iris/home/update/:id
 noRecordsMessage: backend::lang.list.no_records

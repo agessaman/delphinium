@@ -38,17 +38,11 @@ class OAuthResponse extends Controller {
         {
             session_start();
         }
-<<<<<<< HEAD
 
         $code = Input::get('code');
         $lti = Input::get('lti');
         $roleId = Input::get('role');
 
-=======
-        $code = Input::get('code');
-        $lti = Input::get('lti');
-        $roleId = Input::get('role');
->>>>>>> 458e203e636a22db079d0e2b12c60aa91cba5e3b
         if(is_null($code))//meaning, they cancelled rather than authorize the LTI app
         {
             echo "You have canceled authorizing this app. If you want to use this app, you must authorize it. Please reload this page.";

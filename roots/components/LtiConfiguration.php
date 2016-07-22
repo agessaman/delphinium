@@ -242,10 +242,7 @@ class LtiConfiguration extends ComponentBase
         $context = new Blti($secret, false, false);
 
         if ($context->valid) { // query DB to see if user has token, if yes, go to LTI.
-<<<<<<< HEAD
-=======
 
->>>>>>> 458e203e636a22db079d0e2b12c60aa91cba5e3b
             //parameters needed to request for the token
             //TODO: take this redirectUri out into some parameter somewhere...
             $baseUrlWithSlash = rtrim($_SESSION['baseUrl'], '/') . '/';
@@ -265,10 +262,7 @@ class LtiConfiguration extends ComponentBase
             $url = "https://{$domainWithSlash}login/oauth2/auth?client_id={$clientId}&response_type=code&redirect_uri={$redirectUri}";
 
             $userCheck = $dbHelper->getCourseApprover($courseId);
-<<<<<<< HEAD
-
-=======
->>>>>>> 458e203e636a22db079d0e2b12c60aa91cba5e3b
+            
             if (!$userCheck) { //if no user is found, redirect to canvas permission page
                 if (stristr($rolesStr, $approverRole)) {
                     //As per my discussion with Jared, we will use the instructor's token only. This is the token that will be stored in the DB
