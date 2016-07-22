@@ -52,14 +52,14 @@ promise.then(function (data1, textStatus, jqXHR) {
             if(getStep[instructorId]){
                 stepSlider = getStep[instructorId];
             }else{
-                stepSlider = 100;
-                stepSlider[instructorId] = 100;
+                stepSlider = 33;
+                stepSlider[instructorId] = 33;
                 setStorage('histogramStep',JSON.stringify(stepSlider));
             }
         }else{
             var stD = {};
-            stD[instructorId] = 100;
-            stepSlider = 100;
+            stD[instructorId] = 33;
+            stepSlider = 33;
             setStorage('histogramStep',JSON.stringify(stD));
         }
         histogram();
@@ -2027,7 +2027,7 @@ function getStudentsCount(intervals){
 
 function histogramChart(data,slideDays) {
     var margin = {top: 20, right: 20, bottom: 30, left: 40},
-        width = 1020,
+        width = 900,
         height = 300 - margin.top - margin.bottom;
 
     var y = d3.scale.linear()
@@ -2132,7 +2132,6 @@ function addxBar(data,height,x,y,xAxis,yAxis){
         .attr("width", x.rangeBand())
         .attr("y", function(d) { return y(d.count); })
         .attr("height", function(d) { return height - y(d.count); });
-
         var wH = 1060 - histXectWidth;
         var p = (data.length <= 3) ? 20 : 10;
         var startPoint = parseFloat($('.histogramXA').find('.tick').first().attr('transform').split(['('])[1].split(',')[0]);
@@ -2382,7 +2381,7 @@ function getQ1Q3MedianForBoxPlot(arr,del){
 function boxPlotChart(data){
     $('#boxPlot svg').remove();
     var h = 80,
-        w = 1020;
+        w = 890;
     var margin = {'top': 20,'bottom': 20,'left': 20,'right': 20};
     var svg = d3.select("#boxPlot").append("svg")
         .attr("height", h)
@@ -2392,7 +2391,7 @@ function boxPlotChart(data){
     .domain([0,data.xScaleEnd])
     .range([
       0,
-      1040
+      920
     ]);
 
     yScale = d3.scale.linear()
@@ -2557,7 +2556,7 @@ function meanPixel(data,width){
 function changeBoxPlotData(data){
     xScale = d3.scale.linear()
     .domain([data.xScaleStart,data.xScaleEnd])
-    .range([0,1040]);
+    .range([0,920]);
 
     xAxis = d3.svg.axis()
     .scale(xScale)
