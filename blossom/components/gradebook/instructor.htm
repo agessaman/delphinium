@@ -120,37 +120,39 @@
                 <div id='histogram'></div>
                 <div id='boxPlot'></div>
                 <div class="container-fluid m-t-2">
-                    <div class="histogramGroup container btn-group col-md-3 histogramRVS" role="group">
-                    <div class="btn-group">
-                        <label class="btn btn-info active disabled">
-                            <input type="radio" name='histogram' checked class="btn btn-info hide histRadio" id="hPoint" />Points
-                        </label>
-                    </div>
-                    <div class="btn-group">
-                        <label class="btn btn-info disabled">
-                            <input type="radio" name='histogram' class="btn btn-info hide histRadio" id="hMilestone" />Milestones
-                        </label>
-                    </div>
-                    <div class="btn-group">
-                        <label class="btn btn-info disabled hGrade">
-                            <input type="radio" name='histogram' data-disable = "disabled" disabled class="btn btn-info hide histRadio" id="hGrade" />Grades
-                        </label>
-                    </div>
-                    </div>
-                    <div class="histogram-date-slider-container col-md-4 m-t-2 col-sm-4 histogramRVS">
-                        <span class="date r-name">Date</span>
-                        <div class="col-md-1 col-sm-1">
-                            <button type="button" class="btn btn-primary btn-xs histogram-player"><i class="fa fa-play"></i></button>
+                    <div class="row-fluid">
+                        <div class="histogramGroup container btn-group col-md-3 histogramRVS" role="group">
+                        <div class="btn-group">
+                            <label class="btn btn-info active disabled">
+                                <input type="radio" name='histogram' checked class="btn btn-info hide histRadio" id="hPoint" />Points
+                            </label>
                         </div>
-                        <div class="col-md-9 col-sm-9">
-                            <div class="histogram-date"></div>
+                        <div class="btn-group">
+                            <label class="btn btn-info disabled">
+                                <input type="radio" name='histogram' class="btn btn-info hide histRadio" id="hMilestone" />Milestones
+                            </label>
                         </div>
-                    </div>
-                    <div class="range-slider-container col-sm-4 col-md-5 m-t-2 histogramRVS">
-                        <span class="rg r-name">Interval</span>
-                        <div class="col-md-7 histogram-range-slider"></div>
-                        <div class="like-interval col-md-3">
-                            <input type="number" min="10" max="100000" step="1" class="like-interval-inp">
+                        <div class="btn-group">
+                            <label class="btn btn-info disabled hGrade">
+                                <input type="radio" name='histogram' data-disable = "disabled" disabled class="btn btn-info hide histRadio" id="hGrade" />Grades
+                            </label>
+                        </div>
+                        </div>
+                        <div class="histogram-date-slider-container col-md-4 m-t-2 col-sm-4 histogramRVS">
+                            <span class="date r-name">Date</span>
+                            <div class="col-md-1 col-sm-1">
+                                <button type="button" class="btn btn-primary btn-xs histogram-player"><i class="fa fa-play"></i></button>
+                            </div>
+                            <div class="col-md-9 col-sm-9">
+                                <div class="histogram-date"></div>
+                            </div>
+                        </div>
+                        <div class="range-slider-container col-sm-4 col-md-5 m-t-2 histogramRVS">
+                            <span class="rg r-name">Interval</span>
+                            <div class="col-md-7 histogram-range-slider"></div>
+                            <div class="like-interval col-md-3">
+                                <input type="number" min="10" max="100000" step="1" class="like-interval-inp">
+                            </div>
                         </div>
                     </div>
                 </div>
