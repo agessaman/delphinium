@@ -2202,6 +2202,7 @@ function histogram(){
         } else { 
             i.removeClass('fa-pause').addClass('fa-play');
             clearInterval(speed);
+            $('.like-interval-inp').attr('disabled',false).removeClass('color-grey');
         }
     });
     $(".histogram-date").slider({
