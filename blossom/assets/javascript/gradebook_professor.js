@@ -2027,7 +2027,7 @@ function getStudentsCount(intervals){
 
 function histogramChart(data,slideDays) {
     var margin = {top: 20, right: 20, bottom: 30, left: 40},
-        width = 1020,
+        width = 960,
         height = 300 - margin.top - margin.bottom;
 
     var y = d3.scale.linear()
@@ -2382,7 +2382,7 @@ function getQ1Q3MedianForBoxPlot(arr,del){
 function boxPlotChart(data){
     $('#boxPlot svg').remove();
     var h = 80,
-        w = 1020;
+        w = 960;
     var margin = {'top': 20,'bottom': 20,'left': 20,'right': 20};
     var svg = d3.select("#boxPlot").append("svg")
         .attr("height", h)
@@ -2392,7 +2392,7 @@ function boxPlotChart(data){
     .domain([0,data.xScaleEnd])
     .range([
       0,
-      1040
+      980
     ]);
 
     yScale = d3.scale.linear()
