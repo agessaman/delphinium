@@ -902,13 +902,19 @@ th.details {
     margin-left: 15px;
 }
 .red {
-    color: red;
+    background:#fb7b7b !important;
 }
 .green {
-    color:green;
+    background:#7bfb8a !important;
 }
 .yellow {
-    color:yellow;
+    background:#f8fb7b !important;
+}
+.lh {
+    line-height: 35px;
+}
+.subtraction {
+    border-radius: none !important;
 }
 .like-interval-inp {
     width: 70px;
