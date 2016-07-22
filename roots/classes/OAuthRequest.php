@@ -24,24 +24,24 @@ class OAuthRequest {
    */
   public static function from_request($http_method=NULL, $http_url=NULL, $parameters=NULL) {
     $scheme = (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != "on")
-        ? 'http'
-        : 'https';
+              ? 'http'
+              : 'https';
     $port = "";
     if ( $_SERVER['SERVER_PORT'] != "80" && $_SERVER['SERVER_PORT'] != "443" &&
         strpos(':', $_SERVER['HTTP_HOST']) < 0 ) {
       $port =  ':' . $_SERVER['SERVER_PORT'] ;
     }
     @$http_url or $http_url = $scheme .
-        '://' . $_SERVER['HTTP_HOST'] .
-        $port .
-        $_SERVER['REQUEST_URI'];
+                              '://' . $_SERVER['HTTP_HOST'] .
+                              $port .
+                              $_SERVER['REQUEST_URI'];
     @$http_method or $http_method = $_SERVER['REQUEST_METHOD'];
 
     // We weren't handed any parameters, so let's find the ones relevant to
     // this request.
     // If you run XML-RPC or similar you should use this to provide your own
     // parsed parameter-list
-
+    
     if (!$parameters) {
       // Find request headers
       $request_headers = OAuthUtil::get_headers();
@@ -53,19 +53,19 @@ class OAuthRequest {
       // Deal with magic_quotes
       // http://www.php.net/manual/en/security.magicquotes.disabling.php
       if ( get_magic_quotes_gpc() ) {
-        $outpost = array();
-        foreach ($_POST as $k => $v) {
-          $v = stripslashes($v);
-          $ourpost[$k] = $v;
-        }
+         $outpost = array();
+         foreach ($_POST as $k => $v) {
+            $v = stripslashes($v);
+            $ourpost[$k] = $v;
+         }
       }
-      // Add POST Parameters if they exist
+     // Add POST Parameters if they exist
       $parameters = array_merge($parameters, $ourpost);
       // We have a Authorization-header with OAuth data. Parse the header
       // and add those overriding any duplicates from GET or POST
       if (@substr($request_headers['Authorization'], 0, 6) == "OAuth ") {
         $header_parameters = OAuthUtil::split_header(
-            $request_headers['Authorization']
+          $request_headers['Authorization']
         );
         $parameters = array_merge($parameters, $header_parameters);
       }
@@ -81,9 +81,9 @@ class OAuthRequest {
   public static function from_consumer_and_token($consumer, $token, $http_method, $http_url, $parameters=NULL) {
     @$parameters or $parameters = array();
     $defaults = array("oauth_version" => OAuthRequest::$version,
-        "oauth_nonce" => OAuthRequest::generate_nonce(),
-        "oauth_timestamp" => OAuthRequest::generate_timestamp(),
-        "oauth_consumer_key" => $consumer->key);
+                      "oauth_nonce" => OAuthRequest::generate_nonce(),
+                      "oauth_timestamp" => OAuthRequest::generate_timestamp(),
+                      "oauth_consumer_key" => $consumer->key);
     if ($token)
       $defaults['oauth_token'] = $token->key;
 
@@ -91,11 +91,11 @@ class OAuthRequest {
 
     // Parse the query-string to find and add GET parameters
     $parts = parse_url($http_url);
-    if (isset($parts['query'] )) {
+    if ( $parts['query'] ) {
       $qparms = OAuthUtil::parse_parameters($parts['query']);
       $parameters = array_merge($qparms, $parameters);
     }
-
+     
 
     return new OAuthRequest($http_method, $http_url, $parameters);
   }
@@ -153,9 +153,9 @@ class OAuthRequest {
    */
   public function get_signature_base_string() {
     $parts = array(
-        $this->get_normalized_http_method(),
-        $this->get_normalized_http_url(),
-        $this->get_signable_parameters()
+      $this->get_normalized_http_method(),
+      $this->get_normalized_http_url(),
+      $this->get_signable_parameters()
     );
 
     $parts = OAuthUtil::urlencode_rfc3986($parts);
@@ -222,10 +222,10 @@ class OAuthRequest {
         throw new OAuthException('Arrays not supported in headers');
       }
       $out .= ',' .
-          OAuthUtil::urlencode_rfc3986($k) .
-          '="' .
-          OAuthUtil::urlencode_rfc3986($v) .
-          '"';
+              OAuthUtil::urlencode_rfc3986($k) .
+              '="' .
+              OAuthUtil::urlencode_rfc3986($v) .
+              '"';
     }
     return $out;
   }
@@ -237,9 +237,9 @@ class OAuthRequest {
 
   public function sign_request($signature_method, $consumer, $token) {
     $this->set_parameter(
-        "oauth_signature_method",
-        $signature_method->get_name(),
-        false
+      "oauth_signature_method",
+      $signature_method->get_name(),
+      false
     );
     $signature = $this->build_signature($signature_method, $consumer, $token);
     $this->set_parameter("oauth_signature", $signature, false);

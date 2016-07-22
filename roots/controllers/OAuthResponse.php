@@ -22,7 +22,6 @@
 
 namespace Delphinium\Roots\Controllers;
 
-use \Input;
 use Illuminate\Routing\Controller;
 use Delphinium\Roots\Models\Developer as LtiConfigurations;
 use Delphinium\Roots\Models\User;
@@ -39,9 +38,9 @@ class OAuthResponse extends Controller {
         {
             session_start();
         }
-        $code = Input::get('code');
-        $lti = Input::get('lti');
-        $roleId = Input::get('role');
+        $code = \Input::get('code');
+        $lti = \Input::get('lti');
+
         if(is_null($code))//meaning, they cancelled rather than authorize the LTI app
         {
             echo "You have canceled authorizing this app. If you want to use this app, you must authorize it. Please reload this page.";
@@ -63,30 +62,7 @@ class OAuthResponse extends Controller {
 
         $actualToken = $userToken->access_token;
         $encryptedToken = \Crypt::encrypt($actualToken);
-
-        switch($roleId)
-        {
-            case 1://student
-                $_SESSION['studentToken'] = $encryptedToken;
-                break;
-            case 2://TA
-                $_SESSION['taToken'] = $encryptedToken;
-                break;
-            case 3://instructor
-                $_SESSION['instructorToken'] = $encryptedToken;
-                break;
-            case 4://approver (may be an instructor, an admin, or whatever the user configured in the LTIConfiguration component
-                $_SESSION['userToken'] = $encryptedToken;
-                break;
-        }
-        if($roleId===1)
-        {//student
-        }
-        else
-        {//approver
-            $_SESSION['userToken'] = $encryptedToken;
-
-        }
+        $_SESSION['userToken'] = $encryptedToken;
 
         setcookie("token_attempts", 0, time() + (300), "/"); //5 minutes
 
@@ -99,7 +75,7 @@ class OAuthResponse extends Controller {
         //when we get the user from the LMS it gets stored in the DB.
         $roots->getUser($userId);
         $dbHelper = new DbHelper();
-        $role = $dbHelper->getRoleById($roleId);
+        $role = $dbHelper->getRole('Approver');
 
         $userCourse = UserCourse::firstOrNew(array('user_id' => $userId, 'course_id' => $courseId));
         $userCourse->user_id = $userId;

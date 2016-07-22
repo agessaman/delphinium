@@ -25,10 +25,3 @@ fields:
         span: auto
         comment: Enter the the size of component you want as a percent (no sign)
         tab: Settings
-
-    custom_css:
-        label: Custom CSS
-        type: textarea
-        span: auto
-        comment: You can add custom css for the front-end view of this component
-        tab: Settings

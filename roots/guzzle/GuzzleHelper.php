@@ -57,11 +57,9 @@ class GuzzleHelper
                 break;
             case ActionType::PUT:
                 $response = $client->put($url);
-                return json_decode($response->getBody());
                 break;
             case ActionType::POST:
                 $response = $client->post($url);
-                return json_decode($response->getBody());
                 break;
             default:
                 $response = GuzzleHelper::getAsset($url);//$client->get($url);
@@ -149,7 +147,7 @@ class GuzzleHelper
         return json_decode($response->getBody());
     }
 
-    public static function postOrPutWithCurl($url, $params, $token, $action = 'POST')
+    public static function postDataWithParamsCurl($url, $params, $token, $action = 'POST')
     {
         $data_string = json_encode($params);
         $ch = curl_init($url);
@@ -166,7 +164,7 @@ class GuzzleHelper
         ));
         $result = curl_exec($ch);
         curl_close($ch);
-        return json_decode($result);
+        return $result;
     }
 
     public static function postMultipartRequest($params, $file, $upload_url)

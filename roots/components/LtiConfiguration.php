@@ -16,7 +16,7 @@ use Delphinium\Roots\Exceptions\NonLtiException;
 
 class LtiConfiguration extends ComponentBase
 {
-//	die()
+
     public function componentDetails()
     {
         return [
@@ -24,7 +24,6 @@ class LtiConfiguration extends ComponentBase
             'description' => 'Handles the LTI Configuration required for communicating with Canvas'
         ];
     }
-
 
 //    public function onRun() {
 //        try
@@ -222,9 +221,7 @@ class LtiConfiguration extends ComponentBase
         //Check to see if the lti handshake passes
         $context = new Blti($secret, false, false);
 
-
         if ($context->valid) { // query DB to see if user has token, if yes, go to LTI.
-
             $userCheck = $dbHelper->getCourseApprover($_SESSION['courseID']);
             if (!$userCheck) { //if no user is found, redirect to canvas permission page
                 if (stristr($rolesStr, $approverRole)) {
@@ -243,11 +240,9 @@ class LtiConfiguration extends ComponentBase
                     return;
                 }
             } else {
-
                 //set the professor's token
                 $courseId = $_SESSION['courseID'];
                 $_SESSION['userToken'] = $userCheck->encrypted_token;
-
                 //get the timezone
                 $roots = new Roots();
 
@@ -269,23 +264,19 @@ class LtiConfiguration extends ComponentBase
                         } else {
                             setcookie("token_attempts", 1, time() + (300), "/"); //5 minutes
                         }
-
-                        if ($_COOKIE['token_attempts'] > 3) {
+                        if ((isset($_COOKIE['token_attempts']))||($_COOKIE['token_attempts'] > 3)) {
                             echo "Unable to obtain access to your Canvas account. Reached the max number of attempts. Please verify your configuration and try again in 5 minutes.";
                             return;
                         } else {
                             $this->onRun();//the cookie is done to prevent infinite loops
                         }
                     }
-
                 }
 
                 $course = $roots->getCourse();
-
-
+	
                 $account_id = $course->account_id;
                 $account = $roots->getAccount($account_id);
-
                 $_SESSION['timezone'] = new \DateTimeZone($account->default_time_zone);
                 //to maintain the users table synchronized with Canvas, everytime a student comes in we'll check to make sure they're in the DB.
                 //If they're not, we will pull all the students from Canvas and refresh our users table.
@@ -341,7 +332,7 @@ class LtiConfiguration extends ComponentBase
     }
 
     function returnXML()
-    {
+    {	
         $baseUrlWithoutSlash = rtrim(\Config::get('app.url'), '/');
         $url = $baseUrlWithoutSlash . $this->page->url;
         $typeOpts = $this->getTypeOptions();

@@ -40,10 +40,6 @@ if (str != undefined) {
     });
     
 }
-var checkSub = getStorage('subtraction');
-if (checkSub == null) {
-    setStorage('subtraction', 100);
-}
 //GET DATA FOR THE TOP CHART
 var promise = $.get("gradebook/getAllStudentSubmissions");
 promise.then(function (data1, textStatus, jqXHR) {
@@ -51,7 +47,7 @@ promise.then(function (data1, textStatus, jqXHR) {
         var getStep = getStorage('histogramStep');
         var stepSlider;
 
-        if(getStep != null) {
+        if(getStep != null){
             getStep = jQuery.parseJSON(getStep);
             if(getStep[instructorId]){
                 stepSlider = getStep[instructorId];
@@ -1385,7 +1381,7 @@ function buildTable(data) {
     });
 
     $("#gridContainer").jsGrid({
-        height: "500px",
+        height: "510px",
         width: "100%",
         filtering: true,
         sorting: true,
@@ -1412,7 +1408,7 @@ function buildTable(data) {
         onDataLoaded: function(args) {
             var td = $('.jsgrid-grid-header tr').eq(1).find('td');
             $('.jsgrid-search-button').hide();
-            td.eq(td.length-2).html('<a data-toggle="modal" style="outline:none;" href="#content-configuration"><i class="fa fa-cog table_set"></i></a>').css('text-align','center');
+            td.eq(td.length-2).html('<a data-toggle="modal" style="outline:none;" href="#content-confirmation"><i class="fa fa-cog table_set"></i></a>').css('text-align','center');
             if($('.filter_checkbox').length == 0){
                 var sections = get_checkboxes('sections'),
                     grade = get_checkboxes('grade');
@@ -1547,57 +1543,21 @@ function buildTable(data) {
     hide_or_show(columns);
 
     $('#content-confirmation .modal-footer button').eq(0).click(function() {
-        var statsObj = expInst;
-        $('.jsgrid-grid-body .jsgrid-table tr').each(function(a,b) {
-            var userPnt = parseInt($(b).find('td').eq(4).text());
-            var green = userPnt - statsObj.redLine;
-            var subtraction = parseInt($('.subtraction').val());
-            var def = getStorage('subtraction');
-            if ($.isNumeric(subtraction)) {
-                setStorage('subtraction', subtraction);
-                if (green > subtraction) {
-                    $(b).find('.details').removeClass().addClass('details green');
-                } else if(green > (-subtraction)) {
-                    $(b).find('.details').removeClass().addClass('details yellow');
-                } else {
-                    $(b).find('.details').removeClass().addClass('details red');
-                }
-                $('.subtraction').val(subtraction);
-            } else {
-                $('.subtraction').val(def);
-                //$('.subtraction').next('<span>Please type only numbers</span>');
-            }
-        });
+
+
         $('#content-confirmation input[type=checkbox]').each(function(a,b) {
+
             var key = $(b).val();
             if ($(b).is(':checked')) {
                 columns[key]['show'] = true;
             } else {
                 columns[key]['show'] = false;
             }
-
         });
         hide_or_show(columns);
         setStorage('ListSetup',JSON.stringify(columns));
     });
 
-    $('#content-email .modal-footer button').eq(0).click(function(e){
-        var subject = $('#email-subject').val().trim(),
-            body = $('#email-message').val().trim(),
-            recipients = [33,18],
-            context_code = 'account_'+instructorId;
-        if(subject.length > 255 || body.length == 0){
-            e.preventDefault();
-            e.stopPropagation();
-        }else{
-            $.post('https://'+location.host+':3001/conversations',{subject:subject,body:body,recipients:recipients,authenticity_token:userToken,context_code:context_code,group_conversation:true,mode:'async'});
-        }
-    });
-
-    $('#content-email').on('hidden.bs.modal', function () {
-        $('#email-subject').val('');
-        $('#email-message').val('');
-    });
 }
 
 function hide_or_show(args) {
@@ -1681,16 +1641,12 @@ function callStudentsMilestoneInfo(studentsArr)
             $('.jsgrid-grid-body .jsgrid-table tr').each(function(a,b) {
                 var userPnt = parseInt($(b).find('td').eq(4).text());
                 var green = userPnt - statsObj.redLine;
-                var subtraction = getStorage('subtraction');
-                if ($.isNumeric(subtraction)) {
-                    if (green > subtraction) {
-                    $(b).find('.details').removeClass().addClass('details green');
-                    } else if(green > (-subtraction)) {
-                        $(b).find('.details').removeClass().addClass('details yellow');
-                    } else {
-                        $(b).find('.details').removeClass().addClass('details red');
-                    }
-                    $('.subtraction').val(subtraction);
+                if (green >= 0) {
+                    $(b).find('td i').addClass('green');
+                } else if(green >= (-100)) {
+                    $(b).find('td i').addClass('yellow');
+                } else {
+                    $(b).find('td i').addClass('red');
                 }
             });
 

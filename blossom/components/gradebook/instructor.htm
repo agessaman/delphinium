@@ -23,7 +23,6 @@
     var gradingScheme = {{grading_scheme|raw}};
     var instructorId = {{user}};
     var expInst = {{ expInst|raw}};
-    var userToken = {{userToken|raw}};
 </script>
 
 {% set studentData = __SELF__.studentData %}
@@ -220,7 +219,8 @@
                     </div>
                 </div>
             </div>
-            <div class="control-popup modal fade" id="content-configuration" tabindex="-1" role="dialog">
+
+            <div class="control-popup modal fade" id="content-confirmation" tabindex="-1" role="dialog">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -228,64 +228,6 @@
                             <h4 class="modal-title">List Setup</h4>
                         </div>
                         <div class="modal-body">
-                            <div>
-                                <a data-toggle="modal" data-dismiss="modal" type="button" class="btn btn-default btn-lg btn-block" href="#content-confirmation">Table Configuration</a>
-                            </div>
-                            <div>
-                                <a data-toggle="modal" data-dismiss="modal" type="button" class="btn btn-default btn-lg btn-block" href="#content-email">Send Email</a> 
-                            </div>                            
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="control-popup modal fade" id="content-email" tabindex="-1" role="dialog">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title">Email Box</h4>
-                        </div>
-                        <div class="modal-body">
-                            <div>
-                                <form>
-                                    <div class="form-group">
-                                        <label for="email-subject">Subject</label>
-                                        <input type="text" id="email-subject" class="form-control" />
-                                    </div>
-                                    <div class="form-group">
-                                        <textarea class="form-control" id="email-message"></textarea>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" data-dismiss="modal">Send</button>
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="control-popup modal fade" id="content-confirmation" tabindex="-1" role="dialog">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title">Settings</h4>
-                        </div>
-                        <div class="modal-body">
-                            <div class="row m-t-1">
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <input type="text" class="form-control subtraction">
-                                    </div>
-                                </div>
-                                <div class="col-md-8">
-                                    <p class="lh">Color of details value</p>
-                                </div>
-                            </div>
                             <p>Use checkboxes to select columns you want to see in the list.</p>
                         </div>
                         <div class="modal-footer">
@@ -295,6 +237,7 @@
                     </div>
                 </div>
             </div>
+
             <div id="modalStudentGradebook" class="modal fade" role="dialog">
                 <div class="modal-dialog" style="width:800px !important;">
 

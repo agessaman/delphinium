@@ -101,7 +101,6 @@ class Gradebook extends ComponentBase {
             $userRoles = $_SESSION['roles'];
             $this->page['userRoles'] = $userRoles;
             $this->page['user'] = $_SESSION['userID'];
-            $this->page['userToken'] = json_encode(\Crypt::decrypt($_SESSION['userToken']));
             if (!is_null($expInst)) {
                 $instance = ExperienceModel::find($expInst);
                 $maxExperiencePts = $instance->total_points;

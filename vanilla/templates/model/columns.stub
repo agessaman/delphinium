@@ -18,7 +18,3 @@ columns:
     size:
         label: Size
         searchable: true
-
-    custom_css:
-        label: Custom CSS
-        searchable: true

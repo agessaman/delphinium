@@ -49,9 +49,8 @@ class Plugin extends PluginBase
 	
 	public function registerComponents()
 	{
-	  	return [
-			'\Delphinium\Orchid\Components\Quizlesson' => 'quizlesson',
-		    '\Delphinium\Orchid\Components\Attendance' => 'attendance'
+	  return [
+		'\Delphinium\Orchid\Components\Quizlesson' => 'quizlesson'
 	  ];
 	}
 
@@ -65,13 +64,7 @@ class Plugin extends PluginBase
 			  'owner' => 'Delphinium.Greenhouse',
 			  'url' => Backend::url('delphinium/orchid/quizlesson'),
 			  'group' => 'Orchid',
-			],
-			'Attendance' => array(
-				'label' => 'Attendance',
-				'icon' => 'oc-icon-check-square-o',
-				'owner' => 'Delphinium.Greenhouse',
-				'url' => Backend::url('delphinium/orchid/attendance'),
-				'group' => 'Blossom')
+			]
 		  ]);
 	  });
 	}

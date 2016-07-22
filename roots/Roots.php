@@ -22,7 +22,6 @@
 
 namespace Delphinium\Roots;
 
-use Delphinium\Roots\Models\AssignmentGroup;
 use Delphinium\Roots\Requestobjects\SubmissionsRequest;
 use Delphinium\Roots\Requestobjects\ModulesRequest;
 use Delphinium\Roots\Requestobjects\AssignmentsRequest;
@@ -127,7 +126,7 @@ class Roots
         switch($request->getActionType())
         {
             case(ActionType::GET):
-                $result = null;
+                $result;
                 switch ($request->getLms())
                 {
                     case (Lms::CANVAS):
@@ -138,7 +137,9 @@ class Roots
                         $canvas = new CanvasHelper(DataType::SUBMISSIONS);
                         $result = $canvas->processSubmissionsRequest($request);
                         break;
+
                 }
+
                 return $result;
             case(ActionType::POST):
                 if(is_null($params))
@@ -147,14 +148,6 @@ class Roots
                 }
                 $canvas = new CanvasHelper(DataType::SUBMISSIONS);
                 $result = $canvas->postSubmission($request, $params);
-                return $result;
-            case(ActionType::PUT):
-                if(is_null($params))
-                {
-                    throw new InvalidRequestException("put submission", "no parameters in submission");
-                }
-                $canvas = new CanvasHelper(DataType::SUBMISSIONS);
-                $result = $canvas->putSubmission($request, $params);
                 return $result;
             default :
                 throw new InvalidActionException($request->getActionType(), get_class($request));
@@ -204,7 +197,7 @@ class Roots
         }
     }
 
-    public function assignmentGroups(AssignmentGroupsRequest $request, AssignmentGroup $group =null)
+    public function assignmentGroups(AssignmentGroupsRequest $request)
     {
         switch($request->getActionType())
         {
@@ -222,12 +215,9 @@ class Roots
                 }
                 else
                 {
-                    return $this->getAssignmentGroupDataFromLms($request);
+                    return $this->getAssignmentGroupDataFromLms( $request);
                 }
 
-                break;
-            case(ActionType::POST);
-                return $this->canvasHelper->postAssignmentGroup($request, $group);
                 break;
             default :
                 throw new InvalidActionException($request->getActionType(), get_class($request));
