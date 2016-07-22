@@ -799,8 +799,7 @@ th.details {
     margin-top: 7px;
 }
 .histogramGroup .btn {
-    padding: 8px !important;
-    font-size: 12px;
+    padding: 9px !important;
 }
 .empty {
     height: 30px;
@@ -913,4 +912,7 @@ th.details {
 }
 .like-interval-inp {
     width: 70px;
+}
+.histogram-date-slider-container {
+    margin-left: -23px;
 }
