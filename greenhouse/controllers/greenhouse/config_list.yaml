@@ -4,8 +4,12 @@
 
 title: Greenhouse
 <<<<<<< HEAD
+<<<<<<< HEAD
 list: $/delphinium/greenhouse/models/greenhouse/columns.yaml
 =======
 list: ~/plugins/delphinium/greenhouse/models/greenhouse/columns.yaml
 >>>>>>> b2e80ac3a6c3869578b563140dcb761ad5044817
+=======
+list: ~/plugins/delphinium/greenhouse/models/greenhouse/columns.yaml
+>>>>>>> 458e203e636a22db079d0e2b12c60aa91cba5e3b
 modelClass: Delphinium\Greenhouse\Models\Greenhouse

@@ -4,10 +4,14 @@
 
 name: Iris
 <<<<<<< HEAD
+<<<<<<< HEAD
 form: $/delphinium/iris/models/home/fields.yaml
 =======
 form: ~/plugins/delphinium/iris/models/home/fields.yaml
 >>>>>>> b2e80ac3a6c3869578b563140dcb761ad5044817
+=======
+form: ~/plugins/delphinium/iris/models/home/fields.yaml
+>>>>>>> 458e203e636a22db079d0e2b12c60aa91cba5e3b
 modelClass: Delphinium\Iris\Models\Home
 defaultRedirect: delphinium/iris/home
 

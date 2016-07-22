@@ -4,10 +4,14 @@
 
 title: Dev Configurations
 <<<<<<< HEAD
+<<<<<<< HEAD
 list: $/delphinium/dev/models/configuration/columns.yaml
 =======
 list: ~/plugins/delphinium/dev/models/configuration/columns.yaml
 >>>>>>> b2e80ac3a6c3869578b563140dcb761ad5044817
+=======
+list: ~/plugins/delphinium/dev/models/configuration/columns.yaml
+>>>>>>> 458e203e636a22db079d0e2b12c60aa91cba5e3b
 modelClass: Delphinium\Dev\Models\Configuration
 recordUrl: delphinium/dev/configuration/update/:id
 noRecordsMessage: backend::lang.list.no_records
