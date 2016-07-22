@@ -98,16 +98,17 @@ class Attendance extends ComponentBase
             //IN Delphinium\Orchid\controllers\Attendance\_instructions.htm
             // include the backend form with instructions for instructor.htm
 
-        //check if the compnent has custom css
-        if($config&&$config->custom_css)
-        {
-            $cssStr = $config->custom_css;
-            $this->page['custom_css'] = $cssStr;
-        }
-        $this->addCss('/modules/system/assets/ui/storm.css', 'core');
-        $this->addCss('/modules/system/assets/ui/storm.less', 'core');
-        $this->addJs('/modules/system/assets/ui/js/flashmessage.js', 'core');
-        $this->addJs('/plugins/delphinium/orchid/assets/js/attendance_instructor.js');
+            //check if the compnent has custom css
+            if($config&&$config->custom_css)
+            {
+                $cssStr = $config->custom_css;
+                $this->page['custom_css'] = $cssStr;
+            }
+            $this->addCss('/modules/system/assets/ui/storm.css', 'core');
+            $this->addCss('/modules/system/assets/ui/storm.less', 'core');
+            $this->addJs('/modules/system/assets/ui/js/flashmessage.js', 'core');
+            $this->addJs('/plugins/delphinium/orchid/assets/js/attendance_instructor.js');
+
             if (stristr($roleStr, 'Instructor') || stristr($roleStr, 'TeachingAssistant'))
             {
                 $this->page['statsRecordId'] = $this->statsInstanceId;
@@ -128,6 +129,8 @@ class Attendance extends ComponentBase
 
             } else {
                 if (stristr($roleStr, 'Learner')) {
+
+//                    $this->addJs('/plugins/delphinium/orchid/assets/js/attendance_student.js');
                     //see if there's an active session, and if so, check to see whether the student has submitted the assignment
                     $session = $this->getActiveSession();
                     if(!$session)return;
@@ -164,7 +167,27 @@ class Attendance extends ComponentBase
         $session = $this->getActiveSession();
         if($session)
         {
+
             $this->page->code = $this->getActiveSession()->code;
+            $assignment_id = $session->assignment_id;
+            $req = new AssignmentsRequest(ActionType::GET, $assignment_id, false, null, false);
+
+            $roots = new Roots();
+            $assignment = $roots->assignments($req);
+            $this->page->total_points = $assignment['points_possible'];
+            $this->page->percentage_fifteen = $assignment['points_possible']*($session->percentage_fifteen/100);
+            $this->page->percentage_thirty = $assignment['points_possible']*($session->percentage_thirty/100);
+//
+            $start_time = new \DateTime($session->start_at);
+            $this->page->start_at = $start_time->format('H:i');
+//            $fifteen = $start_time->add(new \DateInterval('PT15M'))->format('H:i');
+////            echo json_encode($fifteen);
+//            $thirty = $start_time->add(new \DateInterval('PT15M'))->format('H:i');
+//
+//            $this->page->start_at = $start_timeStr;
+//            $this->page->fifteen_time = $fifteen;
+//            $this->page->percentage_fifteen = $session->percentage_fifteen;
+//            $this->page->thirty_time = $thirty;
         }
         else
         {
@@ -394,7 +417,7 @@ class Attendance extends ComponentBase
         $s = new \DateTime($session->start_at);
         $start_at =strtotime($s->format('c'));
         $minutes = ($now-$start_at)/60;
-        $points = floatval($assignment->points_possible);
+        $points = floatval($assignment['points_possible']);
         $grade = $points;
 
         switch ($minutes)
@@ -435,7 +458,7 @@ class Attendance extends ComponentBase
         }
         $courseId = $_SESSION['courseID'];
         //check to see if there's an active session.
-        $lastSession = Sessions::where(array('course_id' => $courseId))->orderBy('start_at', 'DESC')->first();
+        $lastSession = Sessions::where(array('course_id' => $courseId))->orderBy('id', 'DESC')->first();
         if (!$lastSession) {
             return null;
         } else {

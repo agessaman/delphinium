@@ -3,7 +3,7 @@
 # ===================================
 
 title: Dev Configurations
-list: @/plugins/delphinium/dev/models/configuration/columns.yaml
+list: ~/plugins/delphinium/dev/models/configuration/columns.yaml
 modelClass: Delphinium\Dev\Models\Configuration
 recordUrl: delphinium/dev/configuration/update/:id
 noRecordsMessage: backend::lang.list.no_records

@@ -50,7 +50,7 @@ class Plugin extends PluginBase
 
     public function register()
     {
-        BackendMenu::registerContextSidenavPartial('Delphinium.Greenhouse', 'greenhouse', '@/plugins/delphinium/greenhouse/partials/_sidebar.htm');
+        BackendMenu::registerContextSidenavPartial('Delphinium.Greenhouse', 'greenhouse', '~/plugins/delphinium/greenhouse/partials/_sidebar.htm');
 
         //register console commands
         $this->registerConsoleCommand('Delphinium.DelphiniumPlugin', 'Delphinium\Greenhouse\Console\DelphiniumPlugin');
