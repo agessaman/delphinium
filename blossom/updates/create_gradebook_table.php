@@ -3,7 +3,7 @@
 use Schema;
 use October\Rain\Database\Updates\Migration;
 
-class BuilderTableCreateDelphiniumBlossomGradebook extends Migration
+class CreateGradebookTable extends Migration
 {
     public function up()
     {
