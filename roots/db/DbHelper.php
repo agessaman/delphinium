@@ -690,7 +690,7 @@ class DbHelper
     }
     public function getCourseApprover($courseId)
     {
-        $role = Role::where('role_name','=','Approver')->first();
+        $role = Role::where('role_name','=','Instructor')->first();
         $user = UserCourse::with('user')->where(array(
             'role' => $role->id,
             'course_id'=> $courseId
@@ -716,9 +716,14 @@ class DbHelper
         return Role::where('role_name','=',$role_name)->first();
     }
 
+    public function getRoleById($role_id)
+    {
+        return Role::where('id','=',$role_id)->first();
+    }
+
     public function deleteInvalidApproverToken($courseId)
     {
-        $role = Role::where('role_name','=','Approver')->first();
+        $role = Role::where('role_name','=','Instructor')->first();
         $user = UserCourse::where(array(
             'role' => $role->id,
             'course_id'=> $courseId
