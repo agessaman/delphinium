@@ -1,0 +1,155 @@
+<!--
+  ~ Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
+  ~
+  ~ This file is subject to the terms and conditions defined in
+  ~ file 'https://github.com/ProjectDelphinium/delphinium/blob/master/EULA',
+  ~ which is part of this source code package.
+  ~
+  ~ NOTICE:  All information contained herein is, and remains the property of Project Delphinium. The intellectual and technical concepts contained
+  ~ herein are proprietary to Project Delphinium and may be covered by U.S. and Foreign Patents, patents in process, and are protected by trade secret or copyright law.
+  ~ Dissemination of this information or reproduction of this material is strictly forbidden unless prior written permission is obtained
+  ~ from Project Delphinium.
+  ~
+  ~ THE RECEIPT OR POSSESSION OF THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS
+  ~ TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.
+  ~
+  ~ Unauthorized copying of this file, via any medium is strictly prohibited
+  ~ Non-commercial use only, you may not charge money for the software
+  ~ You can modify personal copy of source-code but cannot distribute modifications
+  ~ You may not distribute any version of this software, modified or otherwise
+  -->
+
+<div id="loader">
+    <h2>Gradebook Component</h2>
+
+    <div id="backend-instructions">
+        <p>The gradebook component is tightly related to the experience component. In order for gradebook to work, an instance of
+            experience must be configured in the
+            greenhouse backend. A backend instance of gradebook must also be configured in greenhouse.
+            <br/><b>Greenhouse-->Blossom-->Gradebook-->New Gradebook Instance</b>
+        </p>
+        Fill out the form accordingly:
+        <div class="fillOutForm"></div>
+        <br/>
+        If these instances are not configured and the component is added onto a page, automatic instances of these components will
+        be created on the fly, but the instructor must then configure them from the LTI inside Canvas.
+    </div>
+    <hr/>
+</div>
+
+<h3>There are four modules in the Gradebook component:</h3>
+<div id="accordion">
+    <h3>Pace</h3>
+    <div>
+        <p>
+            Pace shows bonuses and penalties --a measure of how well students are keeping up with the red line as it
+            crosses milestones. It also shows what their potential
+            penalty points are if they cross the next milestone, and the potential bonuses they could earn by crossing
+            the next milestone.
+            <br/>Bonuses are green, and penalties are red. Potential bonuses and penalties are also green red, but are
+            slightly grayed out.
+            <br/>Locked in bonus and penalties use a lock icon <i class="fa fa-lock"></i>, whereas potential
+            bonus/penalties are denoted by a clock icon <i class="fa fa-clock-o"></i>.
+            <br/>
+        </p>
+        <div id="pace-img"></div>
+    </div>
+    <h3>Health</h3>
+    <div>
+        <p>
+            Health shows students' current, locked-in penalty/bonus balance. If the overall balance is positive, the bar
+            will be green. If the balance is
+            negative, the bar will be red.
+        </p>
+        <div id="health-img"></div>
+    </div>
+    <h3>Gap</h3>
+    <div>
+        <p>
+            Gap shows how many points students are ahead or behind the red line. If they are ahead of the line, the bar
+            will be green.
+            If they are behind of the line, the bar will be red.
+        </p>
+        <div id="gap-img"></div>
+    </div>
+    <h3>Stamina</h3>
+    <div>
+        <p>
+            Stamina is a measure of the quality of students' work. If their work quality is low, they will "run out of
+            gas" early and
+            not be able to reach higher milestones because they will run out of points to earn. Students can select to
+            view the percent of points
+            earned for all assignments they have completed so far, or just the last 10 assignments.
+        </p>
+        <div id="stamina-img"></div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+
+<style>
+    .fillOutForm{
+        width: 100%;
+        height: 288px;
+        background-image: url('<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/stats_new.png');
+        background-repeat: no-repeat;
+        background-size: contain;
+    }
+    #pace-img{
+        width: 100%;
+        height: 80px;
+        background-image: url('<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/stats_pace.png');
+        background-repeat: no-repeat;
+        background-size: contain;
+    }
+    #health-img{
+        width: 100%;
+        height: 72px;
+        background-image: url('<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/stats_health.png');
+        background-repeat: no-repeat;
+        background-size: contain;
+    }
+    #gap-img{
+        width: 100%;
+        height: 75px;
+        background-image: url('<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/stats_gap.png');
+        background-repeat: no-repeat;
+        background-size: contain;
+     }
+    #stamina-img{
+        width: 100%;
+        height: 90px;
+        background-image: url('<?= Config::get("app.url", "backend") ?>plugins/delphinium/blossom/assets/images/stats_stamina.png');
+        background-repeat: no-repeat;
+        background-size: contain;
+    }
+    div.panel {
+        padding: 0px !important;
+    }
+
+    .img {
+        margin-top: 15px;
+    }
+
+    #image4 {
+        margin-left: 25px;
+    }
+
+    #accordion {
+        font-family: 'Open Sans', Arial, sans-serif;
+        margin-bottom: 40px;
+    }
+
+    #accordion .ui-icon {
+        display: none;
+    }
+
+    #accordion .ui-accordion-header a {
+        padding-left: 0;
+    }
+
+    #accordion .ui-accordion .ui-accordion-icons {
+        padding: 0;
+    }
+</style>

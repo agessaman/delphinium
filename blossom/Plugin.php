@@ -134,6 +134,13 @@ class Plugin extends PluginBase
                     'owner' => 'Delphinium.Greenhouse',
                     'url' => Backend::url('delphinium/blossom/stats'),
                     'group'       => 'Blossom',
+                ],
+                'Gradebook' => [
+                    'label' => 'Gradebook',
+                    'icon' => 'icon-book',
+                    'owner' => 'Delphinium.Greenhouse',
+                    'url' => Backend::url('delphinium/blossom/gradebook'),
+                    'group'       => 'Blossom',
                 ]
             ]);
             

@@ -38,6 +38,7 @@ use \DateInterval;
 use Carbon\Carbon;
 use Delphinium\Roots\Guzzle\GuzzleHelper;
 use Delphinium\Blossom\Components\Stats as StatsComponent;
+use Delphinium\Blossom\Models\Gradebook as GradebookModel;
 
 class Gradebook extends ComponentBase {
 
@@ -59,6 +60,12 @@ class Gradebook extends ComponentBase {
             'experienceInstance' => [
                 'title' => 'Experience instance',
                 'description' => 'Select the experience instance to display the student\'s bonus and penalties',
+                'type' => 'dropdown',
+            ],
+            'gradebook' => [
+                'title' => '(Optional) Gradebook instance',
+                'description' => 'Select the gradebook instance to display. If an instance is selected, it will be the configuration for all courses that use this page.
+                Leaving this field blank will allow different configurations for every course.',
                 'type' => 'dropdown',
             ]
         ];
@@ -1132,6 +1139,86 @@ class Gradebook extends ComponentBase {
             return $elem->assignment_id === $assignmentId;
         }));
         return $filteredItems;
+    }
+
+    private function firstOrNewCourseInstance($copyName=null)
+    {
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+        $courseId = $_SESSION['courseID'];
+        $this->courseId = $courseId;
+        $courseInstance = null;
+
+        //if they have selected a backend instance, that will take precedence over creating a dynamic instance based on the component alias
+        if(($this->property('gradebook'))>0)
+        {
+            $courseInstance =GradebookModel::firstOrNew(array('id' => $this->property('gradebook')));
+        }
+        else
+        {//didn't select a backend instance. Create the component based on the copy name, or the alias name if the copy name was not provided
+            if(is_null($copyName))
+            {
+                $copyName =$this->alias . "_".$courseId;
+            }
+            $courseInstance =StatsModel::firstOrNew(array('name'=>$copyName));
+            $courseInstance->course_id = $courseId;
+            $courseInstance->name = $copyName;
+        }
+
+        if(is_null($courseInstance->animate)){$courseInstance->animate = 1;}
+        if(is_null($courseInstance->size)){$courseInstance->size = 'medium';}
+        $courseInstance->save();
+        return $courseInstance;
+    }
+
+    private function findExperienceInstance()
+    {
+        $experienceModel=null;
+        if(is_null($this->property('experience'))||$this->property('experience')==0)
+        {//find an instance of experience with the same course id
+            if (!isset($_SESSION)) {
+                session_start();
+            }
+            $courseId = $_SESSION['courseID'];
+            $experienceModel = ExperienceModel::where('course_id','=',$courseId)->first();
+            if(is_null($experienceModel))
+            {//if no experience was created we will create one on the fly and tell the user to go configure it
+                $experienceModel = ExperienceModel::firstOrNew(array('course_id' => $courseId));
+                $experienceModel->name = "Experience_auto";
+                $experienceModel->total_points = 1000;
+                $today = new \DateTime('now');
+                $experienceModel->start_date = $today;
+                $newDate = new \DateTime('now');
+                $tomorrow = $newDate->add(new \DateInterval('P10D'));
+                $experienceModel->end_date = $tomorrow;
+                $experienceModel->bonus_per_day = 1;
+                $experienceModel->penalty_per_day = 1;
+                $experienceModel->bonus_days = 5;
+                $experienceModel->penalty_days = 5;
+                $experienceModel->animate = 1;
+                $experienceModel->size = 'medium';
+                $experienceModel->course_id = $courseId;
+                $experienceModel->save();
+                $this->page['configureExperience']=1;
+            }
+            else
+            {
+                $this->page['configureExperience']=0;
+            }
+            $this->page['experienceInstanceId'] =$experienceModel->id;
+            $this->experienceInstanceId = $experienceModel->id;
+            return $experienceModel;
+        }
+        else
+        {//use the selected instance
+            $experienceModel= ExperienceModel::find($this->property('experience'))->first();
+            $this->page['experienceInstanceId'] =$experienceModel->id;
+            $this->page['configureExperience']=0;
+
+            $this->experienceInstanceId = $experienceModel->id;
+            return $experienceModel;
+        }
     }
 
 }
