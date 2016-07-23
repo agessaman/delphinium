@@ -1,3 +1,9 @@
 1.0.0:
-    - Initialize plugin
+    - 'Initialize plugin'
     - create_iris_charts_table.php
+1.0.1:
+    - 'Created table delphinium_iris_walk_through'
+    - builder_table_create_delphinium_iris_walk_through.php
+1.0.2:
+    - 'Drop table delphinium_iris_walk_through'
+    - builder_table_delete_delphinium_iris_walk_through.php

@@ -1,0 +1,17 @@
+columns:
+    id:
+        label: ID
+        type: number
+        searchable: true
+    name:
+        label: Name
+        type: text
+        searchable: true
+    animate:
+        label: Animate
+        type: select
+        searchable: true
+    size:
+        label: Size
+        type: number
+        searchable: true

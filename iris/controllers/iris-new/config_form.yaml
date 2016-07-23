@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Iris- New
+
+# Model Form Field configuration
+form: $/delphinium/iris/models/iris-new/fields.yaml
+
+# Model Class name
+modelClass: Delphinium\Iris\Models\IrisNew
+
+# Default redirect location
+defaultRedirect: delphinium/iris/iris-new
+
+# Create page
+create:
+    title: Create Iris- New
+    redirect: delphinium/iris/iris-new/update/:id
+    redirectClose: delphinium/iris/iris-new
+
+# Update page
+update:
+    title: Edit Iris- New
+    redirect: delphinium/iris/iris-new
+    redirectClose: delphinium/iris/iris-new
+
+# Preview page
+preview:
+    title: Preview Iris- New

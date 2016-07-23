@@ -49,7 +49,9 @@ class Plugin extends PluginBase
     {
         return [
             '\Delphinium\Iris\Components\Iris' => 'iris',
-            '\Delphinium\Iris\Components\IrisLegend' => 'irislegend'
+            '\Delphinium\Iris\Components\IrisLegend' => 'irislegend',
+            '\Delphinium\Iris\Components\IrisNew' => 'iris-new',
+            '\Delphinium\Iris\Components\WalkThrough' => 'walk through'
         ];
     }
     
