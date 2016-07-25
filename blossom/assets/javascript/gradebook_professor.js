@@ -2182,7 +2182,7 @@ function addxBar(data,height,x,y,xAxis,yAxis){
         .attr("y",20)
         .attr("height",height)
         .attr("width",0.5)
-        .attr("stroke-width", 1.5)
+        .attr("stroke-width", 2)
         .attr("stroke","red")
         .attr("class", "hist-today-line")
         .attr('transform','translate(40,0)')
