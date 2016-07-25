@@ -221,8 +221,8 @@ a:hover
     margin-left: 41px;
 }
 #chart path {
-    stroke: steelblue;
-    stroke-width: 2;
+    stroke: black;
+    stroke-width: 1px;
     fill: none;
 }
 .spinnerDiv
