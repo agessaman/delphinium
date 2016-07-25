@@ -47,6 +47,8 @@ class Gradebook extends ComponentBase {
     public $users;
     public $submissions;
     public $allStudentSubmissions;
+    public $gradebookInstanceId;
+    public $experienceInstanceId;
 
     public function componentDetails() {
         return [
@@ -90,7 +92,6 @@ class Gradebook extends ComponentBase {
             $this->roots = new Roots();
             $standards = $this->roots->getGradingStandards();
             $grading_scheme = $standards[0]->grading_scheme;
-            $expInst = $this->property('experienceInstance');
             $this->addCss("/plugins/delphinium/blossom/assets/css/jsgrid.css");
             $this->addCss("/plugins/delphinium/blossom/assets/css/storm.css");
             $this->addCss("/plugins/delphinium/blossom/assets/css/nouislider.min.css");
@@ -104,8 +105,15 @@ class Gradebook extends ComponentBase {
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/ui/jquery-ui-slider-pips.js");
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/nouislider.min.js");
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/js/tab.js");
-            $this->page['experienceInstanceId'] = $expInst;
+            $gradebookInstance = $this->firstOrNewCourseInstance();
             $userRoles = $_SESSION['roles'];
+            $this->gradebookInstanceId = $gradebookInstance->id;
+            $experienceInstance = $this->findExperienceInstance();
+            $expInst = $experienceInstance->id;
+            $gradebookInstance = GradebookModel::find($this->gradebookInstanceId);
+            $this->page['gradebookSize'] = $gradebookInstance->size;
+            $this->page['statsAnimate'] = $gradebookInstance->animate;
+            $this->page['instance_id'] =  $gradebookInstance->id;
             $this->page['userRoles'] = $userRoles;
             $this->page['user'] = $_SESSION['userID'];
             if (!is_null($expInst)) {
@@ -1161,7 +1169,7 @@ class Gradebook extends ComponentBase {
             {
                 $copyName =$this->alias . "_".$courseId;
             }
-            $courseInstance =StatsModel::firstOrNew(array('name'=>$copyName));
+            $courseInstance =GradebookModel::firstOrNew(array('name'=>$copyName));
             $courseInstance->course_id = $courseId;
             $courseInstance->name = $copyName;
         }
