@@ -22,7 +22,7 @@
 
 
 <ul>
-        <li><a href="<?= Backend::url('delphinium/blossom/stats') ?>">Stats</a></li>
+        <li><a href="<?= Backend::url('delphinium/blossom/stats') ?>">Gradebook</a></li>
         <li><?= e($this->pageTitle) ?></li>
     </ul>
 <?php Block::endPut() ?>
@@ -36,6 +36,6 @@
 <?php else: ?>
 
     <p class="flash-message static error"><?= e($this->fatalError) ?></p>
-    <p><a href="<?= Backend::url('delphinium/blossom/stats') ?>" class="btn btn-default">Return to stats list</a></p>
+    <p><a href="<?= Backend::url('delphinium/blossom/stats') ?>" class="btn btn-default">Return to Gradebook list</a></p>
 
 <?php endif ?>
