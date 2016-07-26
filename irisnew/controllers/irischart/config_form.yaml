@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Iris Chart
+
+# Model Form Field configuration
+form: $/delphinium/irisnew/models/irischart/fields.yaml
+
+# Model Class name
+modelClass: Delphinium\Irisnew\Models\IrisChart
+
+# Default redirect location
+defaultRedirect: delphinium/irisnew/irischart
+
+# Create page
+create:
+    title: Create Iris Chart
+    redirect: delphinium/irisnew/irischart/update/:id
+    redirectClose: delphinium/irisnew/irischart
+
+# Update page
+update:
+    title: Edit Iris Chart
+    redirect: delphinium/irisnew/irischart
+    redirectClose: delphinium/irisnew/irischart
+
+# Preview page
+preview:
+    title: Preview Iris Chart
