@@ -30,13 +30,14 @@ class CreateComponentTypesTable extends Migration
 
     public function up()
     {
-        Schema::create('delphinium_xylum_component_types', function($table)
-        {
-            $table->engine = 'InnoDB';
-            $table->increments('id');
-            $table->string('type');
-            $table->timestamps();
-        });
+        if ( !Schema::hasTable('delphinium_xylum_component_types') ) {
+            Schema::create('delphinium_xylum_component_types', function ($table) {
+                $table->engine = 'InnoDB';
+                $table->increments('id');
+                $table->string('type');
+                $table->timestamps();
+            });
+        }
     }
 
     public function down()

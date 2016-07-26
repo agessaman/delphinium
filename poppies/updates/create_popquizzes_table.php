@@ -30,15 +30,16 @@ class CreatePopquizzesTable extends Migration
 
     public function up()
     {
-        Schema::create('delphinium_poppies_popquizzes', function($table)
-        {
-            $table->engine = 'InnoDB';
-            $table->increments('id');
-            $table->string('name',255);
-            $table->string('quiz_name',255);//title
-			$table->string('quiz_description',512);//long
-            $table->timestamps();
-        });
+        if ( !Schema::hasTable('delphinium_poppies_popquizzes') ) {
+            Schema::create('delphinium_poppies_popquizzes', function ($table) {
+                $table->engine = 'InnoDB';
+                $table->increments('id');
+                $table->string('name', 255);
+                $table->string('quiz_name', 255);//title
+                $table->string('quiz_description', 512);//long
+                $table->timestamps();
+            });
+        }
     }
 
     public function down()

@@ -32,8 +32,7 @@ class CreateQuizlessonsTable extends Migration
     {
         if ( !Schema::hasTable('delphinium_orchid_quizlessons') )
         {
-            Schema::create('delphinium_orchid_quizlessons', function($table)
-            {
+            Schema::create('delphinium_orchid_quizlessons', function ($table) {
                 $table->engine = 'InnoDB';
                 $table->increments('id');
                 $table->timestamps();
