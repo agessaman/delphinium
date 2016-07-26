@@ -70,7 +70,7 @@ $(document).ready(function() {
     //console.log('quizList:', quizList.length, quizList); 
     var quests=[];// quiz questions to select from
     var selectedQuiz='';// quiz_id
-    var selecteditems=[];// quiz question_id array
+    var selecteditems=[];// quiz question_id array OBSOLETE???
     var qitems=[];// question divs
     var usedcount=0;// questions used on page
     var nextcount=0;// index for question details modal
@@ -85,9 +85,11 @@ $(document).ready(function() {
     if (messageType == "basic-lti-launch-request") {
         //display a list of questions sent from content_items.custom
         //TEST
+        console.log(messageType);// test first two manually
+        console.log('POSTED:', postcontent);
         var content = {
-            "quizid":464865, 
-            "questions":[8369049,8369050]
+            "quizid":678841, 
+            "questions":[12076840,12127914]
         };
         
         render(content.quizid, content.questions);
@@ -187,13 +189,16 @@ $(document).ready(function() {
         
         // for each questions_used disable #questionlist.questitem
         console.log("Hide Used:", orchidConfig.questions_used);
-        if (orchidConfig.questions_used.length > 0) {
+        if (orchidConfig.questions_used.length != 'undefined') {
             $('#replacequiz').attr("disabled","disabled");// cannot change quiz
+            if (orchidConfig.questions_used.length == quests.length) {
+                $('#addsubmit').removeAttr( "disabled" );// show Add Submit Button
+            }
             var ara = orchidConfig.questions_used.split(",");
             for (i=0; i<ara.length; i++) {
                 // if question_id == used id then add used class, select the checkbox 
                 $('#'+ara[i]).addClass('used');
-                $('#'+ara[i]+' input').prop('disabled',true);
+                $('#'+ara[i]).find('input').prop('disabled',true);
             }
         }
         $('.seeit').on('click',function(e){
@@ -210,9 +215,8 @@ $(document).ready(function() {
 		// cannot change quiz if questions are added
         $('#replacequiz').attr("disabled","disabled");
         
-        var content = '';
         var qids = '';
-        var height = 250;
+        var qhite = 250;
 		var items = $( "input:checked" );
 		//console.log(items.length);
         for (var i=0; i<items.length; i++) {	
@@ -225,33 +229,33 @@ $(document).ready(function() {
 			// name = question_id 
 			selecteditems.push($(items[i]).attr('name'));//questions selected
             
-            // comma separated string
+            // comma separated strings
             if (orchidConfig.questions_used.length > 0) {
                 orchidConfig.questions_used += ","+$(items[i]).parent().attr('id');
-                qids += ","+$(items[i]).parent().attr('id');// used in content_items
-                height += 250;// iframe height, guessing for now
             } else {
                 orchidConfig.questions_used += $(items[i]).parent().attr('id');
+            }
+            if (qids.length > 0) {
+                qids += ","+$(items[i]).parent().attr('id');// used in content_items
+                qhite += 250;// iframe height, guessing for now
+            } else {
                 qids += $(items[i]).parent().attr('id');
             }
-            
-            //construct question for page
-            
-            // for testing
-            content += '<div class="question-content">'+$(items[i]).parent().attr('id')+'</div>';
 			usedcount+=1;// add to used count
 		}
 		
-		/* if all questions have been used, 
+		/* Disable Add Selected Questions button
+        *   if all questions have been used, 
         *   enable Add Submit Quiz button,
         *   let user add it to the page, they may want more text still
+        *   tell user to click now or wait.
+        *
+        *   else tell user to close the selection modal
         */
+        $('#addselected').attr("disabled","disabled");
 		if (usedcount == quests.length) {
 			$('#addsubmit').removeAttr( "disabled" );
-			$('#addselected').attr("disabled","disabled");
 		}
-        
-        $('.show-content').append(content);// testing
             
         // update db record orchidConfig
         console.log('Used:', orchidConfig.questions_used);
@@ -262,18 +266,17 @@ $(document).ready(function() {
         //construct content_items, add it to page by submitting form to return_url
         // '<form action="return_url" method="post" encType="application/x-www-form-urlencoded">';
         // form content points to a partial that renders a given question in the canvas iframe, for each question? 
-        var contentval = '{ "@context" : "http://purl.imsglobal.org/ctx/lti/v1/ContentItem","@graph" : [{';
-            contentval += ' "@type" : "LtiLinkItem", "@id" : ":item1",';
-            contentval += ' "url" : "https://mediafiles.uvu.edu/delphinium/quizlesson",';
-            contentval += ' "title" : "Quiz Questions", "text" : "could possibly contain quizid, qid data",';
-            contentval += ' "mediaType" :  "application/vnd.ims.lti.v1.ltilink",';
-            contentval += ' "custom" : { "quizid" : '+orchidConfig.quiz_id+', "questionid" : [ '+qids+'] }';
-            contentval += ' "placementAdvice" : { "presentationDocumentTarget" : "iframe",';
-            contentval += ' "displayWidth" : 100%,  "displayHeight" : '+height+' }} ]} ';
+        var contentval = '{"@context" : "http://purl.imsglobal.org/ctx/lti/v1/ContentItem","@graph":[{';
+            contentval += '"@type":"LtiLinkItem",';// "@id" : ":item1",';
+            contentval += '"url":"https://mediafiles.uvu.edu/delphinium/orchidtest",';
+            //contentval += ' "title" : "Quiz Questions", "text" : "could possibly contain quizid, qid data",';
+            contentval += '"mediaType":"application/vnd.ims.lti.v1.ltilink",';
+            contentval += '"custom":{"quizid":'+orchidConfig.quiz_id+',"questionid":[ '+qids+']},';
+            contentval += '"placementAdvice":{ "presentationDocumentTarget" : "iframe",';
+            contentval += '"displayWidth":"100%","displayHeight":'+qhite+'}}]}';
             
         $('#content_items').val(contentval);// autosubmit form will url encode this
-        //$('#contentSelector').attr('action', 'return_url');
-        //$('#contentSelector').submit();
+        $('#contentSelector').submit();
         
         // warn user to close the selection modal and NOT add any more questions
         
@@ -283,16 +286,32 @@ $(document).ready(function() {
 	$('#addsubmit').on('click', function(e){
         e.preventDefault();
         // wrap in a div and center? or right?
-		// configure quiz submission button and add to page
- //<button type="submit" class="btn submit_button quiz_submit btn-secondary" id="submit_quiz_button" data-action="/courses/368564/quizzes/556620/submissions?user_id=1568377">Submit Quiz</button>
+		// 
         
         var subtn = '<div class="form-actions">';
             subtn +='<button type="submit" class="btn submit_button quiz_submit btn-secondary" id="submit_quiz_button"';
             subtn +='data-action="" >';//configure button
             subtn +='Submit Quiz</button></div>';
-        $('.show-content').append(subtn);
+
 		// disable addsubmit
 		$('#addsubmit').attr("disabled","disabled");
+        /*
+        
+        configure quiz submission button and add to page
+        <button type="submit" class="btn submit_button quiz_submit btn-secondary" id="submit_quiz_button"
+        data-action="/courses/368564/quizzes/556620/submissions?user_id=1568377">Submit Quiz</button>
+        
+        possibly using
+            custom_canvas_course_id = 368564
+            custom_canvas_user_id = 1568377
+            
+        post submit button with different data, user_id will need to be dynamic
+            var contentval = '{ "@context" : "http://purl.imsglobal.org/ctx/lti/v1/ContentItem","@graph" : [{';
+        
+            clear the questions used and quiz id so the user can add another quiz
+            to this or another page
+            
+        */
 	});
     
     // choose a different quiz
@@ -304,8 +323,6 @@ $(document).ready(function() {
 		$('#addselected').removeAttr( "disabled" );
 		$('#addsubmit').attr("disabled","disabled");
         selecteditems=[];// empty array
-        // reset the CMS page OBSOLETE
-        $('.show-content').empty();
     });
     
     

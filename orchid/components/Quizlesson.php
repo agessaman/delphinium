@@ -161,14 +161,18 @@ class Quizlesson extends ComponentBase
                         $instructions = $formController->makePartial('orchidinstructions');
                         $this->page['orchidinstructions'] = $instructions;
                         
-                        //  $this->page['return_url'] = $_POST["content_item_return_url"];// first launch
+                        $this->page['return_url'] = $_POST["content_item_return_url"];// first launch
+                        //$this->page['key'] = $_POST["oauth_consumer_key"];
+                        //$this->page['nonce'] = $_POST["oauth_nonce"];
+                        //$this->page['times'] = $_POST["oauth_timestamp"];
+                        //$this->page['signature'] = $_POST["oauth_signature"];
                         break;
 
                     case "basic-lti-launch-request": // second launch
                         
                         // display renderQuestion.htm with
                         // array of question_id's from content_items
-                        //   $this->page['content_items'] = $_POST['content_items'];
+                        $this->page['content_items'] = json_encode($_POST['content_items']);
                         break;
                 }
             //}// End isset
