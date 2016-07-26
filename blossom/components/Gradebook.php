@@ -1137,7 +1137,7 @@ class Gradebook extends ComponentBase {
     private function findExperienceInstance()
     {
         $experienceModel=null;
-        if(is_null($this->property('experience'))||$this->property('experience')==0)
+        if(is_null($this->property('experienceInstance'))||$this->property('experienceInstance')==0)
         {//find an instance of experience with the same course id
             if (!isset($_SESSION)) {
                 session_start();
@@ -1168,13 +1168,16 @@ class Gradebook extends ComponentBase {
             {
                 $this->page['configureExperience']=0;
             }
+            $experienceModel= ExperienceModel::find($experienceModel->id)->first();
             $this->page['experienceInstanceId'] =$experienceModel->id;
+            $this->page['configureExperience']=0;
+
             $this->experienceInstanceId = $experienceModel->id;
             return $experienceModel;
         }
         else
         {//use the selected instance
-            $experienceModel= ExperienceModel::find($this->property('experience'))->first();
+            $experienceModel= ExperienceModel::find($this->property('experienceInstance'))->first();
             $this->page['experienceInstanceId'] =$experienceModel->id;
             $this->page['configureExperience']=0;
 
