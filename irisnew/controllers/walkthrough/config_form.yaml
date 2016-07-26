@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Walk Through
+
+# Model Form Field configuration
+form: $/delphinium/irisnew/models/walkthrough/fields.yaml
+
+# Model Class name
+modelClass: Delphinium\Irisnew\Models\WalkThrough
+
+# Default redirect location
+defaultRedirect: delphinium/irisnew/walkthrough
+
+# Create page
+create:
+    title: Create Walk Through
+    redirect: delphinium/irisnew/walkthrough/update/:id
+    redirectClose: delphinium/irisnew/walkthrough
+
+# Update page
+update:
+    title: Edit Walk Through
+    redirect: delphinium/irisnew/walkthrough
+    redirectClose: delphinium/irisnew/walkthrough
+
+# Preview page
+preview:
+    title: Preview Walk Through
