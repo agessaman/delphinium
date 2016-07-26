@@ -30,12 +30,15 @@ class CreateQuizlessonsTable extends Migration
 
     public function up()
     {
-        Schema::create('delphinium_orchid_quizlessons', function($table)
+        if ( !Schema::hasTable('delphinium_orchid_quizlessons') )
         {
-            $table->engine = 'InnoDB';
-            $table->increments('id');
-            $table->timestamps();
-        });
+            Schema::create('delphinium_orchid_quizlessons', function($table)
+            {
+                $table->engine = 'InnoDB';
+                $table->increments('id');
+                $table->timestamps();
+            });
+        }
     }
 
     public function down()
