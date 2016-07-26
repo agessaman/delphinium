@@ -11,8 +11,7 @@ fields:
         label: Quiz Name
         span: auto
     quiz_id:
-        label: Quiz
-        comment: Quiz id
+        label: Quiz ID
         span: auto
     course_id:
         label: Course id

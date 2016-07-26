@@ -125,40 +125,58 @@ class Quizlesson extends ComponentBase
             } else { 
                 $roleStr = 'Instructor';
             }
+                //$roleStr = 'Learner';// TEST
             $this->page['role'] = $roleStr;// only one or the other
             
-            // include the backend form with instructions for instructor.htm
-            if($roleStr == 'Instructor')
-			{
-				//https://medium.com/@matissjanis/octobercms-using-backend-forms-in-frontend-component-fe6c86f9296b#.ge50nlmtc
-				// Build a back-end form with the context of 'frontend'
-				$formController = new \Delphinium\Orchid\Controllers\Quizlesson();
-				$formController->create('frontend');
-				
-                // Use the primary key of the record you want to update
-                $this->page['orchidrecordId'] = $config->id;
-				// Append the formController to the page
-				$this->page['orchidform'] = $formController;
+            // include the backend form with instructions for constructing Canvas page
+            /** This component switches by messageType and role
+                https://www.imsglobal.org/specs/lticiv1p0/specification-3
+            */
+            if (isset($_POST['lti_message_type'])) {
                 
-                // Append the Instructions to the page
-                $instructions = $formController->makePartial('orchidinstructions');
-                $this->page['orchidinstructions'] = $instructions;
-                
-                //code specific to instructor.htm goes here
+                echo 'message_type: '.$_POST['lti_message_type'];// TEST
+                foreach($_POST as $key => $value ) { echo "$key = $value <br/>"; }
             }
-			//quizList only instructor? WIP
+            
+                //$messageType = $_POST['lti_message_type'];// online
+                $messageType ="ContentItemSelectionRequest";// "basic-lti-launch-request";// TEST manually
+                $this->page['messageType'] = $messageType;
+                 
+                switch ($messageType) {
+            
+                    case "ContentItemSelectionRequest": // select questions to add
+                        
+                        //FRONTEND FORM IS UNUSED : REMOVE?
+                        // Build a back-end form with the context of 'frontend'
+                        $formController = new \Delphinium\Orchid\Controllers\Quizlesson();
+                        $formController->create('frontend');
+                        
+                        // Use the primary key of the record you want to update
+                        $this->page['orchidrecordId'] = $config->id;
+                        // Append the formController to the page
+                        $this->page['orchidform'] = $formController;
+                        
+                        // INSTRUCTIONS IN MODAL
+                        // Append the Instructions to the page
+                        $instructions = $formController->makePartial('orchidinstructions');
+                        $this->page['orchidinstructions'] = $instructions;
+                        
+                        //  $this->page['return_url'] = $_POST["content_item_return_url"];// first launch
+                        break;
+
+                    case "basic-lti-launch-request": // second launch
+                        
+                        // display renderQuestion.htm with
+                        // array of question_id's from content_items
+                        //   $this->page['content_items'] = $_POST['content_items'];
+                        break;
+                }
+            //}// End isset
+            
 			$quizList = $this->getAllQuizzes();// choose quiz questions to use
 			$this->page['quizList'] = $quizList;
 			
-			
-            if($roleStr = 'Learner')
-			{
-				//code specific to the student.htm goes here
-				// todo: get only the questions selected by instructor
-            }
-			// code used by both
-			
-			// ready to finish loading assets. storm changes modal-header override css
+			// ready to finish loading assets. storm changes modal-header. override in css
 			$this->addCss("/modules/system/assets/ui/storm.css", "core");
 			$this->addJs("/modules/system/assets/ui/storm-min.js", "core");
 			$this->addCss("/plugins/delphinium/orchid/assets/css/quizlesson.css");
@@ -185,43 +203,115 @@ class Quizlesson extends ComponentBase
         }
 */    }
 	
-	/* 
-        return list of quizzes for instructor to choose one
-		contains questions and answers for each quiz
-	*/
+	/** 
+    *   return list of quizzes for instructor to choose one
+    *   contains questions and answers for each quiz
+    */
 	public function getAllQuizzes()
     {
         $fresh_data = false;//true; // instructor may have just built one!
 		$roots = new Roots();
 		$req = new QuizRequest(ActionType::GET, null, $fresh_data, true);
-		
+		$result = $roots->quizzes($req);
+        
 		// remove quizzes with no questions
 		
-		return json_encode($roots->quizzes($req));
+		return json_encode($result);
     }
 	
     /**
-	*  frontend update component submit button
-	*  save to database and return updated record
+    *  frontend update component submit button
+    *  save to database and return updated record
     *
     *  id can be disabled in fields.yaml
     *  id & course can be hidden
     *  $data gets .id from config.id instructor.htm
     *  called from instructor.htm configure settings modal
-	*/
-	public function onUpdate()
+    */
+    public function onUpdate()
     {
         $data = post('Quizlesson');//component name
         $did = intval($data['id']);// convert string to integer
         $config = QuizlessonModel::find($did);// retrieve existing record
         //echo json_encode($config);//($data);// testing
-        
-		//$config->size = '20%';// always 100% canvas page !
-        $config->quiz_name = '';
-        $config->quiz_id = '';
+        $config->quiz_name = $data['quiz_name'];;
+        $config->quiz_id = $data['quiz_id'];
         $config->course_id = $data['course_id'];//hidden field
-		$config->save();// update original record 
-		return json_encode($config);// back to instructor view
+        $config->questions_used = $data['questions_used'];
+        $config->save();// update original record 
+        // orchidCompleted must be in instructor.htm
+        return json_encode($config);// back to instructor.htm
     }
+    
+    /**
+    *   Render Questions
+    */
+ /*
+    public function onRetryQuestion()
+    {
+        // for submission create an instance of submission which has all quiz
+        // data submission check submission.php
+        // IsQuestionAnswered() returns answer if success or no
+        // NOTE: submit one and check if submission feedback
+        //$studentId = $_SESSION['userID'];
+
+        //note jesus code
+        $result = array(
+            'correct_comments' => 'correct one point deducted!',
+            'incorrect_comments' => 'Upps.',
+            'neutral_comments' => ' McDonals is noe hirimg'
+        );
+
+        $retString = "";
+        foreach ($result as $key => $value)
+        {
+            $retString .=  $key. ":". $value .",";
+        }
+
+        $this->gradePerQuestion .= 5; // add grade to array of grades
+        //$retString = $this->gradePerQuestion;
+        echo json_encode($result, JSON_PRETTY_PRINT);// $retString;
+    }
+*/
+
+    /**
+    *   only called if role is Learner
+    *   requires studentId
+    */
+    public function onGradeQuestion()
+    {
+        // see testQuizTakingWorkflow in TestRoots
+        //get passed parameters from js
+        $questionId = $_POST["quest"];
+        $quizId = $_POST["quiz"];
+        //$answerArr = $_POST["selectedAnswer"];
+        
+        $roots = new Roots();
+        $quizSubmissionId = $roots->getQuizSubmission($quizId);
+        //$quizSubmissionId = 9443207;// TEST
+        //data: {"result":"null"} :after postQuizTaking below: already exist err
+        
+        if ($quizSubmissionId == null) {
+            //$studentId = $_SESSION['studentId'];// Not available if role is instructor
+            $studentId = 1604486;// TEST set manually to mine
+            $quizSubmissionId = $roots->postQuizTakingSession($quizId, $studentId);
+           // $result->quiz_submission_id = 9443207
+        }
+        // check if a question has been answered
+        $isAnswered = $roots->isQuestionAnswered($quizId,$questionId,$quizSubmissionId);// null = page not found
+        //return json_encode($isAnswered);//data: {"result":"false"} :for unanswered questions
+        
+        // if false send answer selected to postAnswerQuestion()
+        if ($isAnswered) {
+            echo "was already answered";//do something if the question has been answered
+        } else {
+            //answer it. Still working on this
+            echo "postAnswerQuestion WIP";
+            //$result =$this->canvasHelper->postAnswerQuestion($quizSubmission, $answerArr, $studentId);
+            //var_dump($result);
+        }
+        
+    }
+
     /* End of class */
 }

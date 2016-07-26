@@ -1,29 +1,12 @@
 <?php
 /**
- * Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
- *
- * This file is subject to the terms and conditions defined in
- * file 'https://github.com/ProjectDelphinium/delphinium/blob/master/EULA',
- * which is part of this source code package.
- *
- * NOTICE:  All information contained herein is, and remains the property of Project Delphinium. The intellectual and technical concepts contained
- * herein are proprietary to Project Delphinium and may be covered by U.S. and Foreign Patents, patents in process, and are protected by trade secret or copyright law.
- * Dissemination of this information or reproduction of this material is strictly forbidden unless prior written permission is obtained
- * from Project Delphinium.
- *
- * THE RECEIPT OR POSSESSION OF THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS
- * TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.
- *
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Non-commercial use only, you may not charge money for the software
- * You can modify personal copy of source-code but cannot distribute modifications
- * You may not distribute any version of this software, modified or otherwise
+ CreateQuizBuilder.php
  */
 
 namespace Delphinium\CreateQuizAssigment\Components;
 
 use Cms\Classes\ComponentBase;
-use Delphinium\Dev\Components\TestRoots;
+//use Delphinium\Dev\Components\TestRoots;
 use Delphinium\Roots\Roots;
 use Delphinium\Roots\Requestobjects\QuizRequest;
 use Delphinium\Roots\Enums\ActionType;
@@ -106,7 +89,6 @@ class CreateQuizBuilder extends ComponentBase
 
     public function onRetryQuestion()
     {
-
         // for submission create an instance of submision whichn has all quiz
         // data submision check submision.php
         // testIsQuestionAnswered() regresa answer if succes or no
@@ -133,24 +115,6 @@ class CreateQuizBuilder extends ComponentBase
         $this->gradePerQuestion .= 5; // add grade to array of grades
         $retString = $this->gradePerQuestion;
         echo json_encode($result, JSON_PRETTY_PRINT);// $retString;
-
-
-
-//        if(!isset($_SESSION))
-//        {
-//            session_start();
-//        }
-//        $userId = $_SESSION['userID'];
-//        $quizId = 621753;
-//        $dbHelper = new DbHelper();
-//        $canvasHelper = new CanvasHelper();
-//
-//
-//        $quizSubmission = $dbHelper->getQuizSubmission($quizId, $userId);
-//        $result = $canvasHelper->postSubmitQuiz($quizSubmission);
-//        echo json_encode($result);
-
-
     }
 
 
@@ -159,8 +123,6 @@ class CreateQuizBuilder extends ComponentBase
         $this->roots = new Roots();
 
         $questionId = $_POST["val"];//get passed parameter from js
-
-
         $quizSubmissionId = 8287196;
         $quizId = 621794;
 
@@ -168,7 +130,7 @@ class CreateQuizBuilder extends ComponentBase
         $incorrect="";
         $neutral="";
 
-        $quizesInfo = Session::get('question_attributes');
+        $quizesInfo = Session::get('question_attributes');// onSelect ::put('question_attributes', $tempAtt);
         foreach($quizesInfo as $info) {
 
             if(isset($info)) {
@@ -182,8 +144,6 @@ class CreateQuizBuilder extends ComponentBase
                     $neutral = $info[$val]["neutral_comments"];
                 }
             }
-
-
         }
         //$questionId = 10902238;
         // check if a question has been answered
@@ -203,7 +163,6 @@ class CreateQuizBuilder extends ComponentBase
         $quizId = -1;
         $questionId = $_POST["val"];//get passed parameter from js
 
-
         // returning strings
         $retString = $questionId." id";
         foreach ($result as $key => $value)
@@ -212,16 +171,11 @@ class CreateQuizBuilder extends ComponentBase
         }
 
         if($dd = 1){
-
             print $retString;
         }
         else{
             echo "Fail";
         }
-
-
-
-
     }
 
 
@@ -294,18 +248,12 @@ class CreateQuizBuilder extends ComponentBase
             }
             $this->quiz_attributes = $tempAtt;
 
-            //$_SESSION["question_attributes"] = $tempAtt;
-
             Session::put('question_attributes', $tempAtt);
 
-            // once we dinamically generate set of question is time to make it accessible to the partial
+            // once we dynamically generate set of question its time to make it accessible to the partial
             // this is the way to pass data to the partial by creating page variables
             $this->page['setOfQuestions'] = $temp;
 
-
-
-
-            // $this['setOfDatas'] = 'banda';
         }
 
     }

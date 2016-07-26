@@ -24,21 +24,27 @@
 		[id,name, <Your Fields>, course_id]
 	*/
 	var orchidConfig = {{orchidConfig|raw}};
-	console.log('orchidConfig',orchidConfig);
+	console.log('orchidConfig', orchidConfig);
 	
 	var quizList = {{quizList|raw}};// all quizzes
 	/*
         initialize main variables
         get variables from the php with twig
-        use twig to determine if the component is seen 
-        by an instructor or a student and load needed partial
+        
+        use messageType to determine if this launch is for
+        ContentItemSelectionRequest : select quiz & questions
+        or
+        basic-lti-launch-request : show content
     */
 	var role = '{{role}}';//string
-    console.log('Role: ',role);
+    console.log('Role:', role);
+    
+    var messageType = '{{messageType}}';
+    console.log('messageType:', messageType);
     
 </script>
-{% if ('Learner' in role) %}
-{% partial __SELF__~'::student' %}
-{% elseif ('Instructor' in role) %}
+{% if ('basic-lti-launch-request' in messageType) %}
+{% partial __SELF__~'::renderQuestion' %}
+{% elseif ('ContentItemSelectionRequest' in messageType) %}
 {% partial __SELF__~'::instructor' %}
 {% endif %}
