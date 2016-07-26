@@ -260,7 +260,7 @@ class Attendance extends ComponentBase
         $config->name = $data['name'];
         $config->animate = intval($data['animate']);
         $config->size = intval($data['size']);
-        $config->custom_css = $data['custom_css'];
+        $config->custom_css = trim(preg_replace('/\s+/', ' ',  $data['custom_css']));
         //TODO: must finish updating the rest of the fields in your table
         $config->save();
         // update original record

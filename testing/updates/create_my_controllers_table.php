@@ -8,12 +8,13 @@ class CreateMyControllersTable extends Migration
 
     public function up()
     {
-        Schema::create('delphinium_testing_my_controllers', function($table)
-        {
-            $table->engine = 'InnoDB';
-            $table->increments('id');
-            $table->timestamps();
-        });
+        if ( !Schema::hasTable('delphinium_testing_my_controllers') ) {
+            Schema::create('delphinium_testing_my_controllers', function ($table) {
+                $table->engine = 'InnoDB';
+                $table->increments('id');
+                $table->timestamps();
+            });
+        }
     }
 
     public function down()

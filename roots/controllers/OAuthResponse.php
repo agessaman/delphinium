@@ -77,15 +77,6 @@ class OAuthResponse extends Controller {
                 $_SESSION['userToken'] = $encryptedToken;
                 break;
         }
-        if($roleId===1)
-        {//student
-        }
-        else
-        {//approver
-            $_SESSION['userToken'] = $encryptedToken;
-
-        }
-
         setcookie("token_attempts", 0, time() + (300), "/"); //5 minutes
 
         //store encrypted token in the database
