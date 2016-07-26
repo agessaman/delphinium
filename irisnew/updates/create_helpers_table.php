@@ -20,49 +20,30 @@
  * You may not distribute any version of this software, modified or otherwise
  */
 
-namespace Delphinium\Roots;
-die;
-use \DateTime;
-use \DateTimeZone;
+namespace Delphinium\IrisNew\Updates;
 
-class Utils
-{   
-    public static function setLocalTimezone($value)
+use Schema;
+use October\Rain\Database\Updates\Migration;
+
+class CreateHelpersTable extends Migration
+{
+
+    public function up()
     {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
-        $localTimeZone = $_SESSION['timezone'];
-        
-        if(is_string($value))
+        Schema::create('delphinium_irisnew_helpers', function($table)
         {
-            return new DateTime($value,$localTimeZone);
-        }
-        else if($value instanceof DateTime)
-        {
-            return $value->setTimezone($localTimeZone);
-        }
+            $table->engine = 'InnoDB';
+            $table->increments('id');
+            $table->string('name');
+            $table->boolean('animate');
+            $table->integer('size');
+            $table->timestamps();
+        });
     }
-    
-    public static function setUTCTimezone($value)
+
+    public function down()
     {
-        if(is_string($value))
-        {
-            return new DateTime($value,new DateTimeZone('UTC'));
-        }
-        else if($value instanceof DateTime)
-        {
-            return $value->setTimezone(new DateTimeZone('UTC'));
-        }
+        Schema::dropIfExists('delphinium_irisnew_helpers');
     }
-    
-    public static function getLocalTimeZone()
-    {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
-        return $_SESSION['timezone'];
-    }
+
 }

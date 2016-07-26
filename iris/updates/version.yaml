@@ -7,3 +7,6 @@
 1.0.2:
     - 'Drop table delphinium_iris_walk_through'
     - builder_table_delete_delphinium_iris_walk_through.php
+1.0.3:
+    - 'Drop table delphinium_irisnew_walk_through'
+    - builder_table_delete_delphinium_irisnew_walk_through.php

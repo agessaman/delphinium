@@ -98,7 +98,6 @@ class IndexComponentOperations extends IndexOperationsBehaviorBase
 
         $this->makeFiles();
         $this->modifyFiles();
-//        $this->octoberUp( $vars['author'].".".$vars['plugin']);
         $this->octoberUp( $vars['author'].".".$vars['plugin']);
         return;
     }

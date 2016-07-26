@@ -1,0 +1,8 @@
+1.0.1:
+    - 'Initialize plugin.'
+1.0.2:
+    - 'create walk_throughs table'
+    - create_walk_throughs_table.php
+1.0.3:
+    - 'create helpers table'
+    - create_helpers_table.php

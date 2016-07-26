@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
  *
@@ -19,50 +20,42 @@
  * You can modify personal copy of source-code but cannot distribute modifications
  * You may not distribute any version of this software, modified or otherwise
  */
+namespace Delphinium\Irisnew\Controllers;
 
-namespace Delphinium\Roots;
-die;
-use \DateTime;
-use \DateTimeZone;
-
-class Utils
-{   
-    public static function setLocalTimezone($value)
+use Delphinium\Irisnew\Models\WalkThrough as MyModel;
+use BackendMenu;
+use Backend\Classes\Controller;
+use Flash;
+/**
+ * Walk Through Back-end Controller
+ */
+class WalkThrough extends Controller
+{
+    public $implement = array('Backend.Behaviors.FormController', 'Backend.Behaviors.ListController');
+    public $formConfig = 'config_form.yaml';
+    public $listConfig = 'config_list.yaml';
+    public function __construct()
     {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
-        $localTimeZone = $_SESSION['timezone'];
-        
-        if(is_string($value))
-        {
-            return new DateTime($value,$localTimeZone);
-        }
-        else if($value instanceof DateTime)
-        {
-            return $value->setTimezone($localTimeZone);
-        }
+        parent::__construct();
+        BackendMenu::setContext('Delphinium.Greenhouse', 'greenhouse', 'greenhouse');
     }
-    
-    public static function setUTCTimezone($value)
+    /**
+     * Delete checked instances.
+     * called from /controllers/list_toolbar.htm Remove button
+     */
+    public function index_onDelete()
     {
-        if(is_string($value))
-        {
-            return new DateTime($value,new DateTimeZone('UTC'));
+        if (($checkedIds = post('checked')) && is_array($checkedIds) && count($checkedIds)) {
+            foreach ($checkedIds as $id) {
+                if (!($obj = MyModel::find($id))) {
+                    continue;
+                }
+                $obj->delete();
+            }
+            Flash::success("Successfully deleted");
+        } else {
+            Flash::error("An error occurred when trying to delete the selected item");
         }
-        else if($value instanceof DateTime)
-        {
-            return $value->setTimezone(new DateTimeZone('UTC'));
-        }
-    }
-    
-    public static function getLocalTimeZone()
-    {
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
-        return $_SESSION['timezone'];
+        return $this->listRefresh();
     }
 }
