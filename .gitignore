@@ -1,9 +1,5 @@
 .DS_Store
 *.log
-#.gitignore
-roots/components
-roots/controllers
-roots/db
 app/storage/
 bootstrap/
 install_files/
