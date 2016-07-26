@@ -220,9 +220,9 @@ a:hover
     /*margin-left: 9px;*/
     margin-left: 41px;
 }
-#chart path {
-    stroke: steelblue;
-    stroke-width: 2;
+#chart path:not(.domain) {
+    stroke: black;
+    stroke-width: 2px;
     fill: none;
 }
 .spinnerDiv

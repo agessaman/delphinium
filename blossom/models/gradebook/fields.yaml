@@ -2,7 +2,7 @@ fields:
     id:
         label: ID
         oc.commentPosition: ''
-        span: left
+        span: full
         disabled: 1
         type: text
     name:
