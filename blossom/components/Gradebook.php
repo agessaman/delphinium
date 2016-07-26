@@ -38,7 +38,6 @@ use \DateInterval;
 use Carbon\Carbon;
 use Delphinium\Roots\Guzzle\GuzzleHelper;
 use Delphinium\Blossom\Components\Stats as StatsComponent;
-use Delphinium\Blossom\Models\Gradebook as GradebookModel;
 
 class Gradebook extends ComponentBase {
 
@@ -47,7 +46,6 @@ class Gradebook extends ComponentBase {
     public $users;
     public $submissions;
     public $allStudentSubmissions;
-    public $gradebookInstanceId;
     public $experienceInstanceId;
 
     public function componentDetails() {
@@ -60,14 +58,9 @@ class Gradebook extends ComponentBase {
     public function defineProperties() {
         return [
             'experienceInstance' => [
-                'title' => 'Experience instance',
-                'description' => 'Select the experience instance to display the student\'s bonus and penalties',
-                'type' => 'dropdown',
-            ],
-            'gradebook' => [
-                'title' => '(Optional) Gradebook instance',
-                'description' => 'Select the gradebook instance to display. If an instance is selected, it will be the configuration for all courses that use this page.
-                Leaving this field blank will allow different configurations for every course.',
+                'title' => '(Optional) Experience instance',
+                'description' => 'Select the experience instance to display the student\'s bonus and penalties.
+                Leaving this field blank will automatically select the experience instance for the course.',
                 'type' => 'dropdown',
             ]
         ];
@@ -77,7 +70,7 @@ class Gradebook extends ComponentBase {
         $instances = ExperienceModel::all();
 
         if (count($instances) === 0) {
-            return $array_dropdown = ['0' => 'No instances available. Bonus/penalties won\'t appear in the gradebook'];
+            return $array_dropdown = ['0' => 'No instances available.'];
         } else {
             $array_dropdown = ['0' => '- select Experience Instance - '];
             foreach ($instances as $instance) {
@@ -105,15 +98,9 @@ class Gradebook extends ComponentBase {
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/ui/jquery-ui-slider-pips.js");
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/nouislider.min.js");
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/js/tab.js");
-            $gradebookInstance = $this->firstOrNewCourseInstance();
             $userRoles = $_SESSION['roles'];
-            $this->gradebookInstanceId = $gradebookInstance->id;
             $experienceInstance = $this->findExperienceInstance();
             $expInst = $experienceInstance->id;
-            $gradebookInstance = GradebookModel::find($this->gradebookInstanceId);
-            $this->page['gradebookSize'] = $gradebookInstance->size;
-            $this->page['statsAnimate'] = $gradebookInstance->animate;
-            $this->page['instance_id'] =  $gradebookInstance->id;
             $this->page['userRoles'] = $userRoles;
             $this->page['user'] = $_SESSION['userID'];
             if (!is_null($expInst)) {
@@ -149,8 +136,7 @@ class Gradebook extends ComponentBase {
                 $experience = new ExperienceComponent();
                 $this->page['today'] = $experience->getRedLinePoints($expInst);
 
-                $exp = new ExperienceComponent();
-                $pts = $exp->getUserPoints();
+                $pts = $experience->getUserPoints();
                 $this->page['totalPts'] = $pts;
 
                 //get letter grade
@@ -266,7 +252,6 @@ class Gradebook extends ComponentBase {
     }
 
     private function getProfessorData() {
-
         $aggregateSubmissionScores = $this->aggregateSubmissionScores();
         $users = $this->roots->getStudentsInCourse();
         $userMasterArr = array();
@@ -289,13 +274,13 @@ class Gradebook extends ComponentBase {
         $this->page['chartData'] = json_encode($this->getRedLineData());
         $this->page['endDate'] = json_encode($courseEnd);
         $experience = new ExperienceComponent();
-        $this->page['today'] = $experience->getRedLinePoints($this->property('experienceInstance'));
+        $this->page['today'] = $experience->getRedLinePoints($this->page['experienceInstanceId']);
 
     }
 
     private function getRedLineData() {
-        if (!is_null($this->property('experienceInstance'))) {
-            $instance = ExperienceModel::find($this->property('experienceInstance'));
+        if (!is_null($this->page['experienceInstanceId'])) {
+            $instance = ExperienceModel::find($this->page['experienceInstanceId']);
             $milestones = $instance->milestones;
             $this->page['numMilestones'] = count($milestones);
 
@@ -1024,7 +1009,7 @@ class Gradebook extends ComponentBase {
         $standards = $this->roots->getGradingStandards();
         $grading_scheme = $standards[0]->grading_scheme;
         //get experience total points
-        $experienceInstance = ExperienceModel::find($this->property('experienceInstance'));
+        $experienceInstance = ExperienceModel::find($this->page['experienceInstanceId']);
         $maxExperiencePts = $experienceInstance->total_points;
 
         $utcTimeZone = new DateTimeZone('UTC');
@@ -1045,7 +1030,7 @@ class Gradebook extends ComponentBase {
 
                 $userSubmissions = $expComponent->getSubmissions($user->user_id);
 
-                $bonusPenalties = $this->getBonusPenaltiesNew($this->property('experienceInstance'), $userSubmissions, $ptsPerSecond, $stDate, $bonusPerSecond,
+                $bonusPenalties = $this->getBonusPenaltiesNew($this->page['experienceInstanceId'], $userSubmissions, $ptsPerSecond, $stDate, $bonusPerSecond,
                     $bonusSeconds, $penaltyPerSecond, $penaltySeconds);
 
                 // $bonusPenalties = $this->getBonusPenalties($user->user_id);
@@ -1122,8 +1107,8 @@ class Gradebook extends ComponentBase {
 
     private function getBonusPenalties($userId = null) {
         $experienceComp = new ExperienceComponent();
-        if ((!is_null($this->property('experienceInstance'))) && ($this->property('experienceInstance') > 0)) {
-            return $experienceComp->calculateTotalBonusPenalties($this->property('experienceInstance'), $userId);
+        if ((!is_null($this->page['experienceInstanceId'])) && ($this->page['experienceInstanceId'] > 0)) {
+            return $experienceComp->calculateTotalBonusPenalties($this->page['experienceInstanceId'], $userId);
         } else {
             return 0;
         }
@@ -1147,37 +1132,6 @@ class Gradebook extends ComponentBase {
             return $elem->assignment_id === $assignmentId;
         }));
         return $filteredItems;
-    }
-
-    private function firstOrNewCourseInstance($copyName=null)
-    {
-        if (!isset($_SESSION)) {
-            session_start();
-        }
-        $courseId = $_SESSION['courseID'];
-        $this->courseId = $courseId;
-        $courseInstance = null;
-
-        //if they have selected a backend instance, that will take precedence over creating a dynamic instance based on the component alias
-        if(($this->property('gradebook'))>0)
-        {
-            $courseInstance =GradebookModel::firstOrNew(array('id' => $this->property('gradebook')));
-        }
-        else
-        {//didn't select a backend instance. Create the component based on the copy name, or the alias name if the copy name was not provided
-            if(is_null($copyName))
-            {
-                $copyName =$this->alias . "_".$courseId;
-            }
-            $courseInstance =GradebookModel::firstOrNew(array('name'=>$copyName));
-            $courseInstance->course_id = $courseId;
-            $courseInstance->name = $copyName;
-        }
-
-        if(is_null($courseInstance->animate)){$courseInstance->animate = 1;}
-        if(is_null($courseInstance->size)){$courseInstance->size = 'medium';}
-        $courseInstance->save();
-        return $courseInstance;
     }
 
     private function findExperienceInstance()
