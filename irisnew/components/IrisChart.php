@@ -24,6 +24,9 @@ namespace Delphinium\Irisnew\Components;
 
 use Delphinium\Irisnew\Controllers\IrisChart as MyController;
 use Delphinium\Irisnew\Models\IrisChart as MyModel;
+use Delphinium\Roots\Roots;
+use Delphinium\Roots\RequestObjects\ModulesRequest;
+use Delphinium\Roots\Enums\ActionType;
 use Cms\Classes\ComponentBase;
 class IrisChart extends ComponentBase
 {
@@ -32,16 +35,29 @@ class IrisChart extends ComponentBase
      */
     public function componentDetails()
     {
-        return ['name' => 'IrisChart Component', 'description' => ''];
+        return [
+            'name' => 'IrisChart Component', 
+            'description' => 'This chart displays a course\'s modules and the student\'s progress in them'
+        ];
     }
     /**
      * @return array Array of properties that can be configured in this instance of this component
      */
     public function defineProperties()
     {
-        return ['instance' => ['title' => '(Optional) IrisChart instance', 'description' => 'Select the irischart instance to display. If an instance is selected, it will be
-                                    the configuration for all courses that use this page. Leaving this field blank will allow
-                                    different configurations for every course.', 'type' => 'dropdown', 'default' => 0]];
+        return [
+            'instance' => [
+                'title' => '(Optional) IrisChart instance', 'description' => 'Select the irischart instance to display. If an instance is selected, it will be the configuration for all courses that use this page. Leaving this field blank will allow different configurations for every course.', 
+                'type' => 'dropdown', 
+                'default' => 0
+            ],
+            'filter' => [
+                'title'   => 'Filter',
+                'description' => 'Display only this module and its children in Iris',
+                'placeholder' => 'Select a parent node',
+                'type'    => 'dropdown'
+            ]
+        ];
     }
     /**
      * @return array An array of instances (eloquent models) to populate the instance dropdown to configure this component
@@ -91,6 +107,42 @@ class IrisChart extends ComponentBase
             //get LMS roles --used to determine functions and display options
             $roleStr = $_SESSION['roles'];
             $this->page['role'] = $roleStr;
+             $courseId = $_SESSION['courseID'];
+            $this->page['courseId'] = $courseId;
+            $this->page['userId'] = $_SESSION['userID'];
+
+            //Filter by parent node if it has been configured
+            $defaultNode = 1;
+            $filter = $this->property('filter',$defaultNode);
+            $this->page['filter'] = $filter;
+            $finalData=array();
+
+            $freshData = false;
+            $req = new ModulesRequest(ActionType::GET, null, null, true, true, null, null , $freshData);
+
+            $roots = new Roots();
+            $moduleData = $roots->modules($req);
+
+            $this->page['rawData'] = json_encode($moduleData);
+            $modArr = $moduleData->toArray();
+            if($filter===$defaultNode)
+            {///get all items
+                $finalData = $this->buildTree($modArr,1);
+            }
+            else
+            {//filter by node
+                $filterObj = array_filter(
+                    $modArr,
+                    function ($e) use ($filter) {
+                        return intval($e['module_id']) === intval($filter);
+                    }
+                );
+
+                $obj = array_shift($filterObj);
+                $finalData = $this->buildTree($modArr,$obj['parent_id'], $filter);
+
+            }
+            $this->page['graphData'] = json_encode($finalData);
             //THIS NEXT SECTION WILL PROVIDE TEACHERS WITH FRONT-EDITING CAPABILITIES OF THE BACKEND INSTANCES.
             //A CONTROLLER AND MODEL MUST EXIST FOR THE INSTANCES OF THIS COMPONENT SO THE BACKEND FORM CAN BE USED IN THE FRONT END FOR THE TEACHERS TO USE
             //ALSO, AN INSTRUCTIONS PAGE WITH THE NAME instructor.htm MUST BE ADDED TO YOUR CONTROLLER DIRECTORY, AFTER THE CONTROLLER IS CREATED
@@ -104,7 +156,10 @@ class IrisChart extends ComponentBase
                 $this->addCss('/modules/system/assets/ui/storm.css', 'core');
                 $this->addJs('/modules/system/assets/ui/js/flashmessage.js', 'core');
                 $this->addCss('/modules/system/assets/ui/storm.less', 'core');
-                $this->addJs('/plugins/delphinium/irisnew/assets/irischart_instructor.js');
+                $this->addCss("/plugins/delphinium/irisnew/assets/css/main.css");
+                $this->addJs("/plugins/delphinium/irisnew/assets/js/d3.v3.min.js");
+                $this->addJs('/plugins/delphinium/irisnew/assets/js/irischart_instructor.js');
+
                 $formController = new MyController();
                 $formController->create('frontend');
                 //Append the formController to the page
@@ -145,7 +200,6 @@ class IrisChart extends ComponentBase
         $courseId = $_SESSION['courseID'];
         //if instance has been set
         if ($this->property('instance')) {
-            echo "instance was set";
             //use the instance set in CMS dropdown
             $config = MyModel::find($this->property('instance'));
         } else {
@@ -188,5 +242,68 @@ class IrisChart extends ComponentBase
         // update original record
         return json_encode($config);
         // back to instructor view
+    }
+
+    public function getFilterOptions()
+    {
+        $req = new ModulesRequest(ActionType::GET, null, null, true,
+            true, null, null , false);
+        $roots = new Roots();
+        $moduleData = $roots->modules($req);
+        $arr = $moduleData->toArray();
+
+        $tree = $this->buildTree($arr, 1);
+        $dash = "";
+        $result = array();
+        $result[$tree[0]['module_id']] = "({$tree[0]['name']})";
+
+        foreach($tree as $item)
+        {
+            $this->recursion($item['children'], $dash, $result);
+        }
+        return $result;
+    }
+
+
+    private function recursion($children, &$dash, &$res)
+    {
+        foreach($children as $item)
+        {
+            $res[$item['module_id']] = $dash." ".$item['name'];
+            if(sizeof($item['children'])>=1)
+            {
+                $newDash = $dash."-";
+                $this->recursion($item['children'], $newDash, $res);
+            }
+        }
+    }
+
+    private function buildTree(array &$elements, $parentId = 1, $moduleFilter=null) {
+        $branch = array();
+        foreach ($elements as $key=>$module) {
+            if($module['published'] == "1")//if not published don't include it
+            {
+                if(!is_null($moduleFilter)&&($module['module_id']!=$moduleFilter))
+                {//if we have a filter and this module doesn't match the filter, skip the item
+
+                    unset($elements[$module['module_id']]);
+                    continue;
+                }
+                if ($module['parent_id'] == $parentId) {
+                    $children = $this->buildTree($elements, $module['module_id']);
+                    if ($children) {
+                        $module['children'] = $children;
+                    }
+                    else
+                    {
+                        $module['children'] = array();
+                    }
+                    $branch[] = $module;
+                    unset($elements[$module['module_id']]);
+                }
+            }
+        }
+
+        return $branch;
     }
 }
