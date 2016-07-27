@@ -1,0 +1,222 @@
+
+Notes: 7/24/16
+
+Match Canvas question css? (kinda big, maybe inline css)
+
+multiple_answers_question = check boxes
+multiple_choice_question = radio buttons
+
+quiz_id, question_id, each answer has an id
+
+All questions are in a form for submit button.
+How would this work for separated questions?
+Does each question group need a submit? or does the submit button need question ids?
+
+How to handle multiple pages? will each page in a course try to use the same instance?
+Should a new page update the instance[name] to have a unique instance for the page it belongs to.
+unique name addition would have to come from the launch post and check if it has already been added upon adding questions to the page.
+
+
+postQuizTakingSession($quizId, $studentId);
+with manual student id
+returns
+data: {"result":"{
+    \"quiz_submission_id\":9443207,\"user_id\":1604486,\"quiz_id\":464865,\"submission_id\":42509416,
+    \"validation_token\":\"22108c76fbae0865d9ecffcb45bb1469470bf9ad578cb47d95fbd45eaadb5e41\",
+    \"quiz_version\":5,\"attempt\":1,\"extra_attempts\":null,\"attempts_left\":-1,\"time_spent\":null,\"extra_time\":null,
+    \"started_at\":\"2016-07-25 17:35:28\",
+    \"finished_at\":null,\"end_at\":\"2018-09-13 06:00:00\",
+    \"workflow_state\":\"untaken\",
+    \"has_seen_results\":null,\"manually_unlocked\":null,\"overdue_and_needs_submission\":0,
+    \"score\":0,\"score_before_regrade\":null,\"quiz_points_possible\":66,
+    \"kept_score\":null,\"fudge_points\":null,
+    \"html_url\":\"https:\\\/\\\/uvu.instructure.com\\\/courses\\\/343331\\\/quizzes\\\/464865\\\/submissions\\\/9443207\",
+    \"created_at\":\"2016-07-25 17:36:31\",\"updated_at\":\"2016-07-25 17:36:31\"}"}
+
+
+Canvas first:post
+message_type: ContentItemSelectionRequest
+oauth_consumer_key = mfue-key
+oauth_signature_method = HMAC-SHA1
+oauth_timestamp = 1469540971
+oauth_nonce = 1KyVIrDfH4oZnDC8EjlhHfN6SePZAmuzYciuqs
+oauth_version = 1.0
+accept_media_types = image/*,text/html,application/vnd.ims.lti.v1.ltilink,*/*
+accept_multiple = false
+accept_presentation_document_targets = embed,frame,iframe,window
+accept_unsigned = true
+auto_create = false
+
+content_item_return_url = https://uvu.instructure.com/courses/368564/external_content/success/external_tool_dialog
+
+context_id = 565de2c4ed1a6cb34c90bb3131e31c12fa5bc5bb
+context_title = DEV_Aviation-Course1-2015
+custom_canvas_api_domain = uvu.instructure.com
+custom_canvas_course_id = 368564
+custom_canvas_user_id = 1568377
+custom_canvas_user_login_id = tJones
+custom_lis_course_offering_sourcedid =
+custom_lis_person_contact_email_primary = TJones@uvu.edu
+custom_lis_person_sourcedid = tJones
+custom_user_image = https://secure.gravatar.com/avatar/16ee198c53f9e7c04603fc8ea78005dd?s=50&d=https%3A%2F%2Fcanvas.instructure.com%2Fimages%2Fmessages%2Favatar-50.png
+data = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJkZWZhdWx0X2xhdW5jaF91cmwiOiJodHRwczpcL1wvbWVkaWFmaWxlcy51dnUuZWR1XC9kZWxwaGluaXVtXC9vcmNoaWR0ZXN0In0.v4-21PzSeW92T5Bx1JKnvv3KvIBxpvnFqQcI1KoXPQc
+ext_roles = urn:lti:instrole:ims/lis/Instructor,urn:lti:role:ims/lis/Instructor,urn:lti:role:ims/lis/Learner/NonCreditLearner,urn:lti:sysrole:ims/lis/User
+launch_presentation_document_target = iframe
+launch_presentation_locale = en
+
+lti_message_type = ContentItemSelectionRequest
+
+lti_version = LTI-1p0
+roles = Instructor
+tool_consumer_instance_guid = 53ff06d8f8dbd4741ff5bd57b3065b53c1cca411.uvu.instructure.com
+user_id = 052966325c0d3174b9099230eda241a345883689
+oauth_signature = 3kQe4ICM9lxNavPBJzOTZJC852s= 
+
+
+<form action="{{return_url}}" method="post" id="contentSelector" encType="application/x-www-form-urlencoded">
+    <input type="hidden" name="lti_message_type" value="ContentItemSelection" />
+    <input type="hidden" name="lti_version" value="LTI-1p0" />
+    <input type="hidden" id="content_items" name="content_items" value="" />
+    
+    <input type="hidden" name="oauth_version" value="1.0" />
+    <input type="hidden" name="oauth_consumer_key" value="{{key}}" />
+    <input type="hidden" name="oauth_nonce" value="{{nonce}}" />
+    <input type="hidden" name="oauth_timestamp" value="{{times}}" />
+    <input type="hidden" name="oauth_signature" value="{{signature}}" />
+    <input type="hidden" name="oauth_callback" value="about:blank" />
+    <input type="hidden" name="oauth_signature_method" value="HMAC-SHA1" />
+</form>
+
+<form action="https://uvu.instructure.com/courses/368564/external_content/success/external_tool_dialog" method="post" id="contentSelector" enctype="application/x-www-form-urlencoded">
+    <input type="hidden" name="lti_message_type" value="ContentItemSelection">
+    <input type="hidden" name="lti_version" value="LTI-1p0">
+    <input type="hidden" id="content_items" name="content_items" value="">
+    <input type="hidden" name="oauth_version" value="1.0">
+    <input type="hidden" name="oauth_nonce" value="BOeVBIegyrWJjPFHuOSg95axAZBqTNZYoy2Ojs7534">
+    <input type="hidden" name="oauth_timestamp" value="1469561665">
+    <input type="hidden" name="oauth_consumer_key" value="mfue-key">
+    <input type="hidden" name="oauth_callback" value="about:blank">
+    <input type="hidden" name="oauth_signature_method" value="HMAC-SHA1">
+    <input type="hidden" name="oauth_signature" value="dkVwBJfxf5leN8zaILpcybWQKR8=">
+</form>
+
+inserted:
+<iframe style="width: 100%; height: 250px;" src="/courses/368564/external_tools/retrieve?display=borderless&amp;url=https%3A%2F%2Fmediafiles.uvu.edu%2Fdelphinium%2Forchidtest"
+width="300" height="150" allowfullscreen="allowfullscreen" webkitallowfullscreen="webkitallowfullscreen" mozallowfullscreen="mozallowfullscreen"></iframe>
+
+displays: ERR: Invalid signature
+
+Sample Canvas question html
+
+<div data-group-id="" style="" id="" class="quiz_sortable question_holder " aria-label="Question" role="region">
+  <div style="display: block; height: 1px; overflow: hidden;">&nbsp;</div>
+  <a name="question_12206441"></a>
+  <div id="question_12206441" class="display_question question multiple_choice_question">
+    <div class="move">
+  <a role="button" class="draggable-handle" tabindex="0">
+    <i class="icon-drag-handle">
+      <span class="screenreader-only">Move To...</span>
+      <span class="accessibility-warning screenreader-only">
+        This element is a more accessible alternative to drag &amp; drop reordering. Press Enter or Space to move this question.
+      </span>
+    </i>
+  </a>
+</div>
+
+
+      <a aria-checked="false" role="checkbox" class="flag_question" href="#">
+        <span class="screenreader-only">Flag this Question</span>
+      </a>
+    <div class="header">
+      <span aria-level="2" role="heading" class="name question_name">Question 3</span>
+      <span style="" class="question_points_holder">
+        <span class="points question_points">1</span> pts
+    </span>
+    </div>
+    <div style="display: none;" class="links">
+      <a title="Edit this Question" class="edit_question_link no-hover" href="#"><i class="icon-edit standalone-icon"><span class="screenreader-only">Edit this Question</span></i></a>
+      <a title="Delete this Question" class="delete_question_link no-hover" href="#"><i class="icon-end standalone-icon"><span class="screenreader-only">Delete this Question</span></i></a>
+    </div>
+    <div style="display: none;">
+      <span class="regrade_option"></span>
+      <span class="regrade_disabled">0</span>
+      <span class="question_type">multiple_choice_question</span>
+      <span class="answer_selection_type"></span>
+        <a class="update_question_url" href="/courses/368564/quizzes/678841/questions/12206441">&nbsp;</a>
+      <span class="assessment_question_id">18042615</span>
+    </div>
+    <div class="text">
+      <div style="display: none;" class="original_question_text">
+        <textarea class="textarea_text_after_answers" name="text_after_answers" style="display: none;"></textarea>
+        <textarea class="textarea_question_text" name="question_text" style="display: none;">What was the primary purpose of data processing in the 1970s?</textarea>
+      </div>
+      <div class="question_text user_content enhanced" id="question_12206441_question_text">
+          What was the primary purpose of data processing in the 1970s?
+      </div>
+      <div class="answers">
+              <div class="answer">
+    <table>
+      <tbody><tr>
+        <td class="answer_input">
+            <input type="radio" id="question_12206441_answer_95280" value="95280" name="question_12206441" class="question_input">
+        </td>
+        <td class="answer_label">
+          <label for="question_12206441_answer_95280">improve how employees contacted customers</label>
+        </td>
+      </tr>
+    </tbody></table>
+</div>
+<div class="answer">
+    <table>
+      <tbody><tr>
+        <td class="answer_input">
+            <input type="radio" id="question_12206441_answer_48979" value="48979" name="question_12206441" class="question_input">
+        </td>
+        <td class="answer_label">
+          <label for="question_12206441_answer_48979">improve the flow of communication between networks</label>
+        </td>
+      </tr>
+    </tbody></table>
+</div>
+<div class="answer">
+    <table>
+      <tbody><tr>
+        <td class="answer_input">
+            <input type="radio" id="question_12206441_answer_41104" value="41104" name="question_12206441" class="question_input">
+        </td>
+        <td class="answer_label">
+          <label for="question_12206441_answer_41104">improve how businesses communicated with other businesses</label>
+        </td>
+      </tr>
+    </tbody></table>
+</div>
+<div class="answer">
+    <table>
+      <tbody><tr>
+        <td class="answer_input">
+            <input type="radio" id="question_12206441_answer_44372" value="44372" name="question_12206441" class="question_input">
+        </td>
+        <td class="answer_label">
+          <label for="question_12206441_answer_44372">improve the flow of financial information</label>
+        </td>
+      </tr>
+    </tbody></table>
+</div>
+
+      </div>
+      <div class="after_answers">
+      </div>
+    </div>
+    <div class="clear"></div>
+  </div>
+</div>
+
+
+Sample submit quiz button
+<div class="form-actions">
+    <span id="last_saved_indicator">Quiz saved at 12:52pm</span>
+    <button data-action="/courses/368564/quizzes/678841/submissions?user_id=1568377" id="submit_quiz_button" class="btn submit_button quiz_submit btn-secondary" type="submit">
+      Submit Quiz
+    </button>
+</div>
+  

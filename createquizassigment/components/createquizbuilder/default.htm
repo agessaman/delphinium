@@ -1,23 +1,7 @@
 
 <!--
-  ~ Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
-  ~
-  ~ This file is subject to the terms and conditions defined in
-  ~ file 'https://github.com/ProjectDelphinium/delphinium/blob/master/EULA',
-  ~ which is part of this source code package.
-  ~
-  ~ NOTICE:  All information contained herein is, and remains the property of Project Delphinium. The intellectual and technical concepts contained
-  ~ herein are proprietary to Project Delphinium and may be covered by U.S. and Foreign Patents, patents in process, and are protected by trade secret or copyright law.
-  ~ Dissemination of this information or reproduction of this material is strictly forbidden unless prior written permission is obtained
-  ~ from Project Delphinium.
-  ~
-  ~ THE RECEIPT OR POSSESSION OF THIS SOURCE CODE AND/OR RELATED INFORMATION DOES NOT CONVEY OR IMPLY ANY RIGHTS
-  ~ TO REPRODUCE, DISCLOSE OR DISTRIBUTE ITS CONTENTS, OR TO MANUFACTURE, USE, OR SELL ANYTHING THAT IT  MAY DESCRIBE, IN WHOLE OR IN PART.
-  ~
-  ~ Unauthorized copying of this file, via any medium is strictly prohibited
-  ~ Non-commercial use only, you may not charge money for the software
-  ~ You can modify personal copy of source-code but cannot distribute modifications
-  ~ You may not distribute any version of this software, modified or otherwise
+    restore to original after done testing
+ default.htm
   -->
 
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
@@ -39,7 +23,9 @@
 </style>
 
 <script type="text/javascript">
+
     function selectQuestions() {
+        console.log('called: selectQuestions');
         var checkedQuestion =document.getElementsByTagName('INPUT');
         var cbResults = 'Checkboxes: ';
         // print check boxes to select the questions
@@ -61,7 +47,7 @@
             {
                 getOptionAnswers = false;
             }
-            // at the moment i run the first partial i grab the data, ansers are hidden fields
+            // at the moment i run the first partial i grab the data, answers are hidden fields
             // two options figure out ajax or keep doing it this way
             // check if question has been selected
             // answers had been hidden
@@ -69,7 +55,6 @@
                 showQuestions.innerHTML += checkedQuestion[i].value + ' <br>';
                 getOptionAnswers = true;
                 answerId = checkedQuestion[i].name;
-
             }
             else if (getOptionAnswers && checkedQuestion[i].type == 'hidden' && checkedQuestion[i].name != "btn" )
             {
@@ -84,15 +69,10 @@
                 showQuestions.innerHTML += " <div id='"+ answerId +  "'></div>";
                 showQuestions.innerHTML += " <div id='"+ checkedQuestion[i].name +  "'></div><hr>";
             }
-
-
         }
         showQuestions.innerHTML += "</form>";
-
         showHide();
-
         //alert(cbResults);
-
     }
     function onDropDownChange(){
         document.getElementById('dropSelector').style.display='none';
@@ -100,22 +80,18 @@
     }
 
     function updateComponent(answer){
-        console.log(answer);
+        console.log('called: updateComponent');
+        console.log('question_id:',answer);
         //'#getDatos' is just a name i dont have an element with this id
-        $('#getDatos').request('onGradeQuestion', {//some how detects QuizList.php file
-            data: {val:answer}, // this is the way to pass parameters to the fuction
-            dataType: 'text',// returning info type. I returns an array
-            //contentType: "application/json",
-            //update: {calcresult: '#result2'},
-            //update: {'{{__SELF__}}::calcresult': '#result2'},
-            //complete : {'{{__SELF__}}::calcresult': '#result2'},
-            //dataType: 'json',
+        //$('#getDatos').request('onGradeQuestion', {       
+        $().request('onGradeQuestion', {
+            data: {val:answer}, // pass parameters to the function in QuizList.php
+            dataType: 'text',// returning info type. returns an array
+
             success: function(data) { // data contains the returning result from QuizList.php file
 
-                //var datafromCode = document.getElementB8369896');  //get div to update find the nex one
-                //var datafromCode = document.getElementById('8369897');  //get div to update find the nex one
                 var ans = answer;
-                var datafromCode = document.getElementById('ans'+ans);  //get div to update find the nex one
+                var datafromCode = document.getElementById('ans'+ans);//get div to update find the next one
 
                 //split returning array
                 var comments  = data.split(",");
@@ -123,22 +99,18 @@
                 var incorrect = comments[1];
                 var neutral =comments[2];
                 datafromCode.innerHTML =  "<i class='fa fa-check-circle' style='color:green'></i>"+correct+"<br> <i class='fa fa-times' style='color:red'></i> "+incorrect+"<br><i class='fa fa-comments' style='color:#2E9AFE'></i>"+neutral;
-                datafromCode.innerHTML += " <br><button class='btn btn-success' onclick='gradeRetry()' >Retry</button><br>";
-
-                //showQuestions.innerHTML += " <button class='btn btn-primary' onclick='updateComponent("+ answerId +")' >Grade</button><br>";
-
-
+                datafromCode.innerHTML += "<br><button class='btn btn-success' onclick='gradeRetry()'>Retry</button><br>";
+                console.log('comments:', comments);
             }
-        })
-
+        });
     }
 
     function gradeRetry(){
-
+         console.log('called: gradeRetry');
         //'#getDatos' is just a name i dont have an element with this id
-        $('#getGtgrade').request('onRetryQuestion', {//some how detects QuizList.php file
-            data: {val:123}, // this is the way to pass parameters to the fuction
-            dataType: 'text',// returning info type. I returns an array
+        $('#getGtgrade').request('onRetryQuestion', {
+            data: {val:123}, // pass parameters to the function in QuizList.php
+            dataType: 'text',// returning info type. returns an array
             success: function(data) { // data contains the returning result from QuizList.php file
 
                 //var t = JSON.parse(data);
@@ -148,89 +120,52 @@
                 console.log("showing "+correct);
                 var showQuestions = document.getElementById("printQuestions");
                 showQuestions.innerHTML += " <div> <i class='fa fa-check-circle' style='color:green'></i>"+comments[0]+"</div>";
-
-
             }
-        })
+        });
     }
 
-
     function showHide() {
-
-        //document.getElementById('questions').className='visibleRow';
         document.getElementById('questions').className='hiddenRow';
         var hideselectQuestions = document.getElementById('selectQuestions');
         hideselectQuestions.className='hiddenRow';
-
     }
 
     function nextButton() {
-
         document.getElementById(0).style.display='none';
         document.getElementById(1).style.display='block';
         $('html, body').animate({scrollTop: '0px'}, 300);
-
     }
 
 </script>
 
 
-
-
 {%  set test = __SELF__.quizzes %}
 <div class="container">
-<div id="dropSelector">
-    <hi>Select a Quiz </hi>
+    <div id="dropSelector">
+        <hi>Select a Quiz </hi>
+        <form data-request="{{ __SELF__ }}::onSelect"
+              data-request-update="'{{ __SELF__ }}::quizSelection': '#result'"
+       >
 
+            <div>
+                <select name="selectedQuiz" onchange="onDropDownChange()">
+                    <option  value='Select' >Select</option>
+                    {% for quiz in test %}
 
-    <form data-request="{{ __SELF__ }}::onSelect"
-          data-request-update="'{{ __SELF__ }}::quizSelection': '#result'"
-            >
+                    <option  value='{{ quiz.quiz_id }}' />
+                    {{ quiz.title   }}
+                    </option>
 
+                    {% endfor %}
+                </select>
+            </div>
 
-        <div >
-            <select name="selectedQuiz" onchange="onDropDownChange()">
-                <option  value='Select' >Select</option>
-                {% for quiz in test %}
-
-                <option  value='{{ quiz.quiz_id }}' />
-
-                {{ quiz.title   }}
-
-                </option>
-
-                {% endfor %}
-            </select>
-        </div>
-
-    </form>
-</div>
-
+        </form>
+    </div>
 
     <div id="result" >
 
         {% partial __SELF__~'::quizSelection'    %}
 
-
     </div>
-
-
-    <!--<form onsubmit="$(this).request('onGradeQuestion', {-->
-
-    <!--update: {calcresult: '#result2'}-->
-
-
-    <!--}); return false;">-->
-    <!--<input type="submit" value="Submit">-->
-    <!--</form>-->
-    <!--<div id="result2" >-->
-    <!--&lt;!&ndash;https://octobercms.com/docs/cms/ajax#javascript-examples&ndash;&gt;-->
-    <!--{% partial __SELF__~'::calcresult'   %}-->
-    <!--&lt;!&ndash;setOfDatas = setOfDatas&ndash;&gt;-->
-    <!--&lt;!&ndash;setOfDatas=__SELF__.setOfDatas&ndash;&gt;-->
-    <!--&lt;!&ndash;{{ dump(QuizList) }}&ndash;&gt;-->
-
-    <!--</div>-->
-
-
 </div>

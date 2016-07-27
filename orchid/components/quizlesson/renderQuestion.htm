@@ -1,4 +1,3 @@
-
 <!--
   ~ Copyright (C) 2012-2016 Project Delphinium - All Rights Reserved
   ~
@@ -20,11 +19,20 @@
   ~ You may not distribute any version of this software, modified or otherwise
   -->
 
-<div >
-<h1>Partial test</h1>
-    {{ setOfDatas }}
+<script>
 
+	/*
+        display a list of questions sent to the render function
+        from content_items onto this partial
+        retrieve question details from quizList
+    */
+    var postcontent = {{content_items|raw}};
+</script>
 
+<div class="container">
+    <div class="row">
+        <div id="q" class="col-md-12 text-left">
+            <p>This page displays the questions sent using content_items</p>
+        </div>
+    </div>
 </div>
-
-
