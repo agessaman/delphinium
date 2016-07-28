@@ -106,8 +106,8 @@ class IrisChart extends ComponentBase
             }
             //get LMS roles --used to determine functions and display options
             $roleStr = $_SESSION['roles'];
+            $courseId = $_SESSION['courseID'];
             $this->page['role'] = $roleStr;
-             $courseId = $_SESSION['courseID'];
             $this->page['courseId'] = $courseId;
             $this->page['userId'] = $_SESSION['userID'];
 

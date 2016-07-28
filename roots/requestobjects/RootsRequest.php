@@ -25,6 +25,7 @@ namespace Delphinium\Roots\Requestobjects;
 
 use Delphinium\Roots\Enums\ActionType;
 use Delphinium\Roots\Enums\Lms;
+use Delphinium\Dev\Models\Configuration;
 
 abstract class RootsRequest
 {
@@ -49,12 +50,8 @@ abstract class RootsRequest
         {
             throw new \Exception("Invalid ActionType"); 
         }
-        
-        if(!isset($_SESSION)) 
-        { 
-            session_start(); 
-    	}
-        $lms = strtoupper($_SESSION['lms']);
+        $config = Configuration::where('Enabled', '=', '1')->first();
+        $lms = strtoupper($config->Lms);
         if(Lms::isValidValue($lms))
         {
             $this->lms = $lms;
