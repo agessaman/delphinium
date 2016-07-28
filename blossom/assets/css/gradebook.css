@@ -437,7 +437,7 @@ td.details a {
     outline: none;
     cursor: pointer;
     color: #4da7e8 !important;
-    background: #fff;
+    background: #fcfcfc;
     display: inline-block;
     width: 28px;
     margin: 0 auto;
@@ -917,7 +917,9 @@ th.details {
     background:#f8fb7b !important;
 }
 .lh {
-    line-height: 35px;
+line-height: 14px;
+font-size: 13px;
+color: #666666;
 }
 .subtraction {
     border-radius: none !important;
