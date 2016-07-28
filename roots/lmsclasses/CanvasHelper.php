@@ -1826,7 +1826,7 @@ $req = curl_exec($curl);*/
 
     private function processSingleAssignmentGroup($row, $courseId)
     {
-        $assignmentGroup = AssignmentGroup::firstOrNew(array('assignment_group_id' => $row->id));
+        $assignmentGroup = AssignmentGroup::firstOrNew(array('assignment_group_id' => $row->id,'course_id'=>$courseId));
         $assignmentGroup->assignment_group_id = $row->id;
         $assignmentGroup->name = $row->name;
         $assignmentGroup->position = $row->position;

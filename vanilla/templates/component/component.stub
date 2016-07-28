@@ -217,10 +217,6 @@ class {{studly_name}} extends ComponentBase
         $config->name = $data['name'];
         $config->animate = intval($data['animate']);
         $config->size = intval($data['size']);
-
-        //TODO: must finish updating the rest of the fields in your table
-        $config->save();// update original record
-        return json_encode($config);// back to instructor view
-
+        $config->custom_css = trim(preg_replace('/\s+/', ' ',  $data['custom_css']));
     }
 }

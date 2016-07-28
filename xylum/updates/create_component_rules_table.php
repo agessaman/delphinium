@@ -30,13 +30,14 @@ class CreateComponentRulesTable extends Migration
 
     public function up()
     {
-        Schema::create('delphinium_xylum_component_rules', function($table)
-        {
-            $table->engine = 'InnoDB';
-            $table->integer('component_id');
-            $table->integer('rule_id');
-            $table->timestamps();
-        });
+        if ( !Schema::hasTable('delphinium_xylum_component_rules') ) {
+            Schema::create('delphinium_xylum_component_rules', function ($table) {
+                $table->engine = 'InnoDB';
+                $table->integer('component_id');
+                $table->integer('rule_id');
+                $table->timestamps();
+            });
+        }
     }
 
     public function down()

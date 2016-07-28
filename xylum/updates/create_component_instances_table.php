@@ -30,15 +30,16 @@ class CreateComponentInstancesTable extends Migration
 
     public function up()
     {
-        Schema::create('delphinium_xylum_component_instances', function($table)
-        {
-            $table->engine = 'InnoDB';
-            $table->increments('id');
-            $table->string('type');
-            $table->text('data');
-            $table->integer('course_id')->nullable();
-            $table->timestamps();
-        });
+        if ( !Schema::hasTable('delphinium_xylum_component_instances') ) {
+            Schema::create('delphinium_xylum_component_instances', function ($table) {
+                $table->engine = 'InnoDB';
+                $table->increments('id');
+                $table->string('type');
+                $table->text('data');
+                $table->integer('course_id')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     public function down()

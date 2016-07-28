@@ -34,25 +34,25 @@ class LtiConfiguration extends ComponentBase
                     break;
                 case 'basic-lti-launch-request':
                 default:
-                    // try {
-                    $this->doBltiHandshake();
-                // } catch (\Delphinium\Roots\Exceptions\InvalidRequestException $e) {
-                // return \Response::make($this->controller->run('error'), 500);
-                // } catch (NonLtiException $e) {
-                // if ($e->getCode() == 584) {
-                // return \Response::make($this->controller->run('nonlti'), 500);
-                // } else {
-                // echo json_encode($e->getMessage());
-                // return;
-                // }
-                // } catch (\GuzzleHttp\Exception\ClientException $e) {
-                // return;
-                // } catch (\Exception $e) {
-                // if ($e->getMessage() == 'Invalid LMS') {
-                // return \Response::make($this->controller->run('nonlti'), 500);
-                // }
-                // return \Response::make($this->controller->run('error'), 500);
-                // }
+                    try {
+                        $this->doBltiHandshake();
+                    } catch (\Delphinium\Roots\Exceptions\InvalidRequestException $e) {
+                        return \Response::make($this->controller->run('error'), 500);
+                    } catch (NonLtiException $e) {
+                        if ($e->getCode() == 584) {
+                            return \Response::make($this->controller->run('nonlti'), 500);
+                        } else {
+                            echo json_encode($e->getMessage());
+                            return;
+                        }
+                    } catch (\GuzzleHttp\Exception\ClientException $e) {
+                        return;
+                    } catch (\Exception $e) {
+                        if ($e->getMessage() == 'Invalid LMS') {
+                            return \Response::make($this->controller->run('nonlti'), 500);
+                        }
+                        return \Response::make($this->controller->run('error'), 500);
+                    }
             }
         } else {
             $this->returnXML();
@@ -181,6 +181,7 @@ class LtiConfiguration extends ComponentBase
             $_SESSION['roles'] =$userRolesArr[0];
         }
 
+
         //TODO: make sure this parameter below works with all other LMSs
         $_SESSION['lms'] = \Input::get('tool_consumer_info_product_family_code');
         $secret = $instanceFromDB['SharedSecret'];
@@ -197,7 +198,7 @@ class LtiConfiguration extends ComponentBase
             $rolesStr = $_SESSION['roles'];
             $roleId = $dbHelper->getRole($rolesStr)->id;
             $lti = $this->property('ltiInstance');
-            $data = array('lti'=>intval($lti),'role'=>intval($roleId));
+            $data = array('lti'=>intval($lti),'role'=>intval($roleId), 'approver'=>$approverRole);
             $query = http_build_query($data);
             $redirectUri = urlencode("{$baseUrlWithSlash}saveUserInfo?$query");
             $url = "https://{$domainWithSlash}login/oauth2/auth?client_id={$clientId}&response_type=code&redirect_uri={$redirectUri}";
@@ -205,6 +206,7 @@ class LtiConfiguration extends ComponentBase
 
             if (!$userCheck) { //if no user is found, redirect to canvas permission page
                 if (stristr($rolesStr, $approverRole)) {
+
                     //We need both the instructor token as well as the student token, but the instructor must approve the course first
                     //otherwise privileged roots functions won't work
                     $this->redirect($url);
@@ -213,21 +215,10 @@ class LtiConfiguration extends ComponentBase
                     return;
                 }
             } else {//the course has been approved. Check to see if we have the student token
-                $pos = strpos($rolesStr, 'Learner');
-                if ($pos !== false) {
-                    $student = $dbHelper->getUserInCourse($courseId, $_SESSION['userID']);
-                    if(!$student||(!$student->encrypted_token))
-                    {
-                        $this->redirect($url);
-                    }
-                    else
-                    {//set the student token in session
-                        $_SESSION['studentToken'] = $student->encrypted_token;
-                    }
-                }
-                //set the professor's token & search for the student token
+                //set the professor's token
                 $courseId = $_SESSION['courseID'];
                 $_SESSION['userToken'] = $userCheck->encrypted_token;
+
                 //get the timezone
                 $roots = new Roots();
                 try {
@@ -239,7 +230,8 @@ class LtiConfiguration extends ComponentBase
                 } catch (\Exception $e) {
                     if ($e->getCode() == 401) {//unauthorized, meaning the token we have in the DB has been deleted from Canvas. We must request a new token
                         $dbHelper->deleteInvalidApproverToken($courseId);
-                        //launch the approval process again, try three times at most
+
+                        // launch the approval process again, try three times at most
                         if (isset($_COOKIE['token_attempts'])) {
                             $attempts = $_COOKIE['token_attempts'] + 1;
                             setcookie("token_attempts", $attempts, time() + (300), "/"); //5 minutes
@@ -287,6 +279,21 @@ class LtiConfiguration extends ComponentBase
                     //update the approver
                     $approver->updated_at = $now;
                     $approver->save();
+                }
+
+                //if the user is a student, we'll also need their token
+                $pos = strpos($rolesStr, 'Learner');
+                if ($pos !== false) {
+
+                    $student = $dbHelper->getUserInCourse($courseId, $_SESSION['userID']);
+                    if(!$student||(!$student->encrypted_token))
+                    {
+                        $this->redirect($url);
+                    }
+                    else
+                    {//set the student token in session
+                        $_SESSION['studentToken'] = $student->encrypted_token;
+                    }
                 }
             }
         } else {
