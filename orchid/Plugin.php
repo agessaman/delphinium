@@ -57,15 +57,21 @@ class Plugin extends PluginBase
 
     public function boot()
     {
-        Event::listen('backend.menu.extendItems', function ($manager) {
+        Event::listen('backend.menu.extendItems', function($manager) {
             $manager->addSideMenuItems('Delphinium.Greenhouse', 'greenhouse', [
                 'Orchid' => [
                     'label' => 'Orchid',
-                    'icon' => 'icon-empire',
+                    'icon'  => 'icon-empire',
                     'owner' => 'Delphinium.Greenhouse',
                     'url' => Backend::url('delphinium/orchid/quizlesson'),
                     'group' => 'Orchid',
-                ]
+                ],
+                'Attendance' => array(
+                    'label' => 'Attendance',
+                    'icon' => 'oc-icon-check-square-o',
+                    'owner' => 'Delphinium.Greenhouse',
+                    'url' => Backend::url('delphinium/orchid/attendance'),
+                    'group' => 'Blossom')
             ]);
         });
     }
