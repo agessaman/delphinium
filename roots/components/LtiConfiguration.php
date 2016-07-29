@@ -127,7 +127,7 @@ class LtiConfiguration extends ComponentBase
         $array_dropdown = ['0' => '- select an LTI configuration - '];
 
         foreach ($instances as $instance) {
-            $array_dropdown[$instance->id] = $instance->Name;
+            $array_dropdown[$instance->id] = $instance->name;
         }
 
         return $array_dropdown;
