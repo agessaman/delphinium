@@ -51,8 +51,8 @@ class OAuthResponse extends Controller {
 
         $instanceFromDB = LtiConfigurations::find($lti);
 
-        $clientId = $instanceFromDB['developer_id'];
-        $developerSecret = $instanceFromDB['developer_secret'];
+        $clientId = $instanceFromDB['DeveloperId'];
+        $developerSecret = $instanceFromDB['DeveloperSecret'];
 
         $opts = array('http' => array('method' => 'POST',));
         $context = stream_context_create($opts);
