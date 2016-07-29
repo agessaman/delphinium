@@ -65,12 +65,6 @@ You may not distribute any version of this software, modified or otherwise
                     <form role="form" id="updateForm"
                       data-request="{{ __SELF__ }}::onUpdate"
                       data-request-success="$el.hide();completed(data);">
-
-
-
-                        <span>{{ this.page.attendancerecordId }}</span>
-
-
                         {{ attendanceform.update(this.page.attendancerecordId)|raw }}
                         {{ attendanceform.formRender()|raw }}
                       <div class="form-group">
