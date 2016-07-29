@@ -2,11 +2,5 @@
     - First version of orchid
     - create_quizlessons_table.php
 1.0.2:
-    - Add quiz_id and quiz_name
-    - update_quizlessons_table.php
-1.0.3:
-    - 'create attendances table'
-    - create_attendances_table.php
-1.0.4:
-    - 'Created table delphinium_orchid_attendance_sessions'
-    - builder_table_create_delphinium_orchid_attendance_sessions.php
+- Add quiz_id and quiz_name 
+- update_quizlessons_table.php

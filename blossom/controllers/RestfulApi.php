@@ -215,6 +215,12 @@ class RestfulApi extends Controller
         return $gradebook->aggregateSubmissionScores();
     }
 
+    public function getStudentSubmission()
+    {
+        $gradebook = new GradebookComponent();
+        return $gradebook->aggregateSubmissionStudentScores();
+    }
+
     public function getAllUserClearedMilestoneData()
     {
         $instanceId = \Input::get('experienceInstanceId');

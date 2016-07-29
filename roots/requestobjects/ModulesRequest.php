@@ -25,6 +25,7 @@ namespace Delphinium\Roots\Requestobjects;
 use Delphinium\Roots\Enums\Lms;
 use Delphinium\Roots\UpdatableObjects\Module;
 use Delphinium\Roots\UpdatableObjects\ModuleItem;
+use Delphinium\Dev\Models\Configuration;
 
 class ModulesRequest extends RootsRequest
 {
@@ -92,7 +93,8 @@ class ModulesRequest extends RootsRequest
         parent::__construct($actionType);
         
 
-        $lms = strtoupper($_SESSION['lms']);
+        $config = Configuration::where('Enabled', '=', '1')->first();
+        $lms = strtoupper($config->Lms);
         if(Lms::isValidValue($lms))
         {
             $this->lms = $lms;

@@ -32,7 +32,8 @@ class Utils
         if(!isset($_SESSION)) 
         { 
             session_start(); 
-    	}
+        }
+	$_SESSION['timezone'] = new \DateTimeZone('America/Denver');
         $localTimeZone = $_SESSION['timezone'];
         
         if(is_string($value))

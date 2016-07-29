@@ -46,23 +46,23 @@ class Data extends ComponentBase
 
     public function onRun()
     {
-        try {
-            $this->doBltiHandshake();
-        } catch (NonLtiException $e) {
-            if ($e->getCode() == 584) {
-                return \Response::make($this->controller->run('nonlti'), 500);
-            } else {
-                echo json_encode($e->getMessage());
-                return;
-            }
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
-            return;
-        } catch (\Exception $e) {
-            if ($e->getMessage() == 'Invalid LMS') {
-                return \Response::make($this->controller->run('nonlti'), 500);
-            }
-            return \Response::make($this->controller->run('error'), 500);
-        }
+        // try {
+             $this->doBltiHandshake();
+        // } catch (NonLtiException $e) {
+        //    if ($e->getCode() == 584) {
+        //        return \Response::make($this->controller->run('nonlti'), 500);
+        //    } else {
+        //        echo json_encode($e->getMessage());
+        //        return;
+        //    }
+        // } catch (\GuzzleHttp\Exception\ClientException $e) {
+        //     return;
+        // } catch (\Exception $e) {
+        //     if ($e->getMessage() == 'Invalid LMS') {
+        //         return \Response::make($this->controller->run('nonlti'), 500);
+        //     }
+        //     return \Response::make($this->controller->run('error'), 500);
+        // }
     }
 
     public function defineProperties()
@@ -102,9 +102,8 @@ class Data extends ComponentBase
         $_SESSION['courseID'] = \Input::get('custom_canvas_course_id');
         $_SESSION['userID'] = \Input::get('custom_canvas_user_id');
         $_SESSION['domain'] = \Input::get('custom_canvas_api_domain');
-
-
-        //get the roles
+;
+	     //get the roles
         $roleStr = \Input::get('roles');
         if (stristr($roleStr, 'Learner')) {
             $_SESSION['roles'] = $roleStr;
@@ -147,7 +146,6 @@ class Data extends ComponentBase
                     return;
                 }
             } else {
-
                 $_SESSION['userToken'] = $userCheck->encrypted_token;
                 $decrypted = \Crypt::decrypt($userCheck->encrypted_token);
                 //get the timezone
@@ -156,7 +154,6 @@ class Data extends ComponentBase
                 $account_id = $course->account_id;
                 $account = $roots->getAccount($account_id);
                 $courseId = $_SESSION['courseID'];
-
                 $_SESSION['timezone'] = new \DateTimeZone($account->default_time_zone);
                 echo nl2br("User Id: {$_SESSION['userID']} \n");
                 echo nl2br("Token: {$decrypted} \n");

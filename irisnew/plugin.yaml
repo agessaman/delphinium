@@ -1,0 +1,6 @@
+plugin:
+    name: 'delphinium.irisnew::lang.plugin.name'
+    description: 'delphinium.irisnew::lang.plugin.description'
+    author: Delphinium
+    icon: oc-icon-bullseye
+    homepage: ''

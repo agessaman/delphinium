@@ -1,0 +1,31 @@
+fields:
+    id:
+        label: ID
+        oc.commentPosition: ''
+        span: full
+        disabled: 1
+        type: text
+    name:
+        label: Name
+        span: auto
+        type: text
+        comment: 'Ehttp://localhost/octobercms/backend/rainlab/builder#nter the name of this instance'
+    course_id:
+        label: Course_id
+        span: auto
+        type: text
+        comment: 'Enter the course id to which this component will be tied'
+    animate:
+        label: Animate
+        span: auto
+        type: switch
+        comment: 'On = component will be animated.'
+    size:
+        label: Size
+        options:
+            small: Small
+            medium: Medium
+            large: Large
+        span: auto
+        type: dropdown
+        comment: 'Enter the the size of component you want'

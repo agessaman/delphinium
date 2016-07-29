@@ -22,15 +22,14 @@
 
 namespace Delphinium\Roots\Guzzle;
 
-use Delphinium\Roots\Enums\ActionType;
 use Delphinium\Roots\Exceptions\InvalidRequestException;
 use GuzzleHttp\Client;
+use Delphinium\Roots\Enums\ActionType;
 
 class GuzzleHelper
 {
     public static function makeRequest($request, $url, $getRawResponse = false, $token=null)
     {
-
         //if the raw response is requested, we cannot do the recursive url (for which the token is needed), so we will need to set it to false
         if($getRawResponse==true)
         {
@@ -58,11 +57,9 @@ class GuzzleHelper
                 break;
             case ActionType::PUT:
                 $response = $client->put($url);
-                return json_decode($response->getBody());
                 break;
             case ActionType::POST:
                 $response = $client->post($url);
-                return json_decode($response->getBody());
                 break;
             default:
                 $response = GuzzleHelper::getAsset($url);//$client->get($url);
@@ -78,13 +75,15 @@ class GuzzleHelper
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_VERBOSE, 1); //Requires to load headers
         curl_setopt($ch, CURLOPT_HEADER, 1);  //Requires to load headers
+	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         $result = curl_exec($ch);
-
         #Parse header information from body response
         $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         $header = substr($result, 0, $header_size);
         $body = substr($result, $header_size);
         $data = json_decode($body);
+
         $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         if($status != 200 and $status != 201)
         {
@@ -125,15 +124,14 @@ class GuzzleHelper
 
     public static function getAsset($url)
     {
-        $client = new Client();
-//         try {
-        $response = $client->get($url);
-
-        $data = json_decode($response->getBody());
-        return $data;
-        // } catch (\GuzzleHttp\Exception\ClientException $e) {
-//             return [];
-//         }
+        $client = new Client(['verify' => false]);
+        try {
+            $response = $client->get($url);
+            $data = json_decode($response->getBody());
+            return $data;
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+             return [];
+        }
     }
     public static function postData($url)
     {
@@ -149,7 +147,7 @@ class GuzzleHelper
         return json_decode($response->getBody());
     }
 
-    public static function postOrPutWithCurl($url, $params, $token, $action = 'POST')
+    public static function postDataWithParamsCurl($url, $params, $token, $action = 'POST')
     {
         $data_string = json_encode($params);
         $ch = curl_init($url);
@@ -157,6 +155,8 @@ class GuzzleHelper
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $action);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
             'Content-Type: application/json',
             'Content-Length: ' . strlen($data_string),
@@ -164,7 +164,7 @@ class GuzzleHelper
         ));
         $result = curl_exec($ch);
         curl_close($ch);
-        return json_decode($result);
+        return $result;
     }
 
     public static function postMultipartRequest($params, $file, $upload_url)

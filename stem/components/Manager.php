@@ -42,8 +42,8 @@ class Manager extends ComponentBase
 
     public function onRun()
     {
-        try
-        {
+        // try
+        // {
             $this->addJs("/plugins/delphinium/stem/assets/javascript/angular.min.js");
             $this->addJs("/plugins/delphinium/stem/assets/javascript/angular-ui-tree.js");
             //        $this->addJs("/plugins/delphinium/stem/assets/javascript/bodyCtrl.js");
@@ -70,24 +70,24 @@ class Manager extends ComponentBase
             $this->page['lmsUrl'] =  json_encode($this->getLmsUrl());
             $this->prepareData(false);
 
-        }catch (\GuzzleHttp\Exception\ClientException $e) {
-            return;
-        }
-        catch(Delphinium\Roots\Exceptions\NonLtiException $e)
-        {
-            if($e->getCode()==584)
-            {
-                return \Response::make($this->controller->run('nonlti'), 500);
-            }
-        }
-        catch(\Exception $e)
-        {
-            if($e->getMessage()=='Invalid LMS')
-            {
-                return \Response::make($this->controller->run('nonlti'), 500);
-            }
-            return \Response::make($this->controller->run('error'), 500);
-        }
+        // }catch (\GuzzleHttp\Exception\ClientException $e) {
+        //     return;
+        // }
+        // catch(Delphinium\Roots\Exceptions\NonLtiException $e)
+        // {
+        //     if($e->getCode()==584)
+        //     {
+        //         return \Response::make($this->controller->run('nonlti'), 500);
+        //     }
+        // }
+        // catch(\Exception $e)
+        // {
+        //     if($e->getMessage()=='Invalid LMS')
+        //     {
+        //         return \Response::make($this->controller->run('nonlti'), 500);
+        //     }
+        //     return \Response::make($this->controller->run('error'), 500);
+        // }
     }
 
 
@@ -138,7 +138,7 @@ class Manager extends ComponentBase
 
         $roots = new Roots();
         $moduleData = $roots->modules($req);
-        $modArr = $moduleData->toArray();
+	$modArr = $moduleData->toArray();
 
         $simpleModules = array();
         foreach($modArr as $item)
@@ -164,11 +164,13 @@ class Manager extends ComponentBase
 
             //The parent will be the first PUBLISHED item
             $firstItem;
+            echo json_encode($moduleData);
             foreach($moduleData as $item)
             {
                 if($item['published'] == "1")
                 {
                     $firstItem = $item;
+                    var_dump($firstItem);
                     break;
                 }
             }

@@ -170,7 +170,7 @@ class CanvasHelper
 
         try {
 
-            $items = GuzzleHelper::postOrPutWithCurl($url, $questionsWrap, $token);
+            $items = GuzzleHelper::postDataWithParamsCurl($url, $questionsWrap, $token);
             return $items;
         } catch (\GuzzleHttp\Exception\ClientException $e) {
             $code = $e->getCode();
@@ -439,6 +439,7 @@ class CanvasHelper
         $urlArgs[] = "access_token={$token}&per_page=5000";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+        
         $response = GuzzleHelper::makeRequest($request, $url, false, $token);
 
         return $this->processCanvasModuleData($response, $courseId);
@@ -691,18 +692,18 @@ class CanvasHelper
                     $urlParams[$key] = floatval($value);
                     continue;
                 }
-                $urlParams[$key] = $value;
+                $params[] = "assignment[{$key}]={$value}";
             }
         }
+
         $params = ["assignment" => $urlParams];
         $urlArgs[] = "access_token={$token}";
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
         $response = GuzzleHelper::postOrPutWithCurl($url, $params, $token, $action = 'POST');
         $assignment = $this->processSingleAssignment($response);
 
-        return $assignment;
+        $params[] = "assignment[published]=true";
     }
-
     public function postAssignmentGroup(AssignmentGroupsRequest $request, AssignmentGroup $group)
     {///api/v1/courses/:course_id/assignment_groups
         if (!isset($_SESSION)) {
@@ -715,9 +716,10 @@ class CanvasHelper
         $urlPieces[] = 'assignment_groups';
         $params = ['name' => $group->name];
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
-        $response = GuzzleHelper::postOrPutWithCurl($url, $params, $token, $action = 'POST');
-        return $this->processCanvasAssignmentGroupsData($response, $courseId, true);
-
+        echo $url;
+//        $response = GuzzleHelper::makeRequest($request, $url);
+        $response = GuzzleHelper::postDataWithParamsCurl($url, $params, $token, $action = 'POST');
+        return $response;
     }
 
     public function updateAssignment(AssignmentsRequest $request)
@@ -812,7 +814,6 @@ class CanvasHelper
         $response = GuzzleHelper::postData($url);
         return $response;
     }
-
     public function uploadFile(File $file)
     {
         $urlPieces = $this->initUrl();
@@ -1026,12 +1027,13 @@ class CanvasHelper
      */
     public function processSubmissionsRequest(SubmissionsRequest $request)
     {
+
         $asynch = false;//this variable will determine whether we'll send the request asynchronously or not.
         if (!isset($_SESSION)) {
             session_start();
         }
         $domain = $_SESSION['domain'];
-        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $token = \Crypt::decrypt($_SESSION['userToken']);       
         $courseId = $_SESSION['courseID'];
         $userId = $_SESSION['userID'];
 
@@ -1072,19 +1074,30 @@ class CanvasHelper
                         $urlArgs = array();
                     }
                 }//for
-
                 //at the end we'll have requests left that need to be sent
                 if ($request->getGrouped()) {
                     $urlArgs[] = "grouped=true";
                 }
                 $urlArgs[] = "access_token={$token}&per_page=100";
                 $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+/*$curl = curl_init();
+curl_setopt_array($curl,array(
+	CURLOPT_RETURNTRANSFER => 1,
+	CURLOPT_URL=>$url,
+CURLOPT_SSL_VERIFYHOST=> 0,
+CURLOPT_SSL_VERIFYPEER => 0
+));
+$req = curl_exec($curl);*/
+//var_dump($result);
+//echo $url;
+//print_r($req);die(':end');
 
                 $req = new \GuzzleHttp\Psr7\Request('GET', $url);
                 $requests[] = $req;
 
                 $client = new Client();
                 $returnData = array();
+
                 $pool = new Pool($client, $requests, [
                     'concurrency' => count($requests),
                     'fulfilled' => function ($response, $index) use (&$returnData, $request) {
@@ -1093,7 +1106,7 @@ class CanvasHelper
                         $returnData = array_merge($returnData, $processedData);
                     },
                     'rejected' => function ($reason, $index) {
-                        //TODO: figure out what to do here
+			//TODO: figure out what to do here
                     },
                 ]);
                 // Initiate the transfers and create a promise
@@ -1154,7 +1167,6 @@ class CanvasHelper
 
     }
 
-    //REQUIRES A STUDENT TOKEN
     public function postSubmission(SubmissionsRequest $request, $params)
     {///api/v1/courses/:course_id/assignments/:assignment_id/submissions
 
@@ -1167,14 +1179,13 @@ class CanvasHelper
             session_start();
         }
         $domain = $_SESSION['domain'];
-        $token = \Crypt::decrypt($_SESSION['studentToken']);
+        $token = \Crypt::decrypt($_SESSION['userToken']);
         $courseId = $_SESSION['courseID'];
 
         $urlPieces = array();
         $urlArgs = array();
         $assignmentId = intval($request->getAssignmentIds()[0]);
         $urlPieces[] = "https://{$domain}/api/v1/courses/{$courseId}/assignments/{$assignmentId}/submissions";
-
         $urlArgs = $params;
         $urlArgs[] = "access_token={$token}";
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
@@ -1306,7 +1317,7 @@ class CanvasHelper
 
     public function getUsersInCourse()
     {
-        return $this->simpleGet('users');
+        return $this->newsimpleGet('users');
     }
 
     public function getStudentsInCourse()
@@ -1315,9 +1326,33 @@ class CanvasHelper
             session_start();
         }
         $courseId = $_SESSION['courseID'];
-        $data = ($this->simpleGet('students'));
+        $data = ($this->newSimpleGet('users'));
 
         return $this->processStudentsInCourse($data, $courseId);
+    }
+
+    public function getStudentsInCourseGradebook()
+    {
+        if(!isset($_SESSION))
+        {
+            session_start();
+        }
+
+        $urlPieces= $this->initUrl();
+        $courseId = $_SESSION['courseID'];
+        $urlPieces[] = "sections";
+        $userToken = \Crypt::decrypt($_SESSION['userToken']);
+        $urlArgs = array();
+        $urlArgs[] = "include[]=students";
+        $urlArgs[] = "access_token={$userToken}";
+        $data = ($this->newSimpleGet('users'));
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+        $section_info = GuzzleHelper::getAsset($url);
+        $studentsWithSection = $this->processStudentsWithSection($data, $section_info);
+        $studentsInCourse = $this->processStudentsInCourse($data, $courseId);
+        //$data = $this->processStudentsWithSection($data, $section_info);
+        //print_r($this->processStudentsInCourse($data, $courseId));die;
+        return array("studentsWithSection" => $studentsWithSection, "studentsInCourse"=>$studentsInCourse);
     }
 
     public function getUser($userId = null)
@@ -1386,6 +1421,7 @@ class CanvasHelper
         $urlArgs[] = "access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+
         $response = GuzzleHelper::getAsset($url);
         return $response;
     }
@@ -1771,6 +1807,7 @@ class CanvasHelper
         }
 
         $assignment->save();
+
         return $assignment;
     }
 
@@ -1781,14 +1818,13 @@ class CanvasHelper
             return $this->processSingleAssignmentGroup($data, $courseId);
         } else {
             $assignmentGroupArray = array();
+
             foreach ($data as $row) {
                 $currentAssignmentGroupsIds[] = $row->id;
                 $assignmentG = $this->processSingleAssignmentGroup($row, $courseId);
                 $assignmentGroupArray[] = $assignmentG;
             }
 
-            //do quality assurance and delete from our DB any groups that have been deleted from Canvas
-            $this->dbHelper->qualityAssuranceAssignmentGroups($courseId, $currentAssignmentGroupsIds);
             return $assignmentGroupArray;
         }
     }
@@ -1841,8 +1877,10 @@ class CanvasHelper
                     $subm = $this->processSingleSubmission($row, $includeTags);
                     $submissions[] = $subm;
                 }
+
             } else {
                 $submissions[] = $this->processSingleSubmission($data, $includeTags);
+
             }
         }
         return $submissions;
@@ -1959,6 +1997,22 @@ class CanvasHelper
         return $urlPieces;
     }
 
+    private function newSimpleGet($canvasItem)
+    {
+        $urlPieces= $this->initUrl();
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $urlArgs = array();
+        $urlPieces[] = $canvasItem;
+
+        //Attach token
+        $urlArgs[]="enrollment_type=student&access_token={$token}&per_page=5000";
+
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+
+        $response = GuzzleHelper::getAsset($url);
+        return $response;
+    }
+
     private function simpleGet($canvasItem)
     {
         $urlPieces = $this->initUrl();
@@ -2016,4 +2070,23 @@ class CanvasHelper
 
         return $user;
     }
+
+     private function processStudentsWithSection($students, $sections)
+     {
+        $sections_array = $this->getSectionNamesByStudentId($sections);
+        return $sections_array;
+     }
+
+     private function getSectionNamesByStudentId($sections){
+        $return = array();
+        foreach($sections as $section){
+            if(!empty($section->students)){
+                foreach($section->students as $student){
+                    $return[$student->id][] = $section->name;
+                }
+            }
+        }
+        return $return;
+     }
+
 }

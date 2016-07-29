@@ -1,0 +1,14 @@
+1.0.1:
+    - 'Initialize plugin.'
+1.0.2:
+    - 'create walk_throughs table'
+    - create_walk_throughs_table.php
+1.0.3:
+    - 'create helpers table'
+    - create_helpers_table.php
+1.0.4:
+    - 'create iris_charts table'
+    - create_iris_charts_table.php
+1.0.5:
+    - 'Created table delphinium_irisnew_create_chart_table'
+    - builder_table_create_delphinium_irisnew_create_chart_table.php

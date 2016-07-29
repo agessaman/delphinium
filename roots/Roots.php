@@ -22,7 +22,6 @@
 
 namespace Delphinium\Roots;
 
-use Delphinium\Roots\Models\AssignmentGroup;
 use Delphinium\Roots\Requestobjects\SubmissionsRequest;
 use Delphinium\Roots\Requestobjects\ModulesRequest;
 use Delphinium\Roots\Requestobjects\AssignmentsRequest;
@@ -127,7 +126,7 @@ class Roots
         switch($request->getActionType())
         {
             case(ActionType::GET):
-                $result = null;
+                $result;
                 switch ($request->getLms())
                 {
                     case (Lms::CANVAS):
@@ -138,7 +137,9 @@ class Roots
                         $canvas = new CanvasHelper(DataType::SUBMISSIONS);
                         $result = $canvas->processSubmissionsRequest($request);
                         break;
+
                 }
+
                 return $result;
             case(ActionType::POST):
                 if(is_null($params))
@@ -147,14 +148,6 @@ class Roots
                 }
                 $canvas = new CanvasHelper(DataType::SUBMISSIONS);
                 $result = $canvas->postSubmission($request, $params);
-                return $result;
-            case(ActionType::PUT):
-                if(is_null($params))
-                {
-                    throw new InvalidRequestException("put submission", "no parameters in submission");
-                }
-                $canvas = new CanvasHelper(DataType::SUBMISSIONS);
-                $result = $canvas->putSubmission($request, $params);
                 return $result;
             default :
                 throw new InvalidActionException($request->getActionType(), get_class($request));
@@ -204,7 +197,7 @@ class Roots
         }
     }
 
-    public function assignmentGroups(AssignmentGroupsRequest $request, AssignmentGroup $group =null)
+    public function assignmentGroups(AssignmentGroupsRequest $request)
     {
         switch($request->getActionType())
         {
@@ -222,12 +215,9 @@ class Roots
                 }
                 else
                 {
-                    return $this->getAssignmentGroupDataFromLms($request);
+                    return $this->getAssignmentGroupDataFromLms( $request);
                 }
 
-                break;
-            case(ActionType::POST);
-                return $this->canvasHelper->postAssignmentGroup($request, $group);
                 break;
             default :
                 throw new InvalidActionException($request->getActionType(), get_class($request));
@@ -767,6 +757,33 @@ class Roots
             throw new \Exception("Invalid LMS");
         }
     }
+    
+    public function getStudentsInCourseGradebook()
+    {
+        if(!isset($_SESSION)) 
+        { 
+            session_start(); 
+        }
+        $lms = strtoupper($_SESSION['lms']);
+        $courseId = $_SESSION['courseID'];
+        
+        if(Lms::isValidValue($lms))
+        {
+            switch ($lms)
+            {
+                case (Lms::CANVAS):
+                    $canvasHelper = new CanvasHelper();
+                    return ($canvasHelper->getStudentsInCourseGradebook());
+                default:
+                    $canvasHelper = new CanvasHelper();
+                    return ($canvasHelper->getStudentsInCourseGradebook());
+            }
+        }
+        else
+        {
+           throw new \Exception("Invalid LMS");  
+        }
+    }
 
     public function getStudentsInCourse()
     {
@@ -776,11 +793,11 @@ class Roots
         }
         $lms = strtoupper($_SESSION['lms']);
         $courseId = $_SESSION['courseID'];
-        $users = $this->dbHelper->getUsersInCourseWithRole($courseId, 'Learner');
+        /*$users = $this->dbHelper->getUsersInCourseWithRole($courseId, 'Learner');
         if(count($users)>1)
         {
-//            return $users;
-        }
+            return $users;
+        }*/
 
         //if no users were found in DB try to get them from Canvas
         if(Lms::isValidValue($lms))
@@ -799,6 +816,7 @@ class Roots
         {
             throw new \Exception("Invalid LMS");
         }
+
     }
 
     public function getUser($userId)

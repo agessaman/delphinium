@@ -21,7 +21,6 @@
  */
 
 namespace Delphinium\Blossom\Components;
-
 use Cms\Classes\ComponentBase;
 use Delphinium\Blossom\Models\Experience as ExperienceModel;
 use Delphinium\Blossom\Models\Milestone;

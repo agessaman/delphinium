@@ -1,0 +1,21 @@
+columns:
+    id:
+        label: ID
+        type: number
+        searchable: true
+    name:
+        label: Name
+        type: text
+        searchable: true
+    course_id:
+        label: Course_id
+        type: number
+        searchable: true
+    animate:
+        label: Animate
+        type: switch
+        searchable: true
+    size:
+        label: Size
+        type: select
+        searchable: true
