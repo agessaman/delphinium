@@ -40,32 +40,33 @@ class Plugin extends PluginBase
     public function pluginDetails()
     {
         return [
-            'name'        => 'orchid',
+            'name' => 'orchid',
             'description' => 'No description provided yet...',
-            'author'      => 'delphinium',
-            'icon'        => 'icon-empire'
+            'author' => 'delphinium',
+            'icon' => 'icon-empire'
         ];
     }
-	
-	public function registerComponents()
-	{
-	  return [
-		'\Delphinium\Orchid\Components\Quizlesson' => 'quizlesson'
-	  ];
-	}
 
-	public function boot()
-	{
-	  Event::listen('backend.menu.extendItems', function($manager) {
-		$manager->addSideMenuItems('Delphinium.Greenhouse', 'greenhouse', [
-			'Orchid' => [
-			  'label' => 'Orchid',
-			  'icon'  => 'icon-empire',
-			  'owner' => 'Delphinium.Greenhouse',
-			  'url' => Backend::url('delphinium/orchid/quizlesson'),
-			  'group' => 'Orchid',
-			]
-		  ]);
-	  });
-	}
+    public function registerComponents()
+    {
+        return [
+            '\Delphinium\Orchid\Components\Quizlesson' => 'quizlesson',
+            '\Delphinium\Orchid\Components\Attendance' => 'attendance'
+        ];
+    }
+
+    public function boot()
+    {
+        Event::listen('backend.menu.extendItems', function ($manager) {
+            $manager->addSideMenuItems('Delphinium.Greenhouse', 'greenhouse', [
+                'Orchid' => [
+                    'label' => 'Orchid',
+                    'icon' => 'icon-empire',
+                    'owner' => 'Delphinium.Greenhouse',
+                    'url' => Backend::url('delphinium/orchid/quizlesson'),
+                    'group' => 'Orchid',
+                ]
+            ]);
+        });
+    }
 }
