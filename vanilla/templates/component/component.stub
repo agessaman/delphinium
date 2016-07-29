@@ -25,7 +25,7 @@ use Cms\Classes\ComponentBase;
 class {{studly_name}} extends ComponentBase
 {
 
-    public ${lower_model}}recordId;
+    public ${{lower_model}}recordId;
     /**
      * @return array An array of details to be shown in the CMS section of OctoberCMS
      */
@@ -103,7 +103,7 @@ class {{studly_name}} extends ComponentBase
             $this->page['config'] = json_encode($config);
             //Use the primary key of the record you want to update
             $this->page['recordId'] = $config->id;
-            $this->page->{{lower_model}}recordId) = $config->id;
+            $this->page->{{lower_model}}recordId = $config->id;
             if (!isset($_SESSION)) {
                  session_start();
              }
@@ -219,7 +219,7 @@ class {{studly_name}} extends ComponentBase
     {
 
         $data = post('{{studly_model}}');//model name
-        $id = $this->page->'{{lower_model}}recordId';// convert string to integer
+        $id = intval($this->page->{{lower_model}}recordId);// convert string to integer
         $config = $this->getInstance($data['name']);// retrieve existing record
 
         //update record with new data coming from POST
