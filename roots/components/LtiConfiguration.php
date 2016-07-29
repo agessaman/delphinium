@@ -202,8 +202,8 @@ class LtiConfiguration extends ComponentBase
 
         //TODO: make sure this parameter below works with all other LMSs
         $_SESSION['lms'] = \Input::get('tool_consumer_info_product_family_code');
-        $secret = $instanceFromDB['SharedSecret'];
-        $clientId = $instanceFromDB['DeveloperId'];
+        $secret = $instanceFromDB['shared_secret'];
+        $clientId = $instanceFromDB['developer_id'];
 
         //Check to see if the lti handshake passes
         $context = new Blti($secret, false, false);
