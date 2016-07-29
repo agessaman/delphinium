@@ -34,25 +34,25 @@ class LtiConfiguration extends ComponentBase
                     break;
                 case 'basic-lti-launch-request':
                 default:
-                    try {
+                    // try {
                         $this->doBltiHandshake();
-                    } catch (\Delphinium\Roots\Exceptions\InvalidRequestException $e) {
-                        return \Response::make($this->controller->run('error'), 500);
-                    } catch (NonLtiException $e) {
-                        if ($e->getCode() == 584) {
-                            return \Response::make($this->controller->run('nonlti'), 500);
-                        } else {
-                            echo json_encode($e->getMessage());
-                            return;
-                        }
-                    } catch (\GuzzleHttp\Exception\ClientException $e) {
-                        return;
-                    } catch (\Exception $e) {
-                        if ($e->getMessage() == 'Invalid LMS') {
-                            return \Response::make($this->controller->run('nonlti'), 500);
-                        }
-                        return \Response::make($this->controller->run('error'), 500);
-                    }
+                    // } catch (\Delphinium\Roots\Exceptions\InvalidRequestException $e) {
+                        // return \Response::make($this->controller->run('error'), 500);
+                    // } catch (NonLtiException $e) {
+                        // if ($e->getCode() == 584) {
+                            // return \Response::make($this->controller->run('nonlti'), 500);
+                        // } else {
+                            // echo json_encode($e->getMessage());
+                            // return;
+                        // }
+                    // } catch (\GuzzleHttp\Exception\ClientException $e) {
+                        // return;
+                    // } catch (\Exception $e) {
+                        // if ($e->getMessage() == 'Invalid LMS') {
+                            // return \Response::make($this->controller->run('nonlti'), 500);
+                        // }
+                        // return \Response::make($this->controller->run('error'), 500);
+                    // }
             }
         } else {
             $this->returnXML();
@@ -117,7 +117,7 @@ class LtiConfiguration extends ComponentBase
         $instances = LtiConfigurations::all();
         $array_dropdown = ['0' => '- select an LTI configuration - '];
         foreach ($instances as $instance) {
-            $array_dropdown[$instance->id] = $instance->Name;
+            $array_dropdown[$instance->id] = $instance->name;
         }
         return $array_dropdown;
     }
@@ -184,6 +184,7 @@ class LtiConfiguration extends ComponentBase
 
         //TODO: make sure this parameter below works with all other LMSs
         $_SESSION['lms'] = \Input::get('tool_consumer_info_product_family_code');
+        
         $secret = $instanceFromDB['SharedSecret'];
         $clientId = $instanceFromDB['DeveloperId'];
         //Check to see if the lti handshake passes

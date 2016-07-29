@@ -72,35 +72,35 @@ class CanvasHelper
 
     public function getModuleStates($request)
     {
-        if(!isset($_SESSION))
-        {
+        if (!isset($_SESSION)) {
             session_start();
         }
         $domain = $_SESSION['domain'];
         $userId = $_SESSION['userID'];
         $token = \Crypt::decrypt($_SESSION['userToken']);
         $courseId = $_SESSION['courseID'];
-        $urlPieces= array();
+        $urlPieces = array();
         $urlArgs = array();
-        $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
+        $urlPieces[] = "https://{$domain}/api/v1/courses/{$courseId}";
         $urlPieces[] = 'modules';
 
         $urlArgs[] = "student_id={$userId}";
         //Attach token
-        $urlArgs[]="access_token={$token}&per_page=5000";
+        $urlArgs[] = "access_token={$token}&per_page=5000";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
         $states = GuzzleHelper::makeRequest($request, $url, false, $token);
 
         $moduleStateInfo = array();
 
-        foreach($states as $moduleRow)
-        {
+        foreach ($states as $moduleRow) {
             //we'll create an array with all the moduleIds that belong to this courseId
             $mod = new \stdClass();
             $mod->module_id = $moduleRow->id;
             $mod->state = $moduleRow->state;
-            if(isset($moduleRow->completed_at)){$mod->completed_at = $moduleRow->completed_at;}
+            if (isset($moduleRow->completed_at)) {
+                $mod->completed_at = $moduleRow->completed_at;
+            }
             array_push($moduleStateInfo, $mod);
         }
 
@@ -118,11 +118,10 @@ class CanvasHelper
         return $this->simpleGet('pages');
     }
 
-    public function getQuizSubmission($quizId, $quizSubmissionId=null)
+    public function getQuizSubmission($quizId, $quizSubmissionId = null)
     {///api/v1/courses/:course_id/quizzes/:quiz_id/submissions/:id
-        $urlPieces= $this->initUrl();
-        if(!isset($_SESSION))
-        {
+        $urlPieces = $this->initUrl();
+        if (!isset($_SESSION)) {
             session_start();
         }
         $token = \Crypt::decrypt($_SESSION['userToken']);
@@ -130,66 +129,55 @@ class CanvasHelper
         $urlPieces[] = 'quizzes';
         $urlPieces[] = $quizId;
         $urlPieces[] = 'submissions';
-        if(!is_null($quizSubmissionId))
-        {
+        if (!is_null($quizSubmissionId)) {
             $urlPieces[] = $quizSubmissionId;
         }
 
-        $urlArgs[]="access_token={$token}&per_page=5000";
+        $urlArgs[] = "access_token={$token}&per_page=5000";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
 
         $items = GuzzleHelper::getAsset($url);
         $arr = array();
-        if(count($items->quiz_submissions)>0)
-        {
-            foreach($items->quiz_submissions as $item)
-            {
+        if (count($items->quiz_submissions) > 0) {
+            foreach ($items->quiz_submissions as $item) {
                 $item = $this->saveQuizSubmission($item);
-                if(count($items->quiz_submissions)>1)
-                {
+                if (count($items->quiz_submissions) > 1) {
                     $arr[] = $item;
-                }
-                else
-                {
+                } else {
                     return $item;
                 }
                 return $arr;
             }
-        }
-        else
-        {
+        } else {
             return null;
         }
     }
 
     public function postAnswerQuestion($quizSubmission, $questionsWrap, $studentId)
     {//POST /api/v1/quiz_submissions/:quiz_submission_id/questions
-        if(!isset($_SESSION))
-        {
+        if (!isset($_SESSION)) {
             session_start();
         }
         $domain = $_SESSION['domain'];
         $token = \Crypt::decrypt($_SESSION['userToken']);
 
-        $urlPieces= array();
-        $urlPieces[]= "https://{$domain}/api/v1/quiz_submissions/{$quizSubmission->quiz_submission_id}/questions";
-        $urlArgs[] ="as_user_id={$studentId}";
-        $urlArgs[]="access_token={$token}";
+        $urlPieces = array();
+        $urlPieces[] = "https://{$domain}/api/v1/quiz_submissions/{$quizSubmission->quiz_submission_id}/questions";
+        $urlArgs[] = "as_user_id={$studentId}";
+        $urlArgs[] = "access_token={$token}";
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
 
-        try{
+        try {
 
             $items = GuzzleHelper::postDataWithParamsCurl($url, $questionsWrap, $token);
             return $items;
-        }catch (\GuzzleHttp\Exception\ClientException $e)
-        {
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
             $code = $e->getCode();
             $message = $e->getMessage();
             $action = "post the answer";
 
-            switch($code)
-            {
+            switch ($code) {
                 case 401:
                     $exception = new InvalidRequestException($action, $message, $code);
                     throw $exception;
@@ -200,9 +188,8 @@ class CanvasHelper
 
     public function postQuizTakingSession($quizId, $studentId)
     {///ap i/v1/courses/:course_id/quizzes/:quiz_id/submissions
-        $urlPieces= $this->initUrl();
-        if(!isset($_SESSION))
-        {
+        $urlPieces = $this->initUrl();
+        if (!isset($_SESSION)) {
             session_start();
         }
         $token = \Crypt::decrypt($_SESSION['userToken']);
@@ -210,29 +197,23 @@ class CanvasHelper
         $urlPieces[] = 'quizzes';
         $urlPieces[] = $quizId;
         $urlPieces[] = 'submissions';
-        $urlArgs[]="as_user_id={$studentId}";
-        $urlArgs[]="access_token={$token}";
+        $urlArgs[] = "as_user_id={$studentId}";
+        $urlArgs[] = "access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
-        try
-        {
+        try {
             $items = GuzzleHelper::postData($url);
-            if(count($items->quiz_submissions)>0)
-            {
+            if (count($items->quiz_submissions) > 0) {
                 return $this->saveQuizSubmission($items->quiz_submissions[0]);
-            }
-            else
-            {
+            } else {
                 $action = "start a quiz taking session";
                 $exception = new InvalidRequestException($action, "unknown error", 400);
             }
-        }
-        catch (\GuzzleHttp\Exception\ClientException $e) {
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
             $code = $e->getCode();
             $action = "start a quiz taking session";
 
-            switch($code)
-            {
+            switch ($code) {
                 case 400:
                     $exception = new InvalidRequestException($action, "the quiz is locked", 400);
                     throw $exception;
@@ -249,30 +230,25 @@ class CanvasHelper
 
     public function isQuestionAnswered($quizId, $questionId, $quizSubmissionId)
     {///api/v1/quiz_submissions/:quiz_submission_id/questions
-        if(!isset($_SESSION))
-        {
+        if (!isset($_SESSION)) {
             session_start();
         }
         $domain = $_SESSION['domain'];
         $token = \Crypt::decrypt($_SESSION['userToken']);
-        $urlPieces= array();
-        $urlPieces[]= "https://{$domain}/api/v1/quiz_submissions/{$quizSubmissionId}/questions";
+        $urlPieces = array();
+        $urlPieces[] = "https://{$domain}/api/v1/quiz_submissions/{$quizSubmissionId}/questions";
 
-        $urlArgs[]="access_token={$token}";
+        $urlArgs[] = "access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
         $items = GuzzleHelper::getAsset($url);
 
-        foreach($items->quiz_submission_questions as $submission)
-        {
+        foreach ($items->quiz_submission_questions as $submission) {
             $question = $submission->id === $questionId && $quizId === $submission->quiz_id;
             $isAnswered = !is_null($submission->answer) && isset($submission->answer);
-            if(($question) && ($isAnswered))
-            {
+            if (($question) && ($isAnswered)) {
                 return true;
-            }
-            else
-            {
+            } else {
                 return false;
             }
         }
@@ -280,9 +256,8 @@ class CanvasHelper
 
     public function postTurnInQuiz($quizId, QuizSubmission $quizSubmission)
     {///api/v1/courses/:course_id/quizzes/:quiz_id/submissions/:id/complete
-        $urlPieces= $this->initUrl();
-        if(!isset($_SESSION))
-        {
+        $urlPieces = $this->initUrl();
+        if (!isset($_SESSION)) {
             session_start();
         }
         $token = \Crypt::decrypt($_SESSION['userToken']);
@@ -293,32 +268,25 @@ class CanvasHelper
         $urlPieces[] = $quizSubmission->quiz_submission_id;
         $urlPieces[] = 'complete';
 
-        $urlArgs[]="attempt={$quizSubmission->attempt}";
-        $urlArgs[]="validation_token={$quizSubmission->validation_token}";
-        $urlArgs[]="access_token={$token}";
+        $urlArgs[] = "attempt={$quizSubmission->attempt}";
+        $urlArgs[] = "validation_token={$quizSubmission->validation_token}";
+        $urlArgs[] = "access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
 
-        try
-        {
+        try {
             $items = GuzzleHelper::postData($url);
-            if(count($items->quiz_submissions)>0)
-            {
+            if (count($items->quiz_submissions) > 0) {
                 return $this->saveQuizSubmission($items->quiz_submissions[0]);
-            }
-            else
-            {
+            } else {
                 $action = "turn in quiz";
                 $exception = new InvalidRequestException($action, "unknown error", 400);
             }
-        }
-        catch (\GuzzleHttp\Exception\ClientException $e)
-        {
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
             $code = $e->getCode();
             $action = "turn in a quiz";
 
-            switch($code)
-            {
+            switch ($code) {
                 case 400:
                     $exception = new InvalidRequestException($action, "the quiz has already been turned in; "
                         . "or the attempt parameter is incorrect or missing", 400);
@@ -333,9 +301,8 @@ class CanvasHelper
 
     public function updateStudentQuizScore($quizId, $quizSubmission, array $questions, $totalPointsToFudge)
     {/// PUT api/v1/courses/:course_id/quizzes/:quiz_id/submissions/:id
-        $urlPieces= $this->initUrl();
-        if(!isset($_SESSION))
-        {
+        $urlPieces = $this->initUrl();
+        if (!isset($_SESSION)) {
             session_start();
         }
         $token = \Crypt::decrypt($_SESSION['userToken']);
@@ -345,26 +312,23 @@ class CanvasHelper
         $urlPieces[] = 'submissions';
         $urlPieces[] = $quizSubmission->quiz_submission_id;
 
-        $options = ["quiz_submissions"=>array([
-            "attempt"=> $quizSubmission->attempt,
-            "fudge_points"=> $totalPointsToFudge,
-            "questions"=> [$questions]
+        $options = ["quiz_submissions" => array([
+            "attempt" => $quizSubmission->attempt,
+            "fudge_points" => $totalPointsToFudge,
+            "questions" => [$questions]
         ])
         ];
-        $urlArgs[]="access_token={$token}";
+        $urlArgs[] = "access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
-        try
-        {
-            $updated = GuzzleHelper::postDataWithParamsCurl($url, $options, $token, 'PUT');
+        try {
+            $updated = GuzzleHelper::postOrPutWithCurl($url, $options, $token, 'PUT');
             return $updated;
-        }catch (\GuzzleHttp\Exception\ClientException $e)
-        {
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
             $code = $e->getCode();
             $action = "turn in a quiz";
 
-            switch($code)
-            {
+            switch ($code) {
                 case 400:
                     $exception = new InvalidRequestException($action, "The quiz has not been submitted "
                         . "or the attempt parameter is incorrect or missing", 400);
@@ -378,16 +342,15 @@ class CanvasHelper
 
     public function getQuizSubmissionQuestions($quizSubmission)
     {//GET /api/v1/quiz_submissions/:quiz_submission_id/questions
-        if(!isset($_SESSION))
-        {
+        if (!isset($_SESSION)) {
             session_start();
         }
         $domain = $_SESSION['domain'];
         $token = \Crypt::decrypt($_SESSION['userToken']);
-        $urlPieces= array();
-        $urlPieces[]= "https://{$domain}/api/v1/quiz_submissions/{$quizSubmission->quiz_id}/questions";
+        $urlPieces = array();
+        $urlPieces[] = "https://{$domain}/api/v1/quiz_submissions/{$quizSubmission->quiz_id}/questions";
 
-        $urlArgs[]="access_token={$token}";
+        $urlArgs[] = "access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
 //        try{
@@ -412,14 +375,12 @@ class CanvasHelper
     {///api/v1/courses/:course_id/quizzes
         //process quiz
         $quizzes = $this->simpleGet('quizzes');
-        if(!isset($_SESSION))
-        {
+        if (!isset($_SESSION)) {
             session_start();
         }
         $courseId = $_SESSION['courseID'];
         $response = array();
-        foreach($quizzes as $quiz)
-        {
+        foreach ($quizzes as $quiz) {
             $response[] = $this->processSingleQuiz($quiz, $courseId);
         }
 
@@ -428,9 +389,8 @@ class CanvasHelper
 
     public function getQuizQuestions($quizId)
     {//api/v1/courses/:course_id/quizzes/:quiz_id/questions
-        $urlPieces= $this->initUrl();
-        if(!isset($_SESSION))
-        {
+        $urlPieces = $this->initUrl();
+        if (!isset($_SESSION)) {
             session_start();
         }
         $token = \Crypt::decrypt($_SESSION['userToken']);
@@ -439,14 +399,13 @@ class CanvasHelper
         $urlPieces[] = $quizId;
         $urlPieces[] = 'questions';
         //Attach token
-        $urlArgs[]="access_token={$token}&per_page=5000";
+        $urlArgs[] = "access_token={$token}&per_page=5000";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
         $questions = GuzzleHelper::getAsset($url);
 
         $response = array();
-        foreach($questions as $question)
-        {
+        foreach ($questions as $question) {
             $response[] = $this->processSingleQuizQuestion($question);
         }
         return $response;
@@ -462,23 +421,22 @@ class CanvasHelper
         $moduleStates = false;
         //As per Jared's & Damaris' discussion when users request fresh module data we wil retrieve ALL module data so we can store it in
         //DB and then we'll only return the data they asked for
-        if(!isset($_SESSION))
-        {
+        if (!isset($_SESSION)) {
             session_start();
         }
         $domain = $_SESSION['domain'];
         $token = \Crypt::decrypt($_SESSION['userToken']);
         $courseId = $_SESSION['courseID'];
 
-        $urlPieces= array();
+        $urlPieces = array();
         $urlArgs = array();
-        $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
+        $urlPieces[] = "https://{$domain}/api/v1/courses/{$courseId}";
 
         $urlPieces[] = 'modules';
         $urlArgs[] = 'include[]=items';
-        $urlArgs[]= 'include[]=content_details';
+        $urlArgs[] = 'include[]=content_details';
         //Attach token
-        $urlArgs[]="access_token={$token}&per_page=5000";
+        $urlArgs[] = "access_token={$token}&per_page=5000";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
         
@@ -490,8 +448,7 @@ class CanvasHelper
     public function putModuleData(ModulesRequest $request)
     {
         $updateCanvas = false;
-        if(!isset($_SESSION))
-        {
+        if (!isset($_SESSION)) {
             session_start();
         }
         $domain = $_SESSION['domain'];
@@ -499,56 +456,46 @@ class CanvasHelper
         $courseId = $_SESSION['courseID'];
         $scope = "module";
 
-        $urlPieces= array();
+        $urlPieces = array();
         $urlArgs = array();
-        $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
+        $urlPieces[] = "https://{$domain}/api/v1/courses/{$courseId}";
 
         $urlPieces[] = "modules/{$request->getModuleId()}";
 
-        if($request->getModuleItem())
-        {
+        if ($request->getModuleItem()) {
             $tags = $request->getModuleItem()->getTags();
-            if(!is_null($tags))
-            {
+            if (!is_null($tags)) {
                 $dbHelper = new DbHelper();
                 return $dbHelper->updateContentTags($request->getModuleItem()->content_id, $tags, $courseId);
             }
         }
-        if($request->getModuleItemId())
-        {//updating a module item
+        if ($request->getModuleItemId()) {//updating a module item
             $updateCanvas = true;
             $urlPieces[] = "items/{$request->getModuleItemId()}";
             $scope = "module_item";
             $urlArgs = $this->buildModuleItemUpdateArgs($request->getModuleItem());
-        }
-        else if($request->getModuleId())
-        {//updating a module
+        } else if ($request->getModuleId()) {//updating a module
             $updateCanvas = true;
             $urlArgs = $this->buildModuleUpdateArgs($request->getModule());
         }
 
-        if($updateCanvas)
-        {
+        if ($updateCanvas) {
             //Attach token
-            $urlArgs[]="access_token={$token}";
+            $urlArgs[] = "access_token={$token}";
 
             $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
 
             $response = GuzzleHelper::makeRequest($request, $url, true);
 
             //update DB if request was successful
-            if ($response->getStatusCode() ==="200")
-            {
-                $newlyUpdated= \GuzzleHttp\json_decode($response->getBody());
+            if ($response->getStatusCode() === "200") {
+                $newlyUpdated = \GuzzleHttp\json_decode($response->getBody());
 
-                if(isset($newlyUpdated->module_id))
-                {
+                if (isset($newlyUpdated->module_id)) {
                     //it's a module item
                     return $this->processSingleModuleItem($courseId, $newlyUpdated);
 
-                }
-                else
-                {
+                } else {
                     //it's a module
                     return $this->processSingleModule($newlyUpdated, $courseId);
                 }
@@ -560,13 +507,11 @@ class CanvasHelper
     public function deleteModuleData(ModulesRequest $request)
     {
         $isModuleItem = false;
-        if(!$request->getModuleId())
-        {
-            throw new InvalidParameterInRequestObjectException(get_class($request),"moduleId", "Parameter is required");
+        if (!$request->getModuleId()) {
+            throw new InvalidParameterInRequestObjectException(get_class($request), "moduleId", "Parameter is required");
         }
 
-        if(!isset($_SESSION))
-        {
+        if (!isset($_SESSION)) {
             session_start();
         }
         $domain = $_SESSION['domain'];
@@ -574,45 +519,39 @@ class CanvasHelper
         $courseId = $_SESSION['courseID'];
         $scope = "module";
 
-        $urlPieces= array();
+        $urlPieces = array();
         $urlArgs = array();
-        $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
+        $urlPieces[] = "https://{$domain}/api/v1/courses/{$courseId}";
 
         $urlPieces[] = "modules/{$request->getModuleId()}";
 
-        if($request->getModuleItemId())
-        {
+        if ($request->getModuleItemId()) {
             $isModuleItem = true;
             $urlPieces[] = "items/{$request->getModuleItemId()}";
             $scope = "module_item";
         }
 
         //Attach token
-        $urlArgs[]="access_token={$token}";
+        $urlArgs[] = "access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
 
-        try
-        {
+        try {
             //delete from Canvas
             $response = GuzzleHelper::makeRequest($request, $url, true);
-            if($response->getStatusCode() ==="200")
-            {
+            if ($response->getStatusCode() === "200") {
                 $dbHelper = new DbHelper();
                 /*
                  * NOTE:
                  * Cascading delete is not yet supported in OctoberCMS, so we have to do all the cascading deletes manually.
                  * See https://github.com/octobercms/october/issues/419
                  */
-                if($isModuleItem)
-                {
+                if ($isModuleItem) {
                     //delete the module item and its contents from DB
                     $dbHelper->deleteModuleItemCascade($request->getModuleId(), $request->getModuleItemId());
                     //delete module item's contents
                     //                $this->deleteModuleItemsContent($courseId, $request->moduleId, $request->moduleItemId);
-                }
-                else
-                {//DELETE MODULE
+                } else {//DELETE MODULE
 
                     //this will delete this module, its module items, and the content from DB
                     $dbHelper->deleteModuleCascade($courseId, $request->getModuleId());
@@ -621,13 +560,10 @@ class CanvasHelper
 
 
             return $response;
-        }
-        catch(\GuzzleHttp\Exception\ClientException $e)//without the backslash the Exception won't be caught!
+        } catch (\GuzzleHttp\Exception\ClientException $e)//without the backslash the Exception won't be caught!
         {
-            if ($e->hasResponse())
-            {
-                if ($e->getResponse()->getStatusCode() ==="404")
-                { //This can be caused because the module/moduleItem doesn't exist. Just return
+            if ($e->hasResponse()) {
+                if ($e->getResponse()->getStatusCode() === "404") { //This can be caused because the module/moduleItem doesn't exist. Just return
                     return null;
                 }
             }
@@ -638,8 +574,7 @@ class CanvasHelper
 
     public function postModuleData(ModulesRequest $request)
     {
-        if(!isset($_SESSION))
-        {
+        if (!isset($_SESSION)) {
             session_start();
         }
         $domain = $_SESSION['domain'];
@@ -647,84 +582,72 @@ class CanvasHelper
         $courseId = $_SESSION['courseID'];
         $scope = "module";
 
-        $urlPieces= array();
+        $urlPieces = array();
         $urlArgs = array();
-        $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
+        $urlPieces[] = "https://{$domain}/api/v1/courses/{$courseId}";
 
 
-        if($request->getModuleId())
-        {// "we're creating a moduleItem";
+        if ($request->getModuleId()) {// "we're creating a moduleItem";
 
             $urlPieces[] = "modules/{$request->getModuleId()}/items";
             $urlArgs = $this->buildAddModuleItemArgs($request);
-        }
-        else
-        {//we're creating a module obj
+        } else {//we're creating a module obj
 
             $urlPieces[] = "modules";
             $urlArgs = $this->buildAddModuleArgs($request);
         }
 
         //Attach token
-        $urlArgs[]="access_token={$token}";
+        $urlArgs[] = "access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
         $response = GuzzleHelper::makeRequest($request, $url, true);
 
         //update DB if request was successful
-        if ($response->getStatusCode() ==="200")
-        {
-            $newlyCreated= \GuzzleHttp\json_decode($response->getBody());
+        if ($response->getStatusCode() === "200") {
+            $newlyCreated = \GuzzleHttp\json_decode($response->getBody());
             $newFromDb;
-            if(isset($newlyCreated->module_id))
-            {
+            if (isset($newlyCreated->module_id)) {
                 //it's a module item
 
                 $this->processSingleModuleItem($courseId, $newlyCreated);
                 $newFromDb = ModuleItem::with('content')->where(array(
                     'module_id' => $newlyCreated->module_id,
-                    'module_item_id'=> $newlyCreated->id
+                    'module_item_id' => $newlyCreated->id
                 ))->first();
-                if($request->getModuleItem()->getTags())
-                {//add the tags!
+                if ($request->getModuleItem()->getTags()) {//add the tags!
                     $tags = $request->getModuleItem()->getTags();
 
                     $dbHelper = new DbHelper();
                     $dbHelper->addTagsToContent($modItem['content_id'], $tags, $courseId);
 
                 }
-            }
-            else
-            {
+            } else {
                 //it's a module
                 $this->processSingleModule($newlyCreated, $courseId);
                 $newFromDb = Module::firstOrNew(array('module_id' => $newlyCreated->id));
             }
 
             return $newFromDb;
-        }
-        else
-        {
+        } else {
             return 0;
         }
     }
 
     public function addPage(Page $page)
     {///api/v1/courses/:course_id/pages
-        $urlPieces= $this->initUrl();
+        $urlPieces = $this->initUrl();
         $token = \Crypt::decrypt($_SESSION['userToken']);
         $urlArgs = array();
         $urlPieces[] = 'pages';
 
-        foreach($page as $key => $value)
-        {
-            if ($value)
-            {
+        foreach ($page as $key => $value) {
+            if ($value) {
                 $urlArgs[] = "wiki_page[{$key}]={$value}";
             }
         }
         //Attach token
-        $urlArgs[]="access_token={$token}";
+        $urlArgs[] = "access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
         $response = GuzzleHelper::postData($url);
@@ -733,20 +656,18 @@ class CanvasHelper
 
     public function addDiscussion(Discussion $discussion)
     {///api/v1/courses/:course_id/discussion_topics
-        $urlPieces= $this->initUrl();
+        $urlPieces = $this->initUrl();
         $token = \Crypt::decrypt($_SESSION['userToken']);
         $urlArgs = array();
         $urlPieces[] = 'discussion_topics';
 
-        foreach($discussion as $key => $value)
-        {
-            if ($value)
-            {
+        foreach ($discussion as $key => $value) {
+            if ($value) {
                 $urlArgs[] = "{$key}={$value}";
             }
         }
         //Attach token
-        $urlArgs[]="access_token={$token}";
+        $urlArgs[] = "access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
         $response = GuzzleHelper::postData($url);
@@ -755,31 +676,45 @@ class CanvasHelper
 
     public function addAssignment(AssignmentsRequest $request)
     {
-        $urlPieces= $this->initUrl();
+        $urlPieces = $this->initUrl();
         $token = \Crypt::decrypt($_SESSION['userToken']);
         $urlArgs = array();
-        $urlArgs[]= "assignments";
-        $params=[];
+        $urlPieces[] = "assignments";
+        $params = [];
 
-        foreach($request->getAssignment()->attributes as $key => $value) {
-            if ($value)
-            {
-                if(($key==="due_at"||$key==="unlock_at"||$key=="lock_at"))
-                {
-                    $params[] = "assignment[{$key}]={$value->format(DateTime::ISO8601)}";
+        foreach ($request->getAssignment()->attributes as $key => $value) {
+            if ($value) {
+                if (($key === "due_at" || $key === "unlock_at" || $key == "lock_at")) {
+                    $urlParams[$key] = "{$value->format('c')}";
                     continue;
                 }
-                if($key==="points_possible")
-                {
-                    $params[] = "assignment[{$key}]=".floatval($value);
+                if ($key === "points_possible") {
+                    $urlParams[$key] = floatval($value);
                     continue;
                 }
                 $params[] = "assignment[{$key}]={$value}";
             }
         }
 
-        $params[] = "assignment[published]=true";
+        $params = ["assignment" => $urlParams];
+        $urlArgs[] = "access_token={$token}";
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+        $response = GuzzleHelper::postOrPutWithCurl($url, $params, $token, $action = 'POST');
+        $assignment = $this->processSingleAssignment($response);
 
+        $params[] = "assignment[published]=true";
+    }
+    public function postAssignmentGroup(AssignmentGroupsRequest $request, AssignmentGroup $group)
+    {///api/v1/courses/:course_id/assignment_groups
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+        $courseId = $_SESSION['courseID'];
+        $urlPieces = $this->initUrl();
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $urlArgs = array();
+        $urlPieces[] = 'assignment_groups';
+        $params = ['name' => $group->name];
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
         echo $url;
 //        $response = GuzzleHelper::makeRequest($request, $url);
@@ -789,9 +724,8 @@ class CanvasHelper
 
     public function updateAssignment(AssignmentsRequest $request)
     {
-        $urlPieces= $this->initUrl();
-        if(!isset($_SESSION))
-        {
+        $urlPieces = $this->initUrl();
+        if (!isset($_SESSION)) {
             session_start();
         }
         $token = \Crypt::decrypt($_SESSION['userToken']);
@@ -839,17 +773,14 @@ class CanvasHelper
 
     public function addQuiz(Quiz $quiz)
     {///api/v1/courses/:course_id/discussion_topics
-        $urlPieces= $this->initUrl();
+        $urlPieces = $this->initUrl();
         $token = \Crypt::decrypt($_SESSION['userToken']);
         $urlArgs = array();
         $urlPieces[] = 'quizzes';
 
-        foreach($quiz as $key => $value)
-        {
-            if ($value)
-            {
-                if($key==='due_at')
-                {
+        foreach ($quiz as $key => $value) {
+            if ($value) {
+                if ($key === 'due_at') {
                     $urlArgs[] = "quiz[{$key}]={$value->format('c')}";
                     continue;
                 }
@@ -857,7 +788,7 @@ class CanvasHelper
             }
         }
         //Attach token
-        $urlArgs[]="access_token={$token}";
+        $urlArgs[] = "access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
         $response = GuzzleHelper::postData($url);
@@ -866,20 +797,18 @@ class CanvasHelper
 
     public function addExternalTool($externalTool)
     {
-        $urlPieces= $this->initUrl();
+        $urlPieces = $this->initUrl();
         $token = \Crypt::decrypt($_SESSION['userToken']);
         $urlArgs = array();
         $urlPieces[] = 'external_tools';
 
-        foreach($externalTool as $key => $value)
-        {
-            if ($value)
-            {
+        foreach ($externalTool as $key => $value) {
+            if ($value) {
                 $urlArgs[] = "{$key}={$value}";
             }
         }
         //Attach token
-        $urlArgs[]="access_token={$token}";
+        $urlArgs[] = "access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
         $response = GuzzleHelper::postData($url);
@@ -887,21 +816,19 @@ class CanvasHelper
     }
     public function uploadFile(File $file)
     {
-        $urlPieces= $this->initUrl();
+        $urlPieces = $this->initUrl();
         $token = \Crypt::decrypt($_SESSION['userToken']);
         $urlPieces[] = 'files';
         $urlArgs = array();
 
-        foreach($file as $key => $value)
-        {
-            if ($value)
-            {
+        foreach ($file as $key => $value) {
+            if ($value) {
                 $urlArgs[] = "{$key}={$value}";
             }
         }
 
         //Attach token
-        $urlArgs[]="access_token={$token}";
+        $urlArgs[] = "access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
         $response = GuzzleHelper::postData($url);
@@ -915,10 +842,10 @@ class CanvasHelper
 
     public function uploadFileStepThree($location)
     {
-        $urlPieces= $location;
+        $urlPieces = $location;
         $urlArgs = array();
         $token = \Crypt::decrypt($_SESSION['userToken']);
-        $urlArgs[]="access_token={$token}";
+        $urlArgs[] = "access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
         $response = GuzzleHelper::postData($url);
@@ -933,30 +860,54 @@ class CanvasHelper
         $quiz = Quiz::firstOrNew(array('quiz_id' => $item->id));
         $quiz->quiz_id = $item->id;
         $quiz->course_id = $courseId;
-        if(isset($item->title)){$quiz->title = $item->title;}
-        if(isset($item->description)){$quiz->description = $item->description;}
-        if(isset($item->html_url)){$quiz->html_url = $item->html_url;}
-        if(isset($item->quiz_type)){$quiz->quiz_type = $item->quiz_type;}
-        if(isset($item->assignment_group_id)){$quiz->assignment_group_id = $item->assignment_group_id;}
-        if(isset($item->time_limit)){$quiz->time_limit = $item->time_limit;}
-        if(isset($item->question_count)){$quiz->question_count = $item->question_count;}
-        if(isset($item->points_possible)){$quiz->points_possible = $item->points_possible;}
-        if(isset($item->due_at)){
-            $due_at= DateTime::createFromFormat(DateTime::ISO8601, $item->due_at);
+        if (isset($item->title)) {
+            $quiz->title = $item->title;
+        }
+        if (isset($item->description)) {
+            $quiz->description = $item->description;
+        }
+        if (isset($item->html_url)) {
+            $quiz->html_url = $item->html_url;
+        }
+        if (isset($item->quiz_type)) {
+            $quiz->quiz_type = $item->quiz_type;
+        }
+        if (isset($item->assignment_group_id)) {
+            $quiz->assignment_group_id = $item->assignment_group_id;
+        }
+        if (isset($item->time_limit)) {
+            $quiz->time_limit = $item->time_limit;
+        }
+        if (isset($item->question_count)) {
+            $quiz->question_count = $item->question_count;
+        }
+        if (isset($item->points_possible)) {
+            $quiz->points_possible = $item->points_possible;
+        }
+        if (isset($item->due_at)) {
+            $due_at = DateTime::createFromFormat(DateTime::ISO8601, $item->due_at);
             $quiz->due_at = $due_at->format('c');
         }
-        if(isset($item->lock_at)){
-            $lock_at= DateTime::createFromFormat(DateTime::ISO8601, $item->lock_at);
+        if (isset($item->lock_at)) {
+            $lock_at = DateTime::createFromFormat(DateTime::ISO8601, $item->lock_at);
             $quiz->lock_at = $lock_at->format('c');
         }
-        if(isset($item->unlock_at)){
-            $unlock_at= DateTime::createFromFormat(DateTime::ISO8601, $item->unlock_at);
+        if (isset($item->unlock_at)) {
+            $unlock_at = DateTime::createFromFormat(DateTime::ISO8601, $item->unlock_at);
             $quiz->unlock_at = $unlock_at->format('c');
         }
-        if(isset($item->published)){$quiz->published = $item->published;}
-        if(isset($item->locked_for_user)){$quiz->locked_for_user = $item->locked_for_user;}
-        if(isset($item->scoring_policy)){$quiz->scoring_policy = $item->scoring_policy;}
-        if(isset($item->allowed_attempts)){$quiz->allowed_attempts = $item->allowed_attempts;}
+        if (isset($item->published)) {
+            $quiz->published = $item->published;
+        }
+        if (isset($item->locked_for_user)) {
+            $quiz->locked_for_user = $item->locked_for_user;
+        }
+        if (isset($item->scoring_policy)) {
+            $quiz->scoring_policy = $item->scoring_policy;
+        }
+        if (isset($item->allowed_attempts)) {
+            $quiz->allowed_attempts = $item->allowed_attempts;
+        }
 
         $quiz->save();
         return $quiz;
@@ -967,15 +918,33 @@ class CanvasHelper
         $question = Quizquestion::firstOrNew(array('question_id' => $quizQuestion->id));
         $question->question_id = $quizQuestion->id;
         $question->quiz_id = $quizQuestion->quiz_id;
-        if(isset($quizQuestion->position)){$question->position = $quizQuestion->position;}
-        if(isset($quizQuestion->points_possible)){$question->points_possible = $quizQuestion->points_possible;}
-        if(isset($quizQuestion->question_name)){$question->name = $quizQuestion->question_name;}
-        if(isset($quizQuestion->question_type)){$question->type = $quizQuestion->question_type;}
-        if(isset($quizQuestion->question_text)){$question->text = htmlspecialchars(($quizQuestion->question_text));}
-        if(isset($quizQuestion->correct_comments)){$question->correct_comments = $quizQuestion->correct_comments;}
-        if(isset($quizQuestion->incorrect_comments)){$question->incorrect_comments = $quizQuestion->incorrect_comments;}
-        if(isset($quizQuestion->neutral_comments)){$question->neutral_comments = $quizQuestion->neutral_comments;}
-        if(isset($quizQuestion->answers)){$question->answers = json_encode($quizQuestion->answers);}
+        if (isset($quizQuestion->position)) {
+            $question->position = $quizQuestion->position;
+        }
+        if (isset($quizQuestion->points_possible)) {
+            $question->points_possible = $quizQuestion->points_possible;
+        }
+        if (isset($quizQuestion->question_name)) {
+            $question->name = $quizQuestion->question_name;
+        }
+        if (isset($quizQuestion->question_type)) {
+            $question->type = $quizQuestion->question_type;
+        }
+        if (isset($quizQuestion->question_text)) {
+            $question->text = htmlspecialchars(($quizQuestion->question_text));
+        }
+        if (isset($quizQuestion->correct_comments)) {
+            $question->correct_comments = $quizQuestion->correct_comments;
+        }
+        if (isset($quizQuestion->incorrect_comments)) {
+            $question->incorrect_comments = $quizQuestion->incorrect_comments;
+        }
+        if (isset($quizQuestion->neutral_comments)) {
+            $question->neutral_comments = $quizQuestion->neutral_comments;
+        }
+        if (isset($quizQuestion->answers)) {
+            $question->answers = json_encode($quizQuestion->answers);
+        }
 
         $question->save();
         return $question;
@@ -984,36 +953,75 @@ class CanvasHelper
     public function saveQuizSubmission($quizSubmission)
     {
         $dbQuizSubmission = QuizSubmission::firstOrNew(
-            array('quiz_submission_id' => $quizSubmission->id, 'user_id'=> $quizSubmission->user_id, 'quiz_id'=>$quizSubmission->quiz_id)
+            array('quiz_submission_id' => $quizSubmission->id, 'user_id' => $quizSubmission->user_id, 'quiz_id' => $quizSubmission->quiz_id)
         );
         $dbQuizSubmission->quiz_submission_id = $quizSubmission->id;
         $dbQuizSubmission->user_id = $quizSubmission->user_id;
         $dbQuizSubmission->quiz_id = $quizSubmission->quiz_id;
         $dbQuizSubmission->submission_id = $quizSubmission->submission_id;
         $dbQuizSubmission->validation_token = $quizSubmission->validation_token;
-        if(isset($quizSubmission->quiz_version)){$dbQuizSubmission->quiz_version = $quizSubmission->quiz_version;}
-        if(isset($quizSubmission->attempt)){$dbQuizSubmission->attempt = $quizSubmission->attempt;}
-        if(isset($quizSubmission)){$dbQuizSubmission->extra_attempts = $quizSubmission->extra_attempts;}
-        if(isset($quizSubmission->attempts_left)){$dbQuizSubmission->attempts_left = $quizSubmission->attempts_left;}
-        if(isset($quizSubmission->time_spent)){$dbQuizSubmission->time_spent = $quizSubmission->time_spent;}
-        if(isset($quizSubmission->extra_time)){$dbQuizSubmission->extra_time = $quizSubmission->extra_time;}
-        if(isset($quizSubmission->started_at)){$dbQuizSubmission->started_at = $quizSubmission->started_at;}
-        if(isset($quizSubmission->finished_at)){$dbQuizSubmission->finished_at = $quizSubmission->finished_at;}
-        if(isset($quizSubmission->end_at)){$dbQuizSubmission->end_at = $quizSubmission->end_at;}
-        if(isset($quizSubmission->workflow_state)){$dbQuizSubmission->workflow_state = $quizSubmission->workflow_state;}
-        if(isset($quizSubmission->has_seen_results)){$dbQuizSubmission->has_seen_results = $quizSubmission->has_seen_results;}
-        if(isset($quizSubmission->manually_unlocked)){$dbQuizSubmission->manually_unlocked = $quizSubmission->manually_unlocked;}
-        if(isset($quizSubmission->overdue_and_needs_submission)){$dbQuizSubmission->overdue_and_needs_submission = $quizSubmission->overdue_and_needs_submission;}
-        if(isset($quizSubmission->score)){$dbQuizSubmission->score =  $quizSubmission->score;}
-        if(isset($quizSubmission->score_before_regrade)){$dbQuizSubmission->score_before_regrade = $quizSubmission->score_before_regrade;}
-        if(isset($quizSubmission->quiz_points_possible)){$dbQuizSubmission->quiz_points_possible = $quizSubmission->quiz_points_possible;}
-        if(isset($quizSubmission->kept_score)){$dbQuizSubmission->kept_score = $quizSubmission->kept_score;}
-        if(isset($quizSubmission->fudge_points)){$dbQuizSubmission->fudge_points = $quizSubmission->fudge_points;}
-        if(isset($quizSubmission->html_url)){$dbQuizSubmission->html_url = $quizSubmission->html_url;}
+        if (isset($quizSubmission->quiz_version)) {
+            $dbQuizSubmission->quiz_version = $quizSubmission->quiz_version;
+        }
+        if (isset($quizSubmission->attempt)) {
+            $dbQuizSubmission->attempt = $quizSubmission->attempt;
+        }
+        if (isset($quizSubmission)) {
+            $dbQuizSubmission->extra_attempts = $quizSubmission->extra_attempts;
+        }
+        if (isset($quizSubmission->attempts_left)) {
+            $dbQuizSubmission->attempts_left = $quizSubmission->attempts_left;
+        }
+        if (isset($quizSubmission->time_spent)) {
+            $dbQuizSubmission->time_spent = $quizSubmission->time_spent;
+        }
+        if (isset($quizSubmission->extra_time)) {
+            $dbQuizSubmission->extra_time = $quizSubmission->extra_time;
+        }
+        if (isset($quizSubmission->started_at)) {
+            $dbQuizSubmission->started_at = $quizSubmission->started_at;
+        }
+        if (isset($quizSubmission->finished_at)) {
+            $dbQuizSubmission->finished_at = $quizSubmission->finished_at;
+        }
+        if (isset($quizSubmission->end_at)) {
+            $dbQuizSubmission->end_at = $quizSubmission->end_at;
+        }
+        if (isset($quizSubmission->workflow_state)) {
+            $dbQuizSubmission->workflow_state = $quizSubmission->workflow_state;
+        }
+        if (isset($quizSubmission->has_seen_results)) {
+            $dbQuizSubmission->has_seen_results = $quizSubmission->has_seen_results;
+        }
+        if (isset($quizSubmission->manually_unlocked)) {
+            $dbQuizSubmission->manually_unlocked = $quizSubmission->manually_unlocked;
+        }
+        if (isset($quizSubmission->overdue_and_needs_submission)) {
+            $dbQuizSubmission->overdue_and_needs_submission = $quizSubmission->overdue_and_needs_submission;
+        }
+        if (isset($quizSubmission->score)) {
+            $dbQuizSubmission->score = $quizSubmission->score;
+        }
+        if (isset($quizSubmission->score_before_regrade)) {
+            $dbQuizSubmission->score_before_regrade = $quizSubmission->score_before_regrade;
+        }
+        if (isset($quizSubmission->quiz_points_possible)) {
+            $dbQuizSubmission->quiz_points_possible = $quizSubmission->quiz_points_possible;
+        }
+        if (isset($quizSubmission->kept_score)) {
+            $dbQuizSubmission->kept_score = $quizSubmission->kept_score;
+        }
+        if (isset($quizSubmission->fudge_points)) {
+            $dbQuizSubmission->fudge_points = $quizSubmission->fudge_points;
+        }
+        if (isset($quizSubmission->html_url)) {
+            $dbQuizSubmission->html_url = $quizSubmission->html_url;
+        }
 
         $dbQuizSubmission->save();
         return $dbQuizSubmission;
     }
+
     /*
      * SUBMISSIONS
      */
@@ -1021,8 +1029,7 @@ class CanvasHelper
     {
 
         $asynch = false;//this variable will determine whether we'll send the request asynchronously or not.
-        if(!isset($_SESSION))
-        {
+        if (!isset($_SESSION)) {
             session_start();
         }
         $domain = $_SESSION['domain'];
@@ -1030,55 +1037,48 @@ class CanvasHelper
         $courseId = $_SESSION['courseID'];
         $userId = $_SESSION['userID'];
 
-        $urlPieces= array();
+        $urlPieces = array();
         $urlArgs = array();
-        $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
+        $urlPieces[] = "https://{$domain}/api/v1/courses/{$courseId}";
 
 
         //MULTIPLE ASSIGNMENTS AND POTENTIALLY MULTIPLE USERS
-        if($request->getMultipleAssignments())
-        {//GET /api/v1/courses/:course_id/students/submissions
-            $urlPieces[]="students/submissions";
+        if ($request->getMultipleAssignments()) {//GET /api/v1/courses/:course_id/students/submissions
+            $urlPieces[] = "students/submissions";
 
             //STUDENT IDS
             //student_ids can be "All", or a list of actual studentIds
-            if($request->getMultipleStudents() && $request->getAllStudents())
-            {
+            if ($request->getMultipleStudents() && $request->getAllStudents()) {
                 //if all students were requested, we will retrieve them by chunks so as to speed up the request
                 $allUsers = $this->dbHelper->getUsersInCourseWithRole($courseId, 'Learner');
                 $count = count($allUsers);
-                $asynch =!$count<=20;
+                $asynch = !$count <= 20;
                 $masterArr = array();
 
                 //this var will store al the requests we will make
                 $requests = array();
 
-                for($i=0;$i<=$count-1;$i++)
-                {
-                    $urlArgs[]="student_ids[]={$allUsers[$i]->user_id}";
-                    $result = fmod($i,10);
-                    if($result == 0 && $asynch && $i>0)
-                    {//we'll send the request every 10 students
+                for ($i = 0; $i <= $count - 1; $i++) {
+                    $urlArgs[] = "student_ids[]={$allUsers[$i]->user_id}";
+                    $result = fmod($i, 10);
+                    if ($result == 0 && $asynch && $i > 0) {//we'll send the request every 10 students
 
-                        if($request->getGrouped())
-                        {
-                            $urlArgs[]="grouped=true";
+                        if ($request->getGrouped()) {
+                            $urlArgs[] = "grouped=true";
                         }
-                        $urlArgs[]="access_token={$token}&per_page=100";
+                        $urlArgs[] = "access_token={$token}&per_page=100";
 
                         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
-
-                        $req =  new \GuzzleHttp\Psr7\Request('GET', $url);
+                        $req = new \GuzzleHttp\Psr7\Request('GET', $url);
                         $requests[] = $req;
                         $urlArgs = array();
                     }
                 }//for
                 //at the end we'll have requests left that need to be sent
-                if($request->getGrouped())
-                {
-                    $urlArgs[]="grouped=true";
+                if ($request->getGrouped()) {
+                    $urlArgs[] = "grouped=true";
                 }
-                $urlArgs[]="access_token={$token}&per_page=100";
+                $urlArgs[] = "access_token={$token}&per_page=100";
                 $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
 /*$curl = curl_init();
 curl_setopt_array($curl,array(
@@ -1092,11 +1092,8 @@ $req = curl_exec($curl);*/
 //echo $url;
 //print_r($req);die(':end');
 
-                $req =  new \GuzzleHttp\Psr7\Request('GET', $url);
-        /*echo '<pre>';
-        print_r($url);die();*/
-        
-        $requests[] = $req;
+                $req = new \GuzzleHttp\Psr7\Request('GET', $url);
+                $requests[] = $req;
 
                 $client = new Client();
                 $returnData = array();
@@ -1105,8 +1102,8 @@ $req = curl_exec($curl);*/
                     'concurrency' => count($requests),
                     'fulfilled' => function ($response, $index) use (&$returnData, $request) {
                         $newData = json_decode($response->getBody());
-                        $processedData = $this->processCanvasSubmissionData($newData, $request->getIncludeTags(), $request->getGrouped());   
-                        $returnData = array_merge($returnData,$processedData);
+                        $processedData = $this->processCanvasSubmissionData($newData, $request->getIncludeTags(), $request->getGrouped());
+                        $returnData = array_merge($returnData, $processedData);
                     },
                     'rejected' => function ($reason, $index) {
 			//TODO: figure out what to do here
@@ -1119,64 +1116,51 @@ $req = curl_exec($curl);*/
                 $promise->wait();
                 return $returnData;
 
-            }
-            else if($request->getMultipleStudents()&&count($request->getStudentIds()>1))
-            {
+            } else if ($request->getMultipleStudents() && count($request->getStudentIds() > 1)) {
                 $ids = json_encode($request->getStudentIds());
-                $urlArgs[]="student_ids[]={$ids}";
-            }
-            else
-            {
-                $urlArgs[]="student_ids[]={$request->getStudentIds()[0]}";
+                $urlArgs[] = "student_ids[]={$ids}";
+            } else {
+                $urlArgs[] = "student_ids[]={$request->getStudentIds()[0]}";
             }
 
             //ASSIGNMENT IDS
             //assignment_ids can be a list of assignmentIds, or if empty, all assignments will be returned
 
             $assignmentIds = implode(',', $request->getAssignmentIds());
-            if(count($request->getAssignmentIds()) > 0)
-            {
-                $urlArgs[]= "assignment_ids[]={$assignmentIds}";
+            if (count($request->getAssignmentIds()) > 0) {
+                $urlArgs[] = "assignment_ids[]={$assignmentIds}";
             }
 
-        }
-        //SINGLE ASSIGNMENT, MULTIPLE USERS
-        else if($request->getMultipleStudents())
-        {
+        } //SINGLE ASSIGNMENT, MULTIPLE USERS
+        else if ($request->getMultipleStudents()) {
             // GET /api/v1/courses/:course_id/assignments/:assignment_id/submissions
-            $urlPieces[]= "assignments";
+            $urlPieces[] = "assignments";
             //grab the first assignment id. Shouldn't have more than one (all this has been validated in the SubmissionsRequest constructor)
-            $urlPieces[]= $request->getAssignmentIds()[0];
-            $urlPieces[]= "submissions";
+            $urlPieces[] = $request->getAssignmentIds()[0];
+            $urlPieces[] = "submissions";
 
-        }
-        //SINGLE ASSIGNMENT, SINGLE USER
-        else
-        {//GET /api/v1/courses/:course_id/assignments/:assignment_id/submissions
-            if(($request->getAssignmentIds()))
-            {
-                $urlPieces[]= "assignments"; //input1
-                $urlPieces[]= $request->getAssignmentIds()[0]; // get the first assignment id from the array (there shouldn't be more than one anyway)
+        } //SINGLE ASSIGNMENT, SINGLE USER
+        else {//GET /api/v1/courses/:course_id/assignments/:assignment_id/submissions
+            if (($request->getAssignmentIds())) {
+                $urlPieces[] = "assignments"; //input1
+                $urlPieces[] = $request->getAssignmentIds()[0]; // get the first assignment id from the array (there shouldn't be more than one anyway)
                 $urlPieces[] = "submissions";
                 $urlPieces[] = $request->getStudentIds()[0];
             }
 
         }
 
-        if(!$asynch)
-        {
-            if($request->getGrouped())
-            {
-                $urlArgs[]="grouped=true";
+        if (!$asynch) {
+            if ($request->getGrouped()) {
+                $urlArgs[] = "grouped=true";
             }
 
-            $urlArgs[]="access_token={$token}&per_page=100";
+            $urlArgs[] = "access_token={$token}&per_page=100";
 
             $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
-            $response = GuzzleHelper::makeRequest($request, $url, false,$token);
-            if(count($response)<1)
-            {
-                return[];
+            $response = GuzzleHelper::makeRequest($request, $url, false, $token);
+            if (count($response) < 1) {
+                return [];
             }
             return $this->processCanvasSubmissionData($response, $request->getIncludeTags(), $request->getGrouped());
         }
@@ -1186,28 +1170,57 @@ $req = curl_exec($curl);*/
     public function postSubmission(SubmissionsRequest $request, $params)
     {///api/v1/courses/:course_id/assignments/:assignment_id/submissions
 
-        if(count($request->getAssignmentIds())<1)
-        {
-            throw new InvalidParameterInRequestObjectException("SubmissionRequest","assignmentIds",
-            "Must provide the assignmentId");
+        if (count($request->getAssignmentIds()) < 1) {
+            throw new InvalidParameterInRequestObjectException("SubmissionRequest", "assignmentIds",
+                "Must provide the assignmentId");
         }
 
-        if(!isset($_SESSION))
-        {
+        if (!isset($_SESSION)) {
             session_start();
         }
         $domain = $_SESSION['domain'];
         $token = \Crypt::decrypt($_SESSION['userToken']);
         $courseId = $_SESSION['courseID'];
 
-        $urlPieces= array();
+        $urlPieces = array();
         $urlArgs = array();
         $assignmentId = intval($request->getAssignmentIds()[0]);
-        $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}/assignments/{$assignmentId}/submissions";
+        $urlPieces[] = "https://{$domain}/api/v1/courses/{$courseId}/assignments/{$assignmentId}/submissions";
+        $urlArgs = $params;
+        $urlArgs[] = "access_token={$token}";
+        $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
+        $response = GuzzleHelper::makeRequest($request, $url, false, $token);
+        return $response;
+    }
+
+    public function putSubmission(SubmissionsRequest $request, $params)
+    {//PUT /api/v1/courses/:course_id/assignments/:assignment_id/submissions/:user_id
+        if (count($request->getAssignmentIds()) < 1) {
+            throw new InvalidParameterInRequestObjectException("SubmissionRequest", "assignmentIds",
+                "Must provide the assignmentId");
+        }
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+        $domain = $_SESSION['domain'];
+        $courseId = $_SESSION['courseID'];
+        $token = \Crypt::decrypt($_SESSION['userToken']);
+        $userId = $_SESSION['userID'];
+
+        $urlPieces = array();
+        $assignmentId = intval($request->getAssignmentIds()[0]);
+        $urlPieces[] = "https://{$domain}/api/v1/courses/{$courseId}/assignments/{$assignmentId}/submissions/{$userId}";
+        $urlArgs = $params;
+        $urlArgs[] = "access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
-//        $response = GuzzleHelper::makeRequest($request, $url, false,$token);
-        GuzzleHelper::postDataWithParamsCurl($url, $params, $token);
+
+//        echo json_encode($params);
+//        return;
+        $response = GuzzleHelper::makeRequest($request, $url, false, $token);
+//        $response = GuzzleHelper::postOrPutWithCurl($url, $params, $token, 'PUT');
+//        GuzzleHelper::postDataWithParamsCurl($url, $submission, $token);
+        return $response;
     }
 
     /*
@@ -1216,25 +1229,24 @@ $req = curl_exec($curl);*/
     public function processAssignmentsRequest(AssignmentsRequest $request)
     {//api/v1/courses/:course_id/assignments
 
-        if(!isset($_SESSION))
-        {
+        if (!isset($_SESSION)) {
             session_start();
         }
         $domain = $_SESSION['domain'];
         $token = \Crypt::decrypt($_SESSION['userToken']);
         $courseId = $_SESSION['courseID'];
 
-        $urlPieces= array();
+        $urlPieces = array();
         $urlArgs = array();
-        $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
+        $urlPieces[] = "https://{$domain}/api/v1/courses/{$courseId}";
 
         $singleRow = false;
 
         $urlPieces[] = "assignments";
 
         //Attach token
-        $urlArgs[]="access_token={$token}";
-        $urlArgs[]="per_page=5000";
+        $urlArgs[] = "access_token={$token}";
+        $urlArgs[] = "per_page=5000";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
         $response = GuzzleHelper::makeRequest($request, $url, false, $token);
@@ -1245,25 +1257,24 @@ $req = curl_exec($curl);*/
 
     public function processAssignmentGroupsRequest(AssignmentGroupsRequest $request)
     {
-        if(!isset($_SESSION))
-        {
+        if (!isset($_SESSION)) {
             session_start();
         }
         $domain = $_SESSION['domain'];
         $token = \Crypt::decrypt($_SESSION['userToken']);
         $courseId = $_SESSION['courseID'];
 
-        $urlPieces= array();
+        $urlPieces = array();
         $urlArgs = array();
-        $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
+        $urlPieces[] = "https://{$domain}/api/v1/courses/{$courseId}";
 
         $singleRow = false;
         $urlPieces[] = "assignment_groups";
 
-        $urlArgs[]="include[]=assignments";
+        $urlArgs[] = "include[]=assignments";
         //Attach token
-        $urlArgs[]="access_token={$token}";
-        $urlArgs[]="per_page=5000";
+        $urlArgs[] = "access_token={$token}";
+        $urlArgs[] = "per_page=5000";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
 
@@ -1277,34 +1288,29 @@ $req = curl_exec($curl);*/
     {
         return $this->simpleGet("analytics/assignments");
     }
-    
+
     public function getAnalyticsStudentAssignmentData($userId = null)
     {//GET /api/v1/courses/:course_id/analytics/users/:student_id/assignments
-        if(!isset($_SESSION))
-        {
+        if (!isset($_SESSION)) {
             session_start();
         }
-        if(is_null($userId))
-        {
+        if (is_null($userId)) {
             $userId = $_SESSION['userID'];
         }
-        $urlPieces= $this->initUrl();
+        $urlPieces = $this->initUrl();
         $token = \Crypt::decrypt($_SESSION['userToken']);
         $urlArgs = array();
         $urlPieces[] = 'analytics/users';
         $urlPieces[] = $userId;
         $urlPieces[] = "assignments";
         //Attach token
-        $urlArgs[]="access_token={$token}";
+        $urlArgs[] = "access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
-        try
-        {
+        try {
             $response = GuzzleHelper::getAsset($url);
             return $response;
-        }
-        catch(\GuzzleHttp\Exception\ClientException $e)
-        {
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
             return [];
         }
     }
@@ -1316,8 +1322,7 @@ $req = curl_exec($curl);*/
 
     public function getStudentsInCourse()
     {
-        if(!isset($_SESSION))
-        {
+        if (!isset($_SESSION)) {
             session_start();
         }
         $courseId = $_SESSION['courseID'];
@@ -1352,49 +1357,45 @@ $req = curl_exec($curl);*/
 
     public function getUser($userId = null)
     {///api/v1/users/:id
-        if(!isset($_SESSION))
-        {
+        if (!isset($_SESSION)) {
             session_start();
         }
-        $urlPieces= array();
+        $urlPieces = array();
         $domain = $_SESSION['domain'];
-        $user = !is_null($userId)?$userId:$_SESSION['userID'];
+        $user = !is_null($userId) ? $userId : $_SESSION['userID'];
 
-        $urlPieces[]= "https://{$domain}/api/v1/users/{$user}";
+        $urlPieces[] = "https://{$domain}/api/v1/users/{$user}";
         $token = \Crypt::decrypt($_SESSION['userToken']);
         $urlArgs = array();
         //Attach token
-        $urlArgs[]="access_token={$token}";
+        $urlArgs[] = "access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
 
         $data = GuzzleHelper::getAsset($url);
 
-        if(isset($data->sis_login_id))
-        {
+        if (isset($data->sis_login_id)) {
             $userObj = $this->saveUser($data->id, $data->name, $data->sortable_name, $data->sis_login_id);
-        }
-        else
-        {
+        } else {
             $userObj = $this->saveUser($data->id, $data->name, $data->sortable_name);
         }
         return $userObj;
     }
+
     public function getUserEnrollments()
     {///api/v1/users/:user_id/enrollments
-        if(!isset($_SESSION))
-        {
+        if (!isset($_SESSION)) {
             session_start();
         }
-        $urlPieces= array();
+        $urlPieces = array();
         $domain = $_SESSION['domain'];
         $userId = $_SESSION['userID'];
 
-        $urlPieces[]= "https://{$domain}/api/v1/users/{$userId}/enrollments";
+        $urlPieces[] = "https://{$domain}/api/v1/users/{$userId}/enrollments";
         $token = \Crypt::decrypt($_SESSION['userToken']);
         $urlArgs = array();
         //Attach token
-        $urlArgs[]="access_token={$token}&per_page=5000";
+        $urlArgs[] = "access_token={$token}&per_page=5000";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
 
@@ -1409,16 +1410,15 @@ $req = curl_exec($curl);*/
 
     public function getCourse()
     {///api/v1/courses/:id
-        if(!isset($_SESSION))
-        {
+        if (!isset($_SESSION)) {
             session_start();
         }
         $userId = $_SESSION['userID'];
-        $urlPieces= $this->initUrl();
+        $urlPieces = $this->initUrl();
         $token = \Crypt::decrypt($_SESSION['userToken']);
         $urlArgs = array();
         //Attach token
-        $urlArgs[]="access_token={$token}";
+        $urlArgs[] = "access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
 
@@ -1428,24 +1428,24 @@ $req = curl_exec($curl);*/
 
     public function getAccount($accountId)
     {///api/v1/accounts/:id
-        if(!isset($_SESSION))
-        {
+        if (!isset($_SESSION)) {
             session_start();
         }
         $domain = $_SESSION['domain'];
 
-        $urlPieces= array();
+        $urlPieces = array();
         //        GET /api/v1/courses/:course_id/files
-        $urlPieces[]= "https://{$domain}/api/v1/accounts/{$accountId}";
+        $urlPieces[] = "https://{$domain}/api/v1/accounts/{$accountId}";
         $token = \Crypt::decrypt($_SESSION['userToken']);
         $urlArgs = array();
         //Attach token
-        $urlArgs[]="access_token={$token}";
+        $urlArgs[] = "access_token={$token}";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
         $response = GuzzleHelper::getAsset($url);
         return $response;
     }
+
     /*
      * MODULES
      */
@@ -1453,18 +1453,14 @@ $req = curl_exec($curl);*/
     private function buildModuleUpdateArgs(UpdatableModule $module)
     {
         $urlArgs = array();
-        foreach($module as $key=>$value)
-        {
-            if(($key === "prerequisite_module_ids") &&($value)&& is_array($value))
-            {
-                foreach($value as $prereq)
-                {
+        foreach ($module as $key => $value) {
+            if (($key === "prerequisite_module_ids") && ($value) && is_array($value)) {
+                foreach ($value as $prereq) {
                     $urlArgs[] = "module[prerequisite_module_ids][]={$prereq}";
                 }
                 continue;
             }
-            if($value)
-            {
+            if ($value) {
                 $urlArgs[] = "module[{$key}]={$value}";
             }
 
@@ -1476,25 +1472,23 @@ $req = curl_exec($curl);*/
     {
         $urlArgs = array();
 
-        foreach($moduleItem as $key=>$value)
-        {
+        foreach ($moduleItem as $key => $value) {
             //cannot update content_id, page_url, or type. (as per Canvas API)
             //The tags will be updated separately since they don't belong to Canvas
-            if(($key === "content_id")||($key === "page_url")||$key==="tags"||$key==="type")
-            {
+            if (($key === "content_id") || ($key === "page_url") || $key === "tags" || $key === "type") {
                 continue;
             }
-            if(($key === "completion_requirement_type")&&($value))//make sure value is not null
+            if (($key === "completion_requirement_type") && ($value))//make sure value is not null
             {
                 $urlArgs[] = "module_item[completion_requirement][type]={$value}";
                 continue;
             }
-            if(($key === "completion_requirement_min_score")&&($value))//make sure value is not null
+            if (($key === "completion_requirement_min_score") && ($value))//make sure value is not null
             {
                 $urlArgs[] = "module_item[completion_requirement][min_score]={$value}";
                 continue;
             }
-            if($value)//only grab non-null items
+            if ($value)//only grab non-null items
             {
                 $urlArgs[] = "module_item[{$key}]={$value}";
             }
@@ -1506,20 +1500,15 @@ $req = curl_exec($curl);*/
     {
         $urlArgs = array();
         $modItem = $request->getModule();
-        foreach($modItem as $key => $value) {
-            if(($key ==="name")&&(!$value))
-            {
-                throw new InvalidParameterInRequestObjectException(get_class($request),"name", "Parameter must be a string");
+        foreach ($modItem as $key => $value) {
+            if (($key === "name") && (!$value)) {
+                throw new InvalidParameterInRequestObjectException(get_class($request), "name", "Parameter must be a string");
             }
-            if(($value) && ($key ==="prerequisite_module_ids") && is_array($value))
-            {
-                foreach($value as $prereq)
-                {
+            if (($value) && ($key === "prerequisite_module_ids") && is_array($value)) {
+                foreach ($value as $prereq) {
                     $urlArgs[] = "module[prerequisite_module_ids][]={$prereq}";
                 }
-            }
-            else if ($value)
-            {
+            } else if ($value) {
                 $urlArgs[] = "module[{$key}]={$value}";
             }
         }
@@ -1530,37 +1519,30 @@ $req = curl_exec($curl);*/
     {
         $urlArgs = array();
         if (!$request->getModuleItem()->title) {
-            throw new InvalidParameterInRequestObjectException(get_class($this),"Title", "Parameter is required");
+            throw new InvalidParameterInRequestObjectException(get_class($this), "Title", "Parameter is required");
         }
 
         if (!$request->getModuleItem()->type) {
-            throw new InvalidParameterInRequestObjectException(get_class($this),"Type", "Type is required");
+            throw new InvalidParameterInRequestObjectException(get_class($this), "Type", "Type is required");
         }
 
         $modItem = $request->getModuleItem();
-        foreach($modItem as $key => $value) {
-            if(($key==="content_id")&&($value))
-            {//Content Id is NOT required for ‘ExternalUrl’, ‘Page’, and ‘SubHeader’ types.
+        foreach ($modItem as $key => $value) {
+            if (($key === "content_id") && ($value)) {//Content Id is NOT required for ‘ExternalUrl’, ‘Page’, and ‘SubHeader’ types.
                 $type = $request->getModuleItem()->type;
-                if(($type==="ExternalUrl")||($type==="Page")||($type==="SubHeader"))
-                {
+                if (($type === "ExternalUrl") || ($type === "Page") || ($type === "SubHeader")) {
                     continue;
                 }
             }
-            if(($key==="tags")||($key==="published"))//tags will be handled by us (not by Canvas). Published cannot be set when creating
+            if (($key === "tags") || ($key === "published"))//tags will be handled by us (not by Canvas). Published cannot be set when creating
             {//a module item
                 continue;
             }
-            if(($key ==="completion_requirement_type")&&($value))
-            {
+            if (($key === "completion_requirement_type") && ($value)) {
                 $urlArgs[] = "module_item[completion_requirement][type]={$value}";
-            }
-            else if(($key ==="completion_requirement_min_score")&&($value))
-            {
+            } else if (($key === "completion_requirement_min_score") && ($value)) {
                 $urlArgs[] = "module_item[completion_requirement][min_score]={$value}";
-            }
-            else if ($value)
-            {
+            } else if ($value) {
                 $urlArgs[] = "module_item[{$key}]={$value}";
             }
         }
@@ -1574,11 +1556,9 @@ $req = curl_exec($curl);*/
         $moduleItemIdsArray = array();
         $i = 0;
         $firstItemId = null;
-        foreach($data as $moduleRow)
-        {
+        foreach ($data as $moduleRow) {
             //assign the first item as the parent IF it's published
-            if(is_null($firstItemId) && $moduleRow->published)
-            {
+            if (is_null($firstItemId) && $moduleRow->published) {
                 $firstItemId = $moduleRow->id;
             }
             //we'll create an array with all the moduleIds that belong to this courseId
@@ -1597,7 +1577,7 @@ $req = curl_exec($curl);*/
         return $items;
     }
 
-    private function processSingleModule($moduleRow, $courseId, $possibleOrder=null, $firstItemId = null, &$itemIdsArr = null)
+    private function processSingleModule($moduleRow, $courseId, $possibleOrder = null, $firstItemId = null, &$itemIdsArr = null)
     {//check if module exists
         $module = Module::firstOrNew(array('module_id' => $moduleRow->id));//('moduleId','=',$module->id);
         $module->module_id = $moduleRow->id;
@@ -1607,13 +1587,17 @@ $req = curl_exec($curl);*/
         $module->unlock_at = $moduleRow->unlock_at;
         $module->require_sequential_progress = $moduleRow->require_sequential_progress;
         $module->publish_final_grade = $moduleRow->publish_final_grade;
-        $module->prerequisite_module_ids = implode(", ",$moduleRow->prerequisite_module_ids);
+        $module->prerequisite_module_ids = implode(", ", $moduleRow->prerequisite_module_ids);
         $module->items_count = $moduleRow->items_count;
-        if(isset($moduleRow->published)){$module->published = $moduleRow->published;}
-        if(isset($moduleRow->state)){$module->state = $moduleRow->state;}
+        if (isset($moduleRow->published)) {
+            $module->published = $moduleRow->published;
+        }
+        if (isset($moduleRow->state)) {
+            $module->state = $moduleRow->state;
+        }
 
 
-        if(isset($moduleRow->items)){
+        if (isset($moduleRow->items)) {
             //save moduleItems
             $moduleItems = $this->saveModuleItems($moduleRow->items, $courseId, $itemIdsArr);
             $module->module_items = $moduleItems;
@@ -1624,19 +1608,13 @@ $req = curl_exec($curl);*/
 
         $orderedMod = $this->retrieveOrderedModuleInfo($moduleRow->id, $courseId);
 
-        if($orderedMod)
-        {
+        if ($orderedMod) {
             $module->order = $orderedMod->order;
             $module->parent_id = $orderedMod->parent_id;
-        }
-        else if(!is_null($firstItemId))
-        {
-            if($firstItemId==$moduleRow->id)
-            {
+        } else if (!is_null($firstItemId)) {
+            if ($firstItemId == $moduleRow->id) {
                 $module->parent_id = 1;
-            }
-            else
-            {
+            } else {
                 $module->parent_id = $firstItemId;
             }
         }
@@ -1660,9 +1638,9 @@ $req = curl_exec($curl);*/
     {
         $allItems = array();
 
-        foreach($moduleItems as $mItem){
+        foreach ($moduleItems as $mItem) {
             $itemIdsArr[] = $mItem->id;
-            $moduleArr =$this->processSingleModuleItem($courseId, $mItem);
+            $moduleArr = $this->processSingleModuleItem($courseId, $mItem);
             array_push($allItems, $moduleArr);
         }
 
@@ -1674,7 +1652,7 @@ $req = curl_exec($curl);*/
     {
         $moduleItem = ModuleItem::firstOrNew(array(
             'module_id' => $mItem->module_id,
-            'module_item_id'=> $mItem->id
+            'module_item_id' => $mItem->id
         ));
         $moduleItem->module_item_id = $mItem->id;
         $moduleItem->module_id = $mItem->module_id;
@@ -1684,38 +1662,45 @@ $req = curl_exec($curl);*/
         $moduleItem->indent = $mItem->indent;
         $moduleItem->type = $mItem->type;
 
-        if(isset($mItem->published)){$moduleItem->published = $mItem->published;}
+        if (isset($mItem->published)) {
+            $moduleItem->published = $mItem->published;
+        }
 
 
         //if we don't have contentId we'll use the module_item_id. This is for tagging purposes
         $contentId = 0;
-        if(isset($mItem->content_id))
-        {
+        if (isset($mItem->content_id)) {
             $moduleItem->content_id = $mItem->content_id;
-        }
-        else
-        {
+        } else {
             $moduleItem->content_id = $mItem->id;
         }
 
-        if(isset($mItem->html_url)){$moduleItem->html_url = $mItem->html_url;}
-        if(isset($mItem->url)){$moduleItem->url = $mItem->url;}
-        if(isset($mItem->page_url)){$moduleItem->page_url = $mItem->page_url;}
-        if(isset($mItem->external_url)){$moduleItem->external_url = $mItem->external_url;}
-        if(isset($mItem->new_tab)){$moduleItem->new_tab = $mItem->new_tab;}
-        if(isset($mItem->completion_requirement)){$moduleItem->completion_requirement = json_encode($mItem->completion_requirement);}
-        if(isset($mItem->type))
-        {
+        if (isset($mItem->html_url)) {
+            $moduleItem->html_url = $mItem->html_url;
+        }
+        if (isset($mItem->url)) {
+            $moduleItem->url = $mItem->url;
+        }
+        if (isset($mItem->page_url)) {
+            $moduleItem->page_url = $mItem->page_url;
+        }
+        if (isset($mItem->external_url)) {
+            $moduleItem->external_url = $mItem->external_url;
+        }
+        if (isset($mItem->new_tab)) {
+            $moduleItem->new_tab = $mItem->new_tab;
+        }
+        if (isset($mItem->completion_requirement)) {
+            $moduleItem->completion_requirement = json_encode($mItem->completion_requirement);
+        }
+        if (isset($mItem->type)) {
             $contentDetails;
-            if(isset($mItem->content_details))
-            {
+            if (isset($mItem->content_details)) {
                 $contentDetails = $mItem->content_details;
-            }
-            else
-            {
+            } else {
                 $contentDetails = null;
             }
-            $content = $this->saveContentDetails($courseId, $mItem->module_id, $mItem->id, $moduleItem->content_id, $mItem->type,$contentDetails);
+            $content = $this->saveContentDetails($courseId, $mItem->module_id, $mItem->id, $moduleItem->content_id, $mItem->type, $contentDetails);
             $moduleItem->content = $content;
         }
 
@@ -1727,16 +1712,26 @@ $req = curl_exec($curl);*/
 
     private function saveContentDetails($courseId, $moduleId, $itemId, $contentId, $type, $contentDetails)
     {
-        $content = Content::firstOrNew(array('content_id'=>$contentId));
-        $content->content_id= $contentId;
-        $content->content_type= $type;
+        $content = Content::firstOrNew(array('content_id' => $contentId));
+        $content->content_id = $contentId;
+        $content->content_type = $type;
         $content->module_item_id = $itemId;
         //$content->tags=$contentDetails->content_id;
-        if(isset($contentDetails->points_possible)){$content->points_possible= $contentDetails->points_possible;}
-        if(isset($contentDetails->due_at)){$content->due_at= $contentDetails->due_at;}
-        if(isset($contentDetails->unlock_at)){$content->unlock_at= $contentDetails->unlock_at;}
-        if(isset($contentDetails->lock_at)){$content->lock_at= $contentDetails->lock_at;}
-        if(isset($contentDetails->lock_explanation)){$content->lock_explanation= $contentDetails->lock_explanation;}
+        if (isset($contentDetails->points_possible)) {
+            $content->points_possible = $contentDetails->points_possible;
+        }
+        if (isset($contentDetails->due_at)) {
+            $content->due_at = $contentDetails->due_at;
+        }
+        if (isset($contentDetails->unlock_at)) {
+            $content->unlock_at = $contentDetails->unlock_at;
+        }
+        if (isset($contentDetails->lock_at)) {
+            $content->lock_at = $contentDetails->lock_at;
+        }
+        if (isset($contentDetails->lock_explanation)) {
+            $content->lock_explanation = $contentDetails->lock_explanation;
+        }
 
         $content->save();
 
@@ -1749,16 +1744,12 @@ $req = curl_exec($curl);*/
      */
     private function processCanvasAssignmentData($data, $courseId, $singleRow)
     {
-        $assignments= array();
+        $assignments = array();
 
-        if($singleRow)
-        {
+        if ($singleRow) {
             $assignments[] = $this->processSingleAssignment($data);
-        }
-        else
-        {
-            foreach($data as $row)
-            {
+        } else {
+            foreach ($data as $row) {
                 $assignments[] = $this->processSingleAssignment($row);
             }
         }
@@ -1773,32 +1764,47 @@ $req = curl_exec($curl);*/
         $assignment->assignment_id = $row->id;
         $assignment->assignment_group_id = $row->assignment_group_id;
         $assignment->name = $row->name;
-        if(($assignment->description)) {$assignment->description=$row->description;}
+        if (($assignment->description)) {
+            $assignment->description = $row->description;
+        }
 
-        if(isset($row->due_at))
-        {
-            $due_at= DateTime::createFromFormat(DateTime::ISO8601, $row->due_at);
+        if (isset($row->due_at)) {
+            $due_at = DateTime::createFromFormat(DateTime::ISO8601, $row->due_at);
             $assignment->due_at = $due_at->format('c');
         }
-        if(isset($row->lock_at))
-        {
-            $lock_at= DateTime::createFromFormat(DateTime::ISO8601, $row->lock_at);
+        if (isset($row->lock_at)) {
+            $lock_at = DateTime::createFromFormat(DateTime::ISO8601, $row->lock_at);
             $assignment->lock_at = $lock_at->format('c');
 
         }
-        if(isset($row->unlock_at))
-        {
-            $unlock_at= DateTime::createFromFormat(DateTime::ISO8601, $row->unlock_at);
+        if (isset($row->unlock_at)) {
+            $unlock_at = DateTime::createFromFormat(DateTime::ISO8601, $row->unlock_at);
             $assignment->unlock_at = $unlock_at->format('c');
         }
-        if(isset($row->all_dates)){$assignment->all_dates = $row->all_dates;}
-        if(isset($row->course_id)){$assignment->course_id = $row->course_id;}
-        if(isset($row->html_url)){$assignment->html_url = $row->html_url;}
-        if(isset($row->points_possible)){$assignment->points_possible = floatval($row->points_possible);}
-        if(isset($row->locked_for_user)){$assignment->locked_for_user = $row->locked_for_user;}
-        if(isset($row->quiz_id)){$assignment->quiz_id = $row->quiz_id;}
-        if(isset($row->additional_info)){$assignment->additional_info = $row->additional_info;}
-        if(isset($row->position)){$assignment->position = $row->position;}
+        if (isset($row->all_dates)) {
+            $assignment->all_dates = $row->all_dates;
+        }
+        if (isset($row->course_id)) {
+            $assignment->course_id = $row->course_id;
+        }
+        if (isset($row->html_url)) {
+            $assignment->html_url = $row->html_url;
+        }
+        if (isset($row->points_possible)) {
+            $assignment->points_possible = floatval($row->points_possible);
+        }
+        if (isset($row->locked_for_user)) {
+            $assignment->locked_for_user = $row->locked_for_user;
+        }
+        if (isset($row->quiz_id)) {
+            $assignment->quiz_id = $row->quiz_id;
+        }
+        if (isset($row->additional_info)) {
+            $assignment->additional_info = $row->additional_info;
+        }
+        if (isset($row->position)) {
+            $assignment->position = $row->position;
+        }
 
         $assignment->save();
 
@@ -1807,15 +1813,14 @@ $req = curl_exec($curl);*/
 
     private function processCanvasAssignmentGroupsData($data, $courseId, $singleRow)
     {
-        if(($singleRow) || count($data)===1)
-        {
+        $currentAssignmentGroupsIds = array();
+        if (($singleRow) || count($data) === 1) {
             return $this->processSingleAssignmentGroup($data, $courseId);
-        }
-        else
-        {
+        } else {
             $assignmentGroupArray = array();
-            foreach($data as $row)
-            {
+
+            foreach ($data as $row) {
+                $currentAssignmentGroupsIds[] = $row->id;
                 $assignmentG = $this->processSingleAssignmentGroup($row, $courseId);
                 $assignmentGroupArray[] = $assignmentG;
             }
@@ -1826,20 +1831,20 @@ $req = curl_exec($curl);*/
 
     private function processSingleAssignmentGroup($row, $courseId)
     {
-        $assignmentGroup = AssignmentGroup::firstOrNew(array('assignment_group_id' => $row->id,'course_id'=>$courseId));
+        $assignmentGroup = AssignmentGroup::firstOrNew(array('assignment_group_id' => $row->id, 'course_id' => $courseId));
         $assignmentGroup->assignment_group_id = $row->id;
         $assignmentGroup->name = $row->name;
         $assignmentGroup->position = $row->position;
         $assignmentGroup->course_id = $courseId;
-        if(isset($row->rules)){ $assignmentGroup->rules = json_encode($row->rules);}
+        if (isset($row->rules)) {
+            $assignmentGroup->rules = json_encode($row->rules);
+        }
         $assignmentGroup->group_weight = $row->group_weight;
 
-        if(isset($row->assignments))
-        {
+        if (isset($row->assignments)) {
             $arr = array();
             $assignments = $row->assignments;
-            foreach($assignments as $row)
-            {
+            foreach ($assignments as $row) {
                 $assignment = $this->processSingleAssignment($row);
                 $arr[] = $assignment;
             }
@@ -1858,30 +1863,22 @@ $req = curl_exec($curl);*/
     private function processCanvasSubmissionData($data, $includeTags = false, $grouped = false)
     {
         $submissions = array();
-        if($grouped)
-        {
-            foreach($data as $userSubmissions)
-            {
-                foreach($userSubmissions->submissions as $submission)
-                {
+        if ($grouped) {
+            foreach ($data as $userSubmissions) {
+                foreach ($userSubmissions->submissions as $submission) {
                     $subm = $this->processSingleSubmission($submission, $includeTags);
                     $submissions[] = $subm;
                 }
             }
-        }
-        else
-        {
-            if(gettype($data)==="array")//we have a single submission
+        } else {
+            if (gettype($data) === "array")//we have a single submission
             { //we have multiple submissions
-                foreach($data as $row)
-                {
+                foreach ($data as $row) {
                     $subm = $this->processSingleSubmission($row, $includeTags);
                     $submissions[] = $subm;
                 }
-            }
-            else
-            {
 
+            } else {
                 $submissions[] = $this->processSingleSubmission($data, $includeTags);
 
             }
@@ -1894,35 +1891,66 @@ $req = curl_exec($curl);*/
         $submission = new Submission();
         $submission->submission_id = $row->id;
         $submission->assignment_id = $row->assignment_id;
-        if(isset($row->course)){$submission->course = $row->course;}
-        if(isset($row->attempt)){$submission->attempt = $row->attempt;}
-        if(isset($row->body)){$submission->body = $row->body;}
-        if(isset($row->grade)){$submission->grade = $row->grade;}
-        if(isset($row->grade_matches_current_submission)){$submission->grade_matches_current_submission = $row->grade_matches_current_submission;}
-        if(isset($row->html_url)){$submission->html_url = $row->html_url;}
-        if(isset($row->preview_url)){$submission->preview_url = $row->preview_url;}
-        if(isset($row->score)){$submission->score = $row->score;}
-        if(isset($row->submission_comments)){$submission->submission_comments = $row->submission_comments;}
-        if(isset($row->submission_type)){$submission->submission_type = $row->submission_type;}
-        if(isset($row->submitted_at)){$submission->submitted_at = $row->submitted_at;}
-        if(isset($row->graded_at)){$submission->graded_at = $row->graded_at;}
-        if(isset($row->url)){$submission->url = $row->url;}
-        if(isset($row->user_id)){$submission->user_id = $row->user_id;}
-        if(isset($row->grader_id)){$submission->grader_id = $row->grader_id;}
-        if(isset($row->late)){$submission->late = $row->late;}
-        if(isset($row->assignment_visible)){$submission->assignment_visible = $row->assignment_visible;}
+        if (isset($row->course)) {
+            $submission->course = $row->course;
+        }
+        if (isset($row->attempt)) {
+            $submission->attempt = $row->attempt;
+        }
+        if (isset($row->body)) {
+            $submission->body = $row->body;
+        }
+        if (isset($row->grade)) {
+            $submission->grade = $row->grade;
+        }
+        if (isset($row->grade_matches_current_submission)) {
+            $submission->grade_matches_current_submission = $row->grade_matches_current_submission;
+        }
+        if (isset($row->html_url)) {
+            $submission->html_url = $row->html_url;
+        }
+        if (isset($row->preview_url)) {
+            $submission->preview_url = $row->preview_url;
+        }
+        if (isset($row->score)) {
+            $submission->score = $row->score;
+        }
+        if (isset($row->submission_comments)) {
+            $submission->submission_comments = $row->submission_comments;
+        }
+        if (isset($row->submission_type)) {
+            $submission->submission_type = $row->submission_type;
+        }
+        if (isset($row->submitted_at)) {
+            $submission->submitted_at = $row->submitted_at;
+        }
+        if (isset($row->graded_at)) {
+            $submission->graded_at = $row->graded_at;
+        }
+        if (isset($row->url)) {
+            $submission->url = $row->url;
+        }
+        if (isset($row->user_id)) {
+            $submission->user_id = $row->user_id;
+        }
+        if (isset($row->grader_id)) {
+            $submission->grader_id = $row->grader_id;
+        }
+        if (isset($row->late)) {
+            $submission->late = $row->late;
+        }
+        if (isset($row->assignment_visible)) {
+            $submission->assignment_visible = $row->assignment_visible;
+        }
 
 
-        if($includeTags)
-        {
+        if ($includeTags) {
             //returns tags
             $tags = $this->matchAssignmentIdWithTags($submission->assignment_id);
             $arr = $submission->toArray();
             $arr['tags'] = $tags;
             return $arr;
-        }
-        else
-        {
+        } else {
             return $submission->toArray();
         }
     }
@@ -1931,8 +1959,7 @@ $req = curl_exec($curl);*/
     {
         $assignment = $this->dbHelper->getAssignment($assignment_id);//try to get it from DB
 
-        if(is_null($assignment))
-        {//get it from Canvas
+        if (is_null($assignment)) {//get it from Canvas
             $freshData = true;
             $includeTags = true;
             $req = new AssignmentsRequest(ActionType::GET, $assignment_id, $freshData, null, $includeTags);
@@ -1941,18 +1968,13 @@ $req = curl_exec($curl);*/
             //try to get the assignment again now that we got the data from Canvas. 
             //If it fails, then return the submission with an empty array for tags
             $assignment = $this->dbHelper->getAssignment($assignment_id);//try to get it from DB again
-            if(is_null($assignment))
-            {
+            if (is_null($assignment)) {
                 return [];
-            }
-            else
-            {
+            } else {
                 $assignmentWithTags = $this->dbHelper->matchAssignmentWithTags($assignment);
                 return $assignmentWithTags['tags'];
             }
-        }
-        else
-        {
+        } else {
             $assignmentWithTags = $this->dbHelper->matchAssignmentWithTags($assignment);
             return $assignmentWithTags['tags'];
         }
@@ -1964,15 +1986,14 @@ $req = curl_exec($curl);*/
 
     private function initUrl()
     {
-        if(!isset($_SESSION))
-        {
+        if (!isset($_SESSION)) {
             session_start();
         }
         $domain = $_SESSION['domain'];
         $courseId = $_SESSION['courseID'];
 
-        $urlPieces= array();
-        $urlPieces[]= "https://{$domain}/api/v1/courses/{$courseId}";
+        $urlPieces = array();
+        $urlPieces[] = "https://{$domain}/api/v1/courses/{$courseId}";
         return $urlPieces;
     }
 
@@ -1994,13 +2015,13 @@ $req = curl_exec($curl);*/
 
     private function simpleGet($canvasItem)
     {
-        $urlPieces= $this->initUrl();
+        $urlPieces = $this->initUrl();
         $token = \Crypt::decrypt($_SESSION['userToken']);
         $urlArgs = array();
         $urlPieces[] = $canvasItem;
 
         //Attach token
-        $urlArgs[]="access_token={$token}&per_page=5000";
+        $urlArgs[] = "access_token={$token}&per_page=5000";
 
         $url = GuzzleHelper::constructUrl($urlPieces, $urlArgs);
 
@@ -2012,11 +2033,10 @@ $req = curl_exec($curl);*/
     {   //first add them the User table
         //then add them to the user_course table.
         $arr = array();
-        $role = Role::where('role_name','=','Learner')->first();
+        $role = Role::where('role_name', '=', 'Learner')->first();
 
-        foreach($data as $row)
-        {
-            if(!isset($row->sis_login_id))//test students don't have a sis_login_id
+        foreach ($data as $row) {
+            if (!isset($row->sis_login_id))//test students don't have a sis_login_id
             {
                 $row->sis_login_id = 0;
             }
@@ -2034,14 +2054,18 @@ $req = curl_exec($curl);*/
         return $arr;
     }
 
-    private function saveUser($userId, $name, $sortableName, $sis_login_id=null, $avatar = null)
+    private function saveUser($userId, $name, $sortableName, $sis_login_id = null, $avatar = null)
     {
         $user = User::firstOrNew(array('user_id' => $userId));
         $user->user_id = $userId;
         $user->name = $name;
         $user->sortable_name = $sortableName;
-        if(!is_null($sis_login_id)){$user->sis_login_id = $sis_login_id;}
-        if(!is_null($avatar)){$user->avatar = $avatar;}
+        if (!is_null($sis_login_id)) {
+            $user->sis_login_id = $sis_login_id;
+        }
+        if (!is_null($avatar)) {
+            $user->avatar = $avatar;
+        }
         $user->save();
 
         return $user;
