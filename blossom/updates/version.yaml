@@ -1,4 +1,4 @@
-1.0.1:
+1.0.0:
     - 'Initialize plugin'
     - create_competencies_table.php
     - create_bonuses_table.php

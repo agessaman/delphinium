@@ -20,119 +20,293 @@
   -->
 
 <script>
-    var chartData = {{chartData | raw}};
-    //var submissions = {{submissions | raw}};
-    var numMilestones = {{numMilestones}};
-    var students = {{users | raw}};
-    var today = {{today}};
-    var experienceInstanceId = {{experienceInstanceId}};
     var gradingScheme = {{grading_scheme|raw}};
+    var instructorId = {{user}};
+    var expInst = {{ expInst|raw}};
 </script>
 
 {% set studentData = __SELF__.studentData %}
 {% set users = __SELF__.users %}
-<div>
-</div>
-<div id="topContainer">
-    <div>
-        <div class="spinnerDiv" style="width:100%;height:400px;">
-            <div style="width:60px;height:60px;position: absolute;top: 50%; left: 50%;transform: translate(-50%,-50%);">
-                <i class="icon-spinner icon-spin icon-3x icon-fw margin-bottom" style="color:#337AB7;"></i>
-            </div>
-        </div>
-        <div id="chart"  style="width:800px;height:400px;opacity:0.5;"></div>
-    </div>
-    <div  id="topRight" style="opacity:0.5">
-        <div class="multiselect" >
-            {% for item in users %}
-            <label class="nameLabel"><input class="single checkboxMultiselect" disabled  type="checkbox" value='{{item.user_id}}'>{{item.name}}</label>
-            {% endfor %}
-        </div>
-        <label class="nameLabel labelSelectAll"><input disabled  class="deselectAll checkboxmultiselect " type="checkbox" value='0'>Select/Deselect all</label>
-    </div>
-</div>
 
-<div>
-    <div id="gridContainer" class="container" >
-        <table id="summaryTable" class='table table-condensed table-responsive table-bordered table-hover table-striped' style="display:none !important;">
-            <thead>
-            <tr>
-                <th title="Number">No.</th>
-                <th title="Student's name">Name</th>
-                <th title="Points earned">Exp. Pts.</th>
-                <th title="Bonus">Bonus</th>
-                <th title="Penalties">Penalties</th>
-                <th title="Total B/P">Total B/P</th>
-                <th title="Total points">Current Score</th>
-                <th title="Letter grade">Grade</th>
-                <th title="See student view for selected student">Details</th>
-            </tr>
-            </thead>
-            <tbody id="tableBody"></tbody>
-        </table>
-    </div>
-    <div class="bottomSpinnerDiv" style="width: 100%; height: 40px;">
-        <div style="width:60px;height:60px;position: relative;top: 50%; left: 50%;transform: translate(-50%,-50%);">
-            <i class="icon-spinner icon-spin icon-3x icon-fw margin-bottom" style="color:#337AB7;"></i>
-        </div>
-    </div>
-</div>
-
-<div id="modalStudentGradebook" class="modal fade" role="dialog">
-    <div class="modal-dialog" style="width:800px !important;">
-
-        <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title" id="studentTitle">Modal Header</h4>
-            </div>
-            <div class="modal-body">
-                <div class="gradebook top">
-                    <table class="table table-condensed table-responsive table-bordered table-striped table-hover">
-                        <caption>Current Grade</caption>
-                        <thead>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <th class='name td'>Experience Points</td>
-                            <td id="tdExpPoints"></td>
-                        </tr>
-                        <tr>
-                            <th class='name td'>Bonus</td>
-                            <td id="tdBonus"></td>
-                        </tr>
-                        <tr>
-                            <th class='name td'>Penalties</td>
-                            <td id="tdPenalties"></td>
-                        </tr>
-                        <tr>
-                            <th class='imp'>Total Points</td>
-                            <td class='imp' id="tdTotalPoints"></td>
-                        </tr>
-                        <tr id="currentGrade">
-                            <th class='imp'>Current Grade</td>
-                            <td class='imp' id="tdCurrentGrade"><span id="spanCurrentGrade"></span>&nbsp;<a id="aGradeHover" style="color:#337AB7 !important;font-size:20px;"><i id="iGradeTooltip" class="fa fa-question-circle"></i></a></td>
-                        </tr>
-                        </tbody>
-                    </table>
+<div class="control-tabs primary-tabs m-t-1" data-control="tab">
+    <ul class="nav nav-tabs grade-tabs">
+        <li><a>Progress</a></li>
+        <li><a>Grades</a></li>
+        <li><a>Assignments</a></li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane">
+            <div id="topContainer">
+                <div class="graphContainer">
+                        <div class="spinnerDiv" style="width:100%;height:400px;">
+                            <div style="width:60px;height:60px;position: absolute;top: 50%; left: 50%;transform: translate(-50%,-50%);">
+                                <i class="fa fa-spinner fa-pulse margin-bottom" style="color:#337AB7;"></i>
+                            </div>
+                        </div>
+                        <h3 class="title-graph">Timeline</h3>
+                        <div id="chart"  style="width:800px;height:400px;opacity:0.5;"></div>
+                        <div  id="topRight" style="opacity:0.5">
+                            <div class="cont">
+                                <div class="multiselect" id="students-checkbox">
+                                    {% for item in users %}
+                                    <label class="nameLabel"><input class="single checkboxMultiselect" disabled  type="checkbox" value='{{item.user_id}}'>{{item.name}}</label>
+                                    {% endfor %}
+                                </div>
+                                <div class="Q123MinMax container btn-group" role="group" aria-label="...">
+                                    <div class="btn-group" data-toggle="buttons">
+                                        <label class="btn btn-info disabled">
+                                            <input type="checkbox" class="btn btn-info" id="avMin" >Min</input>
+                                        </label>
+                                    </div>
+                                    <div class="btn-group" data-toggle="buttons">
+                                        <label class="btn btn-info disabled">
+                                            <input type="checkbox" class="btn btn-info" id="avQ1" >Q1</input>
+                                        </label>
+                                    </div>
+                                    <div class="btn-group" data-toggle="buttons">
+                                        <label class="btn btn-info disabled">
+                                            <input type="checkbox" class="btn btn-info" id="avMedian" >Median</input>
+                                        </label>
+                                    </div>
+                                    <div class="btn-group" data-toggle="buttons">
+                                        <label class="btn btn-info disabled">
+                                            <input type="checkbox" class="btn btn-info" id="avMean" >Mean</input>
+                                        </label>
+                                    </div>
+                                    <div class="btn-group" data-toggle="buttons">
+                                        <label class="btn btn-info disabled">
+                                            <input type="checkbox" class="btn btn-info" id="avQ3" >Q3</input>
+                                        </label>
+                                    </div>
+                                    <div class="btn-group" data-toggle="buttons">
+                                        <label class="btn btn-info disabled">
+                                            <input type="checkbox" class="btn btn-info" id="avMax" >Max</input>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="left-val">
+                                    <div class="labelSelectAll btn-group" data-toggle="buttons">
+                                        <label class="nameLabel btn btn-info active">
+                                            <input disabled type="checkbox" class="deselectAll checkboxmultiselect btn btn-info" value="0">Select all</input>
+                                        </label>
+                                    </div>
+                                    <div class="cont-sorting">
+                                        <div class="sort-name"><i class="fa fa-sort-alpha-asc"></i></div>
+                                        <div class="sort-total"><i class="fa fa-sort-numeric-asc"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                 </div>
-                <div id="spinner">
-                    <span id="bottomSpinner" class="icon-refresh icon-spin icon-3x icon-fw margin-bottom" style="text-align:center;"></span>
+
+                <div class="range-blocks container-fluid col-md-12 m-b-5">
+                    <div class="row-fluid m-l-6">
+                        <div class="date-slider-container col-md-6 m-t-2 col-sm-4">
+                            <span class="date">Date</span>
+                            <div class="col-md-1 col-sm-1">
+                                <button type="button" class="btn btn-primary btn-xs player"><i class="fa fa-play"></i></button>
+                            </div>
+                            <div class="col-md-10 col-sm-9">
+                                <div class="my-ui-slider"></div>
+                            </div>
+                        </div>
+                        <div class="range-slider-container col-sm-3 col-md-6 m-t-2">
+                            <span class="rg">Range</span>
+                            <div class="col-md-9 range-slider"></div>
+                        </div>
+                    </div>
                 </div>
-                <div class="gradebook" id="gradebook" style="text-align:center;">
+                <h3 class="title-graph counts histogramRVS">Counts</h3>
+                <div id='histogram'></div>
+                <div id='boxPlot'></div>
+                <div class="container-fluid m-t-2 m-b-2 col-md-12">
+                    <div class="row-fluid m-l-6">
+                        <div class="histogramGroup container btn-group col-md-3 histogramRVS" role="group">
+                        <div class="btn-group">
+                            <label class="btn btn-info active disabled">
+                                <input type="radio" name='histogram' checked class="btn btn-info hide histRadio" id="hPoint" />Points
+                            </label>
+                        </div>
+                        <div class="btn-group">
+                            <label class="btn btn-info disabled">
+                                <input type="radio" name='histogram' class="btn btn-info hide histRadio" id="hMilestone" />Milestones
+                            </label>
+                        </div>
+                        <div class="btn-group">
+                            <label class="btn btn-info disabled hGrade">
+                                <input type="radio" name='histogram' data-disable = "disabled" disabled class="btn btn-info hide histRadio" id="hGrade" />Grades
+                            </label>
+                        </div>
+                        </div>
+                        <div class="histogram-date-slider-container col-md-4 m-t-2 col-sm-4 histogramRVS">
+                            <span class="date r-name">Date</span>
+                            <div class="col-md-1 col-sm-1 m-r-1">
+                                <button type="button" class="btn btn-primary btn-xs histogram-player"><i class="fa fa-play"></i></button>
+                            </div>
+                            <div class="col-md-9 col-sm-9">
+                                <div class="histogram-date"></div>
+                            </div>
+                        </div>
+                        <div class="range-slider-container col-sm-4 col-md-5 m-t-2 histogramRVS">
+                            <span class="rg r-name">Interval</span>
+                            <div class="col-md-7 histogram-range-slider"></div>
+                            <div class="like-interval col-md-2">
+                                <input type="number" min="10" max="100000" step="1" class="like-interval-inp">
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <div class="empty"></div>
             </div>
         </div>
+        <div class="tab-pane">
+            <div class="container-fluid dashboard-container">
+                <h3>Averages</h3>
+                <div class="dcontent" id="4">
+                    <div>
+                        <span>Experience Points</span>
+                        <p class="expt"></p>
+                        <i class="fa fa-graduation-cap" aria-hidden="true"></i>
+                    </div>
+                </div>
+                <div class="dcontent" id="10">
+                    <div>
+                        <span>Current Score</span>
+                        <p class="currnent"></p>
+                        <i class="fa fa-star-o" aria-hidden="true"></i>
+                    </div>
+                </div>
+                <div class="dcontent" id="5">
+                    <div>
+                        <span>Bonus</span>
+                        <p class="bonus"></p>
+                        <i class="fa fa-gift" aria-hidden="true"></i>
+                    </div>
+                </div>
+                <div class="dcontent" id="6">
+                    <div>
+                        <span>Penalties</span>
+                        <p class="penalty"></p>
+                        <i class="fa fa-gavel" aria-hidden="true"></i>
+                    </div>
+                </div>
+                <div class="dcontent" id="9">
+                    <div>
+                        <span>Total B/P</span>
+                        <p class="total"></p>
+                        <i class="fa fa-star-half-o" aria-hidden="true"></i>
+                    </div>
+                </div>
+                <div class="dcontent" id="7">
+                    <div>
+                        <span>Possible Bonus</span>
+                        <p class="possBonus"></p>
+                        <i class="fa fa-magic" aria-hidden="true"></i>
+                    </div>
+                </div>
+                <div class="dcontent" id="8">
+                    <div>
+                        <span>Probable Penalties</span>
+                        <p class="probPenalty"></p>
+                        <i class="fa fa-balance-scale" aria-hidden="true"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="cont">
+                <h3>Students</h3>
+                <div id="gridContainer" class="container"></div>
+                <div class="bottomSpinnerDiv" style="width: 100%; height: 40px;margin-top:23%;">
+                    <div style="width:60px;height:60px;position: relative;top: 50%; left: 50%;transform: translate(-50%,-50%);">
+                        <i class="fa fa-spinner fa-pulse margin-bottom" style="color:#337AB7;"></i>
+                    </div>
+                </div>
+            </div>
 
+            <div class="control-popup modal fade" id="content-confirmation" tabindex="-1" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title">Settings</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row m-t-1">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control subtraction">
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <p class="lh">Number of student experience points away from the red line before the 'Details' cell turns red (This will help you identify students that are struggling)</p>
+                                </div>
+                            </div>
+                            <p>Use checkboxes to select columns you want to see in the list.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">Apply</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="modalStudentGradebook" class="modal fade" role="dialog">
+                <div class="modal-dialog" style="width:800px !important;">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title" id="studentTitle">Modal Header</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="gradebook top">
+                                <table class="table table-condensed table-responsive table-bordered table-striped table-hover">
+                                    <caption>Current Grade</caption>
+                                    <thead>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <th class='name td'>Experience Points</td>
+                                        <td id="tdExpPoints"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class='name td'>Bonus</td>
+                                        <td id="tdBonus"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class='name td'>Penalties</td>
+                                        <td id="tdPenalties"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class='imp'>Total Points</td>
+                                        <td class='imp' id="tdTotalPoints"></td>
+                                    </tr>
+                                    <tr id="currentGrade">
+                                        <th class='imp'>Current Grade</td>
+                                        <td class='imp' id="tdCurrentGrade"><span id="spanCurrentGrade"></span>&nbsp;<a id="aGradeHover" style="color:#337AB7 !important;font-size:20px;"><i id="iGradeTooltip" class="fa fa-question-circle"></i></a></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div id="spinner">
+                                <span id="bottomSpinner" class="fa fa-refresh fa-spin fa-3x fa-fw margin-bottom" style="text-align:center;"></span>
+                            </div>
+                            <div class="gradebook" id="gradebook" style="text-align:center;"></div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div id="jsGrid"></div>
+
+            <div id='tabhistogram'></div>
+        </div>
+        <div class="tab-pane">
+            <div id="assignments-container" class="container"></div>
+        </div>
     </div>
 </div>
-
-
-<script type="text/javascript" src="plugins/delphinium/blossom/assets/javascript/light-table-sorter.min.js"></script>
-<script> LightTableSorter.init()</script>
-
-

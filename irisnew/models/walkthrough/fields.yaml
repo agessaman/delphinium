@@ -1,0 +1,27 @@
+fields: {  }
+tabs:
+    fields:
+        id:
+            label: ID
+            disabled: true
+            span: auto
+            type: text
+            tab: 'Walk Through'
+        name:
+            label: Name
+            span: auto
+            comment: 'Enter the name of this instance'
+            tab: 'Walk Through'
+            type: text
+        animate:
+            label: Animate
+            span: auto
+            type: switch
+            comment: 'On = component will be animated.'
+            tab: 'Walk Through'
+        size:
+            label: Size
+            span: auto
+            comment: 'Enter the the size of component you want as a percent (no sign)'
+            tab: 'Walk Through'
+            type: text

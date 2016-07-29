@@ -18,56 +18,18 @@
   ~ You can modify personal copy of source-code but cannot distribute modifications
   ~ You may not distribute any version of this software, modified or otherwise
   -->
-
+<script type="text/javascript">
+  var chartData = {{chartData | raw}};
+  var chartData = {{chartData | raw}};
+  var numMilestones = {{numMilestones}};
+  var submissions = {{submissions | raw}};
+  var students = {{users | raw}};
+  var experienceInstanceId = {{experienceInstanceId}};
+  var today = {{today}};
+  var endDate = {{ endDate | raw}};
+</script>
 {%if ('Instructor' in userRoles or 'TeachingAssistant' in userRoles)%}
 {% partial __SELF__ ~ "::instructor" %}
 {% else %}
-
-<script>
-    var gradingScheme = {{grading_scheme|raw}};
-</script>
-<!-- STUDENT'S INTERFACE
- 	Bonus/penalties-->
-
-<div class="gradebook top">
-
-    <table class="table table-condensed table-responsive table-bordered table-striped table-hover">
-        <caption>Current Grade</caption>
-        <thead>
-        </thead>
-        <tbody>
-        <tr>
-            <th class='name td'>Experience Points</td>
-            <td>{{totalPts|round(2, 'common')}}</td>
-        </tr>
-        <tr>
-            <th class='name td'>Bonus</td>
-            <td>{{bonus|round(2, 'common')}}</td>
-        </tr>
-        <tr>
-            <th class='name td'>Penalties</td>
-            <td>{{penalties|round(2, 'common')}}</td>
-        </tr>
-        <tr>
-            <th class='imp'>Total Points</td>
-            <td class='imp'>{{(totalPts + bonus + penalties)|round(2, 'common')}}</td>
-        </tr>
-        <tr id="currentGrade">
-            <th class='imp'>Current Grade</td>
-            <td class='imp'>{{letterGrade}} <a style="color:#337AB7 !important;font-size:20px;"><i id="iGradeTooltip" class="fa fa-question-circle"></i></a></td>
-        </tr>
-        </tbody>
-    </table>
-</div>
-<div class="gradebook" id="gradebook" style="text-align:center;">
-    <div id="spinner">
-        <span id="bottomSpinner" class="icon-refresh icon-spin icon-3x icon-fw margin-bottom"></span>
-    </div>
-</div>
-
-<script type="text/javascript">
-    var bonus = {{bonus}};
-    var penalties = {{penalties}};
-</script>
+{% partial __SELF__ ~ "::student" %}
 {% endif %}
-

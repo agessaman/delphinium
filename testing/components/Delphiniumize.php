@@ -25,13 +25,13 @@ namespace Delphinium\Testing\Components;
 use Cms\Classes\ComponentBase;
 use System\Classes\UpdateManager;
 use October\Rain\Support\Str;
+use Delphinium\Greenhouse\Templates\Component;
 use Delphinium\Greenhouse\Templates\Plugin;
-use Delphinium\Vanilla\Templates\Component;
-use Delphinium\Vanilla\Templates\Controller;
-use Delphinium\Vanilla\Templates\Model;
+use Delphinium\Greenhouse\Templates\Controller;
+use Delphinium\Greenhouse\Templates\Model;
 use Delphinium\Vanilla\Classes\PluginNodeVisitor;
-use Delphinium\Vanilla\Classes\ControllerNodeVisitor;
-use Delphinium\Vanilla\Classes\ComponentNodeVisitor;
+use Delphinium\Testing\Classes\ControllerNodeVisitor;
+use Delphinium\Testing\Classes\ComponentNodeVisitor;
 use October\Rain\Filesystem\Filesystem;
 use PhpParser\ParserFactory;
 use PhpParser\Error;
@@ -66,7 +66,7 @@ class Delphiniumize extends ComponentBase
 
     public function onRun()
     {
-        $vars =  array("author"=>"Delphinium","plugin"=>"Blossom", "component"=>"A", "controller"=>"A", "model"=>"A", "description"=>"Some desc", "icon"=>'ic-leaf');
+        $vars =  array("author"=>"Author","plugin"=>"NewPl", "component"=>"NewComp", "controller"=>"NewCont", "model"=>"NewMod", "description"=>"Some desc");
 //        $vars =  array("author"=>"author","plugin"=>"newPlugin", "component"=>"newComponent", "controller"=>"newController", "model"=>"newModel");
 
         $this->readyVars = $this->processVars($vars);
@@ -74,7 +74,6 @@ class Delphiniumize extends ComponentBase
         $this->newPluginData = $vars;
 //        $this->makeFiles();
         $this->modifyFiles();
-        $this->octoberUp( $vars['author'].".".$vars['plugin']);
 //        $this->octoberUp($this->newPluginData['author'].".".$this->newPluginData['plugin']);
 //        $this->octoberUp("Author.Vanillaando");
     }
@@ -94,7 +93,7 @@ class Delphiniumize extends ComponentBase
     {
         $old_umask = umask(0);//we will change the umask to make the respective directories and files 777
         //so that users can edit them after they are created, otherwise only the apache group will be able to edit them
-//        $this->createPlugin();
+        $this->createPlugin();
         $this->createComponent();
         $this->createController();
         $this->createModel();
@@ -182,8 +181,8 @@ class Delphiniumize extends ComponentBase
     private function modifyFiles()
     {//the model doesn't need to be modified
 //        $this->modifyController();
-//        $this->modifyComponent();
-        $this->modifyPlugin();
+        $this->modifyComponent();
+//        $this->modifyPlugin();
 //        $this->modifyVersion();
 
     }

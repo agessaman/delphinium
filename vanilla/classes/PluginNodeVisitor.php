@@ -65,16 +65,13 @@ class PluginNodeVisitor extends NodeVisitorAbstract
             $methods = $node->stmts;
             foreach($methods as $method)
             {
-                if($method instanceof Node\Stmt\ClassMethod)
+                if($method->name =="boot")
                 {
-                    if($method->name =="boot")
-                    {
-                        $this->hasBoot = true;
-                    }
-                    if($method->name =="pluginDetails")
-                    {
+                    $this->hasBoot = true;
+                }
+                if($method->name =="pluginDetails")
+                {
 
-                    }
                 }
             }
             if(!$this->hasBoot)
@@ -133,14 +130,12 @@ class PluginNodeVisitor extends NodeVisitorAbstract
                         $this->hasComponent = count($diffModel) == 0 ? true : false;
                     }
 
+                    if(!$this->hasComponent)
+                    {//add the component
+                        $newComponent = $this->newArrayItem($this->componentPath,$this->componentAlias);
+                        $nodeChild->expr->items[]=$newComponent;
+                    }
                 }
-            }
-
-
-            if(!$this->hasComponent)
-            {//add the component
-                $newComponent = $this->newArrayItem($this->componentPath,$this->componentAlias);
-                $nodeChild->expr->items[]=$newComponent;
             }
         }
     }
@@ -217,7 +212,7 @@ class PluginNodeVisitor extends NodeVisitorAbstract
         $label = $this->newArrayItem('label', $this->controllerAlias);
         $icon = $this->newArrayItem('icon', $this->icon);
         $owner = $this->newArrayItem('owner', 'Delphinium.Greenhouse');
-        $group = $this->newArrayItem('group', ucfirst($this->plugin));
+        $group = $this->newArrayItem('group', $this->plugin);
         $arr = array($label, $icon, $owner, $urlItem, $group);
 
         $newSideItem = $this->newArrayItem($this->controllerAlias,$arr, false);

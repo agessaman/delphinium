@@ -4,7 +4,7 @@
  * This file is subject to the terms and conditions defined in
  * file 'https://github.com/ProjectDelphinium/delphinium/blob/master/EULA',
  * which is part of this source code package.
- *
+f *
  * NOTICE:  All information contained herein is, and remains the property of Project Delphinium. The intellectual and technical concepts contained
  * herein are proprietary to Project Delphinium and may be covered by U.S. and Foreign Patents, patents in process, and are protected by trade secret or copyright law.
  * Dissemination of this information or reproduction of this material is strictly forbidden unless prior written permission is obtained
@@ -28,6 +28,63 @@
     font-family: "Helvetica Neue",Helvetica,Arial,sans-serif !important;
 }
 
+.m-t-1 {
+    margin-top: 10px;
+}
+.m-t-2 {
+    margin-top: 20px;
+}
+.m-t-3 {
+    margin-top: 30px;
+}
+.m-l-1 {
+    margin-left: 10px;
+}
+.m-l-2 {
+    margin-left: 20px;
+}
+.m-l-3 {
+    margin-left: 30px;
+}
+.m-l-4 {
+    margin-left: 40px; 
+}
+.m-l-5 {
+    margin-left: 50px;
+}
+.m-l-6 {
+    margin-left: 60px;
+}
+.m-l-7 {
+    margin-left: 70px;
+}
+.m-l-12 {
+    margin-left: 120px;
+}
+.m-r-1 {
+    margin-right: 10px;
+}
+.m-r-2 {
+    margin-right: 20px;
+}
+.m-r-3 {
+    margin-right: 30px;
+}
+.m-b-1 {
+    margin-bottom: 10px;
+}
+.m-b-2 {
+    margin-bottom: 20px;
+}
+.m-b-3 {
+    margin-bottom: 30px;
+}
+.m-b-4 {
+    margin-bottom: 40px;
+}
+.m-b-5 {
+    margin-bottom: 50px;
+}
 .tooltip
 {
     position: absolute;
@@ -80,7 +137,8 @@ a:hover
 {
     text-align: center;
 }
-.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+.table-hover tbody tr:hover td,
+.table-hover tbody tr:hover th {
     background-color: #ebf1ff;
 }
 .gradebook
@@ -128,11 +186,11 @@ a:hover
 #topContainer
 {
     text-align:center;
-    margin:auto;
+    margin-top: -20px;
 }
 #gridContainer
 {
-    margin-top:70px;
+    padding: 0 5px !important;
     width:900px !important;
 }
 .container th:after {
@@ -159,15 +217,17 @@ a:hover
 #chart{
     display: inline-block;
     float:left;
+    /*margin-left: 9px;*/
+    margin-left: 41px;
 }
-#chart path {
-    stroke: steelblue;
-    stroke-width: 2;
+#chart path:not(.domain) {
+    stroke: black;
+    stroke-width: 2px;
     fill: none;
 }
 .spinnerDiv
 {
-    width:400px;
+    width:80% !important;
     height:800px;
     position:absolute;
     margin:auto;
@@ -181,11 +241,15 @@ a:hover
     text-align:center;
 }
 .multiselect {
-    width:180px;
-    height:370px;
-    border:solid 1px #c0c0c0;
-    overflow:auto;
-    text-align:left;
+    max-width: 190px;
+    height: 363px;
+    border: solid 1px #c0c0c0;
+    overflow: auto;
+    text-align: left;
+    position: relative;
+    top: 29px;
+    margin-right: 10px;
+    min-width: 100px;
 }
 
 .multiselect label {
@@ -201,10 +265,10 @@ a:hover
 {
     margin:0 3px !important;
 }
-.nameLabel
+/*.nameLabel
 {
     color:gray;
-}
+}*/
 .labelSelectAll
 {
     float:left;
@@ -236,4 +300,633 @@ a:hover
 .table-gradingScheme thead tr th{
     padding: 0 5px !important;
     text-align:left !important;
+}
+#gridContainer{
+    width:98% !important;
+}
+#gridContainer input{
+    width:100%;
+}
+#gridContainer .jsgrid-header-row th{
+    position:relative;
+    text-align:center !important;
+    font-size:12px !important;
+    padding-left: 18px;
+}
+#gridContainer .jsgrid-header-row th:not(.details, .checkbox-field){
+    padding-left: 20px !important;
+}
+#gridContainer .jsgrid-table td{
+    font-size:13px !important;
+}
+#gridContainer .jsgrid-align-right{
+    text-align:center;
+}
+.one_point:after{
+    content:'.';
+}
+.nouislider{
+    z-index:100;
+    position : absolute;
+    display:none;
+    padding: 18px 27px 10px 27px;
+    background:#fff;
+    width : 300px;
+    margin-top: 8px;
+    border: 1px solid #CCC !important;
+}
+.nouislider .ui-slider-handle .ui-slider-tip{
+    width: 50px !important;
+    margin-left: -25px !important;
+}
+.my-ui-slider .ui-slider-label,
+.range-slider .ui-slider-label {
+    /*color: #FF7A00 !important;*/
+}
+.ui-slider-label {font-weight: normal;}
+.cont {
+    width: 100%;
+    height: 470px;
+}
+.my-ui-slider .ui-slider-label:hover,
+.range-slider .ui-slider-label:hover {
+    color: #999 !important;
+}
+#topRight .left-val {
+    width: 196px;
+    height: 40px;
+    position: relative;
+    top: 5px;
+    left: 357px;
+}
+.left-val{
+    float:left;
+}
+.right-val{
+    float:right;
+}
+.left-val, .right-val{
+    margin-top:13px;
+    color:white;
+}
+.range{
+    font-size: 26px;
+    color: #ccc;
+    text-align: center;
+    display: block;  
+}
+
+.range:hover,
+.checkbox-field:hover > .filter_checkbox {
+    color: #757575 !important;
+}
+.text_blue {
+    color: #2995e3;
+}
+.filter {
+    position: relative;
+    font-size: 18px !important;
+    color: #ccc;
+    margin: -23px 0 0 5px;
+}
+.rangearr {
+    background: #fff;
+    width: 15px;
+    height: 15px;
+    position: absolute;
+    top: -8px;
+    transform: rotate(45deg);
+    left: 47%;
+    border-top: 1px solid #CCCCCC;
+    border-left: 1px solid #CCCCCC;
+}
+.jsgrid-table td {
+    position: initial;
+}
+.range-field {
+    text-align: center;
+}
+.table_set {
+    font-size: 22px;
+    color: #4da7e8;
+}
+.table_set:hover {
+    color: #0181b9;
+}
+.jsgrid-table input[type="button"] {
+    text-align: center;
+}
+/* .jsgrid-alt-row td {
+    background: #f5f5f5 !important;
+} */
+.jsgrid-selected-row td:not(.details){
+    background: #c4e2ff !important;
+}
+.col_no {
+    font-size: 15px !important;
+}
+.details_icon {
+    font-size: 28px;
+    margin-top: -3px;
+}
+.details {
+    text-align: center;
+    cursor: default !important;
+}
+td.details a {
+    outline: none;
+    cursor: pointer;
+    color: #4da7e8 !important;
+    background: #fcfcfc;
+    display: inline-block;
+    width: 28px;
+    margin: 0 auto;
+    height: 20px;
+}
+td.details a:hover{
+    color: #337ab7 !important;
+}
+td.checkbox-field {
+    text-align: left;
+}
+.jsgrid-filter-row .checkbox-field {
+    text-align: center !important;
+}
+/*.checkbox-field {
+    padding: 5px 13 5px 20px !important;
+}*/
+td.checkbox-field .filter_checkbox {
+    font-size: 22px;
+    color: #ccc;
+}
+.checkbox_filter_conternt {
+    position: absolute;
+    min-width: 180px;
+    border: 1px solid #ccc;
+    margin-left: -6px;
+    text-align: left;
+    display: block;
+    background: #fff;
+    max-height: 250px;
+    max-width: 16%;
+    margin-top: 17px;
+    overflow-y: auto;
+}
+.checkbox_filter_conternt input{
+    width: auto !important;
+    margin-right: 7px;
+    position: relative;
+    top: 2px;
+}
+.first_name, .last_name, .grade, .sections {
+    word-wrap: break-word;
+}
+.jsgrid-header-sortable:before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 14px;
+    left: 5px;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 5px 5px 5px;
+    border-color: transparent transparent #ccc transparent;
+}
+.jsgrid-header-sortable:after {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 22px;
+    left: 5px;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 5px 5px 0 5px;
+    border-color: #ccc transparent transparent transparent;
+}
+.jsgrid-header-sort-desc:before{
+    border-width: 0 5px 5px 5px !important;
+    border-color: transparent transparent #ccc transparent !important;
+}
+.jsgrid-header-sort-desc:after{
+    border-color: #39B3D7 transparent transparent transparent !important;
+}
+.checkbox_filter_conternt .custom-checkbox {
+    margin-left: 11px !important;
+}
+.checkbox_filter_conternt label{    
+    padding-top: 12px !important;
+}
+.my-arrow {
+    background: #fff;
+    border-top: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    margin-top: 7px;
+    transform: rotate(45deg);
+    margin-left: 6%;
+    z-index: 11;
+    display: none;
+}
+.jsgrid-grid-body td {
+    cursor: default !important;
+}
+.jsgrid-grid-body td.number {
+    padding-left: 1em;
+}
+.ui-slider-pip-first .ui-slider-label,
+.ui-slider-pip-last .ui-slider-label {
+    width: 9em !important;
+}
+.bottomSpinnerDiv i, .spinnerDiv i {
+    font-size: 40px !important;
+}
+.player,
+.histogram-player {
+    height: 19px;
+    margin-top: -2px;
+}
+.ui-slider-pip .ui-slider-label {
+    left: -27px !important;
+}
+.my-ui-slider .ui-slider-handle .ui-slider-tip,
+.histogram-date  .ui-slider-handle .ui-slider-tip {
+    left: 2px !important;
+}
+.my-ui-slider .ui-slider-tip, .my-ui-slider .ui-slider-tip-label,
+.histogram-date .ui-slider-tip, .histogram-date .ui-slider-tip-label {
+    width: 50px !important;
+}
+.slider-container {
+    display: block !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+.date{
+    display: inline-block;
+    font-size: 15px;
+    float: left;
+    line-height: 14px;
+}
+.rg {
+    line-height: 14px;
+    font-size: 15px;
+    float: left;
+    margin-right: 17px;
+}
+.jsgrid-filter-row td,
+.ui-slider-handle,
+.noUi-handle {
+    cursor:pointer !important;
+}
+.jsgrid-header-scrollbar {
+    margin-top: 10px;
+}
+.graphContainer {
+    margin: 0 auto;
+}
+.cont-sorting {
+    background: #fff;
+    height: 38px;
+    width: 90px;
+    border-radius: 3px;
+    color: #000;
+    text-align: left;
+    float: right;
+    position: relative;
+    left: -18px;
+    top: 0px;
+}
+.sort-name,
+.sort-total {
+    position: relative;
+    cursor: pointer;
+}
+.sort-name i,
+.sort-total i {
+    font-size: 18px;
+}
+.sort-total i {
+    margin-top: 9px;
+    margin-left: 22px;
+}
+.sort-name i {
+    margin-left: 20px;
+    margin-top: 8px;
+}
+.sort-name {
+    float: left;
+    height: 38px;
+    background: #fff;
+    width: 46px;
+    border: 1px solid silver;
+    top: 0px;
+    left: -1px;
+}
+.sort-name-desc:before  {
+    border-color:#fff transparent #fff transparent !important;
+}
+.sort-name-desc:after  {
+    border-color:transparent !important;
+}
+.sort-name-asc:after{
+    border-color:#fff transparent #fff transparent !important;
+}
+.sort-name-asc:before{
+    border-color:transparent !important;
+}
+.sort-total {
+    float: left;
+    height: 38px;
+    width: 48px;
+    background: #fff;
+    border: 1px solid silver;
+    left: 44px;
+    border-radius: 0 2px 2px 0;
+    top: -38px;
+}
+.sort-name:after,
+.sort-total:after {
+    position: absolute;
+    top: 18px;
+    content: " ";
+    display: block;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 5px 5px 0 5px;
+    border-color: #ccc transparent transparent transparent;
+}
+.sort-name:after {
+    left: 6px;
+}
+.sort-total:after {
+    right: 28px;
+}
+.sort-name:before,
+.sort-total:before {
+    position: absolute;
+    top: 9px;
+    content: " ";
+    display: block;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 5px 5px 5px;
+    border-color: transparent transparent #ccc transparent;
+}
+.sort-name:before {
+    left: 6px;
+}
+.sort-name-desc {
+    background: #39b3d7;
+}
+.sort-name-desc i, .sort-name-asc i {
+    color: #fff;
+}
+.sort-name-desc:hover {
+    background: rgba(57, 179, 215, 0.66) !important
+}
+.sort-name-asc:hover {
+    background: rgba(57, 179, 215, 0.66) !important
+}
+.sort-name-asc{
+    background: #39b3d7;
+}
+
+.sort-name-desc:before {
+    border-width: 0 5px 5px 5px;
+    border-color: transparent transparent #39B3D7 transparent;
+}
+.sort-name-asc:after {
+    border-width: 5px 5px 0 5px;
+    border-color: #39B3D7 transparent transparent transparent;
+}
+.sort-total:before {
+    right: 28px;
+}
+.grade-tabs li > a {
+    cursor: pointer;
+}
+.Q123MinMax {
+    width: 409px;
+    margin-top: 17px;
+    margin-left: 74px;
+    float: left;
+    clear: both;
+}
+.sort-total:hover, .sort-name:hover {
+    background: #39b3d7;
+    color: black;
+}
+.sort-total:hover:after, .sort-total:hover:before, .sort-name:hover:after, .sort-name:hover:before  {
+    border-color:#fafbf9 transparent #fff transparent;
+}
+.sort-name:hover >  i, .sort-total:hover >  i {
+    color: #fff;
+}
+.range-blocks {
+    margin-top:0px;
+}
+.nameLabel span {
+    position: relative;
+    top: -3px;
+}
+.milestone {
+    stroke: #f5f5f5 !important;
+}
+.btn-info {
+    color: #555555;
+    border: 1px solid #C0C0C0 !important;
+    background: #fff;
+}
+.btn-info .active {
+    border: 1px solid #fff;
+    color: #fff;
+}
+.btn-group label.active:hover {
+    background: rgba(57, 179, 215, 0.66) !important;
+}
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track{
+    background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb{
+    background: #c1c1c1;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #989898;
+}
+::-webkit-scrollbar-thumb:active {
+    background: #808080;
+}
+th.details {
+    padding-left: 10px !important;
+}
+::-webkit-scrollbar-thumb
+{
+  background: rgba(0, 0, 0, 0.5);
+}
+.histogramRVS {
+    display: none;
+}
+#boxPlot {
+    height: 80px;
+    margin-left: 25px;
+}
+#boxPlot svg {
+  border: none;
+}
+
+#boxPlot line {
+  shape-rendering: crispEdges;
+  stroke: #000000;
+}
+
+#boxPlot  line.minor  {
+  stroke: #777777;
+  stroke-dasharray: 2,2;
+}
+
+#boxPlot  path.domain {
+  fill: none;
+  stroke: black;
+}
+.histogramXA .tick {
+    font-size: 12px !important;
+}
+.histogramGroup {
+    margin-top: 7px;
+}
+.histogramGroup .btn {
+    padding: 9px !important;
+}
+.empty {
+    height: 30px;
+}
+::-webkit-scrollbar-track{
+    background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb{
+    background: #c1c1c1;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #989898;
+}
+::-webkit-scrollbar-thumb:active {
+    background: #808080;
+}
+th.details {
+    padding-left: 10px !important;
+}
+.bar{
+    fill: steelblue;
+}
+.title-graph {
+    margin: 55px 15px 15px 15px;
+    text-align: left !important;
+}
+.user {
+    stroke: #024b88;
+}
+#assignments-container table tr td {
+    padding: 10px;
+}
+#assignments-container table tr td:nth-child(2) {
+    text-align: right;
+}
+.chart {
+/*    float: none !important;
+    margin-right: 90px;*/
+}
+.user-line {
+    stroke: orange !important;
+    opacity: 2;
+    stroke-width: 5 !important;
+}
+.histogram-range-slider .ui-slider-handle .ui-slider-tip {
+    width: 50px !important;
+    left: 14% !important;
+}
+.histogram-range-slider .ui-slider-pip-first,
+.histogram-range-slider .ui-slider-pip-last {
+    color: #FF7A00 !important;
+}
+.color-grey {
+    color: grey;
+}
+.like-interval {
+    margin-top: -7px;
+    text-align: center;
+}
+.dcontent {
+    width: 14.28%;
+    position: relative;
+    min-height: 1px;
+    padding-left: 0px;
+    padding-right: 9px;
+    float: left;
+}
+.dcontent div {
+    border: 1px solid #e0e0e0;
+    text-align: center;
+    padding-top: 11px;
+    box-shadow: 2px 2px 4px #888888;
+    border-radius: 5px;
+    background: white;
+}
+.dcontent span {
+    color: #617f9e;
+    font-weight: bold;
+}
+.dcontent p {
+    margin: 0 0 10px;
+    font-size: 22px;
+    position: relative;
+    top: 8px;
+    left: 9px;
+    color: #aaa;
+}
+.dcontent i {
+    margin: -35px 0px 19px -82px;
+    font-size: 40px;
+    color: #e0e0e0;
+}
+.dashboard-container h3 {   
+    margin-top: 40px;
+    margin-left: 2px;
+    margin-bottom: 16px;
+}
+.cont h3{
+    margin-top: 40px;
+    margin-left: 15px;
+}
+.red {
+    background:#fb7b7b !important;
+}
+.green {
+    background:#7bfb8a !important;
+}
+.yellow {
+    background:#f8fb7b !important;
+}
+.lh {
+line-height: 14px;
+font-size: 13px;
+color: #666666;
+}
+.subtraction {
+    border-radius: none !important;
+}
+.like-interval-inp {
+    width: 70px;
+}
+.histogram-date-slider-container {
+    margin-left: -23px;
 }

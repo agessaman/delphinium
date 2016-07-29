@@ -37,13 +37,16 @@ use \DateTimeZone;
 use \DateInterval;
 use Carbon\Carbon;
 use Delphinium\Roots\Guzzle\GuzzleHelper;
+use Delphinium\Blossom\Components\Stats as StatsComponent;
 
 class Gradebook extends ComponentBase {
 
     public $roots;
     public $studentData;
     public $users;
+    public $submissions;
     public $allStudentSubmissions;
+    public $experienceInstanceId;
 
     public function componentDetails() {
         return [
@@ -55,8 +58,9 @@ class Gradebook extends ComponentBase {
     public function defineProperties() {
         return [
             'experienceInstance' => [
-                'title' => 'Experience instance',
-                'description' => 'Select the experience instance to display the student\'s bonus and penalties',
+                'title' => '(Optional) Experience instance',
+                'description' => 'Select the experience instance to display the student\'s bonus and penalties.
+                Leaving this field blank will automatically select the experience instance for the course.',
                 'type' => 'dropdown',
             ]
         ];
@@ -66,7 +70,7 @@ class Gradebook extends ComponentBase {
         $instances = ExperienceModel::all();
 
         if (count($instances) === 0) {
-            return $array_dropdown = ['0' => 'No instances available. Bonus/penalties won\'t appear in the gradebook'];
+            return $array_dropdown = ['0' => 'No instances available.'];
         } else {
             $array_dropdown = ['0' => '- select Experience Instance - '];
             foreach ($instances as $instance) {
@@ -77,43 +81,67 @@ class Gradebook extends ComponentBase {
     }
 
     public function onRender() {
-
-        try{
-
+        //try{
             $this->roots = new Roots();
             $standards = $this->roots->getGradingStandards();
             $grading_scheme = $standards[0]->grading_scheme;
-
-            $this->addCss("/plugins/delphinium/blossom/assets/css/bootstrap.min.css");
+            $this->addCss("/plugins/delphinium/blossom/assets/css/jsgrid.css");
+            $this->addCss("/plugins/delphinium/blossom/assets/css/storm.css");
+            $this->addCss("/plugins/delphinium/blossom/assets/css/nouislider.min.css");
             $this->addCss("/plugins/delphinium/blossom/assets/css/gradebook.css");
+            $this->addCss("/plugins/delphinium/blossom/assets/css/jquery-ui-slider-pips.css");
+            $this->addCss("/plugins/delphinium/blossom/assets/css/jquery-ui.theme.css");
+            $this->addCss("/plugins/delphinium/blossom/assets/css/jquery-ui.min.css");
+
+            $this->addJs("/plugins/delphinium/blossom/assets/javascript/ui/jquery-ui.min.js");
             $this->addJs("/plugins/delphinium/blossom/assets/javascript/d3.min.js");
-            $this->addJs("/plugins/delphinium/blossom/assets/javascript/gradebook_student.js");
-            $this->page['experienceInstanceId'] = $this->property('experienceInstance');
+            $this->addJs("/plugins/delphinium/blossom/assets/javascript/ui/jquery-ui-slider-pips.js");
+            $this->addJs("/plugins/delphinium/blossom/assets/javascript/nouislider.min.js");
+            $this->addJs("/plugins/delphinium/blossom/assets/javascript/js/tab.js");
             $userRoles = $_SESSION['roles'];
+            $experienceInstance = $this->findExperienceInstance();
+            $expInst = $experienceInstance->id;
             $this->page['userRoles'] = $userRoles;
-            if (!is_null($this->property('experienceInstance'))) {
-                $instance = ExperienceModel::find($this->property('experienceInstance'));
+            $this->page['user'] = $_SESSION['userID'];
+            if (!is_null($expInst)) {
+                $instance = ExperienceModel::find($expInst);
                 $maxExperiencePts = $instance->total_points;
 
             }
             if (stristr($userRoles, 'Learner')) {
+
                 if (!isset($_SESSION))
                 {
                     session_start();
                 }
+                $this->addJs("/plugins/delphinium/blossom/assets/javascript/gradebook_student.js");
+                $aggregateSubmissionScores = $this->aggregateSubmissionScores();
+                $users = $this->roots->getStudentsInCourse();
+                $userMasterArr= array();
+                $courseEnd = $this->roots->getCourse()->end_at;
+                foreach($users as $userCourse)
+                {
+                    $userMasterArr[] = $userCourse->user;
+                }
+                $this->page['users'] = json_encode($userMasterArr);
+                $this->users = $userMasterArr;
 
                 $bonusPenalties = $this->getBonusPenalties();
 
                 $this->page['bonus'] = $bonusPenalties === 0 ? 0 : $bonusPenalties->bonus;
                 $this->page['penalties'] = $bonusPenalties === 0 ? 0 : $bonusPenalties->penalties;
+                $this->page['chartData'] = json_encode($this->getRedLineData());
+                $this->page['submissions'] = json_encode($aggregateSubmissionScores);
+                $this->page['endDate'] = json_encode($courseEnd);
+                $experience = new ExperienceComponent();
+                $this->page['today'] = $experience->getRedLinePoints($expInst);
 
-                $exp = new ExperienceComponent();
-                $pts = $exp->getUserPoints();
+                $pts = $experience->getUserPoints();
                 $this->page['totalPts'] = $pts;
 
                 //get letter grade
-                if (!is_null($this->property('experienceInstance'))) {
-                    $instance = ExperienceModel::find($this->property('experienceInstance'));
+                if (!is_null($expInst)) {
+                    $instance = ExperienceModel::find($expInst);
                     $maxExperiencePts = $instance->total_points;
 
                     $grade = new GradeComponent();
@@ -124,12 +152,16 @@ class Gradebook extends ComponentBase {
                 }
                 $this->addJs("/plugins/delphinium/blossom/assets/javascript/boxplot_d3.js");
             } else if ((stristr($userRoles, 'Instructor')) || (stristr($userRoles, 'TeachingAssistant'))) {
+                $stats = new StatsComponent();
+                $this->page['expInst'] = json_encode($stats->getStudentsStats($expInst));
                 $this->getProfessorData();
-                $this->addCss("/plugins/delphinium/blossom/assets/css/light-js-table-sorter.css");
+                $this->addJs("/plugins/delphinium/blossom/assets/javascript/jsgrid.min.js");
+                $this->addCss("/plugins/delphinium/blossom/assets/css/jsgrid-theme.css");
                 $this->addJs("/plugins/delphinium/blossom/assets/javascript/gradebook_professor.js");
                 $this->addJs("/plugins/delphinium/blossom/assets/javascript/boxplot_d3.js");
+                //$this->addCss("/plugins/delphinium/blossom/assets/css/light-js-table-sorter.css");
+                
             }
-
 
             //modify grading scheme for display to users
             foreach($grading_scheme as $grade)
@@ -138,37 +170,36 @@ class Gradebook extends ComponentBase {
             }
             $this->page['grading_scheme'] = json_encode($grading_scheme);
 
-
-        }
-        catch(\Delphinium\Roots\Exceptions\InvalidRequestException $e)
-        {
-            if($e->getCode()==401)//meaning there are two professors and one is trying to access the other professor's grades
-            {
-                return;
-            }
-            else
-            {
-                return \Response::make($this->controller->run('error'), 500);
-            }
-        }
-        catch (\GuzzleHttp\Exception\ClientException $e) {
-            return;
-        }
-        catch(Delphinium\Roots\Exceptions\NonLtiException $e)
-        {
-            if($e->getCode()==584)
-            {
-                return \Response::make($this->controller->run('nonlti'), 500);
-            }
-        }
-        catch(\Exception $e)
-        {
-            if($e->getMessage()=='Invalid LMS')
-            {
-                return \Response::make($this->controller->run('nonlti'), 500);
-            }
-            return \Response::make($this->controller->run('error'), 500);
-        }
+        // }
+        // catch(\Delphinium\Roots\Exceptions\InvalidRequestException $e)
+        // {
+        //     if($e->getCode()==401)//meaning there are two professors and one is trying to access the other professor's grades
+        //     {
+        //         return;
+        //     }
+        //     else
+        //     {
+        //         return \Response::make($this->controller->run('error'), 500);
+        //     }
+        // }
+        // catch (\GuzzleHttp\Exception\ClientException $e) {
+        //     return;
+        // }
+        // catch(Delphinium\Roots\Exceptions\NonLtiException $e)
+        // {
+        //     if($e->getCode()==584)
+        //     {
+        //         return \Response::make($this->controller->run('nonlti'), 500);
+        //     }
+        // }
+        // catch(\Exception $e)
+        // {
+        //     if($e->getMessage()=='Invalid LMS')
+        //     {
+        //         return \Response::make($this->controller->run('nonlti'), 500);
+        //     }
+        //     return \Response::make($this->controller->run('error'), 500);
+        // }
     }
 
     function onGetContent() {
@@ -221,35 +252,37 @@ class Gradebook extends ComponentBase {
     }
 
     private function getProfessorData() {
-
-        // $aggregateSubmissionScores = $this->aggregateSubmissionScores();
-
+        $aggregateSubmissionScores = $this->aggregateSubmissionScores();
         $users = $this->roots->getStudentsInCourse();
-        $userMasterArr= array();
+        $userMasterArr = array();
+        $courseEnd = $this->roots->getCourse()->end_at;
         foreach($users as $userCourse)
         {
             $userMasterArr[] = $userCourse->user;
         }
         $this->page['users'] = json_encode($userMasterArr);
         $this->users = $userMasterArr;
+        $this->page['submissions'] = json_encode($aggregateSubmissionScores);
+
+        //$this->page['courseDate'] = json_encode($courseEnd);
 
         //comment these two lines
         // $submissionData = $this->matchSubmissionsAndUsers($users, $aggregateSubmissionScores);
         // $this->studentData = $submissionData;
         // chart data
+
         $this->page['chartData'] = json_encode($this->getRedLineData());
+        $this->page['endDate'] = json_encode($courseEnd);
         $experience = new ExperienceComponent();
-        $this->page['today'] = $experience->getRedLinePoints($this->property('experienceInstance'));
+        $this->page['today'] = $experience->getRedLinePoints($this->page['experienceInstanceId']);
 
     }
 
     private function getRedLineData() {
-        if (!is_null($this->property('experienceInstance'))) {
-            $instance = ExperienceModel::find($this->property('experienceInstance'));
-
+        if (!is_null($this->page['experienceInstanceId'])) {
+            $instance = ExperienceModel::find($this->page['experienceInstanceId']);
             $milestones = $instance->milestones;
             $this->page['numMilestones'] = count($milestones);
-
 
             $utcTimeZone = new DateTimeZone('UTC');
             $stDate = $instance->start_date->setTimezone($utcTimeZone);
@@ -258,7 +291,6 @@ class Gradebook extends ComponentBase {
             $expComponent = new ExperienceComponent();
 
             $ptsPerSecond = $expComponent->getPtsPerSecond($stDate, $endDate, $instance->total_points);
-
             $milestoneData = array();
             foreach ($milestones as $milestone) {
                 $secsTranspired = ceil($milestone->points / $ptsPerSecond);
@@ -276,10 +308,16 @@ class Gradebook extends ComponentBase {
             $newArr = $this->fillInMissingDays($stDate, $milestoneData);
             //merge arrays and order by date
             $final = array_merge($newArr, $milestoneData);
-
+		
             usort($final, function($a, $b) {
-                if ($a->date == $b->date) {
+                if ($a->date == $b->date && $a->points == $b->points) {
                     return 0;
+                }
+                if($a->date == $b->date && $a->points < $b->points){
+                    return -1;
+                }
+                if($a->date == $b->date && $a->points > $b->points){
+                    return 1;
                 }
                 return $a->date > $b->date ? 1 : -1;
             });
@@ -356,13 +394,12 @@ class Gradebook extends ComponentBase {
         $zeroMile->date = $experienceStartDateUTC->format('c');
         $newArr[] = $zeroMile;
 
-        $interval = "P1D";
+        $interval = "P0D";
         $dayBeforeMile = new \stdClass();
         $dayBeforeMile->points =0;
         $dayB = $firstD->sub(new DateInterval($interval));
         $dayBeforeMile->date = $dayB->format('c');
         $newArr[] = $dayBeforeMile;
-
 
 
         for ($i = 0; $i <= count($milestoneData) - 1; $i++) {
@@ -379,7 +416,7 @@ class Gradebook extends ComponentBase {
 
                     $newDate = $firstD->add(new DateInterval('P1D'));
 
-                    $mile->date = $newDate->format('c');
+                    $mile->date = ($j==$diff-1) ? $secondD->format('c') : $mile->date = $newDate->format('c');
                     $newArr[] = $mile;
                 }
             }
@@ -414,6 +451,14 @@ class Gradebook extends ComponentBase {
         return $masterArr;
     }
 
+    /*private function getCourseDate() {
+        
+        session_start();
+        if(!empty($_SESSION['courseID']) && !empty($_SESSION['userToken'])) {
+
+        }
+    }*/
+
     public function aggregateSubmissionScores() {
 
         $req = new SubmissionsRequest(ActionType::GET, array(), true, array(), true, true, true, false, true);
@@ -427,6 +472,7 @@ class Gradebook extends ComponentBase {
         $res = $this->orderSubmissionsByUsersAndDate($result);
         //set the results as a class variable
         $this->submissions = $res;
+
         //aggregate the scores
         $masterArr = array();
         $scoresArr = array();
@@ -490,7 +536,87 @@ class Gradebook extends ComponentBase {
             $masterArr[] = $student;
             $scoresArr[] = $subm;
         }
+        $this->page['submissions'] = json_encode($masterArr);
+        // return $scoresArr;
+        return $masterArr;
+    }
 
+    public function aggregateSubmissionStudentScores() {
+
+        $req = new SubmissionsRequest(ActionType::GET, array(), true, array(), true, true, true, false, true);
+
+        if (is_null($this->roots)) {
+            $this->roots = new Roots();
+        }
+        $result = $this->roots->submissions($req);
+        $res = $this->orderSubmissionsByUsersAndDate($result);
+        //set the results as a class variable
+        $this->submissions = $res;
+        //print_r($this->submissions);die();
+
+        //aggregate the scores
+        $masterArr = array();
+        $scoresArr = array();
+        $subm = new \stdClass();
+        $carryingScore = 0;
+        $userId = 0;
+
+        $student = new \stdClass();
+        $studentItems = array();
+        foreach ($res as $submission) {
+            if (!isset($submission['submitted_at'])) {//skip items that have no submission date
+                continue;
+            }
+
+            if ($userId === 0) {//init variables
+
+                $student->id = $submission['user_id'];
+                $subm = new \stdClass();
+                $subm->user_id = $submission['user_id'];
+            }
+            $carryingScore = $carryingScore + $submission['score'];
+            $item = new \stdClass();
+
+            $item->points = $userId === 0 ? $submission['score'] : $carryingScore;
+            $item->date = $submission['submitted_at'];
+
+            if ($userId === 0 || $userId === $submission['user_id']) {//first loop or looping through same user
+
+                //Add the current item to this user's item array
+                $studentItems[] = $item;
+                $userId = $submission['user_id'];
+                $subm->score = $carryingScore;
+            } else {//we moved on to a new student
+
+                $student->items = $studentItems;
+                //add the previous student to the master array
+                $masterArr[] = $student;
+                $student = new \stdClass(); //reset the student
+                $student->id = $submission['user_id'];
+                //if we have moved to a new student we must reset the carrying score
+                $item->points = $submission['score'];
+                $studentItems = array(); //reset the items array
+                $studentItems[] = $item;
+                //add the last item to the array
+//                $subm->score = $carryingScore;
+                $scoresArr[] = $subm;
+
+                //and start a new one
+                $subm = new \stdClass();
+                $subm->user_id = $submission['user_id'];
+                $carryingScore = $submission['score'];
+                $userId = $submission['user_id'];
+            }
+        }
+
+        //add the last student to the master array;
+        if(count($res)>0)
+        {
+            $student->id = $userId;
+            $student->items = $studentItems;
+            $masterArr[] = $student;
+            $scoresArr[] = $subm;
+        }
         $this->page['submissions'] = json_encode($masterArr);
         // return $scoresArr;
         return $masterArr;
@@ -539,6 +665,32 @@ class Gradebook extends ComponentBase {
 
     }
 
+    private function getPotential($experienceInstanceId, $userId)
+    {
+        $potential = new \stdClass();
+        $potentialBonus = 0.0;
+        $potentialPenalties = 0.0;
+        $experienceComp = new ExperienceComponent();
+        $milestoneClearanceInfo = $experienceComp->getMilestoneClearanceInfo($experienceInstanceId, $userId);
+        foreach($milestoneClearanceInfo as $mileInfo)
+        {
+            if(!$mileInfo->cleared)
+            {
+                if($mileInfo->bonusPenalty>=0)
+                {
+                    $potentialBonus+=$mileInfo->bonusPenalty;
+                }
+                else{
+                    $potentialPenalties+=$mileInfo->bonusPenalty;
+                }
+            }
+        }
+        $potential->bonus = $potentialBonus;
+        $potential->penalties = $potentialPenalties;
+        return $potential;
+
+    }
+
     public function getSetOfUsersMilestoneInfo($experienceInstanceId, $userIds)
     {//init experience variables
         $experienceInstance = ExperienceModel::find($experienceInstanceId);
@@ -568,10 +720,11 @@ class Gradebook extends ComponentBase {
         //get all students in course
 
         $roots = new Roots();
-        $users = $roots->getStudentsInCourse();
+        $returned_data = $roots->getStudentsInCourseGradebook();
+        $users = $returned_data['studentsInCourse'];
+        $sections = $returned_data['studentsWithSection'];
 
         $filteredUsers = array();
-
         foreach($userIds as $userId)
         {
             $res = array_values(array_filter($users, function($elem) use($userId) {
@@ -579,18 +732,21 @@ class Gradebook extends ComponentBase {
             }));
             $filteredUsers = array_merge($filteredUsers,$res);
         }
-        $masterArr=array();
+        $masterArr = array();
+        $potentisal_array = array();
         foreach($filteredUsers as $user)
         {
+            $potentialOfUser = $this->getPotential($experienceInstanceId, $user->user_id);
             $item = $this->getUserMilestoneInfo($user, $milestonesOrderedByPointsDesc, $ptsPerSecond, $stDate, $endDate, $bonusPerSecond, $bonusSeconds,
-                $penaltyPerSecond, $penaltySeconds, $maxExperiencePts, $grading_scheme);
+                $penaltyPerSecond, $penaltySeconds, $maxExperiencePts, $grading_scheme, $sections, $potentialOfUser);
             $masterArr[] = $item;
         }
         return $masterArr;
+
     }
 
     private function getUserMilestoneInfo($user,$milestonesOrderedByPointsDesc, $ptsPerSecond, $stDate, $endDate, $bonusPerSecond, $bonusSeconds,
-                                          $penaltyPerSecond, $penaltySeconds, $maxExperiencePts, $grading_scheme)
+                                          $penaltyPerSecond, $penaltySeconds, $maxExperiencePts, $grading_scheme, $sections, $potentialOfUser)
     {
 
         //get User submissions
@@ -600,7 +756,6 @@ class Gradebook extends ComponentBase {
         $multipleAssignments = true;
         $allStudents = false;
         $allAssignments = true;
-// echo "getting submissions at ".json_encode(new \DateTime('now'))."--";
         //can have the student Id param null if multipleUsers is set to false (we'll only get the current user's submissions)
         $req = new SubmissionsRequest(ActionType::GET, $studentIds, $allStudents,
             $assignmentIds, $allAssignments, $multipleStudents, $multipleAssignments);
@@ -675,7 +830,9 @@ class Gradebook extends ComponentBase {
         //get letter grade
         $grade = new GradeComponent();
         $userObj->grade = $grade->getLetterGrade($totalPoints, $maxExperiencePts, $grading_scheme);
-
+        $userObj->probable_penalty = $potentialOfUser->penalties;
+        $userObj->possible_bonus = $potentialOfUser->bonus;
+        $userObj->sections = implode("<br>",$sections[$userObj->id]);
         return $userObj;
     }
 
@@ -852,7 +1009,7 @@ class Gradebook extends ComponentBase {
         $standards = $this->roots->getGradingStandards();
         $grading_scheme = $standards[0]->grading_scheme;
         //get experience total points
-        $experienceInstance = ExperienceModel::find($this->property('experienceInstance'));
+        $experienceInstance = ExperienceModel::find($this->page['experienceInstanceId']);
         $maxExperiencePts = $experienceInstance->total_points;
 
         $utcTimeZone = new DateTimeZone('UTC');
@@ -873,7 +1030,7 @@ class Gradebook extends ComponentBase {
 
                 $userSubmissions = $expComponent->getSubmissions($user->user_id);
 
-                $bonusPenalties = $this->getBonusPenaltiesNew($this->property('experienceInstance'), $userSubmissions, $ptsPerSecond, $stDate, $bonusPerSecond,
+                $bonusPenalties = $this->getBonusPenaltiesNew($this->page['experienceInstanceId'], $userSubmissions, $ptsPerSecond, $stDate, $bonusPerSecond,
                     $bonusSeconds, $penaltyPerSecond, $penaltySeconds);
 
                 // $bonusPenalties = $this->getBonusPenalties($user->user_id);
@@ -950,8 +1107,8 @@ class Gradebook extends ComponentBase {
 
     private function getBonusPenalties($userId = null) {
         $experienceComp = new ExperienceComponent();
-        if ((!is_null($this->property('experienceInstance'))) && ($this->property('experienceInstance') > 0)) {
-            return $experienceComp->calculateTotalBonusPenalties($this->property('experienceInstance'), $userId);
+        if ((!is_null($this->page['experienceInstanceId'])) && ($this->page['experienceInstanceId'] > 0)) {
+            return $experienceComp->calculateTotalBonusPenalties($this->page['experienceInstanceId'], $userId);
         } else {
             return 0;
         }
@@ -975,6 +1132,58 @@ class Gradebook extends ComponentBase {
             return $elem->assignment_id === $assignmentId;
         }));
         return $filteredItems;
+    }
+
+    private function findExperienceInstance()
+    {
+        $experienceModel=null;
+        if(is_null($this->property('experienceInstance'))||$this->property('experienceInstance')==0)
+        {//find an instance of experience with the same course id
+            if (!isset($_SESSION)) {
+                session_start();
+            }
+            $courseId = $_SESSION['courseID'];
+            $experienceModel = ExperienceModel::where('course_id','=',$courseId)->first();
+            if(is_null($experienceModel))
+            {//if no experience was created we will create one on the fly and tell the user to go configure it
+                $experienceModel = ExperienceModel::firstOrNew(array('course_id' => $courseId));
+                $experienceModel->name = "Experience_auto";
+                $experienceModel->total_points = 1000;
+                $today = new \DateTime('now');
+                $experienceModel->start_date = $today;
+                $newDate = new \DateTime('now');
+                $tomorrow = $newDate->add(new \DateInterval('P10D'));
+                $experienceModel->end_date = $tomorrow;
+                $experienceModel->bonus_per_day = 1;
+                $experienceModel->penalty_per_day = 1;
+                $experienceModel->bonus_days = 5;
+                $experienceModel->penalty_days = 5;
+                $experienceModel->animate = 1;
+                $experienceModel->size = 'medium';
+                $experienceModel->course_id = $courseId;
+                $experienceModel->save();
+                $this->page['configureExperience']=1;
+            }
+            else
+            {
+                $this->page['configureExperience']=0;
+            }
+            $experienceModel= ExperienceModel::find($experienceModel->id)->first();
+            $this->page['experienceInstanceId'] =$experienceModel->id;
+            $this->page['configureExperience']=0;
+
+            $this->experienceInstanceId = $experienceModel->id;
+            return $experienceModel;
+        }
+        else
+        {//use the selected instance
+            $experienceModel= ExperienceModel::find($this->property('experienceInstance'))->first();
+            $this->page['experienceInstanceId'] =$experienceModel->id;
+            $this->page['configureExperience']=0;
+
+            $this->experienceInstanceId = $experienceModel->id;
+            return $experienceModel;
+        }
     }
 
 }

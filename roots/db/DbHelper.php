@@ -542,23 +542,6 @@ class DbHelper
         }
     }
 
-    public function qualityAssuranceAssignmentGroups($courseId, $currentAssignmentGroupsIds)
-    {
-        $groups = AssignmentGroup::where('course_id','=',$courseId)->select('assignment_group_id')->get();
-        $fromDBArr = array();
-        foreach($groups as $grp)
-        {
-            $fromDBArr[] = $grp['assignment_group_id'];
-        }
-
-        $toBeDeleted =array_diff($fromDBArr,$currentAssignmentGroupsIds);
-
-        foreach($toBeDeleted as $groupId)
-        {//TODO: verify cascading delete
-            Module::AssignmentGroup('course_id','=',$courseId)->where('assignment_group_id','=',  intval($groupId))->delete();
-        }
-    }
-    
     public function specificModuleQualityAssurance($courseId, $module_id, $allModuleItems)
     {
         $newIds = [];
@@ -692,7 +675,6 @@ class DbHelper
         return $users;
     }
 
-
     public function getCondensedUsersInCourseWithRole($courseId, $role_name)
     {
         $role = $this->getRole($role_name);
@@ -736,9 +718,9 @@ class DbHelper
 
     public function getRoleById($role_id)
     {
-
         return Role::where('id','=',$role_id)->first();
     }
+
     public function deleteInvalidApproverToken($courseId)
     {
         $role = Role::where('role_name','=','Approver')->first();

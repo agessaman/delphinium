@@ -19,9 +19,7 @@
  * You can modify personal copy of source-code but cannot distribute modifications
  * You may not distribute any version of this software, modified or otherwise
  */
-
 namespace Delphinium\Roots\Controllers;
-
 use \Input;
 use Illuminate\Routing\Controller;
 use Delphinium\Roots\Models\Developer as LtiConfigurations;
@@ -30,15 +28,14 @@ use Delphinium\Roots\Models\UserCourse;
 use Delphinium\Roots\Models\Role;
 use Delphinium\Roots\Roots;
 use Delphinium\Roots\DB\DbHelper;
-
 class OAuthResponse extends Controller {
-
     public function saveUserInfo()
     {
         if (!isset($_SESSION))
         {
             session_start();
         }
+
         $code = Input::get('code');
         $lti = Input::get('lti');
         $roleId = Input::get('role');
@@ -48,21 +45,16 @@ class OAuthResponse extends Controller {
             echo "You have canceled authorizing this app. If you want to use this app, you must authorize it. Please reload this page.";
             return;
         }
-
         $instanceFromDB = LtiConfigurations::find($lti);
-
         $clientId = $instanceFromDB['DeveloperId'];
         $developerSecret = $instanceFromDB['DeveloperSecret'];
-
         $opts = array('http' => array('method' => 'POST',));
         $context = stream_context_create($opts);
         $url = "https://{$_SESSION['domain']}/login/oauth2/token?client_id={$clientId}&client_secret={$developerSecret}&code={$code}";
         $userTokenJSON = file_get_contents($url, false, $context, -1, 40000);
         $userToken = json_decode($userTokenJSON);
-
         $actualToken = $userToken->access_token;
         $encryptedToken = \Crypt::encrypt($actualToken);
-
         $dbHelper = new DbHelper();
         $role = $dbHelper->getRoleById($roleId);
 
@@ -93,7 +85,6 @@ class OAuthResponse extends Controller {
 
         $roleId = $newRoleId;
         setcookie("token_attempts", 0, time() + (300), "/"); //5 minutes
-
         //store encrypted token in the database
         $courseId = $_SESSION['courseID'];
         $userId = $_SESSION['userID'];
@@ -106,7 +97,6 @@ class OAuthResponse extends Controller {
 
         echo "App has been approved. Please reload this page";
     }
-
     function redirect($url) {
         echo '<script type="text/javascript">';
         echo 'window.location.href="' . $url . '";';
@@ -116,5 +106,4 @@ class OAuthResponse extends Controller {
         echo '</noscript>';
         exit;
     }
-
 }
